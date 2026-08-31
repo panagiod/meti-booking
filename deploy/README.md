@@ -4,7 +4,10 @@
 
 ## Start here
 
-👉 **[HETZNER.md](./HETZNER.md)** — full step-by-step guide (server, DNS, Docker, HTTPS, cron, backups).
+| Doc | Contents |
+|-----|----------|
+| **[HETZNER.md](./HETZNER.md)** | Full step-by-step (server, DNS, Docker, HTTPS, cron) |
+| **[../docs/HOSTING.md](../docs/HOSTING.md)** | Hosting overview, env vars, scripts, checklist |
 
 ## Quick deploy (on the VPS)
 

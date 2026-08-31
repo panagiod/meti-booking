@@ -2,6 +2,26 @@
 
 **Best for:** a real MeTi Pilates studio website — commercial use, custom domain, no cold starts, full control.
 
+📖 **Also see:** [docs/HOSTING.md](../docs/HOSTING.md) — hosting overview, env vars, scripts, go-live checklist.
+
+## Table of contents
+
+1. [Cost](#cost)
+2. [What you get](#what-you-get)
+3. [Overview](#overview)
+4. [Step 1 — Hetzner server](#step-1--hetzner-server)
+5. [Step 2 — Domain DNS](#step-2--domain-dns)
+6. [Step 3 — Server setup](#step-3--server-setup-ssh)
+7. [Step 4 — Clone the app](#step-4--clone-the-app)
+8. [Step 5 — Deploy](#step-5--deploy)
+9. [Step 6 — Seed data](#step-6--seed-studio-data-first-time)
+10. [Step 7 — Cron jobs](#step-7--cron-jobs)
+11. [Step 8 — Smoke test](#step-8--smoke-test)
+12. [Google OAuth](#google-oauth)
+13. [Mercado Pago](#mercado-pago-real-payments)
+14. [Updating](#updating-the-live-site)
+15. [Troubleshooting](#troubleshooting)
+
 | Item | Cost |
 |------|-----:|
 | Hetzner CX22 (2 vCPU, 4 GB RAM) | ~**€4.5/mo** |

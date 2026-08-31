@@ -140,14 +140,23 @@ The app uses daily crons (expire pending appointments, reminders, cleanup). This
 
 ---
 
-## Phase 3 — Cheapest VPS (full control, ~$5–7/month)
+## Phase 3 — Hetzner VPS (~€5–7/month) — **recommended for production**
 
-**Goal:** Predictable cost, no vendor sleep/cold starts, run everything on one server.
+**Goal:** Cheapest **commercial** hosting with full control. No Vercel Pro fees, no Neon sleep.
 
-Use this when:
-- Neon/Vercel free tiers are too limiting
-- You want Postgres + app on one bill
-- You need more cron flexibility
+👉 **Full guide:** [deploy/HETZNER.md](../deploy/HETZNER.md)  
+👉 **Overview:** [docs/HOSTING.md](./HOSTING.md)
+
+### Quick summary
+
+| Item | Detail |
+|------|--------|
+| Server | Hetzner **CX22** (~€4.5/mo) — Ubuntu 24.04 |
+| Stack | Docker: Postgres + Next.js + Caddy (HTTPS) |
+| Deploy | `./deploy/deploy.sh` on the server |
+| Uploads | `SELF_HOSTED=1` — local disk, no Vercel Blob |
+| Cron | `./deploy/setup-cron.sh` |
+| Backups | `./deploy/backup-db.sh` |
 
 ### Recommended VPS
 
@@ -168,21 +177,20 @@ Files provided:
 - `deploy/docker-compose.prod.yml` — app + Postgres + Caddy
 - `deploy/Caddyfile` — automatic HTTPS via Let's Encrypt
 
-### VPS deploy steps (outline)
+### VPS deploy steps
 
-1. Rent Hetzner CX22 (Ubuntu 24.04)
-2. Point domain A record to server IP (Cloudflare DNS)
-3. Install Docker on the server
-4. Clone repo and copy `.env` with production values
-5. Run:
+See **[deploy/HETZNER.md](../deploy/HETZNER.md)** for the complete walkthrough. Short version:
 
-   ```bash
-   docker compose -f deploy/docker-compose.prod.yml up -d --build
-   docker compose -f deploy/docker-compose.prod.yml exec app pnpm db:deploy
-   docker compose -f deploy/docker-compose.prod.yml exec app pnpm demo:setup
-   ```
+```bash
+git clone https://github.com/panagiod/meti-booking.git
+cd meti-booking
+cp deploy/env.production.example .env   # edit DOMAIN, secrets
+chmod +x deploy/*.sh
+./deploy/deploy.sh
+./deploy/setup-cron.sh
+```
 
-6. Caddy obtains and renews SSL certificates automatically
+Caddy obtains SSL certificates automatically. For backups, cron details, and troubleshooting see the full guide.
 
 ### VPS cost optimization tips
 
@@ -199,14 +207,17 @@ Files provided:
 ## Decision guide
 
 ```
-Need a demo URL today?
+Need a real studio website (commercial)?
+  └─ Hetzner VPS + Docker (~€6/mo) — see deploy/HETZNER.md
+
+Need a demo URL today (non-commercial testing)?
   └─ Phase 1: Vercel + Neon ($0)
 
-Need a custom domain but low traffic?
-  └─ Phase 2: Keep Vercel + add cheap domain ($0/mo + domain)
+Need a custom domain but prefer managed hosting?
+  └─ Phase 2: Vercel Pro + Neon (~€25/mo)
 
-Hitting free-tier limits or need full control?
-  └─ Phase 3: Hetzner VPS + Docker ($5/mo)
+Hitting free-tier limits or want full control?
+  └─ Phase 3: Hetzner VPS + Docker (~€6/mo)
 ```
 
 ## Migration path
@@ -238,8 +249,6 @@ Hitting free-tier limits or need full control?
 
 ## Recommended path for this project
 
-1. **This week:** Deploy Phase 1 to Vercel + Neon ($0) using `pnpm demo:setup` for demo accounts
-2. **When ready for branding:** Buy a `.xyz` or `.com` domain (~$3–10/yr), connect via Cloudflare
-3. **When traffic or limits grow:** Migrate to Hetzner CX22 (~$5/mo) using `deploy/docker-compose.prod.yml`
-
-This keeps costs at **$0 until you need a domain**, then **~$1/month average** with a cheap domain, scaling to **~$5/month** only when free tiers are no longer enough.
+1. **Real studio (MeTi Pilates):** Deploy on **Hetzner CX22** using [deploy/HETZNER.md](../deploy/HETZNER.md) (~€6/mo + domain)
+2. **Testing / portfolio:** Vercel Hobby + Neon free ($0) — see [CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md)
+3. **Managed alternative:** Vercel Pro + Neon Launch (~€25/mo) — see [deploy/VERCEL.md](../deploy/VERCEL.md)

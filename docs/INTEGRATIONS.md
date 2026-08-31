@@ -16,9 +16,12 @@ Admins replace images at **`/admin/content`** → Images & contact tab.
 | Environment | Storage |
 |-------------|---------|
 | Local dev | `public/uploads/studio/` |
-| Production | **Vercel Blob** — `BLOB_READ_WRITE_TOKEN` required (503 without it) |
+| **Hetzner VPS** | `SELF_HOSTED=1` → persistent volume at `/app/public/uploads/studio/` |
+| Vercel production | **Vercel Blob** — `BLOB_READ_WRITE_TOKEN` required (503 without it) |
 
 API: `POST /api/admin/studio/upload` (fields: `file`, `imageKey` = `hero` \| `reformer`).
+
+See [docs/HOSTING.md](./HOSTING.md) for VPS setup.
 
 ### OG image & favicons
 

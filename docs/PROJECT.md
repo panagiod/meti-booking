@@ -34,7 +34,9 @@
 ## Customer booking flow
 
 ```
-/  →  Hero  →  /book  →  Date  →  Time  →  Confirm  →  /login  →  /checkout  →  MP
+/  →  Hero  →  /book  →  Date  →  Time  →  Confirm  →  /checkout  →  MP
+                                                              ↑
+                                                    guest email (no login required)
 ```
 
 - Reformer auto-selected (no session picker).
@@ -241,13 +243,22 @@ Copy `.env.demo.example` → `.env`. See `.env.example` for production.
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | ✅ | Same |
 | `STUDIO_TIMEZONE` | ⚠️ | Default `Europe/Athens` |
 | `ENCRYPTION_KEY` | ✅ prod | MP token encryption; `openssl rand -base64 32` |
-| `BLOB_READ_WRITE_TOKEN` | ✅ prod uploads | Required for admin image uploads in production |
+| `BLOB_READ_WRITE_TOKEN` | Vercel prod | Admin image uploads on Vercel |
+| `SELF_HOSTED` | VPS prod | Set `1` on Hetzner — local disk uploads instead of Blob |
 | `CRON_SECRET` | ✅ prod | Cron endpoints fail-closed without it |
-| `GOOGLE_CLIENT_ID/SECRET` | ⚠️ | Placeholder on demo |
+| `GOOGLE_CLIENT_ID/SECRET` | Optional | See `deploy/GOOGLE_OAUTH.md` |
 | `APP_URL` | ⚠️ | MP webhooks |
 | `DEMO_PASSWORD` | prod seed | Required with `ALLOW_DEMO_SEED=1` |
 | `ALLOW_DEMO_SEED` | prod seed | Set to `1` to allow `demo:setup` in production |
 | `STUDIO_ADVISOR_ID` | ❌ | Optional instructor pin |
+
+### Production hosting
+
+| Platform | Guide |
+|----------|-------|
+| **Hetzner VPS (recommended)** | [deploy/HETZNER.md](../deploy/HETZNER.md) · [docs/HOSTING.md](./HOSTING.md) |
+| Vercel Pro | [deploy/VERCEL.md](../deploy/VERCEL.md) |
+| Cost comparison | [docs/CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md) |
 
 ---
 

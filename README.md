@@ -5,7 +5,7 @@
 Book **reformer sessions** online: pick a date, time, sign in, pay.  
 **English + Greek** (`EN | ΕΛ`).
 
-> 📖 **Full reference:** [docs/PROJECT.md](docs/PROJECT.md) · **Admin guide:** [docs/ADMIN.md](docs/ADMIN.md) · **Cheapest hosting ($0/mo):** [docs/CHEAPEST_HOSTING.md](docs/CHEAPEST_HOSTING.md)
+> 📖 **Full reference:** [docs/PROJECT.md](docs/PROJECT.md) · **Admin:** [docs/ADMIN.md](docs/ADMIN.md) · **Hosting:** [docs/HOSTING.md](docs/HOSTING.md)
 
 ---
 
@@ -107,8 +107,9 @@ public/uploads/studio/   # Admin-uploaded images (local dev)
 
 | Doc | Purpose |
 |-----|---------|
-| [**docs/CHEAPEST_HOSTING.md**](docs/CHEAPEST_HOSTING.md) | Cost comparison ($0 vs real business) |
-| [**deploy/HETZNER.md**](deploy/HETZNER.md) | **Hetzner VPS deploy** (~€5/mo) — recommended for production |
+| [**docs/HOSTING.md**](docs/HOSTING.md) | **Production hosting hub** — Hetzner VPS (~€6/mo) |
+| [**deploy/HETZNER.md**](deploy/HETZNER.md) | Hetzner step-by-step deploy guide |
+| [docs/CHEAPEST_HOSTING.md](docs/CHEAPEST_HOSTING.md) | Cost comparison ($0 vs real business) |
 | [**docs/PROJECT.md**](docs/PROJECT.md) | Complete architecture & API reference |
 | [**docs/ADMIN.md**](docs/ADMIN.md) | Calendar + website CMS |
 | [docs/DEMO.md](docs/DEMO.md) | Demo walkthrough |

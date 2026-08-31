@@ -16,6 +16,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 |-----|----------|
 | **[docs/PROJECT.md](docs/PROJECT.md)** | Architecture, APIs, DB, i18n, demo, security |
 | **[docs/ADMIN.md](docs/ADMIN.md)** | Admin calendar + website CMS |
+| **[docs/HOSTING.md](docs/HOSTING.md)** | Production hosting (Hetzner VPS recommended) |
 
 ## What this repo is
 
@@ -31,7 +32,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - PRs preferred; CI runs `pnpm test:unit` + `pnpm test:e2e`
 - Schema changes: `pnpm db:migrate` + update `demo-setup.ts`
 - After seed changes: `pnpm demo:setup`
-- Production: set `ENCRYPTION_KEY`, `STUDIO_TIMEZONE`, `BLOB_READ_WRITE_TOKEN`
+- Production: set `ENCRYPTION_KEY`, `STUDIO_TIMEZONE`, `CRON_SECRET`
+- **Hetzner VPS:** `SELF_HOSTED=1`, use `./deploy/deploy.sh` — see [docs/HOSTING.md](docs/HOSTING.md)
+- **Vercel:** `BLOB_READ_WRITE_TOKEN` for admin uploads
 
 ## Common tasks
 
@@ -51,6 +54,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | Admin auth | `src/lib/admin-auth.ts`, `admin/layout.tsx` |
 | MP encryption | `src/lib/encryption.ts`, `src/lib/advisor-mp.ts` |
 | Checkout pricing | `src/app/api/checkout/quote/route.ts` |
+| **Production deploy** | `deploy/HETZNER.md`, `docs/HOSTING.md` |
 
 ## Demo
 

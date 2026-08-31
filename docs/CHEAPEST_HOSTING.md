@@ -12,7 +12,8 @@
 
 Custom domain is optional (~**$3–10/year**). See [Custom domain (optional)](#custom-domain-optional).
 
-> ⚠️ **Real business website?** Read [Real studio website — honest limits](#real-studio-website--honest-limits) first. The $0 stack is for testing; a studio that sells classes needs a paid plan (~**$5–25/month**).
+> ⚠️ **Real business website?** Read [Real studio website — honest limits](#real-studio-website--honest-limits) first.  
+> **Production deploy:** [docs/HOSTING.md](./HOSTING.md) · [deploy/HETZNER.md](../deploy/HETZNER.md)
 
 > **Time needed:** ~20 minutes first time.  
 > **Prerequisites:** GitHub account, this repo on GitHub (`panagiod/meti-booking` or your fork).
@@ -365,9 +366,11 @@ VPS instructions: [deploy/README.md](../deploy/README.md) and [docs/DEPLOYMENT.m
 
 | Doc | Purpose |
 |-----|---------|
-| [deploy/VERCEL.md](../deploy/VERCEL.md) | Detailed Vercel checklist |
+| [docs/HOSTING.md](./HOSTING.md) | **Production hosting hub** (Hetzner recommended) |
+| [deploy/HETZNER.md](../deploy/HETZNER.md) | Hetzner step-by-step guide |
+| [deploy/VERCEL.md](../deploy/VERCEL.md) | Vercel checklist |
 | [deploy/GOOGLE_OAUTH.md](../deploy/GOOGLE_OAUTH.md) | Google sign-in setup |
-| [docs/DEPLOYMENT.md](./DEPLOYMENT.md) | All phases (free → domain → VPS) |
+| [docs/DEPLOYMENT.md](./DEPLOYMENT.md) | All phases + migration paths |
 | [.env.example](../.env.example) | Full environment variable list |
 
 ---

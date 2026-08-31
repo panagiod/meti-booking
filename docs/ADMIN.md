@@ -94,7 +94,8 @@ Editable per language:
 
 - Formats: JPEG, PNG, WebP (max 5MB)
 - **Local dev:** saved to `public/uploads/studio/`
-- **Production:** requires `BLOB_READ_WRITE_TOKEN` (Vercel Blob); returns 503 without it
+- **Hetzner VPS:** set `SELF_HOSTED=1` in `.env` — saves to persistent Docker volume (see [docs/HOSTING.md](./HOSTING.md))
+- **Vercel production:** requires `BLOB_READ_WRITE_TOKEN` (Vercel Blob); returns 503 without it
 - Click **Replace image** → file uploads immediately; click **Save changes** to persist URL in DB
 
 ### How it reaches the public site

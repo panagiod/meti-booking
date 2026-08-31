@@ -69,5 +69,6 @@ Password: **`Demo1234!`**
 ## Docs
 
 - [docs/PROJECT.md](docs/PROJECT.md) — full reference
+- [docs/HOSTING.md](docs/HOSTING.md) — **production hosting (Hetzner)**
 - [docs/ADMIN.md](docs/ADMIN.md) — admin calendar + CMS
-- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — permanent hosting
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — all deploy phases
