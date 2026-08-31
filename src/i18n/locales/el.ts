@@ -14,7 +14,7 @@ const el: Messages = {
   },
   hero: {
     eyebrow: "Reformer pilates",
-    title: "Reformer, με απλή κράτηση.",
+    title: "Κλείστε το μάθημά σας.",
     description:
       "Κλείστε μαθήματα reformer online. Επιλέξτε ώρα, ελάτε, κινηθείτε καλά.",
     bookSession: "Κράτηση reformer",

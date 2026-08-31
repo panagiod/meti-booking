@@ -13,7 +13,7 @@ const en: Messages = {
   },
   hero: {
     eyebrow: "Reformer pilates",
-    title: "Reformer, booked beautifully.",
+    title: "Book your session.",
     description: "Book reformer sessions online. Pick a time, show up, move well.",
     bookSession: "Book reformer",
     viewSessions: "View details",
