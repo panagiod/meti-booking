@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { siteConfig } from "@/lib/site-config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -8,8 +9,9 @@ export function cn(...inputs: ClassValue[]) {
 export function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "COP",
+    currency: siteConfig.currency,
     minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(cents / 100);
 }
 

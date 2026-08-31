@@ -10,6 +10,7 @@ import { LoadingPage } from "@/components/ui/loading";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { Save, DollarSign, Percent, Settings, Plus, Trash2 } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 interface Category {
   id: string;
@@ -175,14 +176,6 @@ export default function ConfigPage() {
     };
   };
 
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "COP",
-      minimumFractionDigits: 0,
-    }).format(cents);
-  };
-
   if (isLoading) return <LoadingPage />;
 
   return (
@@ -270,7 +263,7 @@ export default function ConfigPage() {
                       </label>
                       <div className="flex items-center gap-2">
                         <CurrencyInput value={Math.round(category.minimumPriceCents / 100)} onChange={(v) => handleUpdateCategory(category.id, "minimumPriceCents", v * 100)} className="w-40" min={100} />
-                        <span className="text-sm text-[var(--text-muted)]">pesos</span>
+                        <span className="text-sm text-[var(--text-muted)]">EUR</span>
                       </div>
                       <p className="text-xs text-[var(--text-muted)] mt-1">
                         Advisors cannot charge less than this
@@ -319,7 +312,7 @@ export default function ConfigPage() {
                           className="w-40"
                           min={0}
                         />
-                        <span className="text-sm text-[var(--text-muted)]">pesos</span>
+                        <span className="text-sm text-[var(--text-muted)]">EUR</span>
                       </div>
                       <p className="text-xs text-[var(--text-muted)] mt-1">
                         Maximum fee cap (if the % exceeds this value)

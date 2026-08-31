@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { advisorMpConnected } from "@/lib/advisor-mp";
 
 // GET: Check if advisor has MercadoPago configured
 export async function GET(
@@ -22,7 +23,7 @@ export async function GET(
       return NextResponse.json({ error: "Advisor not found" }, { status: 404 });
     }
 
-    const isConnected = !!(advisor.mpPublicKey && advisor.mpAccessToken);
+    const isConnected = advisorMpConnected(advisor);
 
     return NextResponse.json({ isConnected, mpMode: advisor.mpMode });
   } catch (error) {

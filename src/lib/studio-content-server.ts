@@ -6,12 +6,15 @@ import {
   studioBranding,
 } from "@/lib/studio-content";
 import { studioContentSchema, type StudioContentData } from "@/lib/studio-content-types";
+import { StudioContentParseError } from "@/lib/studio-content-errors";
 
 function parseStudioContent(data: unknown): StudioContentData {
   return studioContentSchema.parse(data);
 }
 
-export async function getStudioContent(): Promise<StudioContentData> {
+export async function getStudioContent(options?: {
+  strict?: boolean;
+}): Promise<StudioContentData> {
   const row = await prisma.studioContent.findUnique({
     where: { id: STUDIO_CONTENT_ID },
   });
@@ -22,7 +25,11 @@ export async function getStudioContent(): Promise<StudioContentData> {
 
   try {
     return parseStudioContent(row.data);
-  } catch {
+  } catch (error) {
+    console.error("[studio-content] Failed to parse stored content:", error);
+    if (options?.strict) {
+      throw new StudioContentParseError();
+    }
     return buildDefaultStudioContent();
   }
 }
@@ -57,6 +64,16 @@ export async function ensureStudioContentSeed(): Promise<void> {
       },
     });
   }
+}
+
+export async function resetStudioContentToDefaults(): Promise<StudioContentData> {
+  const defaults = buildDefaultStudioContent();
+  await prisma.studioContent.upsert({
+    where: { id: STUDIO_CONTENT_ID },
+    create: { id: STUDIO_CONTENT_ID, data: defaults },
+    update: { data: defaults },
+  });
+  return defaults;
 }
 
 export { localeContentFromStudio, studioBranding };

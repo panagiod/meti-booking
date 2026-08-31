@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { getStudioContent, saveStudioContent } from "@/lib/studio-content-server";
+import { requireBlobStorageInProduction } from "@/lib/blob-storage";
 import { put, del } from "@vercel/blob";
 import { v4 as uuidv4 } from "uuid";
 
@@ -25,6 +26,18 @@ export async function POST(request: NextRequest) {
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    try {
+      requireBlobStorageInProduction();
+    } catch {
+      return NextResponse.json(
+        {
+          error:
+            "Image uploads require BLOB_READ_WRITE_TOKEN in production. Configure Vercel Blob or a persistent volume.",
+        },
+        { status: 503 }
+      );
     }
 
     if (!imageKey || !["hero", "reformer"].includes(imageKey)) {

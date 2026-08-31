@@ -3,20 +3,13 @@
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-// Formats a number in Colombian style: 1000000 → 1'000.000
-function formatCOP(n: number): string {
+// Formats whole currency units for display (e.g. 45 → "45")
+function formatCurrencyUnits(n: number): string {
   if (isNaN(n)) return "";
-  const abs = Math.abs(Math.trunc(n));
-  const s = abs.toLocaleString("en-US"); // "1.000.000"
-  const firstDot = s.indexOf(".");
-  // If there are two separators, the first one (millions) uses an apostrophe
-  if (firstDot !== -1 && s.indexOf(".", firstDot + 1) !== -1) {
-    return s.slice(0, firstDot) + "'" + s.slice(firstDot + 1);
-  }
-  return s;
+  return Math.abs(Math.trunc(n)).toLocaleString("en-US");
 }
 
-// Currency input with mask. value/onChange operate in pesos (whole number).
+// Currency input with mask. value/onChange operate in whole currency units (e.g. euros).
 export function CurrencyInput({
   value,
   onChange,
@@ -34,7 +27,7 @@ export function CurrencyInput({
   return (
     <Input
       inputMode="numeric"
-      value={formatCOP(value)}
+      value={formatCurrencyUnits(value)}
       onChange={handleChange}
       className={cn(className)}
       {...props}

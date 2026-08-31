@@ -18,14 +18,7 @@ import {
   ArrowRight,
   Plus,
 } from "lucide-react";
-
-function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  }).format(cents);
-}
+import { formatCurrency } from "@/lib/utils";
 
 export default function AdvisorDashboard() {
   const { data, isLoading, error } = useAdvisorDashboard();

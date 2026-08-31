@@ -1,4 +1,5 @@
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
+import { siteConfig } from "@/lib/site-config";
 
 export function getAppUrl(): string {
   return (
@@ -41,7 +42,7 @@ export async function createCheckoutPreference({
         description: item.description,
         quantity: 1,
         unit_price: item.unitPriceCents / 100,
-        currency_id: "COP",
+        currency_id: siteConfig.currency,
       })),
       external_reference: externalReference,
       notification_url: `${appUrl}/api/webhooks/mercadopago`,

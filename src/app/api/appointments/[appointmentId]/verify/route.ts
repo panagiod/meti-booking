@@ -9,6 +9,7 @@ import {
   assertPaymentIdNotReused,
   PaymentVerificationError,
 } from "@/lib/payment-verify";
+import { decryptMpAccessToken } from "@/lib/advisor-mp";
 
 export async function POST(
   request: NextRequest,
@@ -46,13 +47,14 @@ export async function POST(
       return NextResponse.json({ ok: true, alreadyConfirmed: true });
     }
 
-    if (!appointment.advisor.mpAccessToken) {
+    const mpToken = decryptMpAccessToken(appointment.advisor.mpAccessToken);
+    if (!mpToken) {
       return NextResponse.json({ error: "Advisor has no MP credentials" }, { status: 400 });
     }
 
     await assertPaymentIdNotReused(paymentId, appointment.id);
 
-    const payment = await getPayment(appointment.advisor.mpAccessToken, paymentId);
+    const payment = await getPayment(mpToken, paymentId);
     assertPaymentMatchesAppointment(payment, appointment);
 
     const wasPending = appointment.status === "PENDING";

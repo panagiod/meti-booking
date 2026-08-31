@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { createCheckoutPreference } from "@/lib/mercadopago";
+import { decryptMpAccessToken } from "@/lib/advisor-mp";
 
 // POST: Regenerate MercadoPago checkout link for a pending appointment
 export async function POST(
@@ -47,17 +48,17 @@ export async function POST(
       );
     }
 
-    if (!appointment.advisor.mpAccessToken) {
+    const mpToken = decryptMpAccessToken(appointment.advisor.mpAccessToken);
+    if (!mpToken) {
       return NextResponse.json(
         { error: "The advisor does not have a Mercado Pago account configured" },
         { status: 400 }
       );
     }
 
-    // Create a new Checkout Pro preference
     const { preferenceId, initPoint, sandboxInitPoint } =
       await createCheckoutPreference({
-        accessToken: appointment.advisor.mpAccessToken,
+        accessToken: mpToken,
         items: [
           {
             id: appointment.service.id,

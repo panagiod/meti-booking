@@ -13,7 +13,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { sileo } from "sileo";
-import { cn } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 interface Appointment {
   id: string;
@@ -81,14 +81,6 @@ export default function AppointmentsPage() {
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
-  };
-
-  const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "COP",
-      minimumFractionDigits: 0,
-    }).format(cents);
   };
 
   const openReview = (apt: Appointment) => {

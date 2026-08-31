@@ -12,10 +12,7 @@ import { sileo } from "sileo";
 import { Send, FileText, CheckCircle2, Receipt } from "lucide-react";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
-
-function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(cents / 100);
-}
+import { formatCurrency } from "@/lib/utils";
 
 export default function InvoicesPage() {
   const queryClient = useQueryClient();

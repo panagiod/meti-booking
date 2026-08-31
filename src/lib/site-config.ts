@@ -15,6 +15,8 @@ export const siteConfig = {
   bookingWeeksAhead: 8,
   /** Default minimum hours before first bookable slot */
   defaultBookingLeadHours: 2,
+  /** Checkout / Mercado Pago currency */
+  currency: "EUR",
   deliveryMode: "in-person" as const,
   location: "123 Wellness Ave, Studio 2",
   phone: "(555) 012-3456",

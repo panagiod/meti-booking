@@ -14,14 +14,7 @@ import {
   ArrowRight,
   Calendar,
 } from "lucide-react";
-
-function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  }).format(cents);
-}
+import { formatCurrency } from "@/lib/utils";
 
 export default function AdminDashboard() {
   const { data, isLoading } = useAdminDashboard();

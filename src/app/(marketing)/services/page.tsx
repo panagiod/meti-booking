@@ -15,6 +15,7 @@ import {
   Search,
   Briefcase,
 } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 interface Advisor {
   id: string;
@@ -45,11 +46,7 @@ const categories = [
 ];
 
 function formatPrice(cents: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  }).format(cents / 100);
+  return formatCurrency(cents);
 }
 
 export default function ServicesPage() {

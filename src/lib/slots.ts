@@ -224,13 +224,7 @@ export function getAvailableDates(
   return dates;
 }
 
-export function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  }).format(cents / 100);
-}
+export { formatCurrency } from "@/lib/utils";
 
 export function formatDuration(minutes: number): string {
   if (minutes < 60) return `${minutes} min`;

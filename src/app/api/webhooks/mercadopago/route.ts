@@ -7,6 +7,7 @@ import {
   assertPaymentIdNotReused,
   PaymentVerificationError,
 } from "@/lib/payment-verify";
+import { decryptMpAccessToken } from "@/lib/advisor-mp";
 
 interface PaymentNotification {
   type?: string;
@@ -101,9 +102,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!appointment.advisor.mpAccessToken) {
+    const mpToken = decryptMpAccessToken(appointment.advisor.mpAccessToken);
+    if (!mpToken) {
       console.error(
-        `Advisor ${appointment.advisorId} has no MP access token (appointment ${appointment.id})`
+        `Advisor ${appointment.advisorId} has no usable MP access token (appointment ${appointment.id})`
       );
       return NextResponse.json(
         { error: "Advisor has no MP credentials" },
@@ -111,10 +113,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Actual payment verification with the advisor's token (no custody)
     let payment;
     try {
-      payment = await getPayment(appointment.advisor.mpAccessToken, paymentId);
+      payment = await getPayment(mpToken, paymentId);
     } catch (mpError) {
       console.error("MP payment verification failed:", mpError);
       return NextResponse.json(

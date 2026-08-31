@@ -1,12 +1,27 @@
 import { config } from "dotenv";
 import { resolve } from "path";
 import { execSync } from "child_process";
+import { randomBytes } from "crypto";
 import { studioScheduleSeedRows } from "../src/lib/studio-schedule";
 
 config({ path: resolve(__dirname, "../.env") });
 
-const DEMO_PASSWORD = "Demo1234!";
 const RESET = process.argv.includes("--reset");
+const RESET_CONTENT = process.argv.includes("--reset-content");
+
+function resolveDemoPassword(): string {
+  if (process.env.DEMO_PASSWORD) {
+    return process.env.DEMO_PASSWORD;
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "DEMO_PASSWORD is required in production. Set ALLOW_DEMO_SEED=1 and DEMO_PASSWORD."
+    );
+  }
+  return "Demo1234!";
+}
+
+const DEMO_PASSWORD = resolveDemoPassword();
 const DEMO_USERS = {
   admin: {
     email: "admin@demo.meti-booking.local",
@@ -30,10 +45,20 @@ async function main() {
     throw new Error("DATABASE_URL is required. Copy .env.demo.example to .env first.");
   }
 
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_DEMO_SEED !== "1") {
+    throw new Error(
+      "demo:setup is blocked in production. Set ALLOW_DEMO_SEED=1 to run intentionally."
+    );
+  }
+
   if (RESET) {
     console.log("[demo-setup] --reset: will overwrite existing schedule, services, and advisor profile.");
   } else {
     console.log("[demo-setup] Preserving existing admin calendar and website content (use --reset to re-seed).");
+  }
+
+  if (RESET_CONTENT) {
+    console.log("[demo-setup] --reset-content: will reset website CMS to defaults.");
   }
 
   console.log("[demo-setup] Applying database migrations...");
@@ -176,14 +201,25 @@ async function main() {
     console.log(`  ✓ ${account.role.toLowerCase()}: ${account.email}`);
   }
 
-  const { ensureStudioContentSeed } = await import("../src/lib/studio-content-server");
-  await ensureStudioContentSeed();
-  console.log("[demo-setup] Studio website content seeded.");
+  const { ensureStudioContentSeed, resetStudioContentToDefaults } = await import(
+    "../src/lib/studio-content-server"
+  );
+  if (RESET_CONTENT) {
+    await resetStudioContentToDefaults();
+    console.log("[demo-setup] Studio website content reset to defaults.");
+  } else {
+    await ensureStudioContentSeed();
+    console.log("[demo-setup] Studio website content seeded.");
+  }
 
   await prisma.$disconnect();
 
   console.log("\n[demo-setup] Demo environment is ready.\n");
-  console.log("Accounts (password for all: Demo1234!):");
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`Accounts (password: ${DEMO_PASSWORD}):`);
+  } else {
+    console.log("Demo accounts created. Password was set via DEMO_PASSWORD env (not printed).");
+  }
   console.log(`  Admin:   ${DEMO_USERS.admin.email}`);
   console.log(`  Advisor: ${DEMO_USERS.advisor.email}`);
   console.log(`  Client:  ${DEMO_USERS.client.email}`);

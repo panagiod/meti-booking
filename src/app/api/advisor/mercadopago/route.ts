@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { decryptMpAccessToken, encryptMpAccessToken, advisorMpConnected } from "@/lib/advisor-mp";
 
 // GET: Get MercadoPago credentials + mode
 export async function GET() {
@@ -32,7 +33,7 @@ export async function GET() {
       mpMode: advisorProfile.mpMode,
       publicKey: advisorProfile.mpPublicKey || null,
       accessToken: advisorProfile.mpAccessToken ? "••••••••••••••••" : null,
-      isConnected: !!(advisorProfile.mpPublicKey && advisorProfile.mpAccessToken),
+      isConnected: advisorMpConnected(advisorProfile),
     });
   } catch (error) {
     console.error("Error fetching MP credentials:", error);
@@ -137,7 +138,7 @@ export async function POST(request: NextRequest) {
       where: { id: advisorProfile.id },
       data: {
         mpPublicKey: publicKey,
-        mpAccessToken: accessToken,
+        mpAccessToken: encryptMpAccessToken(accessToken),
         ...(mpMode ? { mpMode } : {}),
       },
     });

@@ -124,6 +124,13 @@ export default function AdminSchedulePage() {
     setHasChanges(true);
   };
 
+  const updateDay = (dayOfWeek: number, patch: Partial<StudioDaySchedule>) => {
+    setSchedule((prev) =>
+      prev.map((d) => (d.dayOfWeek === dayOfWeek ? { ...d, ...patch } : d))
+    );
+    setHasChanges(true);
+  };
+
   const updateTime = (
     dayOfWeek: number,
     field: keyof StudioDaySchedule,
@@ -336,39 +343,83 @@ export default function AdminSchedulePage() {
                     </div>
 
                     {day.isActive ? (
-                      <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <div>
-                          <label className="block text-xs text-[var(--text-muted)] mb-1">
-                            Start
-                          </label>
-                          <Input
-                            type="time"
-                            value={day.startTime}
-                            onChange={(e) =>
-                              updateTime(day.dayOfWeek, "startTime", e.target.value)
-                            }
-                            className="h-9 text-sm"
-                          />
+                      <div className="flex-1 space-y-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div>
+                            <label className="block text-xs text-[var(--text-muted)] mb-1">
+                              Start
+                            </label>
+                            <Input
+                              type="time"
+                              value={day.startTime}
+                              onChange={(e) =>
+                                updateTime(day.dayOfWeek, "startTime", e.target.value)
+                              }
+                              className="h-9 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-[var(--text-muted)] mb-1">
+                              End
+                            </label>
+                            <Input
+                              type="time"
+                              value={day.endTime}
+                              onChange={(e) =>
+                                updateTime(day.dayOfWeek, "endTime", e.target.value)
+                              }
+                              className="h-9 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-[var(--text-muted)] mb-1">
+                              Gap (min)
+                            </label>
+                            <Input
+                              type="number"
+                              min={0}
+                              max={120}
+                              value={day.gapMinutes}
+                              onChange={(e) =>
+                                updateDay(day.dayOfWeek, {
+                                  gapMinutes: Number(e.target.value) || 0,
+                                })
+                              }
+                              className="h-9 text-sm"
+                            />
+                          </div>
+                          <div className="flex items-end gap-2 text-sm text-[var(--text-muted)] pb-2">
+                            <Clock className="w-4 h-4" />
+                            {countSlotsPerDay(day, studio.serviceDurationMin)} slots
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-xs text-[var(--text-muted)] mb-1">
-                            End
-                          </label>
-                          <Input
-                            type="time"
-                            value={day.endTime}
-                            onChange={(e) =>
-                              updateTime(day.dayOfWeek, "endTime", e.target.value)
-                            }
-                            className="h-9 text-sm"
-                          />
-                        </div>
-                        <div className="col-span-2 flex items-end gap-2 text-sm text-[var(--text-muted)] pb-2">
-                          <Clock className="w-4 h-4" />
-                          {countSlotsPerDay(day, studio.serviceDurationMin)} slots · up to{" "}
-                          {countSlotsPerDay(day, studio.serviceDurationMin) *
-                            studio.slotCapacity}{" "}
-                          clients
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div>
+                            <label className="block text-xs text-[var(--text-muted)] mb-1">
+                              Lunch start (optional)
+                            </label>
+                            <Input
+                              type="time"
+                              value={day.lunchStart}
+                              onChange={(e) =>
+                                updateTime(day.dayOfWeek, "lunchStart", e.target.value)
+                              }
+                              className="h-9 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-[var(--text-muted)] mb-1">
+                              Lunch end (optional)
+                            </label>
+                            <Input
+                              type="time"
+                              value={day.lunchEnd}
+                              onChange={(e) =>
+                                updateTime(day.dayOfWeek, "lunchEnd", e.target.value)
+                              }
+                              className="h-9 text-sm"
+                            />
+                          </div>
                         </div>
                       </div>
                     ) : (

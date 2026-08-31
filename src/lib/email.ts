@@ -1,5 +1,7 @@
 import { Resend } from "resend";
 import { getAppUrl } from "@/lib/mercadopago";
+import { siteConfig } from "@/lib/site-config";
+import { STUDIO_TIMEZONE } from "@/lib/timezone";
 
 const FROM_EMAIL = process.env.EMAIL_FROM || "Meti <notificaciones@cognilab.dev>";
 
@@ -19,15 +21,16 @@ function formatDate(iso: string): string {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: "America/Bogota",
+    timeZone: STUDIO_TIMEZONE,
   });
 }
 
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "COP",
+    currency: siteConfig.currency,
     minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(cents / 100);
 }
 

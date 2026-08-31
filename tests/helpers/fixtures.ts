@@ -3,6 +3,7 @@ import { prisma } from "./db";
 import { MP_TEST_PUBLIC_KEY, MP_TEST_ACCESS_TOKEN } from "./mp";
 import { BASE_URL, extractSessionToken } from "./api";
 import { randomUUID } from "crypto";
+import { encryptMpAccessToken } from "@/lib/advisor-mp";
 
 // Future date formatted as local ISO (for scheduledAt and slots)
 export function futureDate(daysAhead: number, hour = 10, minute = 0): string {
@@ -79,7 +80,7 @@ export async function createActiveAdvisor(
       ...(opts?.withMP
         ? {
             mpPublicKey: MP_TEST_PUBLIC_KEY,
-            mpAccessToken: MP_TEST_ACCESS_TOKEN,
+            mpAccessToken: encryptMpAccessToken(MP_TEST_ACCESS_TOKEN),
             mpMode: opts?.mpMode || "PRODUCTION",
           }
         : {}),

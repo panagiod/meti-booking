@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { getStudioContent, saveStudioContent } from "@/lib/studio-content-server";
+import { StudioContentParseError } from "@/lib/studio-content-errors";
 import { studioContentSchema } from "@/lib/studio-content-types";
 import { z } from "zod";
 
@@ -13,9 +14,18 @@ export async function GET() {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    const content = await getStudioContent();
+    const content = await getStudioContent({ strict: true });
     return NextResponse.json({ content });
   } catch (error) {
+    if (error instanceof StudioContentParseError) {
+      return NextResponse.json(
+        {
+          error:
+            "Stored website content is invalid. Contact support before saving — raw data is preserved.",
+        },
+        { status: 500 }
+      );
+    }
     console.error("[admin/studio/content] GET error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }

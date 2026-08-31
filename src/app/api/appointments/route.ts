@@ -9,6 +9,7 @@ import { parseLocalISO } from "@/lib/timezone";
 import { calculatePrices } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site-config";
 import { validateBookableSlot, SlotBookingError } from "@/lib/slot-booking";
+import { decryptMpAccessToken } from "@/lib/advisor-mp";
 
 const appointmentSchema = z.object({
   advisorId: z.string(),
@@ -112,6 +113,14 @@ export async function POST(request: NextRequest) {
       scheduledAt: parsedDate,
     });
 
+    const mpToken = decryptMpAccessToken(advisorProfile.mpAccessToken);
+    if (!mpToken) {
+      return NextResponse.json(
+        { error: "Advisor payment credentials are not configured" },
+        { status: 400 }
+      );
+    }
+
     const isTest = advisorProfile.mpMode === "TEST";
 
     const appointment = await prisma.$transaction(
@@ -150,7 +159,7 @@ export async function POST(request: NextRequest) {
     try {
       const { preferenceId, initPoint, sandboxInitPoint } =
         await createCheckoutPreference({
-          accessToken: advisorProfile.mpAccessToken,
+          accessToken: mpToken,
           items: [
             {
               id: service.id,

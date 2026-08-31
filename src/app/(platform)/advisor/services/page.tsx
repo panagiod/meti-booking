@@ -19,15 +19,7 @@ import {
 } from "@/lib/hooks";
 import { Plus, Briefcase, Clock, DollarSign, Edit, Trash2, Eye, EyeOff, AlertTriangle, Tag } from "lucide-react";
 import { sileo } from "sileo";
-
-function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  }).format(cents / 100);
-}
-
+import { formatCurrency } from "@/lib/utils";
 function formatDuration(minutes: number) {
   if (minutes < 60) return `${minutes} min`;
   const hours = Math.floor(minutes / 60);
