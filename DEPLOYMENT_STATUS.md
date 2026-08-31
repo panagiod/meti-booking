@@ -8,8 +8,10 @@
 |------|-----|
 | Homepage | https://sin-building-cardiovascular-lifetime.trycloudflare.com |
 | Book | https://sin-building-cardiovascular-lifetime.trycloudflare.com/book |
+| Admin calendar | …/admin/schedule |
+| Admin website | …/admin/content |
 
-If the link returns **502**, the Next.js server stopped — restart with:
+If **502**, restart:
 
 ```bash
 cd /workspace
@@ -17,17 +19,19 @@ pnpm build
 export $(grep -v '^#' .env | xargs) && pnpm start
 ```
 
-Tunnel process: `cloudflared tunnel --url http://localhost:3000`
+Tunnel: `cloudflared tunnel --url http://localhost:3000`
 
 ---
 
 ## What the demo shows
 
-- **MeTi Pilates** homepage — single hero: "Book your session." / "Κλείστε το μάθημά σας."
-- **Reformer-only** booking at `/book` (date → time → confirm)
-- **3 spots per time slot** — full slots shown as disabled
-- **EN | ΕΛ** language switcher
-- Local reformer pilates images (`/public/images/`)
+- **MeTi Pilates** — hero: "Book your session." / "Κλείστε το μάθημά σας."
+- **Reformer-only** booking · **3 spots per slot**
+- **Tue, Thu, Sat · 2pm–5pm** (admin-editable)
+- **EN | ΕΛ** with Greek fonts (Noto Sans + GFS Didot)
+- **Admin CMS** — edit text + images at `/admin/content`
+- **Admin calendar** — hours + blocked dates at `/admin/schedule`
+- Local reformer images + MeTi OG/favicons
 
 ---
 
@@ -43,22 +47,23 @@ Password: **`Demo1234!`**
 
 ---
 
-## What works / what doesn't
+## Feature status
 
 | Feature | Demo |
 |---------|------|
-| Homepage + booking UI | ✅ |
-| Email/password login | ✅ |
-| Greek translations (customer pages) | ✅ |
-| Slot capacity (3 per time) | ✅ |
-| Google OAuth | ❌ placeholder credentials |
-| Mercado Pago checkout | ❌ instructor MP not connected |
-| Video calls (legacy) | ❌ needs LiveKit |
+| Booking UI + capacity | ✅ |
+| Admin calendar | ✅ |
+| Admin website CMS | ✅ |
+| Greek i18n + fonts | ✅ |
+| Email/password | ✅ |
+| Google OAuth | ❌ |
+| Mercado Pago | ❌ |
+| Video (legacy) | ❌ |
 
 ---
 
-## Permanent hosting
+## Docs
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) and `render.yaml` (Render one-click deploy).
-
-After deploy, set `BETTER_AUTH_URL`, `APP_URL`, run `pnpm demo:setup` with production URL.
+- [docs/PROJECT.md](docs/PROJECT.md) — full reference
+- [docs/ADMIN.md](docs/ADMIN.md) — admin calendar + CMS
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — permanent hosting (`render.yaml`)

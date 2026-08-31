@@ -12,34 +12,39 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Read first
 
-**[docs/PROJECT.md](docs/PROJECT.md)** — full project state, architecture, demo accounts, i18n, slot capacity, known issues.
+| Doc | Contents |
+|-----|----------|
+| **[docs/PROJECT.md](docs/PROJECT.md)** | Architecture, APIs, DB, i18n, demo |
+| **[docs/ADMIN.md](docs/ADMIN.md)** | Admin calendar + website CMS |
 
 ## What this repo is
 
-- **Public product:** MeTi Pilates — reformer-only studio booking (`src/lib/site-config.ts`)
-- **Repo name:** `meti-booking` (legacy from Meti advisory marketplace)
+- **Public product:** MeTi Pilates — reformer-only studio booking
+- **Repo name:** `meti-booking` (legacy Meti advisory marketplace)
 - **Customer routes:** `/`, `/book`, `/login`, `/checkout`
-- **Legacy routes:** `/services`, `/advisor/*`, `/admin/*`, LiveKit video — still in codebase
+- **Admin (MeTi):** `/admin/schedule`, `/admin/content`
+- **Legacy:** `/services`, `/advisor/*`, LiveKit video
 
 ## Development workflow
 
-- **Create a PR** for new work (don't commit directly to `main` unless explicitly asked).
-- CI: `pnpm test:unit` + `pnpm test:e2e` on PRs.
-- Prisma schema changes: `pnpm db:migrate` + regenerate client.
-- After branding/copy changes: update `site-config.ts` + `src/i18n/locales/{en,el}.ts`.
-- After demo seed changes: `pnpm demo:setup`.
+- PRs preferred; CI runs `pnpm test:unit` + `pnpm test:e2e`
+- Schema changes: `pnpm db:migrate` + update `demo-setup.ts`
+- After seed changes: `pnpm demo:setup`
 
 ## Common tasks
 
 | Task | Where |
 |------|-------|
-| Studio name / capacity / images | `src/lib/site-config.ts` |
-| Customer copy EN/EL | `src/i18n/locales/en.ts`, `el.ts` |
-| Booking flow UI | `src/app/(marketing)/book/page.tsx` |
+| **Live homepage copy/images** | Admin `/admin/content` → DB `studio_content` |
+| **Code copy defaults** | `src/i18n/locales/en.ts`, `el.ts` |
+| **Live booking schedule** | Admin `/admin/schedule` → `advisor_schedule` |
+| **Schedule code defaults** | `src/lib/studio-schedule.ts`, `demo-setup.ts` |
+| Slot capacity | `src/lib/site-config.ts` (`slotCapacity: 3`) |
+| Booking UI | `src/app/(marketing)/book/page.tsx` |
 | Slot logic | `src/lib/slots.ts`, `src/app/api/slots/route.ts` |
-| Booking creation | `src/app/api/appointments/route.ts` |
-| Demo seed | `scripts/demo-setup.ts` |
-| Public styles | `src/styles/studio.css` |
+| CMS server logic | `src/lib/studio-content-server.ts` |
+| Greek fonts | `src/app/layout.tsx` + `src/styles/studio.css` |
+| OG / favicons | `src/app/opengraph-image.tsx`, `scripts/generate-brand-assets.ts` |
 
 ## Demo
 
@@ -47,11 +52,12 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 pnpm demo:setup && pnpm dev
 ```
 
-Password: `Demo1234!` — see [docs/DEMO.md](docs/DEMO.md).
+Password: `Demo1234!` — admin: `admin@demo.meti-booking.local`
 
 ## Do not assume
 
-- Multiple session types (mat/duo/private) — **reformer only** on public site.
-- README advisory marketplace description — outdated; use PROJECT.md.
-- External image URLs — use `/public/images/`.
-- Payments work on demo — MP not configured; Stripe planned.
+- Multiple session types on public site — **reformer only**
+- Copy only in locale files — **admin CMS overrides DB**
+- Mon–Fri full-day schedule — **3 afternoons/week default**
+- Payments work — MP not configured; Stripe planned
+- External image URLs — use `/public/images/` or admin upload

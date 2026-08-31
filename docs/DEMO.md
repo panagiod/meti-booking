@@ -2,27 +2,26 @@
 
 Run the reformer booking app locally in ~5 minutes.
 
-> Full reference: [PROJECT.md](./PROJECT.md)
+> **Full reference:** [PROJECT.md](./PROJECT.md) · **Admin guide:** [ADMIN.md](./ADMIN.md)
+
+---
 
 ## What works
 
 | Feature | Demo |
 |---------|------|
 | Homepage + `/book` | ✅ |
-| Reformer-only sessions | ✅ |
-| 3 bookings per time slot | ✅ |
-| EN + Greek (ΕΛ) | ✅ |
+| Reformer-only · 3 per slot | ✅ |
+| Tue/Thu/Sat afternoons | ✅ |
+| EN + Greek (ΕΛ) + Greek fonts | ✅ |
+| Admin calendar (`/admin/schedule`) | ✅ |
+| Admin website CMS (`/admin/content`) | ✅ |
 | Email/password login | ✅ |
-| Admin / instructor dashboards | ✅ |
 | Google OAuth | ⚠️ needs real credentials |
-| Mercado Pago checkout | ❌ needs instructor MP setup |
-| LiveKit video | ❌ legacy feature, needs credentials |
+| Mercado Pago checkout | ❌ not configured |
+| LiveKit video | ❌ legacy |
 
-## Prerequisites
-
-- Node.js 20+
-- pnpm 9+
-- Docker (PostgreSQL)
+---
 
 ## Setup
 
@@ -36,26 +35,39 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+`demo:setup` seeds: users, reformer service, **Tue/Thu/Sat 14:00–17:00** schedule, and **website content** (EN/EL copy + images).
+
+---
+
 ## Demo accounts
 
 Password: **`Demo1234!`**
 
 | Role | Email | Try |
 |------|-------|-----|
-| Client | `client@demo.meti-booking.local` | Book at `/book`, view `/dashboard` |
-| Instructor | `instructor@meti-pilates.studio` | `/advisor` — schedule, services |
-| Admin | `admin@demo.meti-booking.local` | `/admin` |
+| Client | `client@demo.meti-booking.local` | Book at `/book` |
+| Instructor | `instructor@meti-pilates.studio` | `/advisor` |
+| Admin | `admin@demo.meti-booking.local` | `/admin/schedule`, `/admin/content` |
 
-> Note: `demo-setup` seeds **one service**: `Reformer Session` (50 min, €45).
+---
 
 ## Suggested walkthrough
 
-1. **Homepage** — switch to ΕΛ, click **Book reformer** / **Κράτηση**
-2. **`/book`** — pick date → time (note "X left" on slots) → confirm
-3. **Login** as client if prompted → checkout (payment unavailable without MP)
-4. **Instructor** — log in, review schedule at `/advisor`
+### Customer
 
-## Reset demo data
+1. Homepage — switch to **ΕΛ**, note Greek fonts
+2. **Book** — only Tue/Thu/Sat afternoons; "X θέσεις" on slots
+3. Login as client → checkout (payment unavailable without MP)
+
+### Admin
+
+1. Login as admin → **Calendar** — change open days/hours, block a date
+2. **Website** — edit hero headline (EN + EL), upload a new hero image, save
+3. Open homepage in incognito — see your changes
+
+---
+
+## Reset demo
 
 ```bash
 docker compose down -v
@@ -63,12 +75,14 @@ docker compose up -d
 pnpm demo:setup
 ```
 
+---
+
 ## Troubleshooting
 
-**Database connection refused** — `docker compose ps` / `docker compose logs postgres`
-
-**Auth errors** — ensure `.env` has `BETTER_AUTH_SECRET` and URLs set to `http://localhost:3000`
-
-**Images broken after deploy** — see [INTEGRATIONS.md](./INTEGRATIONS.md) (`images.unoptimized: true`)
-
-**Old instructor email** — use `instructor@meti-pilates.studio` (not `flowpilates.studio`)
+| Problem | Fix |
+|---------|-----|
+| DB connection refused | `docker compose ps` |
+| Auth errors | Check `BETTER_AUTH_SECRET` and URLs in `.env` |
+| Images 404 after deploy | `images.unoptimized: true` in `next.config.ts` |
+| CMS not showing changes | Click **Save changes** on `/admin/content` |
+| Old schedule | Re-run `pnpm demo:setup` |

@@ -1,11 +1,11 @@
 # MeTi Pilates Booking
 
-**Reformer pilates studio booking** — built on the [meti-booking](https://github.com/panagiod/meti-booking) stack (Next.js 16, Prisma, better-auth).
+**Reformer pilates studio booking** — [meti-booking](https://github.com/panagiod/meti-booking) stack (Next.js 16, Prisma, better-auth).
 
-Customers book **reformer sessions only** online: pick a date, pick a time, sign in, pay.  
-Bilingual: **English + Greek** (`EN | ΕΛ`).
+Book **reformer sessions** online: pick a date, time, sign in, pay.  
+**English + Greek** (`EN | ΕΛ`).
 
-> 📖 **Full project reference for Cursor / developers:** [docs/PROJECT.md](docs/PROJECT.md)
+> 📖 **Full reference:** [docs/PROJECT.md](docs/PROJECT.md) · **Admin guide:** [docs/ADMIN.md](docs/ADMIN.md)
 
 ---
 
@@ -15,15 +15,15 @@ Bilingual: **English + Greek** (`EN | ΕΛ`).
 |---|---|
 | **Brand** | MeTi Pilates |
 | **Public site** | Homepage + `/book` |
-| **Session** | Reformer only (50 min) |
-| **Capacity** | 3 spots per time slot |
+| **Schedule** | Tue, Thu, Sat · 2pm–5pm |
+| **Capacity** | 3 clients per time slot |
+| **Languages** | EN + ΕΛ (Noto Sans / GFS Didot for Greek) |
 | **Demo password** | `Demo1234!` |
-| **Client login** | `client@demo.meti-booking.local` |
-| **Instructor** | `instructor@meti-pilates.studio` |
+| **Admin** | `admin@demo.meti-booking.local` |
 
 ---
 
-## Quick start (local)
+## Quick start
 
 ```bash
 docker compose up -d
@@ -33,7 +33,18 @@ pnpm demo:setup
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) → **Book** → complete the flow.
+Open [http://localhost:3000](http://localhost:3000) → **Book**.
+
+---
+
+## Admin (studio owner)
+
+| Page | URL | Purpose |
+|------|-----|---------|
+| **Calendar** | [/admin/schedule](http://localhost:3000/admin/schedule) | Open days, hours, block holidays |
+| **Website** | [/admin/content](http://localhost:3000/admin/content) | Hero text, images, contact info |
+
+See [docs/ADMIN.md](docs/ADMIN.md) for details.
 
 ---
 
@@ -42,39 +53,39 @@ Open [http://localhost:3000](http://localhost:3000) → **Book** → complete th
 | Command | Description |
 |---------|-------------|
 | `pnpm dev` | Development server |
-| `pnpm build` | Production build |
-| `pnpm start` | Run production build |
-| `pnpm demo:setup` | Migrate DB + seed reformer studio demo |
-| `pnpm test:unit` | Vitest unit tests |
-| `pnpm test:e2e` | Playwright E2E |
+| `pnpm build` / `pnpm start` | Production |
+| `pnpm demo:setup` | Migrate + seed DB (users, schedule, CMS content) |
+| `pnpm test:unit` | Vitest |
+| `pnpm test:e2e` | Playwright |
+| `pnpm exec tsx scripts/generate-brand-assets.ts` | Regenerate favicons + OG image |
 
 ---
 
 ## Tech stack
 
-- **Next.js 16** (App Router) + React 19 + TypeScript
-- **PostgreSQL** + Prisma 7
-- **better-auth** (email + Google OAuth)
-- **Mercado Pago** (checkout — migration to Stripe/Revolut planned)
-- **Tailwind CSS 4** + custom `studio.css` for public pages
+- Next.js 16 · React 19 · TypeScript
+- PostgreSQL · Prisma 7
+- better-auth
+- Tailwind 4 · `studio.css`
+- DB-backed CMS (`StudioContent` model)
 
 ---
 
-## Project structure (customer-facing)
+## Project structure
 
 ```
 src/
-  lib/site-config.ts          # Studio branding, slotCapacity, images
-  i18n/locales/{en,el}.ts     # Translations
-  app/(marketing)/
-    page.tsx                  # Homepage (hero only)
-    book/page.tsx             # Booking flow
-  components/landing/         # Navbar, hero, footer
-  components/booking/         # Calendar, time slots, summary
-public/images/                # Local reformer photos
+  app/(marketing)/       # Homepage, /book
+  app/(platform)/admin/  # schedule, content, …
+  lib/
+    site-config.ts       # Code defaults
+    studio-content*.ts   # CMS logic
+    studio-schedule.ts   # Calendar defaults
+  i18n/locales/          # EN + EL copy (fallbacks)
+  components/landing/    # Hero, navbar, footer
+public/images/           # Default photos
+public/uploads/studio/   # Admin-uploaded images
 ```
-
-Legacy advisor/admin/marketplace code lives under `src/app/(platform)/` and `/services`.
 
 ---
 
@@ -82,23 +93,12 @@ Legacy advisor/admin/marketplace code lives under `src/app/(platform)/` and `/se
 
 | Doc | Purpose |
 |-----|---------|
-| [**docs/PROJECT.md**](docs/PROJECT.md) | **Complete reference** — architecture, i18n, slots, demo, env, roadmap |
-| [docs/DEMO.md](docs/DEMO.md) | Local demo walkthrough |
+| [**docs/PROJECT.md**](docs/PROJECT.md) | Complete architecture & API reference |
+| [**docs/ADMIN.md**](docs/ADMIN.md) | Calendar + website CMS |
+| [docs/DEMO.md](docs/DEMO.md) | Demo walkthrough |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy to Render / Vercel |
-| [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) | Google OAuth, payments, images |
-| [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md) | Ephemeral live demo URL |
-
----
-
-## Configuration
-
-Studio settings: **`src/lib/site-config.ts`**
-
-```ts
-name: "MeTi Pilates"
-slotCapacity: 3
-images: { hero: "/images/hero.jpg", reformer: "/images/reformer.jpg" }
-```
+| [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) | OAuth, payments, images |
+| [AGENTS.md](AGENTS.md) | Cursor / CI notes |
 
 ---
 
