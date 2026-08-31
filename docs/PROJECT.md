@@ -15,6 +15,8 @@
 | **Languages** | English + Greek (`EN \| ΕΛ` switcher); cookie `flow-locale` |
 | **Session type** | One service: **Reformer Session** (50 min, €45 demo price) |
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |
+| **Weekly schedule** | **3 days/week** (Tue, Thu, Sat) · **3 afternoon hours** (2pm–5pm) → 3 slots/day |
+| **Admin calendar** | `/admin/schedule` — manage weekly hours + block dates |
 | **Payments** | Mercado Pago Checkout Pro in code — **not configured on demo**; planned migration to Stripe/Revolut (see GitHub issues) |
 | **Legacy code** | Original Meti advisory platform still in repo: `/services`, advisor/admin dashboards, LiveKit video, multi-category marketplace |
 
@@ -45,7 +47,9 @@
 | `src/app/api/studio/route.ts` | Returns primary instructor for `/book` |
 | `src/lib/slots.ts` | Slot generation + **capacity counting** |
 | `public/images/hero.jpg` | Reformer pilates hero (bundled, Pexels) |
-| `public/images/reformer.jpg` | Reformer image (bundled; used if session card returns) |
+| `src/lib/studio-schedule.ts` | 3-day/week defaults, validation, slot preview |
+| `src/lib/studio-advisor.ts` | Resolve studio instructor for booking + admin |
+| `src/app/api/admin/studio/*` | Admin calendar APIs (schedule + blocked times) |
 
 ### Reformer-only filtering
 
@@ -171,6 +175,7 @@ Tunnel URL is **ephemeral** (`*.trycloudflare.com`) — dies when VM stops. See 
 | `/checkout` | Payment summary |
 | `/checkout/result` | Post-payment status |
 | `/dashboard/*` | Client bookings (auth required) |
+| `/admin/schedule` | **Studio calendar** — weekly hours + blocked dates (admin) |
 
 ### Legacy / instructor / admin (original Meti)
 

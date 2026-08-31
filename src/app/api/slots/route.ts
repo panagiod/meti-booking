@@ -95,6 +95,22 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    const blockedTimesRaw = await prisma.blockedTime.findMany({
+      where: {
+        advisorId,
+        startDate: { lte: endOfDay },
+        endDate: { gte: startOfDay },
+      },
+    });
+
+    const blockedTimes = blockedTimesRaw.map(
+      (bt: { startDate: Date; endDate: Date; isAllDay: boolean }) => ({
+        startDate: bt.startDate,
+        endDate: bt.endDate,
+        isAllDay: bt.isAllDay,
+      })
+    );
+
     // Convert to format needed for slot generation
     const appointments = existingAppointments.map((apt: { scheduledAt: Date; durationMin: number }) => ({
       start: apt.scheduledAt,
@@ -115,7 +131,7 @@ export async function GET(request: NextRequest) {
       scheduleData,
       service.durationMin,
       appointments,
-      [],
+      blockedTimes,
       requestDate,
       minStartTime,
       siteConfig.slotCapacity

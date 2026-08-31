@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { resolve } from "path";
 import { execSync } from "child_process";
+import { studioScheduleSeedRows } from "../src/lib/studio-schedule";
 
 config({ path: resolve(__dirname, "../.env") });
 
@@ -111,32 +112,15 @@ async function main() {
       }
 
       await prisma.advisorSchedule.deleteMany({ where: { advisorId: advisor.id } });
-      // Mon–Fri: 6am–8pm with lunch break
-      for (let dayOfWeek = 1; dayOfWeek <= 5; dayOfWeek++) {
+      // Tue, Thu, Sat afternoons — 3 hours → 3 reformer slots per day
+      for (const row of studioScheduleSeedRows()) {
         await prisma.advisorSchedule.create({
           data: {
             advisorId: advisor.id,
-            dayOfWeek,
-            startTime: "06:00",
-            endTime: "20:00",
-            lunchStart: "12:00",
-            lunchEnd: "13:00",
-            gapMinutes: 10,
+            ...row,
           },
         });
       }
-      // Saturday: 8am–2pm
-      await prisma.advisorSchedule.create({
-        data: {
-          advisorId: advisor.id,
-          dayOfWeek: 6,
-          startTime: "08:00",
-          endTime: "14:00",
-          lunchStart: null,
-          lunchEnd: null,
-          gapMinutes: 10,
-        },
-      });
 
       await prisma.advisorService.deleteMany({ where: { advisorId: advisor.id } });
       await prisma.advisorService.create({
