@@ -1,48 +1,104 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 
 export function SessionTypes() {
-  return (
-    <section id="sessions" className="bg-[var(--background)] py-20 sm:py-28">
-      <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <div className="mb-12 max-w-lg">
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-4xl">
-            Sessions
-          </h2>
-          <p className="mt-3 text-[var(--text-muted)]">
-            Mat, reformer, private, and duo — all bookable online with live availability.
-          </p>
-        </div>
+  const featured = siteConfig.sessionTypes.find((s) => s.featured);
+  const others = siteConfig.sessionTypes.filter((s) => !s.featured);
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {siteConfig.sessionTypes.map((session) => (
-            <Link
-              key={session.slug}
-              href="/book"
-              className="group overflow-hidden rounded-2xl bg-[var(--surface)] shadow-sm ring-1 ring-[var(--border)] transition hover:shadow-md hover:ring-[var(--primary)]/30"
-            >
-              <div className="relative aspect-[4/3] overflow-hidden">
-                <Image
-                  src={siteConfig.images[session.imageKey]}
-                  alt={session.name}
-                  fill
-                  className="object-cover transition duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, 25vw"
-                />
-              </div>
-              <div className="p-5">
-                <h3 className="font-heading text-lg font-semibold text-[var(--text-primary)]">
-                  {session.name}
-                </h3>
-                <p className="mt-1 text-sm text-[var(--text-muted)]">{session.description}</p>
-                <p className="mt-3 text-sm font-medium text-[var(--primary)]">
-                  {session.duration} · from ${session.priceFrom}
-                </p>
-              </div>
-            </Link>
-          ))}
+  return (
+    <section id="sessions" className="mx-auto max-w-[76rem] px-6 py-20 lg:px-10 lg:py-28">
+      <div className="mb-14 flex flex-col gap-4 lg:mb-20 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-xs font-medium uppercase tracking-[0.22em] text-[var(--studio-muted)]">
+            Sessions
+          </p>
+          <h2 className="font-display mt-3 text-4xl text-[var(--studio-ink)] lg:text-5xl">
+            Choose your class
+          </h2>
         </div>
+        <p className="max-w-sm text-[var(--studio-muted)]">
+          Live availability. Instant confirmation.
+        </p>
+      </div>
+
+      {featured && (
+        <Link
+          href="/book"
+          className="group mb-6 grid overflow-hidden rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] lg:grid-cols-2"
+        >
+          <div className="relative min-h-[18rem] lg:min-h-[22rem]">
+            <Image
+              src={siteConfig.images[featured.imageKey]}
+              alt={featured.name}
+              fill
+              className="object-cover transition duration-700 group-hover:scale-[1.02]"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </div>
+          <div className="flex flex-col justify-center p-8 lg:p-12">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-[var(--studio-muted)]">
+              Most popular
+            </p>
+            <h3 className="font-display mt-3 text-3xl text-[var(--studio-ink)] lg:text-4xl">
+              {featured.name}
+            </h3>
+            <p className="mt-4 max-w-md text-[var(--studio-muted)]">{featured.description}</p>
+            <div className="mt-8 flex items-center justify-between border-t border-[var(--studio-line)] pt-6">
+              <span className="text-sm text-[var(--studio-ink)]">
+                {featured.duration} · from ${featured.priceFrom}
+              </span>
+              <span className="inline-flex items-center gap-1 text-sm font-medium text-[var(--studio-ink)]">
+                Book
+                <ArrowUpRight className="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </span>
+            </div>
+          </div>
+        </Link>
+      )}
+
+      <div className="divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
+        {others.map((session) => (
+          <Link
+            key={session.slug}
+            href="/book"
+            className="group grid gap-6 py-6 transition hover:bg-[var(--studio-warm)]/40 sm:grid-cols-[5rem_1fr_auto] sm:items-center sm:gap-8 sm:px-4"
+          >
+            <div className="relative h-20 w-20 overflow-hidden rounded-xl sm:h-16 sm:w-16">
+              <Image
+                src={siteConfig.images[session.imageKey]}
+                alt={session.name}
+                fill
+                className="object-cover"
+                sizes="80px"
+              />
+            </div>
+            <div>
+              <h3 className="font-display text-2xl text-[var(--studio-ink)]">{session.name}</h3>
+              <p className="mt-1 text-sm text-[var(--studio-muted)]">{session.description}</p>
+            </div>
+            <div className="flex items-center gap-4 sm:flex-col sm:items-end sm:gap-1">
+              <span className="text-sm text-[var(--studio-muted)]">
+                {session.duration} · ${session.priceFrom}
+              </span>
+              <ArrowUpRight className="h-4 w-4 text-[var(--studio-muted)] transition group-hover:text-[var(--studio-ink)]" />
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-16 rounded-2xl bg-[var(--studio-ink)] px-8 py-12 text-center lg:px-16 lg:py-14">
+        <h3 className="font-display text-3xl text-white lg:text-4xl">Ready to move?</h3>
+        <p className="mx-auto mt-3 max-w-md text-sm text-white/70">
+          Pick a session and reserve your spot in under a minute.
+        </p>
+        <Link
+          href="/book"
+          className="studio-btn mt-8 bg-white text-[var(--studio-ink)] hover:bg-white/90"
+        >
+          Book now
+        </Link>
       </div>
     </section>
   );

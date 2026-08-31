@@ -1,10 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isBefore, startOfDay } from "date-fns";
+import {
+  format,
+  addMonths,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isBefore,
+  startOfDay,
+} from "date-fns";
 import { enUS } from "date-fns/locale";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DaySlots } from "@/lib/slots";
@@ -25,111 +33,82 @@ export function CalendarPicker({
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
-
-  // Get day names
   const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-  // Create a map of available dates for quick lookup
-  const availableDatesMap = new Map(
-    availableDates.map((d) => [d.dateStr, d])
-  );
+  const availableDatesMap = new Map(availableDates.map((d) => [d.dateStr, d]));
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <div>
-        <h2 className="font-heading text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
-          Pick a date
-        </h2>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">When would you like to come in?</p>
+        <h2 className="font-display text-3xl text-[var(--studio-ink)]">Pick a date</h2>
+        <p className="mt-2 text-[var(--studio-muted)]">When would you like to come in?</p>
       </div>
 
-      <Card className="border-[var(--border)] shadow-none">
-        <CardContent className="p-4 sm:p-5">
-          {/* Month navigation */}
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <h3 className="font-heading font-semibold text-[var(--text-primary)] capitalize">
-              {format(currentMonth, "MMMM yyyy", { locale: enUS })}
-            </h3>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
+      <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-5 sm:p-6">
+        <div className="mb-5 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+            className="rounded-full p-2 text-[var(--studio-muted)] transition hover:bg-[var(--studio-warm)] hover:text-[var(--studio-ink)]"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <h3 className="font-display text-xl capitalize text-[var(--studio-ink)]">
+            {format(currentMonth, "MMMM yyyy", { locale: enUS })}
+          </h3>
+          <button
+            type="button"
+            onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+            className="rounded-full p-2 text-[var(--studio-muted)] transition hover:bg-[var(--studio-warm)] hover:text-[var(--studio-ink)]"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
 
-          {/* Day names */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
-            {dayNames.map((day) => (
-              <div
-                key={day}
-                className="text-center text-xs font-medium text-[var(--text-muted)] py-2"
+        <div className="mb-2 grid grid-cols-7 gap-1">
+          {dayNames.map((day) => (
+            <div key={day} className="py-2 text-center text-xs text-[var(--studio-muted)]">
+              {day}
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-7 gap-1">
+          {Array.from({ length: (monthStart.getDay() + 6) % 7 }).map((_, i) => (
+            <div key={`empty-${i}`} />
+          ))}
+
+          {monthDays.map((day) => {
+            const dateStr = format(day, "yyyy-MM-dd");
+            const dayData = availableDatesMap.get(dateStr);
+            const isAvailable = dayData?.hasAvailability ?? false;
+            const isSelected = selectedDate?.dateStr === dateStr;
+            const isPast = isBefore(day, startOfDay(new Date()));
+            const isCurrentMonth = isSameMonth(day, currentMonth);
+
+            return (
+              <button
+                key={dateStr}
+                type="button"
+                disabled={!isAvailable || isPast || !isCurrentMonth}
+                onClick={() => dayData && onSelect(dayData)}
+                className={cn(
+                  "h-10 rounded-lg text-sm transition",
+                  !isCurrentMonth && "text-transparent",
+                  isCurrentMonth && !isAvailable && "text-[var(--studio-muted)]/40",
+                  isCurrentMonth &&
+                    isAvailable &&
+                    !isSelected &&
+                    "text-[var(--studio-ink)] hover:bg-[var(--studio-warm)]",
+                  isSelected && "bg-[var(--studio-ink)] text-white",
+                  isPast && "text-[var(--studio-muted)]/30"
+                )}
               >
-                {day}
-              </div>
-            ))}
-          </div>
-
-          {/* Calendar grid */}
-          <div className="grid grid-cols-7 gap-1">
-            {/* Empty cells for days before month start */}
-            {Array.from({ length: (monthStart.getDay() + 6) % 7 }).map((_, i) => (
-              <div key={`empty-${i}`} />
-            ))}
-
-            {/* Month days */}
-            {monthDays.map((day) => {
-              const dateStr = format(day, "yyyy-MM-dd");
-              const dayData = availableDatesMap.get(dateStr);
-              const isAvailable = dayData?.hasAvailability ?? false;
-              const isSelected = selectedDate?.dateStr === dateStr;
-              const isPast = isBefore(day, startOfDay(new Date()));
-              const isCurrentMonth = isSameMonth(day, currentMonth);
-
-              return (
-                <button
-                  key={dateStr}
-                  disabled={!isAvailable || isPast || !isCurrentMonth}
-                  onClick={() => dayData && onSelect(dayData)}
-                  className={cn(
-                    "relative h-10 rounded-lg text-sm font-medium transition-all",
-                    !isCurrentMonth && "text-[var(--text-muted)]/30",
-                    isCurrentMonth && !isAvailable && !isPast && "text-[var(--text-muted)] cursor-not-allowed",
-                    isCurrentMonth && isAvailable && !isSelected && "text-[var(--text-primary)] hover:bg-[var(--primary-light)]",
-                    isSelected && "bg-[var(--primary)] text-white",
-                    isPast && "text-[var(--text-muted)]/50 cursor-not-allowed"
-                  )}
-                >
-                  {format(day, "d")}
-                  {isAvailable && !isPast && isCurrentMonth && !isSelected && (
-                    <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--accent)]" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Legend */}
-          <div className="flex items-center justify-center gap-4 mt-4 text-xs text-[var(--text-muted)]">
-            <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-[var(--accent)]" />
-              Available
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="w-2 h-2 rounded-full bg-[var(--primary)]" />
-              Selected
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+                {format(day, "d")}
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

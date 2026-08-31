@@ -3,24 +3,20 @@ import { siteConfig } from "@/lib/site-config";
 
 export function Footer() {
   return (
-    <footer className="border-t border-[var(--border)] bg-[var(--surface)]">
-      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-        <div>
-          <p className="font-heading text-sm font-semibold text-[var(--text-primary)]">
-            {siteConfig.name}
-          </p>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">
-            {siteConfig.location} · {siteConfig.hours}
-          </p>
-        </div>
-        <div className="flex items-center gap-6 text-sm text-[var(--text-muted)]">
-          <Link href="/book" className="hover:text-[var(--text-primary)] transition-colors">
-            Book a session
+    <footer className="border-t border-[var(--studio-line)]">
+      <div className="mx-auto flex max-w-[76rem] flex-col gap-3 px-6 py-8 text-sm text-[var(--studio-muted)] sm:flex-row sm:items-center sm:justify-between lg:px-10">
+        <p>
+          <span className="font-display text-[var(--studio-ink)]">{siteConfig.name}</span>
+          <span className="mx-2">·</span>
+          {siteConfig.location}
+        </p>
+        <div className="flex gap-5">
+          <Link href="/book" className="hover:text-[var(--studio-ink)] transition">
+            Book
           </Link>
-          <Link href="/privacy" className="hover:text-[var(--text-primary)] transition-colors">
-            Privacy
+          <Link href={`mailto:${siteConfig.email}`} className="hover:text-[var(--studio-ink)] transition">
+            Contact
           </Link>
-          <span>© {new Date().getFullYear()}</span>
         </div>
       </div>
     </footer>

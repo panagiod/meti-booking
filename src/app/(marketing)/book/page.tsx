@@ -201,83 +201,86 @@ export default function BookPage() {
     }
   };
 
-  if (isLoading) return <LoadingPage />;
+  if (isLoading) {
+    return (
+      <div className="studio-booking flex min-h-[60vh] items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--studio-line)] border-t-[var(--studio-ink)]" />
+      </div>
+    );
+  }
 
   if (loadError || !advisor) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center px-5">
-        <p className="text-center text-[var(--text-muted)]">{loadError || "Studio not available"}</p>
+      <div className="studio-booking flex min-h-[60vh] items-center justify-center px-6">
+        <p className="text-center text-[var(--studio-muted)]">{loadError || "Studio not available"}</p>
       </div>
     );
   }
 
   return (
-    <>
-      <div className="min-h-screen bg-[var(--background)] pt-24 pb-16">
-        <div className="mx-auto max-w-lg px-5 sm:px-8">
-          <div className="mb-8 flex items-center justify-between">
-            {step !== "service" ? (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back
-              </button>
-            ) : (
-              <Link
-                href="/"
-                className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Home
-              </Link>
-            )}
-            <p className="text-xs text-[var(--text-muted)]">{siteConfig.location}</p>
-          </div>
-
-          <BookingSteps current={step} />
-
-          <div className="mt-10">
-            {step === "service" && (
-              <ServiceSelector
-                services={advisor.services}
-                selectedService={selectedService}
-                onSelect={handleServiceSelect}
-              />
-            )}
-
-            {step === "date" && selectedService && (
-              <CalendarPicker
-                availableDates={mergedDates.length ? mergedDates : availableDates}
-                selectedDate={selectedDate}
-                onSelect={handleDateSelect}
-              />
-            )}
-
-            {step === "time" && selectedDaySlots && (
-              <TimeSlotPicker
-                daySlots={selectedDaySlots}
-                selectedTime={selectedTime}
-                onSelect={handleTimeSelect}
-              />
-            )}
-
-            {step === "summary" && selectedDaySlots && selectedTime && selectedService && (
-              <BookingSummary
-                service={selectedService}
-                daySlots={selectedDaySlots}
-                time={selectedTime}
-                onConfirm={handleConfirm}
-                isProcessing={isProcessing}
-              />
-            )}
-          </div>
-        </div>
+  <>
+    <div className="studio-booking mx-auto max-w-xl px-6 py-10 lg:px-8 lg:py-14">
+      <div className="mb-10 flex items-center justify-between">
+        {step !== "service" ? (
+          <button
+            type="button"
+            onClick={handleBack}
+            className="inline-flex items-center gap-1.5 text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </button>
+        ) : (
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {siteConfig.name}
+          </Link>
+        )}
       </div>
 
-      <AlertDialog state={dialog} />
-    </>
+      <BookingSteps current={step} />
+
+      <div className="mt-10">
+        {step === "service" && (
+          <ServiceSelector
+            services={advisor.services}
+            selectedService={selectedService}
+            onSelect={handleServiceSelect}
+          />
+        )}
+
+        {step === "date" && selectedService && (
+          <CalendarPicker
+            availableDates={mergedDates.length ? mergedDates : availableDates}
+            selectedDate={selectedDate}
+            onSelect={handleDateSelect}
+          />
+        )}
+
+        {step === "time" && selectedDaySlots && (
+          <TimeSlotPicker
+            daySlots={selectedDaySlots}
+            selectedTime={selectedTime}
+            onSelect={handleTimeSelect}
+          />
+        )}
+
+        {step === "summary" && selectedDaySlots && selectedTime && selectedService && (
+          <BookingSummary
+            service={selectedService}
+            daySlots={selectedDaySlots}
+            time={selectedTime}
+            onConfirm={handleConfirm}
+            isProcessing={isProcessing}
+          />
+        )}
+      </div>
+    </div>
+
+    <AlertDialog state={dialog} />
+  </>
   );
 }

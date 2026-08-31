@@ -13,46 +13,22 @@ type StepKey = (typeof steps)[number]["key"];
 
 export function BookingSteps({ current }: { current: StepKey }) {
   const currentIndex = steps.findIndex((s) => s.key === current);
+  const progress = ((currentIndex + 1) / steps.length) * 100;
 
   return (
-    <div className="flex items-center justify-center gap-2">
-      {steps.map((step, index) => {
-        const isActive = index === currentIndex;
-        const isDone = index < currentIndex;
-
-        return (
-          <div key={step.key} className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <span
-                className={cn(
-                  "flex h-7 w-7 items-center justify-center rounded-full text-xs font-medium transition-colors",
-                  isActive && "bg-[var(--primary)] text-white",
-                  isDone && "bg-[var(--primary-light)] text-[var(--primary)]",
-                  !isActive && !isDone && "bg-[var(--border-light)] text-[var(--text-muted)]"
-                )}
-              >
-                {index + 1}
-              </span>
-              <span
-                className={cn(
-                  "hidden text-sm sm:inline",
-                  isActive ? "font-medium text-[var(--text-primary)]" : "text-[var(--text-muted)]"
-                )}
-              >
-                {step.label}
-              </span>
-            </div>
-            {index < steps.length - 1 && (
-              <div
-                className={cn(
-                  "h-px w-6 sm:w-10",
-                  index < currentIndex ? "bg-[var(--primary)]" : "bg-[var(--border)]"
-                )}
-              />
-            )}
-          </div>
-        );
-      })}
+    <div className="space-y-3">
+      <div className="flex justify-between text-xs uppercase tracking-[0.16em] text-[var(--studio-muted)]">
+        <span>
+          Step {currentIndex + 1} of {steps.length}
+        </span>
+        <span>{steps[currentIndex].label}</span>
+      </div>
+      <div className="h-px w-full bg-[var(--studio-line)]">
+        <div
+          className="h-px bg-[var(--studio-ink)] transition-all duration-300"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
     </div>
   );
 }

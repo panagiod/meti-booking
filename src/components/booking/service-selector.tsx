@@ -20,15 +20,13 @@ export function ServiceSelector({
   subtitle = "Choose what you'd like to book",
 }: ServiceSelectorProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h2 className="font-heading text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
-          {title}
-        </h2>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">{subtitle}</p>
+        <h2 className="font-display text-3xl text-[var(--studio-ink)]">{title}</h2>
+        <p className="mt-2 text-[var(--studio-muted)]">{subtitle}</p>
       </div>
 
-      <div className="space-y-2">
+      <div className="divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
         {services.map((service) => {
           const isSelected = selectedService?.id === service.id;
           const fee = Math.round(service.priceCents * 0.15);
@@ -40,15 +38,13 @@ export function ServiceSelector({
               type="button"
               onClick={() => onSelect(service)}
               className={cn(
-                "flex w-full items-center justify-between gap-4 rounded-xl border px-5 py-4 text-left transition",
-                isSelected
-                  ? "border-[var(--primary)] bg-[var(--primary-light)]/50"
-                  : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--primary)]/40"
+                "flex w-full items-center justify-between gap-4 py-5 text-left transition",
+                isSelected ? "bg-[var(--studio-warm)]/50" : "hover:bg-[var(--studio-warm)]/30"
               )}
             >
               <div>
-                <p className="font-medium text-[var(--text-primary)]">{service.name}</p>
-                <p className="mt-1 flex items-center gap-3 text-sm text-[var(--text-muted)]">
+                <p className="font-display text-xl text-[var(--studio-ink)]">{service.name}</p>
+                <p className="mt-1 flex items-center gap-3 text-sm text-[var(--studio-muted)]">
                   <span className="inline-flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5" />
                     {formatDuration(service.durationMin)}
@@ -58,10 +54,10 @@ export function ServiceSelector({
               </div>
               <span
                 className={cn(
-                  "h-4 w-4 shrink-0 rounded-full border-2",
+                  "h-5 w-5 shrink-0 rounded-full border-2 transition",
                   isSelected
-                    ? "border-[var(--primary)] bg-[var(--primary)]"
-                    : "border-[var(--border)]"
+                    ? "border-[var(--studio-ink)] bg-[var(--studio-ink)]"
+                    : "border-[var(--studio-line)]"
                 )}
               />
             </button>
