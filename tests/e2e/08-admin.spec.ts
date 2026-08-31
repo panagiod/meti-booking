@@ -15,9 +15,11 @@ test.describe("08 · Admin panel", () => {
     // If a previous e2e admin remains, skip (flow already validated).
     test.skip(exists, "admins already exist in the test database");
 
-    const { userId } = await signupClient(api);
+    const { userId, sessionToken } = await signupClient(api);
 
-    const setup = await api.post(`${BASE_URL}/api/admin/setup`, { data: { userId } });
+    const setup = await withSession(api, sessionToken).post("/api/admin/setup", {
+      userId,
+    });
     expect(setup.status(), await setup.text()).toBe(200);
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -26,7 +28,9 @@ test.describe("08 · Admin panel", () => {
     expect(profile).toBeTruthy();
 
     // Second attempt → 400 (admin already exists)
-    const second = await api.post(`${BASE_URL}/api/admin/setup`, { data: { userId } });
+    const second = await withSession(api, sessionToken).post("/api/admin/setup", {
+      userId,
+    });
     expect(second.status()).toBe(400);
   });
 

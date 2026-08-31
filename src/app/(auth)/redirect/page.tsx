@@ -50,12 +50,13 @@ export default function RedirectPage() {
         // First user in the system → automatically admin
         if (user.role === "CLIENT") {
           try {
-            const res = await fetch("/api/admin/setup");
+            const res = await fetch("/api/admin/setup", { credentials: "include" });
             const { hasAdmins } = await res.json();
             if (!hasAdmins) {
               await fetch("/api/admin/setup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                credentials: "include",
                 body: JSON.stringify({ userId: user.id }),
               });
               router.push("/admin");

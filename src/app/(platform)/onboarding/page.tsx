@@ -150,6 +150,7 @@ export default function OnboardingPage() {
       const res = await fetch("/api/admin/setup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ userId: user.id }),
       });
 
@@ -169,6 +170,7 @@ export default function OnboardingPage() {
       const res = await fetch("/api/client/setup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ userId: user.id }),
       });
 
@@ -220,6 +222,7 @@ export default function OnboardingPage() {
       const setupRes = await fetch("/api/advisor/setup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           userId: user.id,
           bio,

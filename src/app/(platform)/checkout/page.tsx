@@ -39,6 +39,14 @@ function CheckoutContent() {
   const [advisorMpMode, setAdvisorMpMode] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [promotion, setPromotion] = useState<any>(null);
+  const [quote, setQuote] = useState<{
+    servicePriceCents: number;
+    discountCents: number;
+    platformFeeCents: number;
+    totalCents: number;
+    feePercentage: number;
+  } | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(true);
 
   const advisorId = searchParams.get("advisorId");
   const advisorName = searchParams.get("advisorName") || "MeTi Pilates";
@@ -46,20 +54,15 @@ function CheckoutContent() {
   const rawServiceName = searchParams.get("serviceName") || "Service";
   const serviceName =
     t.booking.serviceNames[rawServiceName] ?? rawServiceName;
-  const servicePrice = Number(searchParams.get("servicePrice") || "0");
+  const servicePrice = quote?.servicePriceCents ?? Number(searchParams.get("servicePrice") || "0");
   const duration = Number(searchParams.get("duration") || "60");
   const date = searchParams.get("date") || "TBD";
   const time = searchParams.get("time") || "TBD";
 
-  const discountCents = promotion
-    ? promotion.discountType === "percentage"
-      ? Math.round((servicePrice * promotion.discountValue) / 100)
-      : Math.min(Math.round(promotion.discountValue * 100), servicePrice)
-    : 0;
-  const priceAfterDiscount = Math.max(servicePrice - discountCents, 0);
-  const serviceFee = Math.round(servicePrice * 0.15);
+  const discountCents = quote?.discountCents ?? 0;
+  const serviceFee = quote?.platformFeeCents ?? 0;
+  const serviceTotal = quote?.totalCents ?? servicePrice + serviceFee;
   const totalOriginal = servicePrice + serviceFee;
-  const serviceTotal = priceAfterDiscount + serviceFee;
 
   useEffect(() => {
     localStorage.removeItem("meti-pending-booking");
@@ -71,6 +74,27 @@ function CheckoutContent() {
       fetchPromotion(serviceId);
     }
   }, [advisorId, serviceId]);
+
+  useEffect(() => {
+    if (!serviceId) return;
+    const loadQuote = async () => {
+      setQuoteLoading(true);
+      try {
+        const params = new URLSearchParams({ serviceId });
+        if (promotion?.id) params.set("promotionId", promotion.id);
+        const res = await fetch(`/api/checkout/quote?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          setQuote(data.quote);
+        }
+      } catch {
+        // fallback to URL price
+      } finally {
+        setQuoteLoading(false);
+      }
+    };
+    loadQuote();
+  }, [serviceId, promotion?.id]);
 
   const fetchPromotion = async (sid: string) => {
     try {
@@ -151,7 +175,6 @@ function CheckoutContent() {
           advisorId,
           serviceId,
           scheduledAt: `${date}T${time}:00`,
-          discountCents,
           promotionId: promotion?.id || null,
         }),
       });
@@ -376,7 +399,7 @@ function CheckoutContent() {
                   <Button
                     className="w-full h-12 text-base mt-4"
                     onClick={handlePayment}
-                    disabled={isProcessing || advisorHasMP === false}
+                    disabled={isProcessing || advisorHasMP === false || quoteLoading}
                   >
                     {isProcessing ? (
                       <div className="flex items-center gap-2">

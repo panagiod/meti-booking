@@ -1,14 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { getPayment } from "@/lib/mercadopago";
 import { notifyAppointmentConfirmed } from "@/lib/notify";
+import {
+  assertPaymentMatchesAppointment,
+  assertPaymentIdNotReused,
+  PaymentVerificationError,
+} from "@/lib/payment-verify";
 
-// POST: Verify payment directly with MP and confirm the appointment
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ appointmentId: string }> }
 ) {
   try {
+    const headersList = await headers();
+    const session = await auth.api.getSession({ headers: headersList });
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { appointmentId } = await params;
     const { paymentId } = await request.json();
 
@@ -25,6 +38,10 @@ export async function POST(
       return NextResponse.json({ error: "Appointment not found" }, { status: 404 });
     }
 
+    if (appointment.clientId !== session.user.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     if (appointment.status === "CONFIRMED") {
       return NextResponse.json({ ok: true, alreadyConfirmed: true });
     }
@@ -33,36 +50,35 @@ export async function POST(
       return NextResponse.json({ error: "Advisor has no MP credentials" }, { status: 400 });
     }
 
-    // Verify payment directly with the MP API (no custody)
-    const payment = await getPayment(appointment.advisor.mpAccessToken, paymentId);
+    await assertPaymentIdNotReused(paymentId, appointment.id);
 
-    if (payment?.status === "approved") {
-      const wasPending = appointment.status === "PENDING";
-      await prisma.appointment.update({
-        where: { id: appointment.id },
-        data: { status: "CONFIRMED", paymentId },
-      });
-      // Send confirmation emails only if it was pending (avoids duplicates)
-      if (wasPending) {
-        try {
-          await notifyAppointmentConfirmed(appointment.id);
-        } catch (e) {
-          console.error("Error sending confirmation emails:", e);
-        }
+    const payment = await getPayment(appointment.advisor.mpAccessToken, paymentId);
+    assertPaymentMatchesAppointment(payment, appointment);
+
+    const wasPending = appointment.status === "PENDING";
+    await prisma.appointment.update({
+      where: { id: appointment.id },
+      data: { status: "CONFIRMED", paymentId },
+    });
+
+    if (wasPending) {
+      try {
+        await notifyAppointmentConfirmed(appointment.id);
+      } catch (e) {
+        console.error("Error sending confirmation emails:", e);
       }
-      return NextResponse.json({ ok: true, confirmed: true });
     }
 
-    return NextResponse.json({
-      ok: true,
-      confirmed: false,
-      paymentStatus: payment?.status,
-    });
+    return NextResponse.json({ ok: true, confirmed: true });
   } catch (error) {
+    if (error instanceof PaymentVerificationError) {
+      const status = error.code === "NOT_APPROVED" ? 200 : 400;
+      return NextResponse.json(
+        { ok: false, error: error.message, code: error.code },
+        { status }
+      );
+    }
     console.error("Verify payment error:", error);
-    return NextResponse.json(
-      { error: "Verification failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Verification failed" }, { status: 500 });
   }
 }

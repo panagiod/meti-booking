@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getPayment } from "@/lib/mercadopago";
 import { notifyAppointmentConfirmed } from "@/lib/notify";
+import {
+  assertPaymentMatchesAppointment,
+  assertPaymentIdNotReused,
+  PaymentVerificationError,
+} from "@/lib/payment-verify";
 
 interface PaymentNotification {
   type?: string;
@@ -118,35 +123,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const paymentStatus = payment?.status;
-
-    if (paymentStatus === "approved") {
-      const wasPending = appointment.status === "PENDING";
-      await prisma.appointment.update({
-        where: { id: appointment.id },
-        data: {
-          status: "CONFIRMED",
-          paymentId,
-        },
-      });
-      // Confirmation emails (only if it was PENDING, avoids duplicates)
-      if (wasPending) {
-        try {
-          await notifyAppointmentConfirmed(appointment.id);
-        } catch (e) {
-          console.error("Error sending confirmation emails:", e);
-        }
+    try {
+      await assertPaymentIdNotReused(paymentId, appointment.id);
+      assertPaymentMatchesAppointment(payment, appointment);
+    } catch (error) {
+      if (error instanceof PaymentVerificationError) {
+        console.error(`Payment verification failed for ${appointment.id}:`, error.message);
+        return NextResponse.json(
+          { error: error.message, code: error.code },
+          { status: 400 }
+        );
       }
-      return NextResponse.json({ ok: true, confirmed: true });
+      throw error;
     }
 
-    // Pending, rejected, in process... do not confirm yet
+    const wasPending = appointment.status === "PENDING";
     await prisma.appointment.update({
       where: { id: appointment.id },
-      data: { paymentId },
+      data: {
+        status: "CONFIRMED",
+        paymentId,
+      },
     });
 
-    return NextResponse.json({ ok: true, paymentStatus });
+    if (wasPending) {
+      try {
+        await notifyAppointmentConfirmed(appointment.id);
+      } catch (e) {
+        console.error("Error sending confirmation emails:", e);
+      }
+    }
+    return NextResponse.json({ ok: true, confirmed: true });
   } catch (error) {
     console.error("Webhook error:", error);
     return NextResponse.json(
