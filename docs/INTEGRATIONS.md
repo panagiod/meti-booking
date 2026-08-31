@@ -2,20 +2,33 @@
 
 ## Images
 
-Studio photos are **bundled locally** (reformer pilates only):
+### Default (bundled)
 
 - `/public/images/hero.jpg`
 - `/public/images/reformer.jpg`
 
-Configured in `src/lib/site-config.ts`.
+Code defaults in `src/lib/site-config.ts`. **Live site** uses URLs from admin CMS (`studio_content` table).
 
-`next.config.ts` sets `images.unoptimized: true` because the **standalone / Cloudflare tunnel** deploy returns 404 from `/_next/image`. After any image or config change:
+### Admin uploads
 
-```bash
-pnpm build && pnpm start
-```
+Admins replace images at **`/admin/content`** → Images & contact tab.
 
-Do not rely on external Unsplash URLs — many old IDs are 404.
+| Environment | Storage |
+|-------------|---------|
+| Local dev | `public/uploads/studio/` |
+| Vercel (with `BLOB_READ_WRITE_TOKEN`) | Vercel Blob |
+
+API: `POST /api/admin/studio/upload` (fields: `file`, `imageKey` = `hero` \| `reformer`).
+
+### OG image & favicons
+
+- Dynamic: `src/app/opengraph-image.tsx` (hero photo + MeTi copy)
+- Static fallback: `public/og-image.png`
+- Regenerate icons: `pnpm exec tsx scripts/generate-brand-assets.ts`
+
+`next.config.ts` sets `images.unoptimized: true` for standalone/Cloudflare tunnel deploys.
+
+Do not use external Unsplash URLs — many return 404.
 
 ---
 
