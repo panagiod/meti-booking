@@ -5,7 +5,7 @@
 Book **reformer sessions** online: pick a date, time, sign in, pay.  
 **English + Greek** (`EN | ΕΛ`).
 
-> 📖 **Full reference:** [docs/PROJECT.md](docs/PROJECT.md) · **Admin guide:** [docs/ADMIN.md](docs/ADMIN.md)
+> 📖 **Full reference:** [docs/PROJECT.md](docs/PROJECT.md) · **Admin guide:** [docs/ADMIN.md](docs/ADMIN.md) · **Cheapest hosting ($0/mo):** [docs/CHEAPEST_HOSTING.md](docs/CHEAPEST_HOSTING.md)
 
 ---
 
@@ -65,7 +65,7 @@ See [docs/ADMIN.md](docs/ADMIN.md) for details.
 | `pnpm test:e2e` | Playwright |
 | `pnpm exec tsx scripts/generate-brand-assets.ts` | Regenerate favicons + OG image |
 | `pnpm exec tsx scripts/reset-studio-schedule.ts` | Reset schedule to Mon/Wed/Sat 14:00–17:00 |
-| `./scripts/close-resolved-issues.sh` | Close fixed GitHub issues (#1, #9, #11–#31) |
+| `./scripts/close-resolved-issues.sh` | Close fixed GitHub issues (#1, #8, #9, #11–#31) |
 
 ---
 
@@ -106,10 +106,12 @@ public/uploads/studio/   # Admin-uploaded images (local dev)
 
 | Doc | Purpose |
 |-----|---------|
+| [**docs/CHEAPEST_HOSTING.md**](docs/CHEAPEST_HOSTING.md) | **$0/month hosting** — Vercel + Neon step-by-step |
 | [**docs/PROJECT.md**](docs/PROJECT.md) | Complete architecture & API reference |
 | [**docs/ADMIN.md**](docs/ADMIN.md) | Calendar + website CMS |
 | [docs/DEMO.md](docs/DEMO.md) | Demo walkthrough |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy to Vercel / VPS |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | All deploy phases (free → domain → VPS) |
+| [deploy/VERCEL.md](deploy/VERCEL.md) | Vercel checklist |
 | [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) | OAuth, payments, images |
 | [docs/RESOLVED_ISSUES.md](docs/RESOLVED_ISSUES.md) | Audit fixes + GitHub issue close script |
 | [AGENTS.md](AGENTS.md) | Cursor / CI notes |

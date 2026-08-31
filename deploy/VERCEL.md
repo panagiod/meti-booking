@@ -120,4 +120,4 @@ Redeploy after changing env vars.
 
 `POST /api/appointments` accepts `guestEmail` (+ optional `guestName`) when no session cookie is present. No account password is required; existing client emails are reused automatically.
 
-See also [../docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md) for cost phases and VPS alternative.
+See also [../docs/CHEAPEST_HOSTING.md](../docs/CHEAPEST_HOSTING.md) for the **$0/month** quick-start guide.

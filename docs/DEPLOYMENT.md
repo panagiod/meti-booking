@@ -2,6 +2,8 @@
 
 A phased plan to go from **$0/month demo** to the **cheapest sustainable production** setup.
 
+> **Start here:** [CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md) — step-by-step instructions for **$0/month** (Vercel + Neon).
+
 ## Cost summary
 
 | Phase | Monthly cost | Domain (yearly) | Best for |
