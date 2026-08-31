@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n";
+import { formatGreekDate } from "@/lib/date-locale";
 
 export function formatMoney(cents: number, locale: Locale): string {
   return new Intl.NumberFormat(locale === "el" ? "el-GR" : "en-US", {
@@ -16,7 +17,12 @@ export function formatLongDate(
 ): string {
   const [y, m, d] = dateStr.split("-");
   const date = new Date(Number(y), Number(m) - 1, Number(d));
-  return date.toLocaleDateString(locale === "el" ? "el-GR" : "en-US", {
+
+  if (locale === "el") {
+    return formatGreekDate(date, "long");
+  }
+
+  return date.toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -26,7 +32,17 @@ export function formatLongDate(
 }
 
 export function formatDateTime(iso: string, locale: Locale): string {
-  return new Date(iso).toLocaleString(locale === "el" ? "el-GR" : "en-US", {
+  const date = new Date(iso);
+
+  if (locale === "el") {
+    const time = date.toLocaleTimeString("el-GR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return `${formatGreekDate(date, "long")}, ${time}`;
+  }
+
+  return date.toLocaleString("en-US", {
     weekday: "long",
     day: "numeric",
     month: "long",
