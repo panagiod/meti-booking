@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   output: "standalone",
   images: {
+    // Standalone/tunnel deploys often miss the image optimizer bundle — load directly.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
