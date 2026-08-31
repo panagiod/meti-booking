@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
-import "@/styles/studio.css";
 
 export default function MarketingLayout({
   children,

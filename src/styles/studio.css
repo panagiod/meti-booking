@@ -10,15 +10,35 @@
   --studio-accent-hover: #1f281f;
   --studio-warm: #f3ede6;
   --studio-container: 76rem;
+  --studio-font-body: var(--font-dm-sans), system-ui, sans-serif;
+  --studio-font-display: var(--font-cormorant), Georgia, serif;
 
   background: var(--studio-bg);
   color: var(--studio-ink);
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-family: var(--studio-font-body);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html[lang="el"] .studio,
+html[lang="el"] .studio-booking {
+  --studio-font-body: var(--font-noto-sans), "Noto Sans", system-ui, sans-serif;
+  --studio-font-display: var(--font-gfs-didot), "GFS Didot", Georgia, "Times New Roman", serif;
+}
+
+html[lang="el"] body {
+  font-family: var(--font-noto-sans), "Noto Sans", system-ui, sans-serif;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+html[lang="el"] .font-display {
+  font-family: var(--font-gfs-didot), "GFS Didot", Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
 }
 
 .studio .font-display {
-  font-family: var(--font-cormorant), Georgia, serif;
+  font-family: var(--studio-font-display);
   font-weight: 500;
   letter-spacing: -0.03em;
 }
@@ -65,12 +85,15 @@
 }
 
 .studio-booking {
+  --studio-font-body: var(--font-dm-sans), system-ui, sans-serif;
+  --studio-font-display: var(--font-cormorant), Georgia, serif;
   background: var(--studio-bg);
   color: var(--studio-ink);
+  font-family: var(--studio-font-body);
 }
 
 .studio-booking .font-display {
-  font-family: var(--font-cormorant), Georgia, serif;
+  font-family: var(--studio-font-display);
   font-weight: 500;
 }
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans, GFS_Didot, JetBrains_Mono, Noto_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "sileo";
 import { QueryProvider } from "@/components/providers/query-provider";
@@ -7,16 +7,29 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import "./globals.css";
+import "@/styles/studio.css";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
 });
 
+const notoSans = Noto_Sans({
+  variable: "--font-noto-sans",
+  subsets: ["latin", "greek"],
+  weight: ["400", "500", "600"],
+});
+
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+});
+
+const gfsDidot = GFS_Didot({
+  variable: "--font-gfs-didot",
+  subsets: ["greek", "latin"],
+  weight: ["400"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -63,7 +76,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${dmSans.variable} ${cormorant.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${notoSans.variable} ${cormorant.variable} ${gfsDidot.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
         <script
