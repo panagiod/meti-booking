@@ -1,13 +1,14 @@
 "use client";
 
 import { format } from "date-fns";
-import { formatCurrency, formatDuration, type Service, type DaySlots } from "@/lib/slots";
+import { formatDuration, type Service, type DaySlots } from "@/lib/slots";
 import {
   formatMessage,
   useLocale,
   useTranslations,
 } from "@/components/providers/locale-provider";
 import { getDateFnsLocale } from "@/lib/date-locale";
+import { formatMoney } from "@/lib/format";
 
 interface BookingSummaryProps {
   service: Service & { rescheduleHoursMin?: number };

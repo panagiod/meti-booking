@@ -19,34 +19,36 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Logo } from "@/components/ui/logo";
 import { LoadingPage } from "@/components/ui/loading";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { useTranslations } from "@/components/providers/locale-provider";
 
 const navigation = [
   {
-    name: "Dashboard",
+    key: "dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    name: "Browse Advisors",
-    href: "/services",
+    key: "bookSession",
+    href: "/book",
     icon: Search,
   },
   {
-    name: "My Appointments",
+    key: "myAppointments",
     href: "/dashboard/appointments",
     icon: Calendar,
   },
   {
-    name: "Mis Reviews",
+    key: "myReviews",
     href: "/dashboard/reviews",
     icon: Star,
   },
   {
-    name: "My Profile",
+    key: "myProfile",
     href: "/dashboard/profile",
     icon: User,
   },
-];
+] as const;
 
 export default function DashboardLayout({
   children,
@@ -55,6 +57,7 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -138,9 +141,10 @@ export default function DashboardLayout({
           <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = pathname === item.href;
+              const label = t.dashboard[item.key];
               return (
                 <Link
-                  key={item.name}
+                  key={item.key}
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
@@ -156,7 +160,7 @@ export default function DashboardLayout({
                       isActive ? "text-[var(--primary)]" : "text-[var(--text-muted)]"
                     )}
                   />
-                  {item.name}
+                  {label}
                 </Link>
               );
             })}
@@ -182,7 +186,7 @@ export default function DashboardLayout({
                 <p className="text-sm font-medium text-[var(--text-primary)] truncate">
                   {user.name}
                 </p>
-                <p className="text-xs text-[var(--text-muted)] truncate">Client</p>
+                <p className="text-xs text-[var(--text-muted)] truncate">{t.dashboard.client}</p>
               </div>
             </div>
             <Button
@@ -191,7 +195,7 @@ export default function DashboardLayout({
               onClick={handleSignOut}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Sign out
+              {t.dashboard.signOut}
             </Button>
           </div>
         </div>
@@ -212,6 +216,7 @@ export default function DashboardLayout({
             <div className="flex-1 lg:flex-none" />
 
             <div className="flex items-center gap-4">
+              <LanguageSwitcher className="border-[var(--border)]" />
               <ThemeToggle />
             </div>
           </div>

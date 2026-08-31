@@ -25,6 +25,13 @@ type LocaleContextValue = {
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
+function detectBrowserLocale(): Locale {
+  if (typeof navigator === "undefined") return defaultLocale;
+  const lang = navigator.language?.toLowerCase() ?? "";
+  if (lang.startsWith("el")) return "el";
+  return defaultLocale;
+}
+
 function readStoredLocale(): Locale {
   if (typeof window === "undefined") return defaultLocale;
   const fromCookie = document.cookie
@@ -34,7 +41,7 @@ function readStoredLocale(): Locale {
   if (fromCookie && isLocale(fromCookie)) return fromCookie;
   const fromStorage = localStorage.getItem(LOCALE_COOKIE);
   if (fromStorage && isLocale(fromStorage)) return fromStorage;
-  return defaultLocale;
+  return detectBrowserLocale();
 }
 
 function persistLocale(locale: Locale) {

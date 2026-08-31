@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useLocale } from "@/components/providers/locale-provider";
+import { useLocale, useTranslations } from "@/components/providers/locale-provider";
 import type { Locale } from "@/i18n";
 
 const options: { code: Locale; label: string }[] = [
@@ -11,6 +11,7 @@ const options: { code: Locale; label: string }[] = [
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const { locale, setLocale } = useLocale();
+  const t = useTranslations();
 
   return (
     <div
@@ -19,7 +20,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         className
       )}
       role="group"
-      aria-label="Language"
+      aria-label={t.language.ariaLabel}
     >
       {options.map((opt) => (
         <button

@@ -5,6 +5,7 @@ import { Toaster } from "sileo";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { LocaleProvider } from "@/components/providers/locale-provider";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -83,7 +84,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-sans">
         <ThemeProvider>
           <QueryProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <LocaleProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </LocaleProvider>
           </QueryProvider>
         </ThemeProvider>
         <Toaster position="top-right" theme="system" />

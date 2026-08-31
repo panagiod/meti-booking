@@ -20,19 +20,20 @@ import {
   LogIn,
   TestTube,
 } from "lucide-react";
-
-function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "COP",
-    minimumFractionDigits: 0,
-  }).format(cents / 100);
-}
+import {
+  formatMessage,
+  useLocale,
+  useTranslations,
+} from "@/components/providers/locale-provider";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { formatLongDate, formatMoney } from "@/lib/format";
 
 function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dialog = useDialog();
+  const t = useTranslations();
+  const { locale } = useLocale();
   const [isProcessing, setIsProcessing] = useState(false);
   const [advisorHasMP, setAdvisorHasMP] = useState<boolean | null>(null);
   const [advisorMpMode, setAdvisorMpMode] = useState<string | null>(null);
@@ -40,28 +41,27 @@ function CheckoutContent() {
   const [promotion, setPromotion] = useState<any>(null);
 
   const advisorId = searchParams.get("advisorId");
-  const advisorName = searchParams.get("advisorName") || "Advisor";
+  const advisorName = searchParams.get("advisorName") || "Flow Pilates";
   const serviceId = searchParams.get("serviceId");
-  const serviceName = searchParams.get("serviceName") || "Service";
+  const rawServiceName = searchParams.get("serviceName") || "Service";
+  const serviceName =
+    t.booking.serviceNames[rawServiceName] ?? rawServiceName;
   const servicePrice = Number(searchParams.get("servicePrice") || "0");
   const duration = Number(searchParams.get("duration") || "60");
   const date = searchParams.get("date") || "TBD";
   const time = searchParams.get("time") || "TBD";
 
-  // Calculate discount if there is an active promotion (fixed amount is in pesos, convert to cents)
   const discountCents = promotion
     ? promotion.discountType === "percentage"
-      ? Math.round(servicePrice * promotion.discountValue / 100)
+      ? Math.round((servicePrice * promotion.discountValue) / 100)
       : Math.min(Math.round(promotion.discountValue * 100), servicePrice)
     : 0;
   const priceAfterDiscount = Math.max(servicePrice - discountCents, 0);
-  // Fee is always calculated on the ORIGINAL price (the advisor absorbs the discount)
   const serviceFee = Math.round(servicePrice * 0.15);
   const totalOriginal = servicePrice + serviceFee;
   const serviceTotal = priceAfterDiscount + serviceFee;
 
   useEffect(() => {
-    // Consume the pending booking saved before login (left by /redirect without clearing)
     localStorage.removeItem("meti-pending-booking");
     checkLoginStatus();
     if (advisorId) {
@@ -79,7 +79,7 @@ function CheckoutContent() {
         const data = await res.json();
         if (data.promotion) setPromotion(data.promotion);
       }
-    } catch { }
+    } catch {}
   };
 
   const checkLoginStatus = async () => {
@@ -109,36 +109,32 @@ function CheckoutContent() {
   };
 
   const handleLogin = () => {
-    // Save booking data to localStorage before going to login
     const bookingData = {
       advisorId,
       advisorName,
       serviceId,
-      serviceName,
+      serviceName: rawServiceName,
       servicePrice: String(servicePrice),
       duration: String(duration),
       date,
       time,
     };
     localStorage.setItem("meti-pending-booking", JSON.stringify(bookingData));
-    // Redirect to login - will come back to checkout after login
     router.push("/login");
   };
 
   const handlePayment = async () => {
-    // If not logged in, go to login
     if (isLoggedIn === false) {
       handleLogin();
       return;
     }
 
-    // Wait for login check
     if (isLoggedIn === null) return;
 
     if (!advisorHasMP) {
       dialog.showAlert(
-        "Payment unavailable",
-        "This advisor has not set up their Mercado Pago account yet.",
+        t.checkout.paymentUnavailable,
+        t.checkout.paymentUnavailableSub,
         "warning"
       );
       return;
@@ -162,59 +158,52 @@ function CheckoutContent() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Error creating appointment");
+        throw new Error(data.error || t.checkout.errorCreateAppointment);
       }
 
       const { initPoint } = await res.json();
-
-      // Redirect to Mercado Pago checkout (payment confirms the appointment via webhook)
       localStorage.removeItem("meti-pending-booking");
       window.location.href = initPoint;
     } catch (error) {
       console.error("Error:", error);
-      dialog.showAlert("Error", "Failed to create appointment. Please try again.", "error");
+      dialog.showAlert(t.common.error, t.checkout.errorCreateAppointment, "error");
       setIsProcessing(false);
     }
   };
 
-  // No data state
   if (!advisorId || !serviceId) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
-            <p className="text-[var(--text-muted)] mb-4">No booking data</p>
-            <Button onClick={() => router.push("/services")}>
-              Browse services
-            </Button>
+            <p className="text-[var(--text-muted)] mb-4">{t.checkout.noBookingData}</p>
+            <Button onClick={() => router.push("/book")}>{t.checkout.bookSession}</Button>
           </CardContent>
         </Card>
       </div>
     );
   }
 
-  // Success state (now handled in /checkout/result after MP payment)
-
-  // Main checkout view
   return (
     <>
       <div className="min-h-screen bg-[var(--background)]">
         <header className="sticky top-0 z-30 bg-[var(--surface)]/80 backdrop-blur-lg border-b border-[var(--border)]">
-          <div className="container-meti flex items-center h-16">
-            <Button variant="ghost" size="icon" onClick={() => router.back()}>
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <h1 className="ml-4 font-heading font-semibold text-[var(--text-primary)]">
-              Checkout
-            </h1>
+          <div className="container-meti flex items-center justify-between h-16">
+            <div className="flex items-center">
+              <Button variant="ghost" size="icon" onClick={() => router.back()}>
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <h1 className="ml-4 font-heading font-semibold text-[var(--text-primary)]">
+                {t.checkout.title}
+              </h1>
+            </div>
+            <LanguageSwitcher className="border-[var(--border)]" />
           </div>
         </header>
 
         <div className="container-meti py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {/* Left column */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Login Required */}
               {isLoggedIn === false && (
                 <Card className="border-[var(--primary)]">
                   <CardContent className="p-6">
@@ -224,21 +213,20 @@ function CheckoutContent() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-heading font-semibold text-[var(--text-primary)] text-lg">
-                          Sign in to continue
+                          {t.checkout.signInToContinue}
                         </h3>
                         <p className="text-sm text-[var(--text-muted)]">
-                          You need an account to complete this purchase
+                          {t.checkout.signInToContinueSub}
                         </p>
                       </div>
                       <Button onClick={handleLogin} size="lg">
-                        Sign in
+                        {t.auth.signIn}
                       </Button>
                     </div>
                   </CardContent>
                 </Card>
               )}
 
-              {/* Test mode banner */}
               {advisorMpMode === "TEST" && (
                 <Card className="border-[var(--warning)] bg-[var(--warning-light)]">
                   <CardContent className="p-4">
@@ -246,10 +234,10 @@ function CheckoutContent() {
                       <TestTube className="w-5 h-5 text-[var(--warning)] flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-medium text-[var(--text-primary)]">
-                          This advisor is in test mode
+                          {t.checkout.testModeTitle}
                         </p>
                         <p className="text-sm text-[var(--text-muted)] mt-1">
-                          Payment is not real. The advisor is testing their services before offering them publicly.
+                          {t.checkout.testModeSub}
                         </p>
                       </div>
                     </div>
@@ -261,7 +249,7 @@ function CheckoutContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CreditCard className="w-5 h-5" />
-                    Payment method
+                    {t.checkout.paymentMethod}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -271,10 +259,10 @@ function CheckoutContent() {
                         <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
                         <div>
                           <p className="font-medium text-[var(--text-primary)]">
-                            Payment unavailable
+                            {t.checkout.paymentUnavailable}
                           </p>
                           <p className="text-sm text-[var(--text-muted)]">
-                            This advisor has not set up their Mercado Pago account yet.
+                            {t.checkout.paymentUnavailableSub}
                           </p>
                         </div>
                       </div>
@@ -286,15 +274,19 @@ function CheckoutContent() {
                           <CreditCard className="w-5 h-5 text-white" />
                         </div>
                         <div>
-                          <p className="font-medium text-[var(--text-primary)]">Mercado Pago</p>
-                          <p className="text-sm text-[var(--text-muted)]">Credit card, debit card, or account balance</p>
+                          <p className="font-medium text-[var(--text-primary)]">
+                            {t.checkout.mercadoPago}
+                          </p>
+                          <p className="text-sm text-[var(--text-muted)]">
+                            {t.checkout.mercadoPagoSub}
+                          </p>
                         </div>
                       </div>
                     </div>
                   )}
                   <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
                     <Shield className="w-4 h-4" />
-                    Secure payment with Mercado Pago
+                    {t.checkout.securePayment}
                   </div>
                 </CardContent>
               </Card>
@@ -306,11 +298,13 @@ function CheckoutContent() {
                       <span className="text-sm">⚠️</span>
                     </div>
                     <div className="text-sm">
-                      <p className="font-medium text-[var(--text-primary)] mb-1">Cancellation policy</p>
+                      <p className="font-medium text-[var(--text-primary)] mb-1">
+                        {t.checkout.cancellationPolicy}
+                      </p>
                       <ul className="text-[var(--text-muted)] space-y-1">
-                        <li>• Reschedule for free with 24 hours notice</li>
-                        <li>• Cancel without rescheduling = no refund</li>
-                        <li>• No-show = no refund</li>
+                        <li>• {t.checkout.cancelReschedule}</li>
+                        <li>• {t.checkout.cancelNoRefund}</li>
+                        <li>• {t.checkout.cancelNoShow}</li>
                       </ul>
                     </div>
                   </div>
@@ -318,11 +312,10 @@ function CheckoutContent() {
               </Card>
             </div>
 
-            {/* Right column - Summary */}
             <div className="lg:col-span-1">
               <Card className="sticky top-24">
                 <CardHeader>
-                  <CardTitle>Resumen</CardTitle>
+                  <CardTitle>{t.checkout.summary}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3">
@@ -336,16 +329,14 @@ function CheckoutContent() {
                     <div className="flex items-center gap-2 text-sm">
                       <Calendar className="w-4 h-4 text-[var(--text-muted)]" />
                       <span className="text-[var(--text-primary)] capitalize">
-                        {(() => {
-                          const [y, m, d] = date.split("-");
-                          const dt = new Date(Number(y), Number(m) - 1, Number(d));
-                          return dt.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
-                        })()}
+                        {date !== "TBD" ? formatLongDate(date, locale) : date}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Clock className="w-4 h-4 text-[var(--text-muted)]" />
-                      <span className="text-[var(--text-primary)]">{time} · {duration} min</span>
+                      <span className="text-[var(--text-primary)]">
+                        {time} · {duration} {t.checkout.min}
+                      </span>
                     </div>
                   </div>
 
@@ -353,9 +344,13 @@ function CheckoutContent() {
                     <div className="flex justify-between text-sm">
                       <span className="text-[var(--text-muted)]">{serviceName}</span>
                       {discountCents > 0 ? (
-                        <span className="text-[var(--text-muted)] line-through">{formatCurrency(totalOriginal)}</span>
+                        <span className="text-[var(--text-muted)] line-through">
+                          {formatMoney(totalOriginal, locale)}
+                        </span>
                       ) : (
-                        <span className="text-[var(--text-primary)]">{formatCurrency(totalOriginal)}</span>
+                        <span className="text-[var(--text-primary)]">
+                          {formatMoney(totalOriginal, locale)}
+                        </span>
                       )}
                     </div>
                     {discountCents > 0 && (
@@ -364,14 +359,18 @@ function CheckoutContent() {
                           <Tag className="w-3.5 h-3.5" />
                           {promotion.name}
                         </span>
-                        <span className="text-[var(--accent)] font-medium">-{formatCurrency(discountCents)}</span>
+                        <span className="text-[var(--accent)] font-medium">
+                          -{formatMoney(discountCents, locale)}
+                        </span>
                       </div>
                     )}
                     <div className="border-t border-[var(--border)] pt-3 flex justify-between font-heading font-bold text-lg">
-                      <span className="text-[var(--text-primary)]">Total</span>
-                      <span className="text-[var(--primary)]">{formatCurrency(serviceTotal)}</span>
+                      <span className="text-[var(--text-primary)]">{t.checkout.total}</span>
+                      <span className="text-[var(--primary)]">
+                        {formatMoney(serviceTotal, locale)}
+                      </span>
                     </div>
-                    <p className="text-xs text-[var(--text-muted)]">Includes all costs</p>
+                    <p className="text-xs text-[var(--text-muted)]">{t.checkout.includesCosts}</p>
                   </div>
 
                   <Button
@@ -382,17 +381,19 @@ function CheckoutContent() {
                     {isProcessing ? (
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Processing...
+                        {t.common.processing}
                       </div>
                     ) : isLoggedIn === false ? (
                       <>
                         <LogIn className="w-5 h-5 mr-2" />
-                        Sign in to pay
+                        {t.checkout.signInToPay}
                       </>
                     ) : (
                       <>
                         <CreditCard className="w-5 h-5 mr-2" />
-                        Pay {formatCurrency(serviceTotal)}
+                        {formatMessage(t.checkout.pay, {
+                          amount: formatMoney(serviceTotal, locale),
+                        })}
                       </>
                     )}
                   </Button>

@@ -9,9 +9,11 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LoadingPage } from "@/components/ui/loading";
 import { Logo } from "@/components/ui/logo";
+import { useTranslations } from "@/components/providers/locale-provider";
 
 function LoginContent() {
   const router = useRouter();
+  const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
@@ -33,7 +35,7 @@ function LoginContent() {
     try {
       await authClient.signIn.social({ provider: "google", callbackURL: "/redirect" });
     } catch (err) {
-      setError("Failed to sign in with Google. Please try again.");
+      setError(t.auth.googleError);
       setIsLoading(false);
     }
   };
@@ -49,13 +51,13 @@ function LoginContent() {
         callbackURL: "/redirect",
       });
       if (signInError) {
-        setError(signInError.message || "Incorrect email or password.");
+        setError(signInError.message || t.auth.emailError);
         setIsLoading(false);
       } else {
         router.push("/redirect");
       }
     } catch (err) {
-      setError("Failed to sign in. Please try again.");
+      setError(t.auth.signInError);
       setIsLoading(false);
     }
   };
@@ -70,16 +72,15 @@ function LoginContent() {
 
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl font-heading">Welcome back</CardTitle>
-          <CardDescription>Sign in to access your account</CardDescription>
+          <CardTitle className="text-xl font-heading">{t.auth.welcomeBack}</CardTitle>
+          <CardDescription>{t.auth.signInSubtitle}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Google Button */}
           <Button variant="secondary" className="w-full h-12 text-base" onClick={handleGoogleLogin} disabled={isLoading}>
             {isLoading ? (
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 border-2 border-[var(--border)] border-t-[var(--primary)] rounded-full animate-spin" />
-                Connecting...
+                {t.auth.connecting}
               </div>
             ) : (
               <>
@@ -89,40 +90,38 @@ function LoginContent() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
-                Continue with Google
+                {t.auth.continueGoogle}
               </>
             )}
           </Button>
 
-          {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-[var(--border)]" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-[var(--surface)] text-[var(--text-muted)]">o</span>
+              <span className="px-2 bg-[var(--surface)] text-[var(--text-muted)]">{t.auth.orDivider}</span>
             </div>
           </div>
 
-          {/* Email/Password Form */}
           <form onSubmit={handleEmailLogin} className="space-y-3">
             <input
               type="email"
-              placeholder="Email"
+              placeholder={t.auth.email}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full h-11 px-3 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
             />
             <PasswordInput
-              placeholder="Password"
+              placeholder={t.auth.password}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               className="h-11"
             />
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? t.auth.signingIn : t.auth.signIn}
             </Button>
           </form>
 
@@ -132,11 +131,10 @@ function LoginContent() {
             </div>
           )}
 
-          {/* Register Link */}
           <p className="text-center text-sm text-[var(--text-muted)]">
-            Don&apos;t have an account?{" "}
+            {t.auth.noAccount}{" "}
             <Link href="/register" className="font-medium text-[var(--primary)] hover:underline">
-              Sign up for free
+              {t.auth.signUpFree}
             </Link>
           </p>
         </CardContent>
@@ -144,7 +142,7 @@ function LoginContent() {
 
       <p className="text-center text-sm text-[var(--text-muted)]">
         <Link href="/" className="font-medium text-[var(--text-secondary)] hover:text-[var(--primary)]">
-          ← Back to home
+          {t.auth.backHome}
         </Link>
       </p>
     </div>

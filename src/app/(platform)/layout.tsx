@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { LoadingPage } from "@/components/ui/loading";
+import { useTranslations } from "@/components/providers/locale-provider";
 
 // This layout is only used for client dashboard pages
 // Admin and advisor have their own layouts with sidebars
@@ -14,6 +15,7 @@ export default function PlatformLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations();
   const [isLoading, setIsLoading] = useState(true);
 
   // Skip auth check for admin, advisor, and checkout routes
@@ -51,7 +53,7 @@ export default function PlatformLayout({
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingPage label="Loading..." />
+        <LoadingPage label={t.dashboard.loading} />
       </div>
     );
   }

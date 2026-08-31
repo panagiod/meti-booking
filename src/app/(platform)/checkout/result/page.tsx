@@ -8,6 +8,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LoadingPage } from "@/components/ui/loading";
 import { CheckCircle, XCircle, Clock, Calendar, ArrowLeft } from "lucide-react";
+import { useLocale, useTranslations } from "@/components/providers/locale-provider";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { formatDateTime } from "@/lib/format";
 
 type ResultStatus = "approved" | "pending" | "failure" | "unknown";
 
@@ -19,19 +22,10 @@ interface ResultAppointment {
   service?: { name: string } | null;
 }
 
-function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString("en-US", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 function ResultContent() {
   const searchParams = useSearchParams();
+  const t = useTranslations();
+  const { locale } = useLocale();
   const appointmentId = searchParams.get("appointmentId");
   const statusParam = (searchParams.get("status") || "unknown") as ResultStatus;
   const paymentId = searchParams.get("payment_id");
@@ -63,7 +57,6 @@ function ResultContent() {
     }
   }, [appointmentId]);
 
-  // If payment_id comes from MP, verify payment directly via the API
   useEffect(() => {
     if (!appointmentId || !paymentId) return;
     const verifyPayment = async () => {
@@ -94,7 +87,6 @@ function ResultContent() {
     void load();
   }, [fetchAppointment]);
 
-  // Poll: MP webhook may take a few seconds to confirm
   useEffect(() => {
     if (!appointment || appointment.status === "CONFIRMED" || pollAttempts >= 6) {
       return;
@@ -108,16 +100,15 @@ function ResultContent() {
     }
   }, [appointment, pollAttempts, fetchAppointment]);
 
-  // Toast when payment is confirmed
   useEffect(() => {
     if (appointment?.status === "CONFIRMED") {
       sileo.success({
-        title: "Payment confirmed!",
-        description: "Your consultation has been booked. Review the details below.",
+        title: t.checkoutResult.toastConfirmedTitle,
+        description: t.checkoutResult.toastConfirmedSub,
         duration: 6000,
       });
     }
-  }, [appointment?.status]);
+  }, [appointment?.status, t.checkoutResult.toastConfirmedTitle, t.checkoutResult.toastConfirmedSub]);
 
   if (isLoading) {
     return (
@@ -129,17 +120,18 @@ function ResultContent() {
 
   if (isUnauthorized || !appointmentId) {
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
+      <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center px-4">
+        <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+          <LanguageSwitcher className="border-[var(--border)]" />
+        </div>
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
             <p className="text-[var(--text-muted)] mb-4">
-              {isUnauthorized
-                ? "Sign in to view your booking status."
-                : "No booking information available."}
+              {isUnauthorized ? t.checkoutResult.signInToView : t.checkoutResult.noBookingInfo}
             </p>
             <Button asChild className="w-full">
-              <Link href={isUnauthorized ? "/login" : "/services"}>
-                {isUnauthorized ? "Sign in" : "Browse services"}
+              <Link href={isUnauthorized ? "/login" : "/book"}>
+                {isUnauthorized ? t.auth.signIn : t.checkoutResult.bookAgain}
               </Link>
             </Button>
           </CardContent>
@@ -149,12 +141,17 @@ function ResultContent() {
   }
 
   const isConfirmed = appointment?.status === "CONFIRMED";
-
-  // Visual state based on actual payment
-  const failed = !isConfirmed && (statusParam === "failure" || appointment?.status === "CANCELLED");
+  const failed =
+    !isConfirmed && (statusParam === "failure" || appointment?.status === "CANCELLED");
+  const serviceLabel =
+    appointment?.service?.name &&
+    (t.booking.serviceNames[appointment.service.name] ?? appointment.service.name);
 
   return (
-    <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center px-4">
+      <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+        <LanguageSwitcher className="border-[var(--border)]" />
+      </div>
       <Card className="w-full max-w-md">
         <CardContent className="p-8 text-center">
           {isConfirmed ? (
@@ -163,27 +160,27 @@ function ResultContent() {
                 <CheckCircle className="w-8 h-8 text-[var(--success)]" />
               </div>
               <h1 className="font-heading text-2xl font-bold text-[var(--text-primary)] mb-2">
-                Payment confirmed!
+                {t.checkoutResult.paymentConfirmed}
               </h1>
               <p className="text-[var(--text-muted)] mb-4">
-                Your consultation has been booked. You will receive the video call link before the appointment.
+                {t.checkoutResult.paymentConfirmedSub}
               </p>
               <div className="bg-[var(--background)] rounded-lg p-4 mb-6 space-y-2 text-left">
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
                   <span className="text-[var(--text-primary)] capitalize">
-                    {formatDateTime(appointment.scheduledAt)}
+                    {appointment && formatDateTime(appointment.scheduledAt, locale)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="w-4 flex-shrink-0" />
                   <span className="text-[var(--text-muted)]">
-                    {appointment.service?.name} • {appointment.durationMin} min
+                    {serviceLabel} · {appointment?.durationMin} {t.checkout.min}
                   </span>
                 </div>
               </div>
               <Button className="w-full" asChild>
-                <Link href="/dashboard">Go to my dashboard</Link>
+                <Link href="/dashboard">{t.checkoutResult.goToDashboard}</Link>
               </Button>
             </>
           ) : failed ? (
@@ -192,19 +189,17 @@ function ResultContent() {
                 <XCircle className="w-8 h-8 text-[var(--error)]" />
               </div>
               <h1 className="font-heading text-2xl font-bold text-[var(--text-primary)] mb-2">
-                Payment was not completed
+                {t.checkoutResult.paymentFailed}
               </h1>
-              <p className="text-[var(--text-muted)] mb-6">
-                No charge was made. You can try again whenever you like.
-              </p>
+              <p className="text-[var(--text-muted)] mb-6">{t.checkoutResult.paymentFailedSub}</p>
               <div className="space-y-2">
                 <Button className="w-full" asChild>
-                  <Link href="/services">Browse advisors</Link>
+                  <Link href="/book">{t.checkoutResult.bookAgain}</Link>
                 </Button>
                 <Button variant="ghost" className="w-full" asChild>
                   <Link href="/dashboard">
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Go to my dashboard
+                    {t.checkoutResult.goToDashboard}
                   </Link>
                 </Button>
               </div>
@@ -215,21 +210,21 @@ function ResultContent() {
                 <Clock className="w-8 h-8 text-[var(--warning)] animate-pulse" />
               </div>
               <h1 className="font-heading text-2xl font-bold text-[var(--text-primary)] mb-2">
-                Confirming your payment…
+                {t.checkoutResult.confirmingPayment}
               </h1>
               <p className="text-[var(--text-muted)] mb-2">
-                Mercado Pago is processing your payment. This takes a few seconds.
+                {t.checkoutResult.confirmingPaymentSub}
               </p>
               {pollAttempts >= 6 && (
                 <p className="text-sm text-[var(--warning)] mb-4">
-                  Still pending. Check your booking in a few minutes.
+                  {t.checkoutResult.stillPending}
                 </p>
               )}
               <div className="flex justify-center py-2">
                 <div className="loading-spinner loading-spinner-sm" />
               </div>
               <Button variant="ghost" className="w-full mt-4" onClick={fetchAppointment}>
-                Refresh status
+                {t.checkoutResult.refreshStatus}
               </Button>
             </>
           )}
