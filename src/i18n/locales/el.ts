@@ -2,9 +2,9 @@ import type { Messages } from "../types";
 
 const el: Messages = {
   meta: {
-    title: "Flow Pilates — Κράτηση μαθημάτων Pilates",
+    title: "Flow Pilates — Κράτηση Reformer",
     description:
-      "Μαθήματα reformer και mat σε μικρές ομάδες. Κλείστε online, ελάτε, κινηθείτε καλά.",
+      "Κλείστε μαθήματα reformer online. Επιλέξτε ώρα, ελάτε, κινηθείτε καλά.",
   },
   nav: {
     sessions: "Μαθήματα",
@@ -13,43 +13,28 @@ const el: Messages = {
     bookNow: "Κράτηση",
   },
   hero: {
-    eyebrow: "Reformer · Mat · Ιδιωτικό",
-    title: "Pilates, με απλή κράτηση.",
+    eyebrow: "Reformer pilates",
+    title: "Reformer, με απλή κράτηση.",
     description:
-      "Μαθήματα reformer και mat σε μικρές ομάδες. Κλείστε online, ελάτε, κινηθείτε καλά.",
-    bookSession: "Κλείστε μάθημα",
-    viewSessions: "Δείτε μαθήματα",
+      "Κλείστε μαθήματα reformer online. Επιλέξτε ώρα, ελάτε, κινηθείτε καλά.",
+    bookSession: "Κράτηση reformer",
+    viewSessions: "Λεπτομέρειες",
     imageAlt: "Γυναίκα σε μηχάνημα reformer pilates σε φωτεινό στούντιο",
   },
   sessions: {
-    label: "Μαθήματα",
-    title: "Επιλέξτε μάθημα",
-    subtitle: "Διαθεσιμότητα σε πραγματικό χρόνο. Άμεση επιβεβαίωση.",
-    mostPopular: "Πιο δημοφιλές",
+    label: "Reformer",
+    title: "Κλείστε reformer",
+    subtitle: "50 λεπτά στο carriage. Διαθεσιμότητα σε πραγματικό χρόνο.",
+    mostPopular: "Reformer",
     book: "Κράτηση",
     fromPrice: "από",
     readyTitle: "Έτοιμοι να κινηθείτε;",
-    readySubtitle: "Επιλέξτε μάθημα και κλείστε θέση σε λιγότερο από ένα λεπτό.",
+    readySubtitle: "Επιλέξτε ώρα και κλείστε θέση reformer σε λιγότερο από ένα λεπτό.",
     types: {
       reformer: {
         name: "Reformer",
         description: "Εργασία στο carriage για δύναμη, μήκος και έλεγχο.",
         duration: "50 λεπτά",
-      },
-      mat: {
-        name: "Mat Pilates",
-        description: "Ροή στο χάλι για σταθερότητα κέντρου και κινητικότητα.",
-        duration: "55 λεπτά",
-      },
-      private: {
-        name: "Ιδιωτικό",
-        description: "Προσωπικό μάθημα προσαρμοσμένο σε εσάς.",
-        duration: "60 λεπτά",
-      },
-      duo: {
-        name: "Duo",
-        description: "Ημι-ιδιωτικό μάθημα — φέρτε έναν φίλο.",
-        duration: "60 λεπτά",
       },
     },
   },
@@ -87,12 +72,7 @@ const el: Messages = {
     continuePayment: "Συνέχεια στην πληρωμή",
     processing: "Επεξεργασία…",
     serviceNames: {
-      "Mat Pilates": "Mat Pilates",
       "Reformer Session": "Reformer",
-      "Private Session": "Ιδιωτικό μάθημα",
-      "Duo Session": "Duo μάθημα",
-      "Strategic Consulting": "Στρατηγική συμβουλευτική",
-      "Quick Q&A": "Σύντομες ερωτήσεις",
     },
   },
   common: {

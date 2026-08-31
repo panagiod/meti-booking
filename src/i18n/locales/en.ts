@@ -2,9 +2,8 @@ import type { Messages } from "../types";
 
 const en: Messages = {
   meta: {
-    title: "Flow Pilates — Book Pilates Sessions Online",
-    description:
-      "Small-group reformer and mat classes. Book online, show up, move well.",
+    title: "Flow Pilates — Book Reformer Sessions Online",
+    description: "Book reformer pilates sessions online. Pick a time, show up, move well.",
   },
   nav: {
     sessions: "Sessions",
@@ -13,43 +12,27 @@ const en: Messages = {
     bookNow: "Book now",
   },
   hero: {
-    eyebrow: "Reformer · Mat · Private",
-    title: "Pilates, booked beautifully.",
-    description:
-      "Small-group reformer and mat classes. Book online, show up, move well.",
-    bookSession: "Book a session",
-    viewSessions: "View sessions",
+    eyebrow: "Reformer pilates",
+    title: "Reformer, booked beautifully.",
+    description: "Book reformer sessions online. Pick a time, show up, move well.",
+    bookSession: "Book reformer",
+    viewSessions: "View details",
     imageAlt: "Woman on a reformer pilates machine in a bright studio",
   },
   sessions: {
-    label: "Sessions",
-    title: "Choose your class",
-    subtitle: "Live availability. Instant confirmation.",
-    mostPopular: "Most popular",
+    label: "Reformer",
+    title: "Book a reformer session",
+    subtitle: "50 minutes on the carriage. Live availability.",
+    mostPopular: "Reformer",
     book: "Book",
     fromPrice: "from",
     readyTitle: "Ready to move?",
-    readySubtitle: "Pick a session and reserve your spot in under a minute.",
+    readySubtitle: "Pick a time and reserve your reformer spot in under a minute.",
     types: {
       reformer: {
         name: "Reformer",
         description: "Spring-loaded carriage work for strength, length, and control.",
         duration: "50 min",
-      },
-      mat: {
-        name: "Mat Pilates",
-        description: "Floor-based flow focused on core stability and mobility.",
-        duration: "55 min",
-      },
-      private: {
-        name: "Private",
-        description: "Fully tailored session with your instructor.",
-        duration: "60 min",
-      },
-      duo: {
-        name: "Duo",
-        description: "Semi-private session — bring a friend.",
-        duration: "60 min",
       },
     },
   },
@@ -87,12 +70,7 @@ const en: Messages = {
     continuePayment: "Continue to payment",
     processing: "Processing…",
     serviceNames: {
-      "Mat Pilates": "Mat Pilates",
       "Reformer Session": "Reformer Session",
-      "Private Session": "Private Session",
-      "Duo Session": "Duo Session",
-      "Strategic Consulting": "Strategic Consulting",
-      "Quick Q&A": "Quick Q&A",
     },
   },
   common: {

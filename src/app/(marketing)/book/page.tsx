@@ -3,7 +3,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ServiceSelector } from "@/components/booking/service-selector";
 import { CalendarPicker } from "@/components/booking/calendar-picker";
 import { TimeSlotPicker } from "@/components/booking/time-slot-picker";
 import { BookingSummary } from "@/components/booking/booking-summary";
@@ -13,7 +12,7 @@ import { useDialog } from "@/hooks/use-dialog";
 import { LoadingPage } from "@/components/ui/loading";
 import { authClient } from "@/lib/auth-client";
 import { getAvailableDates, type TimeSlot } from "@/lib/slots";
-import { siteConfig } from "@/lib/site-config";
+import { siteConfig, isReformerService } from "@/lib/site-config";
 import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "@/components/providers/locale-provider";
 
@@ -46,7 +45,7 @@ export default function BookPage() {
   const [advisor, setAdvisor] = useState<Advisor | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [step, setStep] = useState<"service" | "date" | "time" | "summary">("service");
+  const [step, setStep] = useState<"date" | "time" | "summary">("date");
   const [selectedService, setSelectedService] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<any>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -70,7 +69,16 @@ export default function BookPage() {
         return;
       }
       const data = await advisorRes.json();
-      setAdvisor(data.advisor);
+      const reformerServices = data.advisor.services.filter((s: { name: string }) =>
+        isReformerService(s.name)
+      );
+      if (reformerServices.length === 0) {
+        setLoadError(t.book.scheduleError);
+        return;
+      }
+      setAdvisor({ ...data.advisor, services: reformerServices });
+      setSelectedService(reformerServices[0]);
+      setStep("date");
     } catch {
       setLoadError(t.book.loadError);
     } finally {
@@ -139,13 +147,6 @@ export default function BookPage() {
     return mergedDates.find((d) => d.dateStr === selectedDate.dateStr) || null;
   }, [selectedDate, selectedService, mergedDates]);
 
-  const handleServiceSelect = (service: any) => {
-    setSelectedService(service);
-    setSelectedDate(null);
-    setSelectedTime(null);
-    setStep("date");
-  };
-
   const handleDateSelect = (date: any) => {
     setSelectedDate(date);
     setSelectedTime(null);
@@ -191,9 +192,6 @@ export default function BookPage() {
 
   const handleBack = () => {
     switch (step) {
-      case "date":
-        setStep("service");
-        break;
       case "time":
         setStep("date");
         break;
@@ -223,7 +221,7 @@ export default function BookPage() {
   <>
     <div className="studio-booking mx-auto max-w-xl px-6 py-10 lg:px-8 lg:py-14">
       <div className="mb-10 flex items-center justify-between">
-        {step !== "service" ? (
+        {step !== "date" ? (
           <button
             type="button"
             onClick={handleBack}
@@ -243,17 +241,9 @@ export default function BookPage() {
         )}
       </div>
 
-      <BookingSteps current={step} />
+      <BookingSteps current={step} singleService />
 
       <div className="mt-10">
-        {step === "service" && (
-          <ServiceSelector
-            services={advisor.services}
-            selectedService={selectedService}
-            onSelect={handleServiceSelect}
-          />
-        )}
-
         {step === "date" && selectedService && (
           <CalendarPicker
             availableDates={mergedDates.length ? mergedDates : availableDates}

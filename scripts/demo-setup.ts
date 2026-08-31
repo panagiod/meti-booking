@@ -80,7 +80,7 @@ async function main() {
         advisor = await prisma.advisorProfile.create({
           data: {
             userId: user.id,
-            bio: "Certified STOTT Pilates instructor with 8+ years teaching mat, reformer, and private sessions.",
+            bio: "Certified STOTT Pilates instructor with 8+ years teaching reformer sessions.",
             speciality: "Pilates & Movement",
             isActive: true,
             isVerified: true,
@@ -92,7 +92,7 @@ async function main() {
         await prisma.advisorProfile.update({
           where: { id: advisor.id },
           data: {
-            bio: "Certified STOTT Pilates instructor with 8+ years teaching mat, reformer, and private sessions.",
+            bio: "Certified STOTT Pilates instructor with 8+ years teaching reformer sessions.",
             speciality: "Pilates & Movement",
             isActive: true,
             isVerified: true,
@@ -139,45 +139,16 @@ async function main() {
       });
 
       await prisma.advisorService.deleteMany({ where: { advisorId: advisor.id } });
-      await prisma.advisorService.createMany({
-        data: [
-          {
-            advisorId: advisor.id,
-            name: "Mat Pilates",
-            description: "Core-focused group mat class. All levels welcome.",
-            durationMin: 55,
-            priceCents: 2800,
-            isActive: true,
-            categoryId: category?.id,
-          },
-          {
-            advisorId: advisor.id,
-            name: "Reformer Session",
-            description: "Equipment-based full-body workout on the reformer.",
-            durationMin: 50,
-            priceCents: 4500,
-            isActive: true,
-            categoryId: category?.id,
-          },
-          {
-            advisorId: advisor.id,
-            name: "Private Session",
-            description: "One-on-one tailored instruction for your goals.",
-            durationMin: 60,
-            priceCents: 7500,
-            isActive: true,
-            categoryId: category?.id,
-          },
-          {
-            advisorId: advisor.id,
-            name: "Duo Session",
-            description: "Semi-private session for you and a friend.",
-            durationMin: 60,
-            priceCents: 5500,
-            isActive: true,
-            categoryId: category?.id,
-          },
-        ],
+      await prisma.advisorService.create({
+        data: {
+          advisorId: advisor.id,
+          name: "Reformer Session",
+          description: "Equipment-based full-body workout on the reformer.",
+          durationMin: 50,
+          priceCents: 4500,
+          isActive: true,
+          categoryId: category?.id,
+        },
       });
 
       return user.id;

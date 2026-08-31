@@ -7,7 +7,7 @@ const categories = [
   {
     name: "Pilates",
     slug: "pilates",
-    description: "Mat, reformer, and private pilates sessions",
+    description: "Reformer pilates sessions",
     icon: "Heart",
     color: "#FF6B35",
   },

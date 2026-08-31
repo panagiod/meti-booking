@@ -5,25 +5,43 @@ import {
   useTranslations,
 } from "@/components/providers/locale-provider";
 
-const stepKeys = ["service", "date", "time", "summary"] as const;
-type StepKey = (typeof stepKeys)[number];
+const reformerSteps = ["date", "time", "summary"] as const;
+const fullSteps = ["service", ...reformerSteps] as const;
 
-export function BookingSteps({ current }: { current: StepKey }) {
+type StepKey = (typeof fullSteps)[number];
+type ReformerStepKey = (typeof reformerSteps)[number];
+
+export function BookingSteps({
+  current,
+  singleService = false,
+}: {
+  current: StepKey | ReformerStepKey;
+  singleService?: boolean;
+}) {
   const t = useTranslations();
-  const currentIndex = stepKeys.indexOf(current);
-  const progress = ((currentIndex + 1) / stepKeys.length) * 100;
-  const stepLabel = t.booking.steps[current];
+  const steps = singleService ? reformerSteps : fullSteps;
+  const currentIndex = steps.indexOf(current as ReformerStepKey & StepKey);
+  const safeIndex = currentIndex >= 0 ? currentIndex : 0;
+  const progress = ((safeIndex + 1) / steps.length) * 100;
+
+  const stepLabels: Record<string, string> = singleService
+    ? {
+        date: t.booking.steps.date,
+        time: t.booking.steps.time,
+        summary: t.booking.steps.summary,
+      }
+    : t.booking.steps;
 
   return (
     <div className="space-y-3">
       <div className="flex justify-between text-xs uppercase tracking-[0.16em] text-[var(--studio-muted)]">
         <span>
           {formatMessage(t.booking.stepOf, {
-            current: currentIndex + 1,
-            total: stepKeys.length,
+            current: safeIndex + 1,
+            total: steps.length,
           })}
         </span>
-        <span>{stepLabel}</span>
+        <span>{stepLabels[steps[safeIndex]]}</span>
       </div>
       <div className="h-px w-full bg-[var(--studio-line)]">
         <div
