@@ -81,6 +81,8 @@ A phased plan to go from **$0/month demo** to the **cheapest sustainable product
 
 8. **Deploy** — Vercel builds automatically on push to `main`.
 
+See [deploy/VERCEL.md](../deploy/VERCEL.md) for a step-by-step checklist (env vars, crons, smoke tests, guest checkout).
+
 ### Vercel cron limitations (Hobby plan)
 
 The app uses daily crons (expire pending appointments, reminders, cleanup). This matches Vercel Hobby limits. For sub-hourly cron jobs you would need Vercel Pro ($20/mo) or an external cron service (e.g. [cron-job.org](https://cron-job.org) free tier hitting your API with `CRON_SECRET`).

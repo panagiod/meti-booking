@@ -99,6 +99,12 @@ export type Messages = {
     title: string;
     signInToContinue: string;
     signInToContinueSub: string;
+    guestContactTitle: string;
+    guestContactSub: string;
+    guestEmailRequired: string;
+    guestEmailInvalid: string;
+    optionalName: string;
+    continueAsGuest: string;
     testModeTitle: string;
     testModeSub: string;
     paymentMethod: string;

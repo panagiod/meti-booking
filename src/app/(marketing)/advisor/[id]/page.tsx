@@ -17,7 +17,7 @@ import { useDialog } from "@/hooks/use-dialog";
 import { LoadingPage } from "@/components/ui/loading";
 import { savePendingBooking } from "@/lib/booking-utils";
 import { useCheckoutStore } from "@/lib/checkout-store";
-import { authClient } from "@/lib/auth-client";
+import { fetchBatchSlots } from "@/lib/fetch-batch-slots";
 import { getAvailableDates, formatCurrency, formatDuration, type TimeSlot } from "@/lib/slots";
 import { resolveBookingLeadHours } from "@/lib/booking-config";
 import { siteConfig } from "@/lib/site-config";
@@ -113,23 +113,10 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
     }
     let cancelled = false;
     const fetchRealSlots = async () => {
-      const results: Record<string, { slots: TimeSlot[]; hasAvailability: boolean }> = {};
-      await Promise.all(
-        availableDates.map(async (day) => {
-          try {
-            const res = await fetch(
-              `/api/slots?advisorId=${advisor.id}&serviceId=${selectedService.id}&date=${day.dateStr}`
-            );
-            if (res.ok) {
-              const data = await res.json();
-              const slots = data.slots || [];
-              results[day.dateStr] = {
-                slots,
-                hasAvailability: slots.some((s: TimeSlot) => s.available),
-              };
-            }
-          } catch (e) {}
-        })
+      const results = await fetchBatchSlots(
+        advisor.id,
+        selectedService.id,
+        availableDates.map((day) => day.dateStr)
       );
       if (!cancelled) setApiSlots(results);
     };
@@ -174,16 +161,6 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
   const handleConfirm = async () => {
     if (!advisor || !selectedService || !selectedDate || !selectedTime) return;
 
-    // Check if user is logged in
-    let isLoggedIn = false;
-    try {
-      const { data } = await authClient.getSession();
-      isLoggedIn = !!data;
-    } catch (error) {
-      isLoggedIn = false;
-    }
-
-    // Create booking params
     const bookingData = {
       advisorId: advisor.id,
       advisorName: advisor.name,
@@ -195,17 +172,9 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
       time: selectedTime,
     };
 
-    // Save booking data for later
-    localStorage.setItem("meti-pending-booking", JSON.stringify(bookingData));
-
-    if (!isLoggedIn) {
-      // Not logged in - go to login first
-      router.push("/login");
-    } else {
-      // Logged in - go directly to checkout
-      const params = new URLSearchParams(bookingData);
-      router.push(`/checkout?${params.toString()}`);
-    }
+    savePendingBooking(new URLSearchParams(bookingData));
+    const params = new URLSearchParams(bookingData);
+    router.push(`/checkout?${params.toString()}`);
   };
 
   const handleBack = () => {

@@ -26,6 +26,7 @@ import {
   useTranslations,
 } from "@/components/providers/locale-provider";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { Input } from "@/components/ui/input";
 import { formatLongDate, formatMoney } from "@/lib/format";
 
 function CheckoutContent() {
@@ -38,6 +39,9 @@ function CheckoutContent() {
   const [advisorHasMP, setAdvisorHasMP] = useState<boolean | null>(null);
   const [advisorMpMode, setAdvisorMpMode] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [guestEmail, setGuestEmail] = useState("");
+  const [guestName, setGuestName] = useState("");
+  const [guestEmailError, setGuestEmailError] = useState<string | null>(null);
   const [promotion, setPromotion] = useState<any>(null);
   const [quote, setQuote] = useState<{
     servicePriceCents: number;
@@ -109,8 +113,13 @@ function CheckoutContent() {
   const checkLoginStatus = async () => {
     try {
       const { data } = await authClient.getSession();
-      setIsLoggedIn(!!data);
-    } catch (error) {
+      const loggedIn = !!data;
+      setIsLoggedIn(loggedIn);
+      if (loggedIn && data?.user?.email) {
+        setGuestEmail(data.user.email);
+        if (data.user.name) setGuestName(data.user.name);
+      }
+    } catch {
       setIsLoggedIn(false);
     }
   };
@@ -147,13 +156,30 @@ function CheckoutContent() {
     router.push("/login");
   };
 
+  const validateGuestEmail = () => {
+    const email = guestEmail.trim();
+    if (!email) {
+      setGuestEmailError(t.checkout.guestEmailRequired);
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setGuestEmailError(t.checkout.guestEmailInvalid);
+      return false;
+    }
+    setGuestEmailError(null);
+    return true;
+  };
+
+  const canPay =
+    isLoggedIn === true ||
+    (isLoggedIn === false && guestEmail.trim().length > 0 && !guestEmailError);
+
   const handlePayment = async () => {
-    if (isLoggedIn === false) {
-      handleLogin();
+    if (isLoggedIn === null) return;
+
+    if (!isLoggedIn && !validateGuestEmail()) {
       return;
     }
-
-    if (isLoggedIn === null) return;
 
     if (!advisorHasMP) {
       dialog.showAlert(
@@ -176,6 +202,12 @@ function CheckoutContent() {
           serviceId,
           scheduledAt: `${date}T${time}:00`,
           promotionId: promotion?.id || null,
+          ...(!isLoggedIn
+            ? {
+                guestEmail: guestEmail.trim(),
+                guestName: guestName.trim() || undefined,
+              }
+            : {}),
         }),
       });
 
@@ -228,21 +260,52 @@ function CheckoutContent() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <div className="lg:col-span-2 space-y-6">
               {isLoggedIn === false && (
-                <Card className="border-[var(--primary)]">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-xl bg-[var(--primary)] flex items-center justify-center flex-shrink-0">
-                        <LogIn className="w-7 h-7 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-heading font-semibold text-[var(--text-primary)] text-lg">
-                          {t.checkout.signInToContinue}
-                        </h3>
-                        <p className="text-sm text-[var(--text-muted)]">
-                          {t.checkout.signInToContinueSub}
-                        </p>
-                      </div>
-                      <Button onClick={handleLogin} size="lg">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t.checkout.guestContactTitle}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-[var(--text-muted)]">
+                      {t.checkout.guestContactSub}
+                    </p>
+                    <div className="space-y-2">
+                      <label htmlFor="guest-email" className="text-sm font-medium text-[var(--text-primary)]">
+                        {t.auth.email}
+                      </label>
+                      <Input
+                        id="guest-email"
+                        type="email"
+                        autoComplete="email"
+                        value={guestEmail}
+                        onChange={(e) => {
+                          setGuestEmail(e.target.value);
+                          if (guestEmailError) setGuestEmailError(null);
+                        }}
+                        onBlur={validateGuestEmail}
+                        placeholder="you@example.com"
+                      />
+                      {guestEmailError && (
+                        <p className="text-sm text-[var(--destructive)]">{guestEmailError}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="guest-name" className="text-sm font-medium text-[var(--text-primary)]">
+                        {t.checkout.optionalName}
+                      </label>
+                      <Input
+                        id="guest-name"
+                        type="text"
+                        autoComplete="name"
+                        value={guestName}
+                        onChange={(e) => setGuestName(e.target.value)}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-4 pt-2">
+                      <p className="text-sm text-[var(--text-muted)]">
+                        {t.checkout.signInToContinueSub}
+                      </p>
+                      <Button variant="outline" onClick={handleLogin}>
+                        <LogIn className="w-4 h-4 mr-2" />
                         {t.auth.signIn}
                       </Button>
                     </div>
@@ -399,18 +462,19 @@ function CheckoutContent() {
                   <Button
                     className="w-full h-12 text-base mt-4"
                     onClick={handlePayment}
-                    disabled={isProcessing || advisorHasMP === false || quoteLoading}
+                    disabled={
+                      isProcessing ||
+                      advisorHasMP === false ||
+                      quoteLoading ||
+                      isLoggedIn === null ||
+                      !canPay
+                    }
                   >
                     {isProcessing ? (
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         {t.common.processing}
                       </div>
-                    ) : isLoggedIn === false ? (
-                      <>
-                        <LogIn className="w-5 h-5 mr-2" />
-                        {t.checkout.signInToPay}
-                      </>
                     ) : (
                       <>
                         <CreditCard className="w-5 h-5 mr-2" />

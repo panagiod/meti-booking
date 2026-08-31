@@ -18,6 +18,7 @@ const publicRoutes = [
   "/api/categories",
   "/api/promotions",
   "/api/checkout/quote",
+  "/api/appointments",
   "/api/advisors",
   "/api/services",
 ];

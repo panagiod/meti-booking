@@ -307,7 +307,8 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 | Payments | MP not configured on demo |
 | Stripe / Revolut | Issues #2–#7 |
 | Permanent hosting | #10 |
-| Guest checkout | #8 |
+| Guest checkout | ✅ Done (`guest-user.ts`, checkout email form) |
+| Batch slots API | ✅ Done (`GET /api/slots/batch`) |
 | Admin/advisor UI Greek | Not translated |
 | Timezone Europe/Athens | ✅ Done |
 | Server slot validation | ✅ Done |

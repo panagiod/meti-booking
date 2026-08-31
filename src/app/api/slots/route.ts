@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { generateAvailableSlots } from "@/lib/slots";
-import { getDayOfWeekForStudioDate, studioDayBoundsUTC } from "@/lib/timezone";
-import { siteConfig } from "@/lib/site-config";
-import { resolveBookingLeadHours } from "@/lib/booking-config";
+import { getSlotsForDate } from "@/lib/slots-server";
 
 export const dynamic = "force-dynamic";
 
@@ -21,102 +17,15 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const dayOfWeek = getDayOfWeekForStudioDate(date);
-
-    const daySchedule = await prisma.advisorSchedule.findUnique({
-      where: {
-        advisorId_dayOfWeek: {
-          advisorId,
-          dayOfWeek,
-        },
-      },
-    });
-
-    if (!daySchedule || !daySchedule.isActive) {
-      return NextResponse.json({ slots: [] });
-    }
-
-    const service = await prisma.advisorService.findUnique({
-      where: { id: serviceId },
-    });
-
-    if (!service) {
-      return NextResponse.json({ error: "Service not found" }, { status: 404 });
-    }
-
-    const advisorProfile = await prisma.advisorProfile.findUnique({
-      where: { id: advisorId },
-      select: { bookingLeadHours: true },
-    });
-
-    const leadHours = resolveBookingLeadHours(advisorProfile?.bookingLeadHours);
-    const minStartTime =
-      leadHours > 0 ? new Date(Date.now() + leadHours * 60 * 60 * 1000) : undefined;
-
-    const { start: startOfDay, end: endOfDay } = studioDayBoundsUTC(date);
-
-    const existingAppointments = await prisma.appointment.findMany({
-      where: {
-        advisorId,
-        scheduledAt: {
-          gte: startOfDay,
-          lte: endOfDay,
-        },
-        status: {
-          in: ["CONFIRMED", "IN_PROGRESS", "PENDING"],
-        },
-      },
-      select: {
-        scheduledAt: true,
-        durationMin: true,
-      },
-    });
-
-    const blockedTimesRaw = await prisma.blockedTime.findMany({
-      where: {
-        advisorId,
-        startDate: { lte: endOfDay },
-        endDate: { gte: startOfDay },
-      },
-    });
-
-    const blockedTimes = blockedTimesRaw.map(
-      (bt: { startDate: Date; endDate: Date; isAllDay: boolean }) => ({
-        startDate: bt.startDate,
-        endDate: bt.endDate,
-        isAllDay: bt.isAllDay,
-      })
-    );
-
-    const appointments = existingAppointments.map((apt: { scheduledAt: Date; durationMin: number }) => ({
-      start: apt.scheduledAt,
-      end: new Date(apt.scheduledAt.getTime() + apt.durationMin * 60 * 1000),
-    }));
-
-    const scheduleData = {
-      dayOfWeek: daySchedule.dayOfWeek,
-      startTime: daySchedule.startTime,
-      endTime: daySchedule.endTime,
-      lunchStart: daySchedule.lunchStart,
-      lunchEnd: daySchedule.lunchEnd,
-      gapMinutes: daySchedule.gapMinutes,
-    };
-
-    const slots = generateAvailableSlots(
-      scheduleData,
-      service.durationMin,
-      appointments,
-      blockedTimes,
-      new Date(`${date}T12:00:00`),
-      minStartTime,
-      siteConfig.slotCapacity
-    );
-
+    const slots = await getSlotsForDate(advisorId, serviceId, date);
     return NextResponse.json(
       { slots },
       { headers: { "Cache-Control": "no-store, max-age=0" } }
     );
   } catch (error) {
+    if (error instanceof Error && error.message === "SERVICE_NOT_FOUND") {
+      return NextResponse.json({ error: "Service not found" }, { status: 404 });
+    }
     console.error("Error fetching slots:", error);
     return NextResponse.json(
       { error: "Internal server error" },

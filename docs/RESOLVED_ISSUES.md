@@ -1,6 +1,6 @@
 # Resolved issues (Aug 2026 audit)
 
-Issues **#1, #9, #11–#31** are fixed on `main`. Close them on GitHub with:
+Issues **#1, #8, #9, #11–#31** are fixed on `main`. Close them on GitHub with:
 
 ```bash
 ./scripts/close-resolved-issues.sh

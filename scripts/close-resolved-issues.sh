@@ -56,4 +56,6 @@ close 30 "Fixed in \`2025a7b\`: \`pnpm demo:setup -- --reset-content\` resets we
 
 close 31 "Fixed in \`8ebf9d6\`: \`resolveBookingLeadHours()\` standardizes 2h default across book, slots, validation, profile, and schema."
 
-echo "Done. Remaining open: #2–#8 (payments), #10 (deploy)."
+close 8 "Fixed: guest checkout — book/pay without login. \`POST /api/appointments\` accepts \`guestEmail\`/\`guestName\`; checkout collects contact details; \`/book\` goes straight to checkout."
+
+echo "Done. Remaining open: #2–#7 (payments/OAuth), #10 (deploy)."

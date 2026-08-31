@@ -10,7 +10,7 @@ import { BookingSteps } from "@/components/booking/booking-steps";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { LoadingPage } from "@/components/ui/loading";
-import { authClient } from "@/lib/auth-client";
+import { fetchBatchSlots } from "@/lib/fetch-batch-slots";
 import { getAvailableDates, type TimeSlot } from "@/lib/slots";
 import { isReformerService, siteConfig } from "@/lib/site-config";
 import { resolveBookingLeadHours } from "@/lib/booking-config";
@@ -110,25 +110,10 @@ export default function BookPage() {
     let cancelled = false;
     setSlotsLoading(true);
     const fetchRealSlots = async () => {
-      const results: Record<string, { slots: TimeSlot[]; hasAvailability: boolean }> = {};
-      await Promise.all(
-        availableDates.map(async (day) => {
-          try {
-            const res = await fetch(
-              `/api/slots?advisorId=${advisor.id}&serviceId=${selectedService.id}&date=${day.dateStr}`
-            );
-            if (res.ok) {
-              const data = await res.json();
-              const slots = data.slots || [];
-              results[day.dateStr] = {
-                slots,
-                hasAvailability: slots.some((s: TimeSlot) => s.available),
-              };
-            }
-          } catch {
-            // ignore
-          }
-        })
+      const results = await fetchBatchSlots(
+        advisor.id,
+        selectedService.id,
+        availableDates.map((day) => day.dateStr)
       );
       if (!cancelled) {
         setApiSlots(results);
@@ -171,14 +156,6 @@ export default function BookPage() {
   const handleConfirm = async () => {
     if (!advisor || !selectedService || !selectedDate || !selectedTime) return;
 
-    let isLoggedIn = false;
-    try {
-      const { data } = await authClient.getSession();
-      isLoggedIn = !!data;
-    } catch {
-      isLoggedIn = false;
-    }
-
     const bookingData = {
       advisorId: advisor.id,
       advisorName: advisor.name,
@@ -191,13 +168,8 @@ export default function BookPage() {
     };
 
     localStorage.setItem("meti-pending-booking", JSON.stringify(bookingData));
-
-    if (!isLoggedIn) {
-      router.push("/login");
-    } else {
-      const params = new URLSearchParams(bookingData);
-      router.push(`/checkout?${params.toString()}`);
-    }
+    const params = new URLSearchParams(bookingData);
+    router.push(`/checkout?${params.toString()}`);
   };
 
   const handleBack = () => {

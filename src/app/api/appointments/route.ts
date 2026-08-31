@@ -10,12 +10,15 @@ import { calculatePrices } from "@/lib/pricing";
 import { siteConfig } from "@/lib/site-config";
 import { validateBookableSlot, SlotBookingError } from "@/lib/slot-booking";
 import { decryptMpAccessToken } from "@/lib/advisor-mp";
+import { findOrCreateGuestUser, GuestUserError } from "@/lib/guest-user";
 
 const appointmentSchema = z.object({
   advisorId: z.string(),
   serviceId: z.string(),
   scheduledAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/),
   promotionId: z.string().nullable().optional(),
+  guestEmail: z.string().email().optional(),
+  guestName: z.string().trim().min(1).max(100).optional(),
 });
 
 // POST: Create appointment (PENDING) + Mercado Pago Checkout Pro preference
@@ -26,12 +29,27 @@ export async function POST(request: NextRequest) {
       headers: headersList,
     });
 
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await request.json();
-    const { advisorId, serviceId, scheduledAt, promotionId } = appointmentSchema.parse(body);
+    const parsed = appointmentSchema.parse(body);
+    const { advisorId, serviceId, scheduledAt, promotionId, guestEmail, guestName } = parsed;
+
+    let clientId: string;
+    let payerEmail: string;
+
+    if (session) {
+      clientId = session.user.id;
+      payerEmail = session.user.email;
+    } else {
+      if (!guestEmail) {
+        return NextResponse.json(
+          { error: "Email is required to complete your booking" },
+          { status: 401 }
+        );
+      }
+      const guest = await findOrCreateGuestUser(guestEmail, guestName);
+      clientId = guest.id;
+      payerEmail = guest.email;
+    }
 
     const advisorProfile = await prisma.advisorProfile.findUnique({
       where: { id: advisorId },
@@ -139,7 +157,7 @@ export async function POST(request: NextRequest) {
 
         return tx.appointment.create({
           data: {
-            clientId: session.user.id,
+            clientId,
             advisorId: advisorProfile.id,
             serviceId: serviceId,
             scheduledAt: parsedDate,
@@ -168,7 +186,7 @@ export async function POST(request: NextRequest) {
             },
           ],
           externalReference: appointment.id,
-          payerEmail: session.user.email,
+          payerEmail,
         });
 
       await prisma.appointment.update({
@@ -191,6 +209,9 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
+    if (error instanceof GuestUserError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
     if (error instanceof SlotBookingError) {
       const status = error.code === "SLOT_UNAVAILABLE" ? 409 : 400;
       return NextResponse.json({ error: error.message }, { status });
