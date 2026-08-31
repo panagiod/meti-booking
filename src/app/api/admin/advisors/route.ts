@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
         id: a.id,
         name: a.user.name,
         email: a.user.email,
-        speciality: a.speciality || "Sin especificar",
+        speciality: a.speciality || "Unspecified",
         status: a.isActive ? "active" : "pending",
         services: a.services.length,
         appointments: a.appointments.length,

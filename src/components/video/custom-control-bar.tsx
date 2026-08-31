@@ -32,25 +32,25 @@ export function CustomControlBar({
 
   return (
     <div className="lk-control-bar flex items-center justify-center gap-2 p-2 bg-[var(--surface)] border-t border-[var(--border)]">
-      {/* Micrófono */}
+      {/* Microphone */}
       <TrackToggle
         source={Track.Source.Microphone}
         className="lk-button flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--background)]"
       >
         <Mic className="w-4 h-4" />
-        <span className="hidden sm:inline">Micrófono</span>
+        <span className="hidden sm:inline">Microphone</span>
       </TrackToggle>
 
-      {/* Cámara */}
+      {/* Camera */}
       <TrackToggle
         source={Track.Source.Camera}
         className="lk-button flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--background)]"
       >
         <Camera className="w-4 h-4" />
-        <span className="hidden sm:inline">Cámara</span>
+        <span className="hidden sm:inline">Camera</span>
       </TrackToggle>
 
-      {/* Compartir pantalla */}
+      {/* Screen share */}
       <TrackToggle
         source={Track.Source.ScreenShare}
         className="lk-button flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--background)]"
@@ -61,7 +61,7 @@ export function CustomControlBar({
           <Monitor className="w-4 h-4" />
         )}
         <span className="hidden sm:inline">
-          {isScreenShareEnabled ? "Dejar de compartir" : "Compartir pantalla"}
+          {isScreenShareEnabled ? "Stop sharing" : "Share screen"}
         </span>
       </TrackToggle>
 
@@ -77,13 +77,13 @@ export function CustomControlBar({
         <span className="hidden sm:inline">Chat</span>
       </button>
 
-      {/* Salir */}
+      {/* Leave */}
       <button
         onClick={onLeave}
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium bg-[var(--error)] text-white hover:opacity-90 transition-opacity"
       >
         <LogOut className="w-4 h-4" />
-        <span className="hidden sm:inline">Salir</span>
+        <span className="hidden sm:inline">Leave</span>
       </button>
     </div>
   );

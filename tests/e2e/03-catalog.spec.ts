@@ -4,8 +4,8 @@ import { prisma } from "../helpers/db";
 import { createActiveAdvisor } from "../helpers/fixtures";
 import { E2E_SKIP_MP_CHECKOUT } from "../helpers/mp";
 
-test.describe("03 · Catálogo público", () => {
-  test("lista asesores activos, visibles y expone mpMode; excluye ocultos e inactivos", async ({ request }) => {
+test.describe("03 · Public catalog", () => {
+  test("lists active, visible advisors and exposes mpMode; excludes hidden and inactive", async ({ request }) => {
     const api = newApi(request);
     const visible = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
     const hidden = await createActiveAdvisor(request, { hidden: true });
@@ -30,7 +30,7 @@ test.describe("03 · Catálogo público", () => {
     expect(visibleAdvisor.minPriceWithFee).toBe(11500);
     expect(visibleAdvisor.categories).toContain("Legal");
 
-    // Todos los listados son activos y visibles
+    // All listings are active and visible
     for (const a of advisors) {
       const db = await prisma.advisorProfile.findUnique({ where: { id: a.id } });
       expect(db?.isActive).toBe(true);
@@ -38,7 +38,7 @@ test.describe("03 · Catálogo público", () => {
     }
   });
 
-  test("búsqueda por nombre filtra asesores", async ({ request }) => {
+  test("search by name filters advisors", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const dbAdvisor = await prisma.advisorProfile.findUnique({
@@ -55,7 +55,7 @@ test.describe("03 · Catálogo público", () => {
     expect(empty.length).toBe(0);
   });
 
-  test("perfil público del asesor incluye servicios, horario y mpMode", async ({ request }) => {
+  test("advisor public profile includes services, schedule, and mpMode", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "PRODUCTION" });
 
@@ -69,7 +69,7 @@ test.describe("03 · Catálogo público", () => {
     expect(advisor.schedule.length).toBe(7);
   });
 
-  test("UI: listado muestra ribbon PRUEBA para asesor en modo test", async ({ page, request }) => {
+  test("UI: listing shows TEST ribbon for advisor in test mode", async ({ page, request }) => {
     test.skip(E2E_SKIP_MP_CHECKOUT, "skip MP UI");
 
     await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
@@ -80,7 +80,7 @@ test.describe("03 · Catálogo público", () => {
     await expect(ribbon).toBeVisible({ timeout: 30_000 });
   });
 
-  test("UI: tarjeta de asesor navega a su perfil público", async ({ page, request }) => {
+  test("UI: advisor card navigates to their public profile", async ({ page, request }) => {
     const fixture = await createActiveAdvisor(request);
 
     await page.goto("/services", { waitUntil: "domcontentloaded" });

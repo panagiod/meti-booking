@@ -3,17 +3,17 @@ import { newApi, signupClient, withSession, BASE_URL } from "../helpers/api";
 import { prisma } from "../helpers/db";
 import { createAdmin, createActiveAdvisor } from "../helpers/fixtures";
 
-test.describe("08 · Panel de administración", () => {
-  test("setup inicial: primer admin solo si no hay admins", async ({ request }) => {
+test.describe("08 · Admin panel", () => {
+  test("initial setup: first admin only when no admins exist", async ({ request }) => {
     const api = newApi(request);
 
     const hasAdmins = await api.get(`${BASE_URL}/api/admin/setup`);
     expect(hasAdmins.status()).toBe(200);
     const { hasAdmins: exists } = await hasAdmins.json();
 
-    // La DB de pruebas es nueva: este test valida el flujo de bootstrap.
-    // Si un admin e2e previo quedó, se salta (el flujo ya fue validado).
-    test.skip(exists, "ya hay admins en la DB de pruebas");
+    // Test DB is fresh: this test validates the bootstrap flow.
+    // If a previous e2e admin remains, skip (flow already validated).
+    test.skip(exists, "admins already exist in the test database");
 
     const { userId } = await signupClient(api);
 
@@ -25,12 +25,12 @@ test.describe("08 · Panel de administración", () => {
     const profile = await prisma.adminProfile.findUnique({ where: { userId } });
     expect(profile).toBeTruthy();
 
-    // Segundo intento → 400 (ya existe admin)
+    // Second attempt → 400 (admin already exists)
     const second = await api.post(`${BASE_URL}/api/admin/setup`, { data: { userId } });
     expect(second.status()).toBe(400);
   });
 
-  test("dashboard: stats y 403 para no-admin", async ({ request }) => {
+  test("dashboard: stats and 403 for non-admin", async ({ request }) => {
     const api = newApi(request);
     const admin = await createAdmin(request);
     await createActiveAdvisor(request);
@@ -45,7 +45,7 @@ test.describe("08 · Panel de administración", () => {
     expect(forbidden.status()).toBe(403);
   });
 
-  test("listar asesores y filtrar por estado", async ({ request }) => {
+  test("list advisors and filter by status", async ({ request }) => {
     const api = newApi(request);
     const admin = await createAdmin(request);
     const active = await createActiveAdvisor(request);
@@ -63,7 +63,7 @@ test.describe("08 · Panel de administración", () => {
     expect(pending.status()).toBe(200);
   });
 
-  test("listar usuarios por rol", async ({ request }) => {
+  test("list users by role", async ({ request }) => {
     const api = newApi(request);
     const admin = await createAdmin(request);
 
@@ -74,12 +74,12 @@ test.describe("08 · Panel de administración", () => {
     expect(users.every((u: any) => u.role === "admin")).toBe(true);
   });
 
-  test("facturas: generar y listar", async ({ request }) => {
+  test("invoices: generate and list", async ({ request }) => {
     const api = newApi(request);
     const admin = await createAdmin(request);
     const fixture = await createActiveAdvisor(request);
 
-    // Cita facturable del mes actual
+    // Billable appointment for the current month
     await prisma.appointment.create({
       data: {
         clientId: admin.userId,
@@ -107,14 +107,14 @@ test.describe("08 · Panel de administración", () => {
     expect(invoices.length).toBeGreaterThanOrEqual(1);
   });
 
-  test("categorías: crear y listar", async ({ request }) => {
+  test("categories: create and list", async ({ request }) => {
     const api = newApi(request);
     const admin = await createAdmin(request);
 
     const created = await withSession(api, admin.sessionToken).post("/api/admin/categories", {
-      name: `E2E Categoría ${Date.now()}`,
+      name: `E2E Category ${Date.now()}`,
       slug: `e2e-cat-${Date.now()}`,
-      description: "Categoría de prueba",
+      description: "Test category",
       minimumPriceCents: 10000,
       feePercentage: 10,
     });

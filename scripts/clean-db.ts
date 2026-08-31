@@ -15,9 +15,9 @@ const prisma = new PrismaClient({ adapter });
 
 async function cleanDatabase() {
   try {
-    console.log("🗑️  Limpiando base de datos...");
+    console.log("🗑️  Cleaning database...");
 
-    // Eliminar en orden correcto (respetar foreign keys)
+    // Delete in correct order (respect foreign keys)
     await prisma.review.deleteMany();
     await prisma.appointment.deleteMany();
     await prisma.promotion.deleteMany();
@@ -31,10 +31,10 @@ async function cleanDatabase() {
     await prisma.verification.deleteMany();
     await prisma.user.deleteMany();
 
-    console.log("✅ Base de datos limpiada correctamente");
-    console.log("   Todos los usuarios y datos han sido eliminados");
+    console.log("✅ Database cleaned successfully");
+    console.log("   All users and data have been removed");
   } catch (error) {
-    console.error("❌ Error al limpiar la base de datos:", error);
+    console.error("❌ Error cleaning database:", error);
   } finally {
     await prisma.$disconnect();
   }

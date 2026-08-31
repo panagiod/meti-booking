@@ -26,8 +26,8 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,
   },
-  // Los tests E2E crean muchos usuarios seguidos: desactivar rate limit
-  // explícitamente para la suite (env DISABLE_RATE_LIMIT=1).
+  // E2E tests create many users in succession: disable rate limit
+  // explicitly for the suite (env DISABLE_RATE_LIMIT=1).
   rateLimit: process.env.DISABLE_RATE_LIMIT === "1" ? { enabled: false } : undefined,
   user: {
     additionalFields: {
@@ -43,7 +43,7 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          // Crear ClientProfile por defecto para todos los usuarios nuevos
+          // Create default ClientProfile for all new users
           await prisma.clientProfile.create({
             data: {
               userId: user.id,
@@ -58,7 +58,7 @@ export const auth = betterAuth({
 
 export type Session = typeof auth.$Infer.Session;
 
-// Helper para verificar si hay admins
+// Helper to check if any admins exist
 export async function hasAdmins(): Promise<boolean> {
   const adminCount = await prisma.adminProfile.count();
   return adminCount > 0;

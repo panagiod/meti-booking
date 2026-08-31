@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("es-CO", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 0,
@@ -33,7 +33,7 @@ export function minutesToTime(minutes: number): string {
 }
 
 export function getDayOfWeekName(day: number): string {
-  const days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   return days[day];
 }
 

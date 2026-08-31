@@ -22,15 +22,15 @@ interface ChatPanelProps {
   onToggle: () => void;
 }
 
-// Panel de chat con persistencia en DB.
-// Los mensajes en vivo viajan por LiveKit; el historial se carga de la API.
+// Chat panel with DB persistence.
+// Live messages travel through LiveKit; history is loaded from the API.
 export function ChatPanel({ appointmentId, currentUserId, currentUserRole, isOpen, onToggle }: ChatPanelProps) {
   const { chatMessages, send } = useChat();
   const [dbMessages, setDbMessages] = useState<PersistedMessage[]>([]);
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Cargar historial persistido
+  // Load persisted history
   useEffect(() => {
     const load = async () => {
       try {
@@ -49,7 +49,7 @@ export function ChatPanel({ appointmentId, currentUserId, currentUserRole, isOpe
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [dbMessages.length, chatMessages.length, isOpen]);
 
-  // Combinar historial + mensajes en vivo (dedupe por cuerpo + remitente)
+  // Merge history + live messages (dedupe by body + sender)
   const combined = useCallback(() => {
     const live = chatMessages || [];
     const persistedKeys = new Set(dbMessages.map((m) => `${m.senderName}|${m.body}`));
@@ -67,7 +67,7 @@ export function ChatPanel({ appointmentId, currentUserId, currentUserRole, isOpe
       ...liveOnly.map((m) => ({
         id: m.timestamp?.toString() || Math.random().toString(36),
         senderId: m.from?.identity || "unknown",
-        senderName: m.from?.name || m.from?.identity || "Desconocido",
+        senderName: m.from?.name || m.from?.identity || "Unknown",
         senderRole: "live" as string,
         body: m.message,
         createdAt: m.timestamp ? new Date(m.timestamp).toISOString() : new Date().toISOString(),
@@ -84,14 +84,14 @@ export function ChatPanel({ appointmentId, currentUserId, currentUserRole, isOpe
     setInput("");
     try {
       await send(text);
-      // Persistir en DB
+      // Persist to DB
       await fetch(`/api/appointments/${appointmentId}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ body: text }),
       });
-      // Refrescar historial para incluir el mensaje persistido
+      // Refresh history to include the persisted message
       const res = await fetch(`/api/appointments/${appointmentId}/chat`, { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
@@ -108,7 +108,7 @@ export function ChatPanel({ appointmentId, currentUserId, currentUserRole, isOpe
     <div className="absolute bottom-6 right-6 z-20 w-80 h-96 rounded-xl bg-[var(--surface)] border border-[var(--border)] shadow-xl flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--border)] bg-[var(--surface)]">
-        <p className="text-sm font-semibold text-[var(--text-primary)]">Chat de la asesoría</p>
+        <p className="text-sm font-semibold text-[var(--text-primary)]">Session chat</p>
         <button onClick={onToggle} className="text-[var(--text-muted)] hover:text-[var(--text-primary)] text-lg leading-none">
           ×
         </button>
@@ -118,7 +118,7 @@ export function ChatPanel({ appointmentId, currentUserId, currentUserRole, isOpe
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {messages.length === 0 && (
           <p className="text-xs text-[var(--text-muted)] text-center mt-6">
-            No hay mensajes aún. ¡Saluda a tu asesor/a!
+            No messages yet. Say hello to your advisor!
           </p>
         )}
         {messages.map((m) => {
@@ -152,13 +152,13 @@ export function ChatPanel({ appointmentId, currentUserId, currentUserRole, isOpe
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Escribe un mensaje..."
+          placeholder="Type a message..."
           className="flex-1 h-9 px-3 rounded-lg bg-[var(--background)] border border-[var(--border)] text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)]"
         />
         <button
           onClick={handleSend}
           className="w-9 h-9 rounded-lg bg-[var(--primary)] text-white flex items-center justify-center hover:bg-[var(--primary-hover)] transition-colors"
-          aria-label="Enviar"
+          aria-label="Send"
         >
           <Send className="w-4 h-4" />
         </button>

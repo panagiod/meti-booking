@@ -33,7 +33,7 @@ function LoginContent() {
     try {
       await authClient.signIn.social({ provider: "google", callbackURL: "/redirect" });
     } catch (err) {
-      setError("Error al iniciar sesión con Google. Intenta de nuevo.");
+      setError("Failed to sign in with Google. Please try again.");
       setIsLoading(false);
     }
   };
@@ -49,13 +49,13 @@ function LoginContent() {
         callbackURL: "/redirect",
       });
       if (signInError) {
-        setError(signInError.message || "Email o contraseña incorrectos.");
+        setError(signInError.message || "Incorrect email or password.");
         setIsLoading(false);
       } else {
         router.push("/redirect");
       }
     } catch (err) {
-      setError("Error al iniciar sesión. Intenta de nuevo.");
+      setError("Failed to sign in. Please try again.");
       setIsLoading(false);
     }
   };
@@ -70,8 +70,8 @@ function LoginContent() {
 
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl font-heading">Bienvenido de vuelta</CardTitle>
-          <CardDescription>Inicia sesión para acceder a tu cuenta</CardDescription>
+          <CardTitle className="text-xl font-heading">Welcome back</CardTitle>
+          <CardDescription>Sign in to access your account</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Google Button */}
@@ -79,7 +79,7 @@ function LoginContent() {
             {isLoading ? (
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 border-2 border-[var(--border)] border-t-[var(--primary)] rounded-full animate-spin" />
-                Conectando...
+                Connecting...
               </div>
             ) : (
               <>
@@ -89,7 +89,7 @@ function LoginContent() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
-                Continuar con Google
+                Continue with Google
               </>
             )}
           </Button>
@@ -115,14 +115,14 @@ function LoginContent() {
               className="w-full h-11 px-3 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
             />
             <PasswordInput
-              placeholder="Contraseña"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               className="h-11"
             />
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
-              {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
+              {isLoading ? "Signing in..." : "Sign in"}
             </Button>
           </form>
 
@@ -134,9 +134,9 @@ function LoginContent() {
 
           {/* Register Link */}
           <p className="text-center text-sm text-[var(--text-muted)]">
-            ¿No tienes una cuenta?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/register" className="font-medium text-[var(--primary)] hover:underline">
-              Regístrate gratis
+              Sign up for free
             </Link>
           </p>
         </CardContent>
@@ -144,7 +144,7 @@ function LoginContent() {
 
       <p className="text-center text-sm text-[var(--text-muted)]">
         <Link href="/" className="font-medium text-[var(--text-secondary)] hover:text-[var(--primary)]">
-          ← Volver al inicio
+          ← Back to home
         </Link>
       </p>
     </div>

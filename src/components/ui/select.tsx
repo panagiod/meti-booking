@@ -97,7 +97,7 @@ const Select = React.forwardRef<HTMLDivElement, SelectProps>(
             "truncate",
             selectedOption ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"
           )}>
-            {selectedOption?.label || placeholder || "Seleccionar..."}
+            {selectedOption?.label || placeholder || "Select..."}
           </span>
           <ChevronDown
             className={cn(

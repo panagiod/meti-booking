@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { APP_TIMEZONE_OFFSET_HOURS } from "@/lib/timezone";
 
-// GET: Facturas del asesor logueado + resumen del mes actual
+// GET: Logged-in advisor's invoices + current month summary
 export async function GET() {
   try {
     const headersList = await headers();
@@ -17,13 +17,13 @@ export async function GET() {
     const advisorProfile = await prisma.advisorProfile.findUnique({ where: { userId: session.user.id } });
     if (!advisorProfile) return NextResponse.json({ error: "Advisor not found" }, { status: 404 });
 
-    // Facturas del asesor
+    // Advisor invoices
     const invoices = await prisma.invoice.findMany({
       where: { advisorId: advisorProfile.id },
       orderBy: { periodStart: "desc" },
     });
 
-    // Resumen del mes actual: acumulado de fee + earnings
+    // Current month summary: accumulated fee + earnings
     const now = new Date();
     const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, -APP_TIMEZONE_OFFSET_HOURS, 0, 0, 0));
 

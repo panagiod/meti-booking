@@ -27,22 +27,22 @@ const navigation = [
     icon: LayoutDashboard,
   },
   {
-    name: "Explorar Asesores",
+    name: "Browse Advisors",
     href: "/services",
     icon: Search,
   },
   {
-    name: "Mis Citas",
+    name: "My Appointments",
     href: "/dashboard/appointments",
     icon: Calendar,
   },
   {
-    name: "Mis Reseñas",
+    name: "Mis Reviews",
     href: "/dashboard/reviews",
     icon: Star,
   },
   {
-    name: "Mi Perfil",
+    name: "My Profile",
     href: "/dashboard/profile",
     icon: User,
   },
@@ -68,7 +68,7 @@ export default function DashboardLayout({
           return;
         }
         setUser(data.user);
-        // Verificar rol: cliente puede estar en dashboard
+        // Verify role: clients can access the dashboard
         const role = (data.user as any).role;
         if (role === "ADMIN") {
           router.push("/admin");
@@ -182,7 +182,7 @@ export default function DashboardLayout({
                 <p className="text-sm font-medium text-[var(--text-primary)] truncate">
                   {user.name}
                 </p>
-                <p className="text-xs text-[var(--text-muted)] truncate">Cliente</p>
+                <p className="text-xs text-[var(--text-muted)] truncate">Client</p>
               </div>
             </div>
             <Button
@@ -191,7 +191,7 @@ export default function DashboardLayout({
               onClick={handleSignOut}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Cerrar sesión
+              Sign out
             </Button>
           </div>
         </div>

@@ -14,50 +14,56 @@ import {
 const categories = [
   {
     name: "Legal",
+    slug: "legal",
     icon: Scale,
     color: "var(--primary)",
     bgColor: "var(--primary-light)",
-    description: "Abogados, contratos, derecho corporativo",
+    description: "Lawyers, contracts, corporate law",
     count: 45,
   },
   {
-    name: "Financiero",
+    name: "Finance",
+    slug: "finanzas",
     icon: TrendingUp,
     color: "var(--accent)",
     bgColor: "var(--accent-light)",
-    description: "Inversiones, planificación financiera",
+    description: "Investments, financial planning",
     count: 32,
   },
   {
-    name: "Salud",
+    name: "Health",
+    slug: "salud",
     icon: Heart,
     color: "var(--error)",
     bgColor: "var(--error-light)",
-    description: "Psicología, nutrición, coaching de vida",
+    description: "Psychology, nutrition, life coaching",
     count: 28,
   },
   {
-    name: "Tecnología",
+    name: "Technology",
+    slug: "tecnologia",
     icon: Cpu,
     color: "#8b5cf6",
     bgColor: "#ede9fe",
-    description: "IT, marketing digital, desarrollo",
+    description: "IT, digital marketing, development",
     count: 56,
   },
   {
-    name: "Educación",
+    name: "Education",
+    slug: "educacion",
     icon: GraduationCap,
     color: "var(--warning)",
     bgColor: "var(--warning-light)",
-    description: "Tutorías, formación profesional",
+    description: "Tutoring, professional training",
     count: 19,
   },
   {
-    name: "Negocios",
+    name: "Business",
+    slug: "negocios",
     icon: Briefcase,
     color: "var(--secondary)",
     bgColor: "rgba(26, 26, 46, 0.1)",
-    description: "Consultoría empresarial, emprendimiento",
+    description: "Business consulting, entrepreneurship",
     count: 41,
   },
 ];
@@ -68,11 +74,11 @@ export function Categories() {
       <div className="container-meti">
         <div className="text-center mb-12">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
-            Encuentra el asesor que necesitas
+            Find the advisor you need
           </h2>
           <p className="text-lg text-[var(--text-muted)] max-w-2xl mx-auto">
-            Explora nuestras categorías y conecta con profesionales expertos en
-            el área que buscas.
+            Browse our categories and connect with expert professionals in
+            the field you need.
           </p>
         </div>
 
@@ -80,7 +86,7 @@ export function Categories() {
           {categories.map((category, index) => (
             <Link
               key={category.name}
-              href={`/services?category=${category.name.toLowerCase()}`}
+              href={`/services?category=${category.slug}`}
               className="group"
             >
               <div
@@ -103,7 +109,7 @@ export function Categories() {
                   {category.description}
                 </p>
                 <p className="text-xs font-medium" style={{ color: category.color }}>
-                  {category.count} asesores
+                  {category.count} advisors
                 </p>
               </div>
             </Link>
@@ -115,7 +121,7 @@ export function Categories() {
             href="/services"
             className="inline-flex items-center gap-2 text-[var(--primary)] font-semibold hover:gap-3 transition-all duration-300"
           >
-            Ver todos los asesores
+            View all advisors
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>

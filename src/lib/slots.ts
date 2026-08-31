@@ -1,5 +1,5 @@
 import { addDays, format, startOfDay, isSameDay, getDay, isWithinInterval } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { utcMinutesToLocal } from "@/lib/timezone";
 
 export interface Schedule {
@@ -84,8 +84,8 @@ function isSlotBlocked(
   });
 }
 
-// Timezone offset de la app (Colombia, UTC-5 = -5 horas desde UTC)
-// Usado para convertir appointment times (UTC) a hora local para comparar con slots
+// App timezone offset (Colombia, UTC-5 = -5 hours from UTC)
+// Used to convert appointment times (UTC) to local time for slot comparison
 const APP_TIMEZONE_OFFSET_HOURS = -5;
 
 export function generateAvailableSlots(
@@ -121,8 +121,8 @@ export function generateAvailableSlots(
     const slotTime = minutesToTime(current);
 
     // Check if slot conflicts with existing appointments
-    // Los appointments se guardan en UTC; convertimos a hora local (Colombia)
-    // para comparar con los slots (que se generan en hora local).
+    // Appointments are stored in UTC; convert to local time (Colombia)
+    // to compare with slots (which are generated in local time).
     const hasAppointmentConflict = existingAppointments.some((apt) => {
       const aptStartLocal = utcMinutesToLocal(apt.start.getUTCHours() * 60 + apt.start.getUTCMinutes());
       const aptEndLocal = utcMinutesToLocal(apt.end.getUTCHours() * 60 + apt.end.getUTCMinutes());
@@ -134,7 +134,7 @@ export function generateAvailableSlots(
       ? isSlotBlocked(slotDate, current, current + serviceDuration, blockedTimes)
       : false;
 
-    // Anticipación mínima: ocultar slots que empiezan antes de minStartTime
+    // Minimum lead time: hide slots that start before minStartTime
     const isTooSoon = (() => {
       if (!slotDate || !minStartTime) return false;
       const slotStart = new Date(slotDate);
@@ -193,7 +193,7 @@ export function getAvailableDates(
       dates.push({
         date,
         dateStr: format(date, "yyyy-MM-dd"),
-        dayName: format(date, "EEE", { locale: es }),
+        dayName: format(date, "EEE", { locale: enUS }),
         slots,
         hasAvailability,
       });
@@ -201,7 +201,7 @@ export function getAvailableDates(
       dates.push({
         date,
         dateStr: format(date, "yyyy-MM-dd"),
-        dayName: format(date, "EEE", { locale: es }),
+        dayName: format(date, "EEE", { locale: enUS }),
         slots: [],
         hasAvailability: false,
       });
@@ -212,7 +212,7 @@ export function getAvailableDates(
 }
 
 export function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("es-CO", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 0,

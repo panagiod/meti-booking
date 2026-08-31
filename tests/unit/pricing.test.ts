@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { calculatePrices } from "@/lib/pricing";
 
 describe("lib/pricing — calculatePrices", () => {
-  it("sin descuento: fee sobre el precio original, total = ganancia + fee", () => {
+  it("without discount: fee on original price, total = earnings + fee", () => {
     const p = calculatePrices({ servicePriceCents: 10000, feePercentage: 15 });
     expect(p).toEqual({
       advisorEarning: 10000,
@@ -11,7 +11,7 @@ describe("lib/pricing — calculatePrices", () => {
     });
   });
 
-  it("el descuento lo absorbe el asesor, la plataforma mantiene su fee", () => {
+  it("the advisor absorbs the discount, the platform keeps its fee", () => {
     const p = calculatePrices({
       servicePriceCents: 10000,
       feePercentage: 15,
@@ -22,7 +22,7 @@ describe("lib/pricing — calculatePrices", () => {
     expect(p.totalCents).toBe(9500);
   });
 
-  it("el descuento no puede dejar la ganancia negativa", () => {
+  it("discount cannot leave earnings negative", () => {
     const p = calculatePrices({
       servicePriceCents: 10000,
       feePercentage: 15,
@@ -32,13 +32,13 @@ describe("lib/pricing — calculatePrices", () => {
     expect(p.totalCents).toBe(p.platformFee);
   });
 
-  it("redondea el fee al centavo más cercano", () => {
+  it("rounds the fee to the nearest cent", () => {
     const p = calculatePrices({ servicePriceCents: 9999, feePercentage: 15 });
     expect(p.platformFee).toBe(Math.round(9999 * 0.15));
     expect(p.platformFee).toBe(1500);
   });
 
-  it("fee percentage 0 → total = ganancia", () => {
+  it("fee percentage 0 → total = earnings", () => {
     const p = calculatePrices({ servicePriceCents: 5000, feePercentage: 0 });
     expect(p).toEqual({ advisorEarning: 5000, platformFee: 0, totalCents: 5000 });
   });

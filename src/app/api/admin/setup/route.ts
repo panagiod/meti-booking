@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET: Verificar si hay admins
+// GET: Check if any admins exist
 export async function GET() {
   const adminCount = await prisma.adminProfile.count();
   return NextResponse.json({ hasAdmins: adminCount > 0 });
 }
 
-// POST: Registrar usuario como admin
+// POST: Register user as admin
 export async function POST(request: NextRequest) {
   const { userId } = await request.json();
 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Verificar que no haya admins ya
+    // Verify no admins exist yet
     const adminCount = await prisma.adminProfile.count();
     if (adminCount > 0) {
       return NextResponse.json(
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar que el usuario exista
+    // Verify the user exists
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Actualizar rol y crear AdminProfile
+    // Update role and create AdminProfile
     await prisma.user.update({
       where: { id: userId },
       data: { role: "ADMIN" },
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Eliminar ClientProfile si existe
+    // Delete ClientProfile if it exists
     await prisma.clientProfile.deleteMany({
       where: { userId: userId },
     });

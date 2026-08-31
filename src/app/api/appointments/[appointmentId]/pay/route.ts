@@ -42,14 +42,14 @@ export async function POST(
     // Only PENDING appointments can have payment retried
     if (appointment.status !== "PENDING") {
       return NextResponse.json(
-        { error: "Solo las citas con pago pendiente pueden reintentar el pago" },
+        { error: "Only appointments with pending payment can retry payment" },
         { status: 400 }
       );
     }
 
     if (!appointment.advisor.mpAccessToken) {
       return NextResponse.json(
-        { error: "El asesor no tiene cuenta de Mercado Pago configurada" },
+        { error: "The advisor does not have a Mercado Pago account configured" },
         { status: 400 }
       );
     }

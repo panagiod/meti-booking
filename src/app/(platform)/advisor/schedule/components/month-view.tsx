@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { format, isSameMonth, isToday } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { Appointment, BlockedTime, getItemsForDay, getStatusColor } from "../utils/schedule-utils";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ export function MonthView({
     <Card className="overflow-hidden">
       <CardContent className="p-0">
         <div className="grid grid-cols-7 border-b border-[var(--border)]">
-          {["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"].map((day) => (
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
             <div
               key={day}
               className="text-center text-xs font-medium text-[var(--text-muted)] py-3 border-r last:border-r-0 border-[var(--border)]"
@@ -89,7 +89,7 @@ export function MonthView({
                   })}
                   {blocked.length + apts.length > 3 && (
                     <div className="text-[10px] text-[var(--text-muted)] pl-1">
-                      +{blocked.length + apts.length - 3} más
+                      +{blocked.length + apts.length - 3} more
                     </div>
                   )}
                 </div>

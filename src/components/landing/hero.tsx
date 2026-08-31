@@ -36,16 +36,16 @@ export function Hero() {
 
           {/* Headline */}
           <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-6 animate-fade-in-up">
-            Tu próximo asesor,{" "}
+            Your next advisor,{" "}
             <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-accent">
-              a un click
+              one click away
             </span>
           </h1>
 
           {/* Subhead — clear purpose for crawlers */}
           <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto mb-10 animate-fade-in-up stagger-1">
-            Meti conecta personas con asesores profesionales por videollamada.
-            Legal, finanzas, salud, tecnología y más. Agenda al instante, paga de forma segura con Mercado Pago.
+            Meti connects people with professional advisors via video call.
+            Legal, finance, health, technology, and more. Book instantly, pay securely with Mercado Pago.
           </p>
 
           {/* Search Bar */}
@@ -54,12 +54,12 @@ export function Hero() {
               <Search className="absolute left-4 w-5 h-5 text-text-muted" />
               <input
                 type="text"
-                placeholder="¿Qué tipo de asesoría necesitas?"
+                placeholder="What type of advisory do you need?"
                 className="flex-1 h-12 pl-12 pr-4 bg-transparent text-text-primary placeholder:text-text-muted focus:outline-none text-base"
               />
               <Button size="lg" className="rounded-lg px-6 shadow-lg hover:shadow-xl" asChild>
                 <Link href="/services">
-                  Buscar
+                  Search
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Link>
               </Button>
@@ -70,15 +70,15 @@ export function Hero() {
           <div className="flex flex-wrap justify-center gap-8 md:gap-12 animate-fade-in-up stagger-3">
             <div className="text-center">
               <div className="text-3xl font-heading font-bold text-white">500+</div>
-              <div className="text-sm text-white/70">Asesores activos</div>
+              <div className="text-sm text-white/70">Active advisors</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-heading font-bold text-white">10,000+</div>
-              <div className="text-sm text-white/70">Asesorías realizadas</div>
+              <div className="text-sm text-white/70">Sessions completed</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-heading font-bold text-accent">4.9★</div>
-              <div className="text-sm text-white/70">Calificación promedio</div>
+              <div className="text-sm text-white/70">Average rating</div>
             </div>
           </div>
         </div>

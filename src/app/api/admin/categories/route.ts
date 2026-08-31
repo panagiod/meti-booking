@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
 
     if (existing) {
       return NextResponse.json(
-        { error: "Ya existe una categoría con ese nombre" },
+        { error: "A category with that name already exists" },
         { status: 400 }
       );
     }
@@ -172,7 +172,7 @@ export async function DELETE(request: NextRequest) {
 
     if (advisorCount > 0) {
       return NextResponse.json(
-        { error: "No se puede eliminar: hay asesores usando este rubro" },
+        { error: "Cannot delete: advisors are using this category" },
         { status: 400 }
       );
     }

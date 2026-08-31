@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock } from "lucide-react";
@@ -25,10 +25,10 @@ export function TimeSlotPicker({
     <div className="space-y-4">
       <div>
         <h2 className="font-heading text-xl font-bold text-[var(--text-primary)]">
-          Selecciona la hora
+          Select a time
         </h2>
         <p className="text-sm text-[var(--text-muted)] mt-1">
-          {format(daySlots.date, "EEEE d 'de' MMMM", { locale: es })}
+          {format(daySlots.date, "EEEE, MMMM d", { locale: enUS })}
         </p>
       </div>
 
@@ -61,7 +61,7 @@ export function TimeSlotPicker({
             <div className="text-center py-8">
               <Clock className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" />
               <p className="text-[var(--text-muted)]">
-                No hay horarios disponibles para esta fecha
+                No time slots available for this date
               </p>
             </div>
           )}

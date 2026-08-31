@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Calendar, Video } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import {
   Appointment,
   BlockedTime,
@@ -37,8 +37,8 @@ export function AgendaView({ calendarDays, blockedTimes, appointments }: AgendaV
           <div className="p-8">
             <EmptyState
               icon={Calendar}
-              title="Sin eventos"
-              description="No hay citas ni bloqueos en este período."
+              title="No events"
+              description="There are no appointments or blocks in this period."
             />
           </div>
         </CardContent>
@@ -57,10 +57,10 @@ export function AgendaView({ calendarDays, blockedTimes, appointments }: AgendaV
             <div key={day.toISOString()}>
               <div className="px-4 py-2 bg-[var(--background)] border-b border-[var(--border)]">
                 <div className="text-sm font-semibold text-[var(--text-primary)]">
-                  {format(day, "d 'de' MMMM", { locale: es }).toUpperCase()}
+                  {format(day, "d 'de' MMMM", { locale: enUS }).toUpperCase()}
                 </div>
                 <div className="text-xs text-[var(--text-muted)]">
-                  {format(day, "EEEE", { locale: es })}
+                  {format(day, "EEEE", { locale: enUS })}
                 </div>
               </div>
 
@@ -73,7 +73,7 @@ export function AgendaView({ calendarDays, blockedTimes, appointments }: AgendaV
                     <div className="font-medium text-[var(--text-primary)]">{bt.title}</div>
                     <div className="text-sm text-[var(--text-muted)]">
                       {bt.isAllDay
-                        ? "Todo el día"
+                        ? "All day"
                         : `${format(new Date(bt.startDate), "HH:mm")} - ${format(new Date(bt.endDate), "HH:mm")}`}
                     </div>
                   </div>
@@ -115,7 +115,7 @@ export function AgendaView({ calendarDays, blockedTimes, appointments }: AgendaV
                               <Button size="sm" asChild>
                                 <Link href={`/call/${apt.id}`}>
                                   <Video className="w-4 h-4 mr-1" />
-                                  Unirse
+                                  Join
                                 </Link>
                               </Button>
                             )}

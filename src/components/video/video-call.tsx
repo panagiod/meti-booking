@@ -54,10 +54,10 @@ function CallContent({
 
   const { isListening, isSupported, transcript, start, stop } =
     useSpeechRecognition({
-      language: "es-CO",
+      language: "en-US",
     });
 
-  // Iniciar transcripción cuando se conecta
+  // Start transcription when connected
   useEffect(() => {
     if (isConnected && isSupported) {
       start();
@@ -70,12 +70,12 @@ function CallContent({
   }, [isConnected]);
 
   const handleLeave = useCallback(async () => {
-    // Detener transcripción
+    // Stop transcription
     if (isListening) {
       stop();
     }
 
-    // Si hay transcripción, generar resumen antes de salir
+    // If there is a transcript, generate a summary before leaving
     if (transcript && transcript.trim().length > 50) {
       setIsGeneratingSummary(true);
       try {
@@ -90,7 +90,7 @@ function CallContent({
       }
     }
 
-    // Desconectar y navegar
+    // Disconnect and navigate
     room?.disconnect();
     if (userRole === "client") {
       router.push(`/dashboard/appointments/${appointmentId}/review`);
@@ -115,7 +115,7 @@ function CallContent({
   if (!isConnected) {
     return (
       <div className="h-[calc(100vh-8rem)] flex items-center justify-center">
-        <LoadingPage label="Conectando a la sala..." className="min-h-0" />
+        <LoadingPage label="Connecting to room..." className="min-h-0" />
       </div>
     );
   }
@@ -123,7 +123,7 @@ function CallContent({
   return (
     <LayoutContextProvider>
       <div className="h-full flex flex-col">
-        {/* Grid de participantes */}
+        {/* Participant grid */}
         <div className="flex-1 min-h-0 p-2">
           <div
             className={`h-full gap-2 ${
@@ -148,7 +148,7 @@ function CallContent({
           </div>
         </div>
 
-        {/* Indicador de transcripción */}
+        {/* Transcription indicator */}
         {isSupported && (
           <div className="absolute top-4 left-4 z-20">
             <div
@@ -159,22 +159,22 @@ function CallContent({
               }`}
             >
               <Mic className="w-3 h-3" />
-              {isListening ? "Transcribiendo..." : "Transcripción desactivada"}
+              {isListening ? "Transcribing..." : "Transcription disabled"}
             </div>
           </div>
         )}
 
-        {/* Banner sutil de Chrome (solo si no está soportado) */}
+        {/* Subtle Chrome banner (only when not supported) */}
         {!isSupported && (
           <div className="absolute top-4 left-4 z-20">
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--border)]">
               <Info className="w-3 h-3" />
-              <span>Usa Chrome para resúmenes automáticos</span>
+              <span>Use Chrome for automatic summaries</span>
             </div>
           </div>
         )}
 
-        {/* Barra de controles */}
+        {/* Control bar */}
         <CustomControlBar
           onToggleChat={() => setIsChatOpen(!isChatOpen)}
           isChatOpen={isChatOpen}
@@ -185,7 +185,7 @@ function CallContent({
         <RoomAudioRenderer />
       </div>
 
-      {/* Aviso de tiempo restante */}
+      {/* Remaining time warning */}
       {appointment && (
         <TimeWarning
           scheduledAt={appointment.scheduledAt}
@@ -201,14 +201,14 @@ function CallContent({
         onToggle={() => setIsChatOpen(!isChatOpen)}
       />
 
-      {/* Modal de generando resumen */}
+      {/* Generating summary modal */}
       {isGeneratingSummary && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <Card className="w-full max-w-sm">
             <CardContent className="p-8 text-center">
-              <LoadingPage label="Generando resumen de la asesoría..." className="min-h-0" />
+              <LoadingPage label="Generating session summary..." className="min-h-0" />
               <p className="text-sm text-[var(--text-muted)] mt-4">
-                La IA está procesando los apuntes de la reunión.
+                AI is processing the meeting notes.
               </p>
             </CardContent>
           </Card>
@@ -279,7 +279,7 @@ export function VideoCall({
   if (isLoading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center">
-        <LoadingPage label="Preparando videollamada..." />
+        <LoadingPage label="Preparing video call..." />
       </div>
     );
   }
@@ -292,10 +292,10 @@ export function VideoCall({
             <VideoOff className="w-8 h-8 text-[var(--error)]" />
           </div>
           <h2 className="font-heading text-xl font-bold text-[var(--text-primary)] mb-2">
-            Error al conectar
+            Connection error
           </h2>
           <p className="text-[var(--text-muted)] mb-4">{error}</p>
-          <Button onClick={() => window.location.reload()}>Reintentar</Button>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
         </CardContent>
       </Card>
     );

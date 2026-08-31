@@ -6,7 +6,7 @@ interface LoadingPageProps {
   label?: string;
 }
 
-export function LoadingPage({ fullScreen = false, className, label = "Cargando..." }: LoadingPageProps) {
+export function LoadingPage({ fullScreen = false, className, label = "Loading..." }: LoadingPageProps) {
   return (
     <div
       className={cn(

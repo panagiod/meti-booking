@@ -1,8 +1,8 @@
 import { cleanupE2EData, disconnectDb } from "../helpers/db";
 
-// Limpieza final: SOLO usuarios e2e.* y sus datos. Nunca otros registros.
+// Final cleanup: ONLY e2e.* users and their data. Never other records.
 export default async function globalTeardown() {
-  console.log("[global-teardown] Limpiando datos de prueba...");
+  console.log("[global-teardown] Cleaning up test data...");
   try {
     await cleanupE2EData();
   } finally {

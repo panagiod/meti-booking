@@ -40,7 +40,7 @@ export async function POST(
     }
 
     if (action === "approve") {
-      // Aprobar: activar perfil de asesor
+      // Approve: activate advisor profile
       await prisma.advisorProfile.update({
         where: { id: advisorId },
         data: { isActive: true },
@@ -49,7 +49,7 @@ export async function POST(
     }
 
     if (action === "reject") {
-      // Rechazar: cambiar rol a CLIENT y eliminar perfil de asesor
+      // Reject: change role to CLIENT and delete advisor profile
       await prisma.user.update({
         where: { id: advisor.userId },
         data: { role: "CLIENT" },
@@ -59,7 +59,7 @@ export async function POST(
         where: { id: advisorId },
       });
 
-      // Crear ClientProfile si no existe
+      // Create ClientProfile if it does not exist
       const existingClient = await prisma.clientProfile.findUnique({
         where: { userId: advisor.userId },
       });
@@ -74,7 +74,7 @@ export async function POST(
     }
 
     if (action === "suspend") {
-      // Suspender: desactivar perfil de asesor
+      // Suspend: deactivate advisor profile
       await prisma.advisorProfile.update({
         where: { id: advisorId },
         data: { isActive: false },

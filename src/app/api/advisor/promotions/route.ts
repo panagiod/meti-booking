@@ -6,7 +6,7 @@ import { z } from "zod";
 
 const promotionSchema = z.object({
   serviceId: z.string(),
-  name: z.string().min(1, "El nombre es requerido"),
+  name: z.string().min(1, "Name is required"),
   discountType: z.enum(["percentage", "fixed"]),
   discountValue: z.number().min(0.01),
   startAt: z.string(),
@@ -50,17 +50,17 @@ export async function POST(request: NextRequest) {
     const data = promotionSchema.parse(body);
 
     if (new Date(data.endAt) <= new Date(data.startAt)) {
-      return NextResponse.json({ error: "La fecha de fin debe ser posterior a la fecha de inicio" }, { status: 400 });
+      return NextResponse.json({ error: "End date must be after start date" }, { status: 400 });
     }
 
     // Validate discount value
     if (data.discountType === "percentage" && (data.discountValue < 0.01 || data.discountValue > 100)) {
-      return NextResponse.json({ error: "El porcentaje debe estar entre 0.01 y 100" }, { status: 400 });
+      return NextResponse.json({ error: "Percentage must be between 0.01 and 100" }, { status: 400 });
     }
 
     // Verify the service belongs to this advisor
     const service = await prisma.advisorService.findFirst({ where: { id: data.serviceId, advisorId: advisorProfile.id } });
-    if (!service) return NextResponse.json({ error: "Servicio no encontrado" }, { status: 404 });
+    if (!service) return NextResponse.json({ error: "Service not found" }, { status: 404 });
 
     const promotion = await prisma.promotion.create({
       data: {
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ promotion }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: "Datos inválidos", details: error.format() }, { status: 400 });
+      return NextResponse.json({ error: "Invalid data", details: error.format() }, { status: 400 });
     }
     console.error("Error creating promotion:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

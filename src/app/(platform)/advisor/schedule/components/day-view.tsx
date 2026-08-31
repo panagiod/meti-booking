@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Video } from "lucide-react";
 import { format, getHours, getMinutes } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import {
   Appointment,
   BlockedTime,
@@ -33,10 +33,10 @@ export function DayView({ currentDate, blockedTimes, appointments }: DayViewProp
       <CardContent className="p-0">
         <div className="border-b border-[var(--border)] p-4">
           <div className="text-sm text-[var(--text-muted)]">
-            {format(currentDate, "EEEE", { locale: es })}
+            {format(currentDate, "EEEE", { locale: enUS })}
           </div>
           <div className="text-2xl font-bold">
-            {format(currentDate, "d 'de' MMMM", { locale: es })}
+            {format(currentDate, 'MMMM d', { locale: enUS })}
           </div>
         </div>
 
@@ -89,7 +89,7 @@ export function DayView({ currentDate, blockedTimes, appointments }: DayViewProp
                                 <Button size="sm" asChild>
                                   <Link href={`/call/${apt.id}`}>
                                     <Video className="w-4 h-4 mr-1" />
-                                    Unirse
+                                    Join
                                   </Link>
                                 </Button>
                               )}

@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingPage } from "@/components/ui/loading";
 import { Star, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 interface ReviewItem {
@@ -55,10 +55,10 @@ export default function ReviewsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          Mis Reseñas
+          Mis Reviews
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Califica las asesorías que has recibido
+          Rate the consultations you have received
         </p>
       </div>
 
@@ -67,8 +67,8 @@ export default function ReviewsPage() {
           <CardContent className="p-12">
             <EmptyState
               icon={Star}
-              title="Sin reseñas"
-              description="Después de completar una asesoría, podrás calificar tu experiencia."
+              title="No reviews yet"
+              description="After completing a consultation, you can rate your experience."
             />
           </CardContent>
         </Card>
@@ -83,7 +83,7 @@ export default function ReviewsPage() {
                       {review.serviceName}
                     </p>
                     <p className="text-sm text-[var(--text-muted)]">
-                      con {review.advisorName}
+                      with {review.advisorName}
                     </p>
                   </div>
                   <div className="flex gap-0.5">
@@ -104,7 +104,7 @@ export default function ReviewsPage() {
                   </p>
                 )}
                 <p className="text-xs text-[var(--text-muted)] mt-2">
-                  {format(new Date(review.createdAt), "d 'de' MMMM, yyyy", { locale: es })}
+                  {format(new Date(review.createdAt), "MMMM d, yyyy", { locale: enUS })}
                 </p>
               </CardContent>
             </Card>

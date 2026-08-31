@@ -7,7 +7,7 @@ import {
 } from "@/lib/email";
 import { getAppUrl } from "@/lib/mercadopago";
 
-// Carga la cita con las relaciones necesarias para notificar
+// Load the appointment with the relations needed for notifications
 async function loadAppointmentForNotify(appointmentId: string) {
   return prisma.appointment.findUnique({
     where: { id: appointmentId },
@@ -19,8 +19,8 @@ async function loadAppointmentForNotify(appointmentId: string) {
   });
 }
 
-// Envía los emails de confirmación de pago (cliente + asesor).
-// Retorna false si no hay API key de email configurada.
+// Send payment confirmation emails (client + advisor).
+// Returns false if no email API key is configured.
 export async function notifyAppointmentConfirmed(appointmentId: string): Promise<boolean> {
   const apt = await loadAppointmentForNotify(appointmentId);
   if (!apt) return false;
@@ -40,7 +40,7 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
   let sent = false;
   if (apt.client.email) sent = (await sendBookingConfirmedEmail(clientEmail, base)) || sent;
 
-  // Asesor usa /advisor/schedule
+  // Advisor uses /advisor/schedule
   if (apt.advisor.user.email) {
     const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
     sent = (await sendNewBookingEmail(advisorEmail, advisorBase)) || sent;
@@ -48,7 +48,7 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
   return sent;
 }
 
-// Envía el recordatorio 24h antes de la asesoría (cliente + asesor).
+// Send the 24h reminder before the consultation (client + advisor).
 export async function notifyAppointmentReminder(appointmentId: string): Promise<boolean> {
   const apt = await loadAppointmentForNotify(appointmentId);
   if (!apt) return false;
@@ -63,11 +63,11 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
   };
 
   let sent = false;
-  if (apt.client.email) sent = (await sendReminderEmail(apt.client.email, base, "cliente")) || sent;
+  if (apt.client.email) sent = (await sendReminderEmail(apt.client.email, base, "client")) || sent;
 
   if (apt.advisor.user.email) {
     const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
-    sent = (await sendReminderEmail(apt.advisor.user.email, advisorBase, "asesor")) || sent;
+    sent = (await sendReminderEmail(apt.advisor.user.email, advisorBase, "advisor")) || sent;
   }
   return sent;
 }

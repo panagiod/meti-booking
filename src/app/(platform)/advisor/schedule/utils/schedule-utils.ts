@@ -31,13 +31,13 @@ export interface DaySchedule {
 export type ViewMode = "month" | "week" | "day" | "agenda";
 
 export const defaultSchedule: DaySchedule[] = [
-  { dayOfWeek: 1, dayName: "Lunes", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
-  { dayOfWeek: 2, dayName: "Martes", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
-  { dayOfWeek: 3, dayName: "Miércoles", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
-  { dayOfWeek: 4, dayName: "Jueves", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
-  { dayOfWeek: 5, dayName: "Viernes", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
-  { dayOfWeek: 6, dayName: "Sábado", isActive: false, startTime: "09:00", endTime: "13:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
-  { dayOfWeek: 0, dayName: "Domingo", isActive: false, startTime: "09:00", endTime: "13:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
+  { dayOfWeek: 1, dayName: "Monday", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
+  { dayOfWeek: 2, dayName: "Tuesday", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
+  { dayOfWeek: 3, dayName: "Wednesday", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
+  { dayOfWeek: 4, dayName: "Thursday", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
+  { dayOfWeek: 5, dayName: "Friday", isActive: false, startTime: "09:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
+  { dayOfWeek: 6, dayName: "Saturday", isActive: false, startTime: "09:00", endTime: "13:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
+  { dayOfWeek: 0, dayName: "Sunday", isActive: false, startTime: "09:00", endTime: "13:00", lunchStart: "", lunchEnd: "", gapMinutes: 15 },
 ];
 
 export function isAppointmentJoinable(scheduledAt: string, durationMin: number): boolean {
@@ -98,11 +98,11 @@ export function getStatusColor(status: string): { bg: string; text: string; bord
 export function getStatusLabel(status: string): string {
   switch (status) {
     case "CONFIRMED":
-      return "Confirmada";
+      return "Confirmed";
     case "PENDING":
-      return "Pendiente";
+      return "Pending";
     case "COMPLETED":
-      return "Completada";
+      return "Completed";
     default:
       return status;
   }

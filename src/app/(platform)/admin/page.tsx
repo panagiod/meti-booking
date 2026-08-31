@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("es-CO", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 0,
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
           Dashboard Admin
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Resumen general de la plataforma
+          Platform overview
         </p>
       </div>
 
@@ -56,13 +56,13 @@ export default function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Asesores activos</p>
+                <p className="text-sm text-[var(--text-muted)]">Active advisors</p>
                 <p className="text-2xl font-heading font-bold text-[var(--text-primary)] mt-1">
                   {stats.activeAdvisors}
                 </p>
                 {stats.pendingAdvisors > 0 && (
                   <p className="text-xs text-[var(--warning)] mt-1">
-                    {stats.pendingAdvisors} pendientes
+                    {stats.pendingAdvisors} pending
                   </p>
                 )}
               </div>
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Usuarios totales</p>
+                <p className="text-sm text-[var(--text-muted)]">Total users</p>
                 <p className="text-2xl font-heading font-bold text-[var(--text-primary)] mt-1">
                   {stats.totalUsers}
                 </p>
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Ingresos del mes</p>
+                <p className="text-sm text-[var(--text-muted)]">Monthly revenue</p>
                 <p className="text-2xl font-heading font-bold text-[var(--text-primary)] mt-1">
                   {formatCurrency(stats.monthRevenue)}
                 </p>
@@ -127,20 +127,20 @@ export default function AdminDashboard() {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg">Asesores recientes</CardTitle>
+              <CardTitle className="text-lg">Recent advisors</CardTitle>
               <Link
                 href="/admin/advisors"
                 className="text-sm text-[var(--primary)] hover:underline flex items-center gap-1"
               >
-                Ver todos <ArrowRight className="w-4 h-4" />
+                View all <ArrowRight className="w-4 h-4" />
               </Link>
             </CardHeader>
             <CardContent>
               {data?.recentAdvisors?.length === 0 ? (
                 <EmptyState
                   icon={Briefcase}
-                  title="Sin asesores"
-                  description="Cuando los profesionales se registren, aparecerán aquí."
+                  title="No advisors yet"
+                  description="When professionals sign up, they will appear here."
                 />
               ) : (
                 <div className="space-y-4">
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
                             : "bg-[var(--warning-light)] text-[var(--warning)]"
                         }`}
                       >
-                        {advisor.status === "active" ? "Activo" : "Pendiente"}
+                        {advisor.status === "active" ? "Active" : "Pending"}
                       </span>
                     </div>
                   ))}
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
                   <Calendar className="w-5 h-5 text-[var(--accent)]" />
                 </div>
                 <div>
-                  <p className="text-sm text-[var(--text-muted)]">Citas hoy</p>
+                  <p className="text-sm text-[var(--text-muted)]">Appointments today</p>
                   <p className="text-xl font-heading font-bold text-[var(--text-primary)]">
                     {stats.todayAppointments}
                   </p>
@@ -206,7 +206,7 @@ export default function AdminDashboard() {
                   <TrendingUp className="w-5 h-5 text-[var(--success)]" />
                 </div>
                 <div>
-                  <p className="text-sm text-[var(--text-muted)]">Completadas hoy</p>
+                  <p className="text-sm text-[var(--text-muted)]">Completed today</p>
                   <p className="text-xl font-heading font-bold text-[var(--text-primary)]">
                     {stats.completedToday}
                   </p>

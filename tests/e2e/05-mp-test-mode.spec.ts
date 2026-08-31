@@ -4,20 +4,20 @@ import { prisma } from "../helpers/db";
 import { createActiveAdvisor, createClient, futureDate } from "../helpers/fixtures";
 import { MP_TEST_PUBLIC_KEY, MP_TEST_ACCESS_TOKEN } from "../helpers/mp";
 
-test.describe("05 · Modo Prueba/Producción de Mercado Pago", () => {
-  test("guardar credenciales sandbox + modo TEST y validación de formato", async ({ request }) => {
+test.describe("05 · Mercado Pago Test/Production mode", () => {
+  test("save sandbox credentials + TEST mode and format validation", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const advisor = withSession(api, fixture.sessionToken);
 
-    // Credenciales inválidas → 400
+    // Invalid credentials → 400
     const invalid = await advisor.post("/api/advisor/mercadopago", {
       publicKey: "PK-invalido",
       accessToken: "TOKEN-invalido",
     });
     expect(invalid.status()).toBe(400);
 
-    // Credenciales sandbox válidas
+    // Valid sandbox credentials
     const saved = await advisor.post("/api/advisor/mercadopago", {
       publicKey: MP_TEST_PUBLIC_KEY,
       accessToken: MP_TEST_ACCESS_TOKEN,
@@ -25,7 +25,7 @@ test.describe("05 · Modo Prueba/Producción de Mercado Pago", () => {
     });
     expect(saved.status(), await saved.text()).toBe(200);
 
-    // GET refleja el modo y la conexión
+    // GET reflects mode and connection
     const get = await advisor.get("/api/advisor/mercadopago");
     expect(get.status()).toBe(200);
     const data = await get.json();
@@ -34,7 +34,7 @@ test.describe("05 · Modo Prueba/Producción de Mercado Pago", () => {
     expect(data.accessToken).toBe("••••••••••••••••");
   });
 
-  test("cita creada en modo TEST queda marcada isTest", async ({ request }) => {
+  test("appointment created in TEST mode is marked isTest", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
     const client = await createClient(request);
@@ -55,13 +55,13 @@ test.describe("05 · Modo Prueba/Producción de Mercado Pago", () => {
     expect(dbApt?.isTest).toBe(true);
   });
 
-  test("al pasar a PRODUCCIÓN se eliminan las citas de prueba", async ({ request }) => {
+  test("switching to PRODUCTION deletes test appointments", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
     const advisor = withSession(api, fixture.sessionToken);
     const client = await createClient(request);
 
-    // Crea 2 citas de prueba
+    // Create 2 test appointments
     for (const day of [3, 4]) {
       const res = await withSession(api, client.sessionToken).post("/api/appointments", {
         advisorId: fixture.advisorId,
@@ -77,7 +77,7 @@ test.describe("05 · Modo Prueba/Producción de Mercado Pago", () => {
     });
     expect(before).toBe(2);
 
-    // Cambiar a PRODUCCIÓN → borra citas test
+    // Switch to PRODUCTION → deletes test appointments
     const switchMode = await advisor.post("/api/advisor/mercadopago", {
       mpMode: "PRODUCTION",
     });
@@ -97,7 +97,7 @@ test.describe("05 · Modo Prueba/Producción de Mercado Pago", () => {
     expect(dbAdvisor?.mpMode).toBe("PRODUCTION");
   });
 
-  test("cita creada en modo PRODUCCIÓN NO queda marcada isTest", async ({ request }) => {
+  test("appointment created in PRODUCTION mode is NOT marked isTest", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "PRODUCTION" });
     const client = await createClient(request);
@@ -113,7 +113,7 @@ test.describe("05 · Modo Prueba/Producción de Mercado Pago", () => {
     expect(appointment.isTest).toBe(false);
   });
 
-  test("mpMode inválido → 400", async ({ request }) => {
+  test("invalid mpMode → 400", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
 
@@ -123,7 +123,7 @@ test.describe("05 · Modo Prueba/Producción de Mercado Pago", () => {
     expect(res.status()).toBe(400);
   });
 
-  test("checkout público ve el modo TEST del asesor", async ({ request }) => {
+  test("public checkout sees the advisor's TEST mode", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
 

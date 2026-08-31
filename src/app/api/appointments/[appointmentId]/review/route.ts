@@ -9,7 +9,7 @@ const reviewSchema = z.object({
   comment: z.string().max(2000).optional(),
 });
 
-// POST: Crear reseña de una asesoría completada (solo el cliente)
+// POST: Create a review for a completed consultation (client only)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ appointmentId: string }> }
@@ -25,22 +25,22 @@ export async function POST(
     });
     if (!appointment) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    // Solo el cliente de la cita puede reseñar
+    // Only the appointment client can leave a review
     if (appointment.clientId !== session.user.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Solo citas completadas
+    // Only completed appointments
     if (appointment.status !== "COMPLETED") {
       return NextResponse.json(
-        { error: "Solo puedes reseñar asesorías completadas" },
+        { error: "You can only review completed consultations" },
         { status: 400 }
       );
     }
 
     const { rating, comment } = reviewSchema.parse(await request.json());
 
-    // Una sola reseña por cita — permitir actualizar si ya existe
+    // One review per appointment — allow update if one already exists
     const existing = await prisma.review.findUnique({
       where: { appointmentId },
     });
@@ -66,7 +66,7 @@ export async function POST(
     return NextResponse.json({ review }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: "Datos inválidos" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid data" }, { status: 400 });
     }
     console.error("Error creating review:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

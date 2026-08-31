@@ -12,24 +12,24 @@ const baseSchedule: Schedule = {
 };
 
 describe("lib/slots — generateAvailableSlots", () => {
-  it("genera slots según duración y rango del horario", () => {
+  it("generates slots based on duration and schedule range", () => {
     const slots = generateAvailableSlots(baseSchedule, 60);
     expect(slots.map((s) => s.time)).toEqual(["09:00", "10:00", "11:00"]);
     expect(slots.every((s) => s.available)).toBe(true);
   });
 
-  it("no genera un slot que sobrepasa el fin del horario", () => {
+  it("does not generate a slot that exceeds the end of the schedule", () => {
     const slots = generateAvailableSlots(baseSchedule, 90);
-    // 09:00, 10:30 → 12:00 exacto no entra (10:30+90=12:00 == end, entra);
+    // 09:00, 10:30 → 12:00 exactly does not fit (10:30+90=12:00 == end, fits);
     expect(slots.map((s) => s.time)).toEqual(["09:00", "10:30"]);
   });
 
-  it("aplica el gap entre citas", () => {
+  it("applies the gap between appointments", () => {
     const slots = generateAvailableSlots({ ...baseSchedule, gapMinutes: 30 }, 60);
     expect(slots.map((s) => s.time)).toEqual(["09:00", "10:30"]);
   });
 
-  it("omite el bloque de almuerzo y no genera slots que lo crucen", () => {
+  it("skips the lunch block and does not generate slots that cross it", () => {
     const slots = generateAvailableSlots(
       { ...baseSchedule, startTime: "09:00", endTime: "15:00", lunchStart: "12:00", lunchEnd: "13:00" },
       60
@@ -43,7 +43,7 @@ describe("lib/slots — generateAvailableSlots", () => {
     ]);
   });
 
-  it("un slot de 90 min que cruzaría el almuerzo se salta al fin del almuerzo", () => {
+  it("a 90-min slot that would cross lunch jumps to the end of lunch", () => {
     const slots = generateAvailableSlots(
       { ...baseSchedule, startTime: "09:00", endTime: "15:00", lunchStart: "12:00", lunchEnd: "13:00" },
       90
@@ -51,8 +51,8 @@ describe("lib/slots — generateAvailableSlots", () => {
     expect(slots.map((s) => s.time)).toEqual(["09:00", "10:30", "13:00"]);
   });
 
-  it("marca como no disponible slots que chocan con citas existentes (UTC→local)", () => {
-    // Cita existente a las 14:00 UTC = 09:00 local Colombia
+  it("marks slots that conflict with existing appointments as unavailable (UTC→local)", () => {
+    // Existing appointment at 14:00 UTC = 09:00 Colombia local
     const aptStart = new Date("2026-08-17T14:00:00.000Z");
     const aptEnd = new Date("2026-08-17T15:00:00.000Z");
     const slots = generateAvailableSlots(baseSchedule, 60, [{ start: aptStart, end: aptEnd }]);
@@ -60,7 +60,7 @@ describe("lib/slots — generateAvailableSlots", () => {
     expect(slots.find((s) => s.time === "10:00")?.available).toBe(true);
   });
 
-  it("marca como no disponible un día con bloqueo all-day", () => {
+  it("marks all slots unavailable on an all-day blocked day", () => {
     const day = new Date("2026-08-17T12:00:00.000Z");
     const slots = generateAvailableSlots(
       baseSchedule,
@@ -73,8 +73,8 @@ describe("lib/slots — generateAvailableSlots", () => {
     expect(slots.every((s) => !s.available)).toBe(true);
   });
 
-  it("marca como no disponible slots antes de minStartTime (anticipación)", () => {
-    const day = new Date(2026, 7, 17, 12, 0, 0); // mediodía local del servidor
+  it("marks slots before minStartTime as unavailable (advance notice)", () => {
+    const day = new Date(2026, 7, 17, 12, 0, 0); // server local noon
     const minStart = new Date(2026, 7, 17, 10, 0, 0);
     const slots = generateAvailableSlots(baseSchedule, 60, [], [], day, minStart);
     expect(slots.find((s) => s.time === "09:00")?.available).toBe(false);
@@ -82,7 +82,7 @@ describe("lib/slots — generateAvailableSlots", () => {
     expect(slots.find((s) => s.time === "11:00")?.available).toBe(true);
   });
 
-  it("bloqueo por rango de horas marca solo los slots que se solapan", () => {
+  it("hour-range block marks only overlapping slots as unavailable", () => {
     const day = new Date(2026, 7, 17, 12, 0, 0);
     const slots = generateAvailableSlots(
       baseSchedule,

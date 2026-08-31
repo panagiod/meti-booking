@@ -61,8 +61,8 @@ export default function MercadoPagoPage() {
   const handleSave = async () => {
     if (!publicKey || !accessToken) {
       dialog.showAlert(
-        "Campos requeridos",
-        "Public Key y Access Token son requeridos",
+        "Required fields",
+        "Public Key and Access Token are required",
         "warning"
       );
       return;
@@ -80,13 +80,13 @@ export default function MercadoPagoPage() {
       if (res.ok) {
         setIsConnected(true);
         setHasChanges(false);
-        dialog.showAlert("Éxito", "Credenciales guardadas correctamente", "success");
+        dialog.showAlert("Success", "Credentials saved successfully", "success");
       } else {
         const data = await res.json();
-        dialog.showAlert("Error", data.error || "Error al guardar credenciales", "error");
+        dialog.showAlert("Error", data.error || "Failed to save credentials", "error");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión", "error");
+      dialog.showAlert("Error", "Connection error", "error");
     } finally {
       setIsSaving(false);
     }
@@ -97,8 +97,8 @@ export default function MercadoPagoPage() {
 
     if (newMode === "PRODUCTION" && isConnected) {
       const confirmed = await dialog.showConfirm(
-        "Cambiar a modo Producción",
-        "Al cambiar a producción se eliminarán todas las citas de prueba. ¿Continuar?",
+        "Switch to Production mode",
+        "Switching to production will delete all test appointments. Continue?",
         "warning"
       );
       if (!confirmed) return;
@@ -119,23 +119,23 @@ export default function MercadoPagoPage() {
 
         if (data.deletedTestCount > 0) {
           sileo.success({
-            title: "Modo Producción activado",
-            description: `${data.deletedTestCount} cita(s) de prueba eliminada(s).`,
+            title: "Production mode enabled",
+            description: `${data.deletedTestCount} test appointment(s) deleted.`,
           });
         } else {
           sileo.success({
-            title: newMode === "TEST" ? "Modo Prueba activado" : "Modo Producción activado",
+            title: newMode === "TEST" ? "Test mode enabled" : "Production mode enabled",
             description: newMode === "TEST"
-              ? "Las citas creadas ahora son de prueba y no cobran dinero real."
-              : "Citas de prueba eliminadas. Asegúrate de usar credenciales de producción.",
+              ? "Appointments created now are test appointments and do not charge real money."
+              : "Test appointments deleted. Make sure to use production credentials.",
           });
         }
       } else {
         const data = await res.json();
-        dialog.showAlert("Error", data.error || "Error al cambiar modo", "error");
+        dialog.showAlert("Error", data.error || "Failed to change mode", "error");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión", "error");
+      dialog.showAlert("Error", "Connection error", "error");
     } finally {
       setIsSaving(false);
     }
@@ -152,10 +152,10 @@ export default function MercadoPagoPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-              Configuración de Pagos
+              Payment Settings
             </h1>
             <p className="text-[var(--text-muted)] mt-1">
-              Conecta tu cuenta de Mercado Pago para recibir pagos directamente
+              Connect your Mercado Pago account to receive payments directly
             </p>
           </div>
           <Badge
@@ -163,9 +163,9 @@ export default function MercadoPagoPage() {
             className="w-fit text-sm px-3 py-1.5"
           >
             {isTestMode ? (
-              <><TestTube className="w-4 h-4 mr-1.5" /> Modo Prueba</>
+              <><TestTube className="w-4 h-4 mr-1.5" /> Test Mode</>
             ) : (
-              <><Rocket className="w-4 h-4 mr-1.5" /> Modo Producción</>
+              <><Rocket className="w-4 h-4 mr-1.5" /> Production Mode</>
             )}
           </Badge>
         </div>
@@ -178,12 +178,12 @@ export default function MercadoPagoPage() {
                 <TestTube className="w-5 h-5 text-[var(--warning)] flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-[var(--text-primary)]">
-                    Estás en modo prueba
+                    You are in test mode
                   </p>
                   <p className="text-sm text-[var(--text-muted)] mt-1">
-                    Las citas creadas son de prueba y no cobran dinero real. Puedes
-                    probar el flujo completo de compra sin gastar. Al cambiar a
-                    producción, todas las citas de prueba se eliminarán.
+                    Appointments created are test appointments and do not charge real money. You can
+                    test the full purchase flow without spending. When switching to
+                    production, all test appointments will be deleted.
                   </p>
                 </div>
               </div>
@@ -208,12 +208,12 @@ export default function MercadoPagoPage() {
                   </div>
                   <div>
                     <h3 className="font-heading font-semibold text-[var(--text-primary)]">
-                      {isConnected ? "Conectada" : "No conectada"}
+                      {isConnected ? "Connected" : "Not connected"}
                     </h3>
                     <p className="text-sm text-[var(--text-muted)]">
                       {isConnected
-                        ? "Lista para recibir pagos"
-                        : "Configura tus credenciales"}
+                        ? "Ready to receive payments"
+                        : "Set up your credentials"}
                     </p>
                   </div>
                 </div>
@@ -223,7 +223,7 @@ export default function MercadoPagoPage() {
             {/* Mode Switch */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm">Modo de operación</CardTitle>
+                <CardTitle className="text-sm">Operating mode</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <button
@@ -238,8 +238,8 @@ export default function MercadoPagoPage() {
                   <div className="flex items-center gap-3">
                     <TestTube className={`w-5 h-5 ${isTestMode ? "text-[var(--warning)]" : "text-[var(--text-muted)]"}`} />
                     <div>
-                      <p className="font-medium text-sm text-[var(--text-primary)]">Prueba</p>
-                      <p className="text-xs text-[var(--text-muted)]">Tarjetas de prueba, sin cobro real</p>
+                      <p className="font-medium text-sm text-[var(--text-primary)]">Test</p>
+                      <p className="text-xs text-[var(--text-muted)]">Test cards, no real charges</p>
                     </div>
                     {isTestMode && <CheckCircle className="w-4 h-4 text-[var(--warning)] ml-auto" />}
                   </div>
@@ -257,8 +257,8 @@ export default function MercadoPagoPage() {
                   <div className="flex items-center gap-3">
                     <Rocket className={`w-5 h-5 ${!isTestMode ? "text-[var(--success)]" : "text-[var(--text-muted)]"}`} />
                     <div>
-                      <p className="font-medium text-sm text-[var(--text-primary)]">Producción</p>
-                      <p className="text-xs text-[var(--text-muted)]">Pagos reales, dinero en tu cuenta</p>
+                      <p className="font-medium text-sm text-[var(--text-primary)]">Production</p>
+                      <p className="text-xs text-[var(--text-muted)]">Real payments, money in your account</p>
                     </div>
                     {!isTestMode && <CheckCircle className="w-4 h-4 text-[var(--success)] ml-auto" />}
                   </div>
@@ -269,7 +269,7 @@ export default function MercadoPagoPage() {
             {/* How it works */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm">¿Cómo funciona?</CardTitle>
+                <CardTitle className="text-sm">How does it work?</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -278,8 +278,8 @@ export default function MercadoPagoPage() {
                       <span className="text-sm font-bold text-[var(--primary)]">1</span>
                     </div>
                     <div>
-                      <p className="font-medium text-sm text-[var(--text-primary)]">Cliente paga</p>
-                      <p className="text-xs text-[var(--text-muted)]">Usa Checkout PRO de MP</p>
+                      <p className="font-medium text-sm text-[var(--text-primary)]">Client paga</p>
+                      <p className="text-xs text-[var(--text-muted)]">Uses MP Checkout PRO</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -287,8 +287,8 @@ export default function MercadoPagoPage() {
                       <span className="text-sm font-bold text-[var(--accent)]">2</span>
                     </div>
                     <div>
-                      <p className="font-medium text-sm text-[var(--text-primary)]">Tú recibes tu ganancia</p>
-                      <p className="text-xs text-[var(--text-muted)]">El dinero llega a tu cuenta MP</p>
+                      <p className="font-medium text-sm text-[var(--text-primary)]">You receive your earnings</p>
+                      <p className="text-xs text-[var(--text-muted)]">Money goes to your MP account</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
@@ -296,8 +296,8 @@ export default function MercadoPagoPage() {
                       <span className="text-sm font-bold text-[var(--warning)]">3</span>
                     </div>
                     <div>
-                      <p className="font-medium text-sm text-[var(--text-primary)]">Fee mensual</p>
-                      <p className="text-xs text-[var(--text-muted)]">Recibes factura por el fee de la plataforma</p>
+                      <p className="font-medium text-sm text-[var(--text-primary)]">Monthly fee</p>
+                      <p className="text-xs text-[var(--text-muted)]">You receive an invoice for the platform fee</p>
                     </div>
                   </div>
                 </div>
@@ -313,7 +313,7 @@ export default function MercadoPagoPage() {
                 className="inline-flex items-center gap-2 text-sm text-[var(--primary)] hover:underline"
               >
                 <ExternalLink className="w-4 h-4" />
-                Documentación de MP
+                MP Documentation
               </a>
             </div>
           </div>
@@ -324,12 +324,12 @@ export default function MercadoPagoPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lock className="w-5 h-5" />
-                  Credenciales {isTestMode ? "de Prueba" : "de Producción"}
+                  Credentials {isTestMode ? "for Test" : "for Production"}
                 </CardTitle>
                 <CardDescription>
                   {isTestMode
-                    ? "Usa las credenciales de prueba de Mercado Pago. Los pagos no son reales."
-                    : "Estas credenciales se usan para procesar pagos reales. Son confidenciales."}
+                    ? "Use Mercado Pago test credentials. Payments are not real."
+                    : "These credentials are used to process real payments. They are confidential."}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -347,7 +347,7 @@ export default function MercadoPagoPage() {
                     placeholder="APP_USR-xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   />
                   <p className="text-xs text-[var(--text-muted)] mt-1">
-                    La encuentras en Tu cuenta → Desarrolladores → Credenciales
+                    Endd it in Your account → Developers → Credentials
                   </p>
                 </div>
 
@@ -364,7 +364,7 @@ export default function MercadoPagoPage() {
                     placeholder="APP_USR-xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                   />
                   <p className="text-xs text-[var(--text-muted)] mt-1">
-                    Nunca compartas este token. Se usa para crear preferencias de pago.
+                    Never share this token. It is used to create payment preferences.
                   </p>
                 </div>
 
@@ -374,7 +374,7 @@ export default function MercadoPagoPage() {
                     disabled={!hasChanges || isSaving}
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    {isSaving ? "Guardando..." : "Guardar credenciales"}
+                    {isSaving ? "Saving..." : "Save credentials"}
                   </Button>
 
                   {isConnected && (
@@ -389,7 +389,7 @@ export default function MercadoPagoPage() {
                 <div className="flex items-start gap-2 p-3 rounded-lg bg-[var(--accent-light)] mt-4">
                   <Shield className="w-4 h-4 text-[var(--accent)] mt-0.5 flex-shrink-0" />
                   <p className="text-xs text-[var(--text-secondary)]">
-                    Tus credenciales se almacenan de forma encriptada. Nunca se muestran completas en la interfaz.
+                    Your credentials are stored encrypted. They are never shown in full in the interface.
                   </p>
                 </div>
               </CardContent>

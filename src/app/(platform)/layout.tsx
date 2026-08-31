@@ -51,7 +51,7 @@ export default function PlatformLayout({
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingPage label="Cargando..." />
+        <LoadingPage label="Loading..." />
       </div>
     );
   }

@@ -23,9 +23,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Meti - Asesorías Profesionales Online",
+  title: "Meti - Professional Online Advisory",
   description:
-    "Conecta con asesores profesionales en línea. Videollamadas, chat y gestión completa de asesorías.",
+    "Connect with professional advisors online. Video calls, chat, and complete advisory session management.",
   icons: {
     icon: [
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
@@ -36,18 +36,18 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   openGraph: {
-    title: "Meti - Asesorías Profesionales Online",
+    title: "Meti - Professional Online Advisory",
     description:
-      "Conecta con asesores profesionales en línea. Videollamadas, chat y gestión completa de asesorías.",
+      "Connect with professional advisors online. Video calls, chat, and complete advisory session management.",
     siteName: "Meti",
     type: "website",
     url: "https://meti.cognilab.dev",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Meti - Asesorías Profesionales Online",
+    title: "Meti - Professional Online Advisory",
     description:
-      "Conecta con asesores profesionales en línea. Videollamadas, chat y gestión completa de asesorías.",
+      "Connect with professional advisors online. Video calls, chat, and complete advisory session management.",
   },
   metadataBase: new URL("https://meti.cognilab.dev"),
 };
@@ -59,7 +59,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="es"
+      lang="en"
       suppressHydrationWarning
       className={`${inter.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
@@ -71,7 +71,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebApplication",
               name: "Meti",
-              description: "Plataforma de asesorías profesionales online. Conecta con asesores expertos por videollamada.",
+              description: "Professional online advisory platform. Connect with expert advisors via video call.",
               url: "https://meti.cognilab.dev",
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",

@@ -67,7 +67,7 @@ export function Navbar() {
               <Link
                 href="/services"
               >
-                Explorar asesores
+                Browse advisors
               </Link>
             </Button>
           </nav>
@@ -75,20 +75,20 @@ export function Navbar() {
           {user ? (
             <>
               <Button variant="secondary" size="sm" asChild>
-                <Link href={getDashboardHref()}>Mi panel</Link>
+                <Link href={getDashboardHref()}>My dashboard</Link>
               </Button>
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4 mr-1" />
-                Salir
+                Sign out
               </Button>
             </>
           ) : (
             <>
               <Button variant="secondary" size="sm" asChild>
-                <Link href="/login">Iniciar sesión</Link>
+                <Link href="/login">Sign in</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link href="/register">Registrarse</Link>
+                <Link href="/register">Sign up</Link>
               </Button>
             </>
           )}
@@ -98,7 +98,7 @@ export function Navbar() {
         <button
           className="md:hidden p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         >
           {mobileMenuOpen ? (
             <X className="w-5 h-5" />
@@ -126,26 +126,26 @@ export function Navbar() {
             )}
             onClick={() => setMobileMenuOpen(false)}
           >
-            Explorar asesores
+            Browse advisors
           </Link>
           <div className="pt-3 border-t border-[var(--border)] space-y-2">
             {user ? (
               <>
                 <Button variant="secondary" className="w-full" asChild>
-                  <Link href={getDashboardHref()} onClick={() => setMobileMenuOpen(false)}>Mi panel</Link>
+                  <Link href={getDashboardHref()} onClick={() => setMobileMenuOpen(false)}>My dashboard</Link>
                 </Button>
                 <Button variant="ghost" className="w-full" onClick={() => { handleSignOut(); setMobileMenuOpen(false); }}>
                   <LogOut className="w-4 h-4 mr-1" />
-                  Cerrar sesión
+                  Sign out
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="secondary" className="w-full" asChild>
-                  <Link href="/login">Iniciar sesión</Link>
+                  <Link href="/login">Sign in</Link>
                 </Button>
                 <Button className="w-full" asChild>
-                  <Link href="/register">Registrarse</Link>
+                  <Link href="/register">Sign up</Link>
                 </Button>
               </>
             )}

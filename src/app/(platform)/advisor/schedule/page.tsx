@@ -72,7 +72,7 @@ export default function SchedulePage() {
     }
   }, [activeTab, fetchAppointments]);
 
-  if (isLoading) return <LoadingPage label="Cargando tu agenda" />;
+  if (isLoading) return <LoadingPage label="Loading your schedule" />;
 
   return (
     <>
@@ -80,10 +80,10 @@ export default function SchedulePage() {
         {/* Header */}
         <div>
           <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-            Mi Agenda
+            My Schedule
           </h1>
           <p className="text-[var(--text-muted)] mt-1">
-            Gestiona tu horario, citas y bloqueos
+            Manage your schedule, appointments, and blocks
           </p>
         </div>
 

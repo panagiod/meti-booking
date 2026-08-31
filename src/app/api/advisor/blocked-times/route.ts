@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 const blockedTimeSchema = z.object({
-  title: z.string().min(1, "El título es requerido"),
+  title: z.string().min(1, "Title is required"),
   startDate: z.string().datetime(),
   endDate: z.string().datetime(),
   isAllDay: z.boolean().default(true),
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     if (endDate <= startDate) {
       return NextResponse.json(
-        { error: "La fecha de fin debe ser posterior a la fecha de inicio" },
+        { error: "End date must be after start date" },
         { status: 400 }
       );
     }
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
 
     if (overlapping) {
       return NextResponse.json(
-        { error: "Ya existe un bloqueo en ese horario" },
+        { error: "A block already exists for that time slot" },
         { status: 400 }
       );
     }

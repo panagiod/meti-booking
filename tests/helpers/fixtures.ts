@@ -4,7 +4,7 @@ import { MP_TEST_PUBLIC_KEY, MP_TEST_ACCESS_TOKEN } from "./mp";
 import { BASE_URL, extractSessionToken } from "./api";
 import { randomUUID } from "crypto";
 
-// Fecha futura formateada como ISO local (para scheduledAt y slots)
+// Future date formatted as local ISO (for scheduledAt and slots)
 export function futureDate(daysAhead: number, hour = 10, minute = 0): string {
   const d = new Date();
   d.setDate(d.getDate() + daysAhead);
@@ -14,7 +14,7 @@ export function futureDate(daysAhead: number, hour = 10, minute = 0): string {
   return `${y}-${m}-${day}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
 }
 
-// Fecha local YYYY-MM-DD (sin el sesgo UTC de toISOString)
+// Local date YYYY-MM-DD (without UTC bias from toISOString)
 export function localDateStr(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -22,8 +22,8 @@ export function localDateStr(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-// Registro real vía better-auth → session token firmado y válido.
-// El rol se ajusta después con prisma (getSession siempre lee el user actual).
+// Real sign-up via better-auth → signed, valid session token.
+// Role is adjusted afterward with prisma (getSession always reads the current user).
 export async function signupUser(
   api: APIRequestContext,
   name: string
@@ -36,14 +36,14 @@ export async function signupUser(
     headers,
     data: { email, password, name },
   });
-  expect(signUp.status(), `sign-up falló: ${await signUp.text()}`).toBe(200);
+  expect(signUp.status(), `sign-up failed: ${await signUp.text()}`).toBe(200);
   const data = await signUp.json();
 
   const signIn = await api.post(`${BASE_URL}/api/auth/sign-in/email`, {
     headers,
     data: { email, password },
   });
-  expect(signIn.status(), `sign-in falló: ${await signIn.text()}`).toBe(200);
+  expect(signIn.status(), `sign-in failed: ${await signIn.text()}`).toBe(200);
   const sessionToken = await extractSessionToken(signIn);
   expect(sessionToken).toBeTruthy();
 
@@ -57,7 +57,7 @@ export interface AdvisorFixture {
   serviceId: string;
 }
 
-// Asesor activo con horario completo, categoría Legal y un servicio de 60 min
+// Active advisor with full schedule, Legal category, and a 60-min service
 export async function createActiveAdvisor(
   api: APIRequestContext,
   opts?: {
@@ -66,9 +66,9 @@ export async function createActiveAdvisor(
     mpMode?: "TEST" | "PRODUCTION";
   }
 ): Promise<AdvisorFixture> {
-  const { userId, sessionToken } = await signupUser(api, "E2E Asesor");
+  const { userId, sessionToken } = await signupUser(api, "E2E Advisor");
 
-  // Convertir en asesor y dejarlo aprobado (equivalente al flujo real)
+  // Convert to advisor and mark as approved (equivalent to the real flow)
   await prisma.user.update({ where: { id: userId }, data: { role: "ADVISOR" } });
   await prisma.clientProfile.deleteMany({ where: { userId } });
   const advisor = await prisma.advisorProfile.create({
@@ -93,7 +93,7 @@ export async function createActiveAdvisor(
     });
   }
 
-  // Horario completo: lunes a domingo 08:00-18:00
+  // Full schedule: Monday through Sunday 08:00-18:00
   for (let dow = 0; dow <= 6; dow++) {
     await prisma.advisorSchedule.create({
       data: {
@@ -109,8 +109,8 @@ export async function createActiveAdvisor(
   const service = await prisma.advisorService.create({
     data: {
       advisorId: advisor.id,
-      name: "Consultoría E2E",
-      description: "Servicio de prueba",
+      name: "E2E Consulting",
+      description: "Test service",
       durationMin: 60,
       priceCents: 10000,
     },
@@ -146,7 +146,7 @@ export interface ClientFixture {
 }
 
 export async function createClient(api: APIRequestContext): Promise<ClientFixture> {
-  const { userId, sessionToken, email } = await signupUser(api, "E2E Cliente");
+  const { userId, sessionToken, email } = await signupUser(api, "E2E Client");
   return { userId, sessionToken, email };
 }
 

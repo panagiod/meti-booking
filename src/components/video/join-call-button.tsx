@@ -19,7 +19,7 @@ export function JoinCallButton({ appointmentId, status }: JoinCallButtonProps) {
     <Button asChild>
       <Link href={`/call/${appointmentId}`}>
         <Video className="w-4 h-4 mr-2" />
-        Unirse a la videollamada
+        Join video call
       </Link>
     </Button>
   );

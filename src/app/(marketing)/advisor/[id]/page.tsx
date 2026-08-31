@@ -94,8 +94,8 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
     return getAvailableDates(advisor.schedule, selectedService.durationMin, 2, [], advisor.bookingLeadHours || 24);
   }, [selectedService, advisor?.schedule]);
 
-  // Disponibilidad REAL: consulta las citas existentes vía API por cada fecha.
-  // getAvailableDates solo genera slots del horario; el API marca los ya reservados.
+  // Real availability: query existing appointments via API for each date.
+  // getAvailableDates only generates schedule slots; the API marks already booked ones.
   const [apiSlots, setApiSlots] = useState<Record<string, { slots: TimeSlot[]; hasAvailability: boolean }>>({});
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
     };
   }, [selectedService, advisor, availableDates]);
 
-  // Merge: usar la disponibilidad real del API cuando esté disponible
+  // Merge: use real API availability when available
   const mergedDates = useMemo(() => {
     return availableDates.map((day) => {
       const real = apiSlots[day.dateStr];
@@ -219,7 +219,7 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
   if (!advisor) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[var(--text-muted)]">Asesor no encontrado</p>
+        <p className="text-[var(--text-muted)]">Advisor not found</p>
       </div>
     );
   }
@@ -233,7 +233,7 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
             <div className="container-meti flex items-center h-12">
               <Button variant="ghost" size="sm" onClick={handleBack}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Volver
+                Back
               </Button>
             </div>
           </div>
@@ -247,7 +247,7 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
                 {/* Test mode ribbon */}
                 {advisor.mpMode === "TEST" && (
                   <div className="absolute top-3.5 -right-8 z-10 rotate-45 bg-[var(--warning)] text-white text-[10px] font-bold px-8 py-0.5 shadow-md pointer-events-none">
-                    PRUEBA
+                    TEST
                   </div>
                 )}
                 <CardContent className="p-6">
@@ -275,7 +275,7 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
                         )}
                       </div>
                       <p className="text-[var(--text-muted)]">
-                        {advisor.speciality || "Profesional"}
+                        {advisor.speciality || "Professional"}
                       </p>
                       <RatingStars
                         rating={advisor.rating}
@@ -289,7 +289,7 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
 
                   <div className="mt-4 flex items-center gap-2 text-sm text-[var(--text-muted)]">
                     <Video className="w-4 h-4" />
-                    100% Online por videollamada
+                    100% online via video call
                   </div>
 
                   {advisor.bio && (
@@ -298,16 +298,16 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
                     </p>
                   )}
 
-                  {/* Video de presentación */}
+                  {/* Introduction video */}
                   {advisor.videoUrl && (
                     <div className="mt-4">
                       <p className="text-xs font-medium text-[var(--text-muted)] mb-2">
-                        Video de presentación
+                        Introduction video
                       </p>
                       <div className="aspect-video rounded-lg overflow-hidden">
                         <iframe
                           src={`https://www.youtube.com/embed/${advisor.videoUrl.replace(/.*(?:v=|\/|youtu\.be\/)([\w-]{11}).*/, "$1")}`}
-                          title="Video de presentación"
+                          title="Introduction video"
                           className="w-full h-full"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
@@ -320,7 +320,7 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
                   {advisor.categories.length > 0 && (
                     <div className="mt-4">
                       <p className="text-xs font-medium text-[var(--text-muted)] mb-2">
-                        Rubros
+                        Fields
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         {advisor.categories.map((cat) => (

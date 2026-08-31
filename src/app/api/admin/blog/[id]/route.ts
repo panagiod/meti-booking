@@ -85,7 +85,7 @@ export async function PUT(
 
     if (!title || !content) {
       return NextResponse.json(
-        { error: "Título y contenido son requeridos" },
+        { error: "Title and content are required" },
         { status: 400 }
       );
     }

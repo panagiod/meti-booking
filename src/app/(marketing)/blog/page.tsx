@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Blog | Meti",
   description:
-    "Artículos y recursos sobre asesoría profesional, emprendimiento y más.",
+    "Articles and resources on professional advisory, entrepreneurship, and more.",
 };
 
 async function getBlogPosts() {
@@ -45,7 +45,7 @@ export default async function BlogPage() {
           Blog
         </h1>
         <p className="mt-3 text-lg text-[var(--text-muted)] max-w-2xl mx-auto">
-          Artículos y recursos sobre asesoría profesional, emprendimiento y más.
+          Articles and resources on professional advisory, entrepreneurship, and more.
         </p>
       </div>
 
@@ -56,10 +56,10 @@ export default async function BlogPage() {
             <FileText className="w-8 h-8 text-[var(--primary)]" />
           </div>
           <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-            Próximamente
+            Coming soon
           </h2>
           <p className="mt-2 text-[var(--text-muted)]">
-            Estamos preparando contenido para ti. Vuelve pronto.
+            We are preparing content for you. Check back soon.
           </p>
         </div>
       ) : (

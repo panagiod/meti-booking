@@ -8,87 +8,87 @@ export default function PrivacyPolicyPage() {
         <CardContent className="p-8 md:p-12 space-y-8">
           <div>
             <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)] mb-2">
-              Política de Privacidad
+              Privacy Policy
             </h1>
             <p className="text-sm text-[var(--text-muted)]">
-              Última actualización: 15 de agosto de 2026
+              Last updated: August 15, 2026
             </p>
           </div>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                1. Información que recopilamos
+                1. Information we collect
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Cuando utilizas Meti, recopilamos la siguiente información:
+                When you use Meti, we collect the following information:
               </p>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li><strong>Datos de cuenta:</strong> nombre, correo electrónico e imagen de perfil proporcionados a través de Google OAuth.</li>
-                <li><strong>Datos de perfil:</strong> biografía, especialidad, documentos de verificación (para asesores).</li>
-                <li><strong>Datos de transacciones:</strong> historial de asesorías, pagos procesados por Mercado Pago.</li>
-                <li><strong>Datos de uso:</strong> interacciones con la plataforma, reseñas y calificaciones.</li>
+                <li><strong>Account data:</strong> name, email address, and profile image provided through Google OAuth.</li>
+                <li><strong>Profile data:</strong> biography, specialty, and verification documents (for advisors).</li>
+                <li><strong>Transaction data:</strong> advisory session history and payments processed through Mercado Pago.</li>
+                <li><strong>Usage data:</strong> interactions with the platform, reviews, and ratings.</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                2. Cómo utilizamos tu información
+                2. How we use your information
               </h2>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>Para proporcionar y mejorar nuestros servicios de asesoría.</li>
-                <li>Para procesar pagos y gestionar asesorías.</li>
-                <li>Para comunicarnos contigo sobre tu cuenta y asesorías.</li>
-                <li>Para verificar la identidad y credenciales de los asesores.</li>
-                <li>Para prevenir fraudes y mejorar la seguridad de la plataforma.</li>
+                <li>To provide and improve our advisory services.</li>
+                <li>To process payments and manage advisory sessions.</li>
+                <li>To communicate with you about your account and sessions.</li>
+                <li>To verify the identity and credentials of advisors.</li>
+                <li>To prevent fraud and improve platform security.</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                3. Compartición de datos
+                3. Data sharing
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                No vendemos tu información personal. Compartimos datos únicamente con:
+                We do not sell your personal information. We share data only with:
               </p>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li><strong>Mercado Pago:</strong> para procesar pagos (el asesor recibe el pago directamente).</li>
-                <li><strong>LiveKit:</strong> para facilitar las videollamadas de asesoría.</li>
-                <li><strong>Google:</strong> para la autenticación a través de OAuth.</li>
-                <li><strong>Autoridades legales:</strong> cuando lo requiera la ley.</li>
+                <li><strong>Mercado Pago:</strong> to process payments (the advisor receives payment directly).</li>
+                <li><strong>LiveKit:</strong> to facilitate advisory video calls.</li>
+                <li><strong>Google:</strong> for authentication through OAuth.</li>
+                <li><strong>Legal authorities:</strong> when required by law.</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                4. Seguridad de los datos
+                4. Data security
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Implementamos medidas de seguridad técnicas y organizativas para proteger tu información personal contra acceso no autorizado, alteración, divulgación o destrucción. Las transacciones de pago se procesan a través de Mercado Pago con encriptación SSL/TLS.
+                We implement technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. Payment transactions are processed through Mercado Pago with SSL/TLS encryption.
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                5. Retención de datos
+                5. Data retention
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Conservamos tu información personal mientras tu cuenta esté activa o sea necesaria para proporcionarte servicios. Si eliminas tu cuenta, eliminaremos tus datos personales dentro de los 30 días, excepto cuando debamos conservarlos por obligación legal.
+                We retain your personal information while your account is active or as needed to provide you services. If you delete your account, we will delete your personal data within 30 days, except when we must retain it for legal obligations.
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                6. Tus derechos
+                6. Your rights
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Tienes derecho a:
+                You have the right to:
               </p>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>Acceder a tus datos personales.</li>
-                <li>Rectificar datos inexactos.</li>
-                <li>Solicitar la eliminación de tus datos.</li>
-                <li>Oponerte al procesamiento de tus datos.</li>
-                <li>Solicitar la portabilidad de tus datos.</li>
+                <li>Access your personal data.</li>
+                <li>Rectify inaccurate data.</li>
+                <li>Request deletion of your data.</li>
+                <li>Object to the processing of your data.</li>
+                <li>Request portability of your data.</li>
               </ul>
             </section>
 
@@ -97,25 +97,25 @@ export default function PrivacyPolicyPage() {
                 7. Cookies
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Meti utiliza cookies esenciales para el funcionamiento de la plataforma (sesiones de autenticación). No utilizamos cookies de rastreo o publicitarias.
+                Meti uses essential cookies for platform operation (authentication sessions). We do not use tracking or advertising cookies.
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                8. Cambios en esta política
+                8. Changes to this policy
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Nos reservamos el derecho de actualizar esta política de privacidad. Los cambios importantes se comunicarán a través de la plataforma o por correo electrónico.
+                We reserve the right to update this privacy policy. Significant changes will be communicated through the platform or by email.
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                9. Contacto
+                9. Contact
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Si tienes preguntas sobre esta política de privacidad, contáctanos a través de{" "}
+                If you have questions about this privacy policy, contact us at{" "}
                 <a href="mailto:edwaramayadiaz@gmail.com" className="text-[var(--primary)] hover:underline">
                   edwaramayadiaz@gmail.com
                 </a>.
@@ -124,7 +124,7 @@ export default function PrivacyPolicyPage() {
 
             <div className="pt-4 border-t border-[var(--border)]">
               <Link href="/" className="text-sm text-[var(--primary)] hover:underline">
-                ← Volver al inicio
+                ← Back to home
               </Link>
             </div>
           </CardContent>

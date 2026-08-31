@@ -112,9 +112,9 @@ model AdvisorProfile {
   userId          String   @unique
   bio             String?  @db.Text
   speciality      String?  // Deprecated: use categories instead
-  videoUrl        String?  // Video de presentación
+  videoUrl        String?  // Presentation video
   isActive        Boolean  @default(true)
-  isHidden        Boolean  @default(false) // Asesor se oculta del listado público
+  isHidden        Boolean  @default(false) // Advisor hidden from public listing
   
   // Verification fields
   isVerified      Boolean  @default(false)
@@ -122,10 +122,10 @@ model AdvisorProfile {
   verificationNotes String? @db.Text
 
   // Booking
-  bookingLeadHours Int      @default(24) // Anticipación mínima para agendar (horas)
+  bookingLeadHours Int      @default(24) // Minimum advance booking notice (hours)
 
   // Contact (admin only)
-  whatsappPhone    String?  // Teléfono de WhatsApp para contacto admin
+  whatsappPhone    String?  // WhatsApp phone for admin contact
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -149,12 +149,12 @@ model AdvisorProfile {
 }
 
 // ============================================
-// CATEGORIES (Rubros de experticia)
+// CATEGORIES (Areas of expertise)
 // ============================================
 
 model Category {
   id                String   @id @default(cuid())
-  name              String   @unique // "Legal", "Finanzas", "Salud"
+  name              String   @unique // "Legal", "Finance", "Health"
   slug              String   @unique // "legal", "finanzas", "salud"
   description       String?  @db.Text
   icon              String?  // Icon name from lucide
@@ -163,7 +163,7 @@ model Category {
   // Pricing configuration per category
   minimumPriceCents Int      @default(10000) // $100 minimum in cents
   feePercentage     Float    @default(15.0)  // 15% platform fee
-  maxFeeCents       Int      @default(100000) // Fee máximo $1,000 en centavos
+  maxFeeCents       Int      @default(100000) // Maximum fee $1,000 in cents
   
   isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
@@ -189,16 +189,16 @@ model AdvisorCategory {
 }
 
 // ============================================
-// BLOCKED TIMES (Vacaciones, bloqueos, etc.)
+// BLOCKED TIMES (Vacations, blocks, etc.)
 // ============================================
 
 model BlockedTime {
   id            String   @id @default(cuid())
   advisorId     String
-  title         String   // "Vacaciones", "Día personal", "Bloqueo médico"
-  startDate     DateTime // Fecha/hora inicio
-  endDate       DateTime // Fecha/hora fin
-  isAllDay      Boolean  @default(true) // Si es todo el día o horario específico
+  title         String   // "Vacation", "Personal day", "Medical block"
+  startDate     DateTime // Start date/time
+  endDate       DateTime // End date/time
+  isAllDay      Boolean  @default(true) // All-day block or specific time range
   reason        String?  @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -216,8 +216,8 @@ model BlockedTime {
 model AdvisorService {
   id                  String   @id @default(cuid())
   advisorId           String
-  categoryId          String?  // Rubro del servicio (define fee y precio mínimo)
-  name                String   // "Consulta General"
+  categoryId          String?  // Service category (defines fee and minimum price)
+  name                String   // "General Consultation"
   description         String?  @db.Text
   durationMin         Int      // 30, 60, 90, 120...
   priceCents          Int      // What advisor wants to earn (in cents)
@@ -313,7 +313,7 @@ model Promotion {
 }
 
 // ============================================
-// INVOICING (facturación mensual de fees)
+// INVOICING (monthly fee billing)
 // ============================================
 
 enum InvoiceStatus {
@@ -324,10 +324,10 @@ enum InvoiceStatus {
 model Invoice {
   id                 String        @id @default(cuid())
   advisorId          String
-  periodStart        DateTime      // Inicio del período (primer día del mes)
-  periodEnd          DateTime      // Fin del período (último día del mes)
-  totalFeeCents      Int           // Suma de platformFee de las citas del mes
-  totalEarningsCents Int           // Suma de advisorEarning de las citas del mes
+  periodStart        DateTime      // Period start (first day of the month)
+  periodEnd          DateTime      // Period end (last day of the month)
+  totalFeeCents      Int           // Sum of platformFee from appointments in the period
+  totalEarningsCents Int           // Sum of advisorEarning from appointments in the period
   appointmentCount   Int
   status             InvoiceStatus @default(PENDING)
   paidAt             DateTime?
@@ -373,26 +373,26 @@ model Appointment {
   totalCents      Int               // Final price (service + fee)
   advisorEarning  Int               // What advisor earns
   platformFee     Int               // Platform fee
-  discountCents   Int  @default(0)  // Descuento aplicado (promoción)
-  isTest          Boolean @default(false) // Cita creada en modo prueba MP
+  discountCents   Int  @default(0)  // Applied discount (promotion)
+  isTest          Boolean @default(false) // Appointment created in MP test mode
   paymentId       String?           // Mercado Pago payment ID
   mpPreferenceId  String?           // Mercado Pago preference ID (Checkout Pro)
 
   // LiveKit
   liveKitRoomId   String?
   recordingUrl    String?
-  recordingEgressId String?          // Egress activo de LiveKit (grabación en curso)
+  recordingEgressId String?          // Active LiveKit egress (recording in progress)
 
   // AI Notes
-  transcript      String?           @db.Text  // Transcripción completa de la llamada
-  summary         String?           @db.Text  // Resumen generado por IA
+  transcript      String?           @db.Text  // Full call transcript
+  summary         String?           @db.Text  // AI-generated summary
 
   // Cancellation
   cancelReason    String?
   cancelledAt     DateTime?
 
   // Notifications
-  reminderSentAt  DateTime?          // Último recordatorio enviado (cron 24h)
+  reminderSentAt  DateTime?          // Last reminder sent (24h cron)
 
   // Timestamps
   createdAt       DateTime          @default(now())
@@ -433,7 +433,7 @@ model Review {
 }
 
 // ============================================
-// CHAT PERSISTENTE (videollamada)
+// PERSISTENT CHAT (video call)
 // ============================================
 
 model ChatMessage {

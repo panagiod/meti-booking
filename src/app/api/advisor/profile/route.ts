@@ -87,7 +87,7 @@ export async function GET() {
   }
 }
 
-// PUT: Update profile (incluyendo categorías)
+// PUT: Update profile (including categories)
 export async function PUT(request: NextRequest) {
   try {
     const headersList = await headers();
@@ -110,7 +110,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const validatedData = profileSchema.parse(body);
 
-    // Actualizar campos de User (name, image)
+    // Update User fields (name, image)
     const userUpdates: Record<string, string> = {};
     if (validatedData.name !== undefined) userUpdates.name = validatedData.name;
     if (validatedData.image !== undefined) userUpdates.image = validatedData.image || "";
@@ -122,7 +122,7 @@ export async function PUT(request: NextRequest) {
       });
     }
 
-    // Actualizar perfil de asesor
+    // Update advisor profile
     await prisma.advisorProfile.update({
       where: { id: advisorProfile.id },
       data: {
@@ -145,9 +145,9 @@ export async function PUT(request: NextRequest) {
       },
     });
 
-    // Actualizar categorías si se enviaron
+    // Update categories if provided
     if (body.categoryIds && Array.isArray(body.categoryIds)) {
-      // Eliminar actuales y recrear
+      // Delete current and recreate
       await prisma.advisorCategory.deleteMany({
         where: { advisorId: advisorProfile.id },
       });
@@ -161,7 +161,7 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // Retornar perfil actualizado con categorías y datos de usuario
+    // Return updated profile with categories and user data
     const updated = await prisma.advisorProfile.findUnique({
       where: { id: advisorProfile.id },
       include: {

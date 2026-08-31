@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-// Logo wordmark inline con color adaptable al tema (currentColor)
+// Inline logo wordmark with theme-adaptive color (currentColor)
 export function Logo({ className }: { className?: string }) {
   return (
     <svg

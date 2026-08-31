@@ -8,14 +8,14 @@ const TEST_DATABASE_URL = process.env.TEST_DATABASE_URL!;
 const BASE_URL = process.env.E2E_BASE_URL || "http://localhost:3100";
 const PORT = new URL(BASE_URL).port;
 
-// Secret fijo para la suite (en CI no existe .env; localmente pisa el de dev)
+// Fixed secret for the test suite (CI has no .env; locally it overrides dev)
 const TEST_AUTH_SECRET = "meti-e2e-better-auth-secret-7f3c9a1e5b8d2046e9a1c7f3b5d9e2a4";
 
 export default defineConfig({
   testDir: "./tests/e2e",
   globalSetup: "./tests/e2e/global-setup.ts",
   globalTeardown: "./tests/e2e/global-teardown.ts",
-  // La suite comparte la misma DB de prueba: ejecución estrictamente serial
+  // The suite shares the same test DB: strictly serial execution
   workers: 1,
   fullyParallel: false,
   retries: 0,
@@ -27,9 +27,9 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   webServer: {
-    // next dev tiene un lock por directorio de proyecto: si el usuario ya tiene
-    // su dev server corriendo, usamos un build de producción aislado (distDir
-    // propio vía NEXT_DIST_DIR) y `next start` en el puerto de pruebas.
+    // next dev has a per-project lock: if the user already has a dev server running,
+    // we use an isolated production build (separate distDir via NEXT_DIST_DIR)
+    // and `next start` on the test port.
     command: "bash tests/scripts/start-server.sh",
     url: BASE_URL,
     reuseExistingServer: false,

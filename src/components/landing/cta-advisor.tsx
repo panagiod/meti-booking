@@ -7,23 +7,23 @@ import { Button } from "@/components/ui/button";
 const benefits = [
   {
     icon: Zap,
-    text: "Configura tus propios precios y horarios",
+    text: "Set your own prices and schedule",
   },
   {
     icon: Shield,
-    text: "Cobra directamente con tu Mercado Pago",
+    text: "Get paid directly through your Mercado Pago account",
   },
   {
     icon: Video,
-    text: "Videollamada y chat integrados",
+    text: "Integrated video calls and chat",
   },
   {
     icon: Clock,
-    text: "Sin límite de asesorías diarias",
+    text: "No daily session limit",
   },
   {
     icon: CheckCircle,
-    text: "Promociones cuando tú lo decidas",
+    text: "Run promotions whenever you choose",
   },
 ];
 
@@ -44,12 +44,12 @@ export function CTAAdvisor() {
           {/* Content */}
           <div>
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6">
-              ¿Eres profesional? Ofrece tus asesorías con Meti
+              Are you a professional? Offer your advisory services with Meti
             </h2>
             <p className="text-lg text-white/90 mb-8">
-              Únete a nuestra plataforma y llega a clientes que buscan tu
-              experiencia. Tú defines tus precios, horarios y condiciones. Nosotros
-              nos encargamos de la tecnología.
+              Join our platform and reach clients seeking your
+              expertise. You set your prices, schedule, and terms. We
+              handle the technology.
             </p>
 
             <ul className="space-y-4 mb-8">
@@ -74,7 +74,7 @@ export function CTAAdvisor() {
                 asChild
               >
                 <Link href="/register">
-                  Comenzar ahora
+                  Get started
                   <ArrowRight className="w-4 h-4 ml-1" />
                 </Link>
               </Button>
@@ -84,7 +84,7 @@ export function CTAAdvisor() {
                 className="border-white text-white hover:bg-white/10"
                 asChild
               >
-                <Link href="#como-funciona">Saber más</Link>
+                <Link href="#como-funciona">Learn more</Link>
               </Button>
             </div>
           </div>
@@ -103,23 +103,23 @@ export function CTAAdvisor() {
                       Juan Pérez
                     </h4>
                     <p className="text-sm text-[var(--text-muted)]">
-                      Legal Corporativo
+                      Corporate law
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-[var(--text-muted)]">Ganancia por asesoría</span>
+                  <span className="text-[var(--text-muted)]">Earnings per session</span>
                   <span className="font-heading font-bold text-[var(--primary)]">
                     $50,000
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm mt-2">
-                  <span className="text-[var(--text-muted)]">Fee plataforma</span>
+                  <span className="text-[var(--text-muted)]">Platform fee</span>
                   <span className="text-[var(--text-secondary)]">$7,500</span>
                 </div>
                 <div className="border-t border-[var(--border)] mt-4 pt-4 flex items-center justify-between">
                   <span className="font-medium text-[var(--text-primary)]">
-                    Total cliente
+                    Client total
                   </span>
                   <span className="font-heading font-bold text-lg text-[var(--text-primary)]">
                     $57,500
@@ -132,7 +132,7 @@ export function CTAAdvisor() {
                 100% Online
               </div>
               <div className="absolute -bottom-4 -left-4 bg-[var(--secondary)] text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg animate-float" style={{ animationDelay: "1s" }}>
-                Pago seguro
+                Secure payment
               </div>
             </div>
           </div>

@@ -16,7 +16,7 @@ function getGroqClient() {
   return groq;
 }
 
-// POST: Generar resumen de la asesoría con IA
+// POST: Generate consultation summary with AI
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ appointmentId: string }> }
@@ -34,12 +34,12 @@ export async function POST(
 
     if (!transcript || transcript.trim().length < 50) {
       return NextResponse.json(
-        { error: "La transcripción es muy corta para generar un resumen" },
+        { error: "The transcript is too short to generate a summary" },
         { status: 400 }
       );
     }
 
-    // Verificar que la cita existe y el usuario es participante
+    // Verify the appointment exists and the user is a participant
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
@@ -50,7 +50,7 @@ export async function POST(
     });
 
     if (!appointment) {
-      return NextResponse.json({ error: "Cita no encontrada" }, { status: 404 });
+      return NextResponse.json({ error: "Appointment not found" }, { status: 404 });
     }
 
     const userId = session.user.id;
@@ -61,38 +61,38 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Generar resumen con Groq
+    // Generate summary with Groq
     const groqClient = getGroqClient();
     if (!groqClient) {
       return NextResponse.json(
-        { error: "Servicio de IA no configurado" },
+        { error: "AI service not configured" },
         { status: 501 }
       );
     }
 
-    const prompt = `Eres un asistente profesional que genera resúmenes de asesorías. 
+    const prompt = `You are a professional assistant that generates consultation summaries.
 
-Analiza la siguiente transcripción de una asesoría de "${appointment.service.name}" entre el asesor "${appointment.advisor.user.name}" y el cliente "${appointment.client.name}".
+Analyze the following transcript of a "${appointment.service.name}" consultation between advisor "${appointment.advisor.user.name}" and client "${appointment.client.name}".
 
-Genera un resumen estructurado en español con:
+Generate a structured summary in English with:
 
-1. **Tema principal**: En una línea corta
-2. **Puntos clave**: Lista de 3-7 puntos más importantes discutidos
-3. **Decisiones o acuerdos**: Si hubo decisiones tomadas
-4. **Próximos pasos**: Si se mencionaron acciones a realizar
-5. **Notas adicionales**: Cualquier otro dato relevante
+1. **Main topic**: In one short line
+2. **Key points**: List of 3-7 most important points discussed
+3. **Decisions or agreements**: If any decisions were made
+4. **Next steps**: If any actions to take were mentioned
+5. **Additional notes**: Any other relevant details
 
-Transcripción:
+Transcript:
 ${transcript}
 
-Resumen:`;
+Summary:`;
 
     const completion = await groqClient.chat.completions.create({
       messages: [
         {
           role: "system",
           content:
-            "Eres un asistente profesional que genera resúmenes concisos y estructurados de asesorías. Responde siempre en español.",
+            "You are a professional assistant that generates concise, structured consultation summaries. Always respond in English.",
         },
         {
           role: "user",
@@ -108,12 +108,12 @@ Resumen:`;
 
     if (!summary) {
       return NextResponse.json(
-        { error: "No se pudo generar el resumen" },
+        { error: "Could not generate the summary" },
         { status: 500 }
       );
     }
 
-    // Guardar en la base de datos
+    // Save to the database
     await prisma.appointment.update({
       where: { id: appointmentId },
       data: {
@@ -126,7 +126,7 @@ Resumen:`;
   } catch (error) {
     console.error("Error generating summary:", error);
     return NextResponse.json(
-      { error: "Error al generar el resumen" },
+      { error: "Error generating summary" },
       { status: 500 }
     );
   }

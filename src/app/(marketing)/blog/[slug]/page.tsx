@@ -40,7 +40,7 @@ export async function generateMetadata({
   const post = await getBlogPost(slug);
 
   if (!post) {
-    return { title: "Post no encontrado | Meti" };
+    return { title: "Post not found | Meti" };
   }
 
   return {
@@ -63,7 +63,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const formattedDate = post.publishedAt
-    ? new Date(post.publishedAt).toLocaleDateString("es-CO", {
+    ? new Date(post.publishedAt).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
@@ -78,7 +78,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         className="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors mb-8"
       >
         <ArrowLeft className="w-4 h-4" />
-        Volver al blog
+        Back to blog
       </Link>
 
       {/* Article */}

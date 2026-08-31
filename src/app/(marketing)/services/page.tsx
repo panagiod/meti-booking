@@ -33,19 +33,19 @@ interface Advisor {
 }
 
 const categories = [
-  { name: "Todos", slug: "" },
+  { name: "All", slug: "" },
   { name: "Legal", slug: "legal" },
-  { name: "Finanzas", slug: "finanzas" },
-  { name: "Salud", slug: "salud" },
-  { name: "Tecnología", slug: "tecnologia" },
-  { name: "Educación", slug: "educacion" },
-  { name: "Negocios", slug: "negocios" },
-  { name: "Diseño", slug: "diseno" },
+  { name: "Finance", slug: "finanzas" },
+  { name: "Health", slug: "salud" },
+  { name: "Technology", slug: "tecnologia" },
+  { name: "Education", slug: "educacion" },
+  { name: "Business", slug: "negocios" },
+  { name: "Design", slug: "diseno" },
   { name: "Marketing", slug: "marketing" },
 ];
 
 function formatPrice(cents: number) {
-  return new Intl.NumberFormat("es-CO", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 0,
@@ -101,10 +101,10 @@ export default function ServicesPage() {
         <div className="container-meti">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="font-heading text-3xl md:text-4xl font-bold mb-4">
-              Encuentra tu asesor ideal
+              Find your ideal advisor
             </h1>
             <p className="text-white/80 mb-8">
-              Explora profesionales expertos en diferentes áreas y agenda tu asesoría
+              Browse expert professionals across different fields and book your session
             </p>
 
             {/* Search Bar */}
@@ -112,7 +112,7 @@ export default function ServicesPage() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" />
               <Input
                 type="text"
-                placeholder="Buscar por nombre, especialidad o rubro..."
+                placeholder="Search by name, specialty, or field..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -122,7 +122,7 @@ export default function ServicesPage() {
                 className="absolute right-2 bottom-2"
                 onClick={handleSearch}
               >
-                Buscar
+                Search
               </Button>
             </div>
           </div>
@@ -137,13 +137,13 @@ export default function ServicesPage() {
             <Card className="sticky top-24">
               <CardContent className="p-4">
                 <h3 className="font-heading font-semibold text-text-primary mb-4">
-                  Filtros
+                  Filters
                 </h3>
 
                 {/* Categories */}
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-text-muted mb-2">
-                    Categorías
+                    Categories
                   </p>
                   {categories.map((cat) => (
                     <button
@@ -164,15 +164,15 @@ export default function ServicesPage() {
                 {/* Sort */}
                 <div className="mt-6 space-y-2">
                   <p className="text-sm font-medium text-text-muted mb-2">
-                    Ordenar por
+                    Sort by
                   </p>
                   <Select
                     value={sortBy}
                     onChange={(value) => setSortBy(value as any)}
                     options={[
-                      { value: "rating", label: "Mejor calificados" },
-                      { value: "price", label: "Menor precio" },
-                      { value: "reviews", label: "Más reseñas" },
+                      { value: "rating", label: "Top rated" },
+                      { value: "price", label: "Lowest price" },
+                      { value: "reviews", label: "Most reviews" },
                     ]}
                   />
                 </div>
@@ -184,7 +184,7 @@ export default function ServicesPage() {
           <div className="flex-1">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-heading font-semibold text-text-primary">
-                {sortedAdvisors.length} asesores encontrados
+                {sortedAdvisors.length} advisors found
               </h2>
             </div>
 
@@ -193,8 +193,8 @@ export default function ServicesPage() {
                 <CardContent className="p-12">
                   <EmptyState
                     icon={Briefcase}
-                    title="No se encontraron asesores"
-                    description="Intenta con otros filtros o términos de búsqueda."
+                    title="No advisors found"
+                    description="Try different filters or search terms."
                   />
                 </CardContent>
               </Card>
@@ -206,7 +206,7 @@ export default function ServicesPage() {
                       {/* Test mode ribbon */}
                       {advisor.mpMode === "TEST" && (
                         <div className="absolute top-3.5 -right-8 z-10 rotate-45 bg-[var(--warning)] text-white text-[10px] font-bold px-8 py-0.5 shadow-md pointer-events-none">
-                          PRUEBA
+                          TEST
                         </div>
                       )}
                       <CardContent className="p-5">
@@ -235,7 +235,7 @@ export default function ServicesPage() {
                               )}
                             </div>
                             <p className="text-sm text-text-muted truncate">
-                              {advisor.speciality || "Profesional"}
+                              {advisor.speciality || "Professional"}
                             </p>
                           </div>
                         </div>
@@ -273,7 +273,7 @@ export default function ServicesPage() {
                           />
                           {advisor.minPriceWithFee > 0 && (
                             <span className="text-sm font-heading font-bold text-primary">
-                              Desde {formatPrice(advisor.minPriceWithFee)}
+                              From {formatPrice(advisor.minPriceWithFee)}
                             </span>
                           )}
                         </div>

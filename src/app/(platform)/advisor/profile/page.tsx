@@ -109,10 +109,10 @@ export default function ProfilePage() {
         setHasChanges(true);
       } else {
         const data = await res.json();
-        dialog.showAlert("Error", data.error || "Error al subir la imagen", "error");
+        dialog.showAlert("Error", data.error || "Failed to upload image", "error");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión", "error");
+      dialog.showAlert("Error", "Connection error", "error");
     } finally {
       setIsUploadingImage(false);
       if (fileInputRef.current) {
@@ -159,13 +159,13 @@ export default function ProfilePage() {
 
       if (res.ok) {
         await fetchDocuments();
-        dialog.showAlert("Éxito", "Documento subido correctamente", "success");
+        dialog.showAlert("Success", "Document uploaded successfully", "success");
       } else {
         const data = await res.json();
-        dialog.showAlert("Error", data.error || "Error al subir documento", "error");
+        dialog.showAlert("Error", data.error || "Failed to upload document", "error");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión", "error");
+      dialog.showAlert("Error", "Connection error", "error");
     } finally {
       setIsUploading(false);
       e.target.value = "";
@@ -178,10 +178,10 @@ export default function ProfilePage() {
       {
         onSuccess: () => {
           setHasChanges(false);
-          dialog.showAlert("Éxito", "Perfil actualizado correctamente", "success");
+          dialog.showAlert("Success", "Profile updated successfully", "success");
         },
         onError: () => {
-          dialog.showAlert("Error", "Error al actualizar perfil", "error");
+          dialog.showAlert("Error", "Failed to update profile", "error");
         },
       }
     );
@@ -195,15 +195,15 @@ export default function ProfilePage() {
       {
         onSuccess: () => {
           sileo.success({
-            title: next ? "Perfil oculto" : "Perfil visible",
+            title: next ? "Profile hidden" : "Profile visible",
             description: next
-              ? "Ya no apareces en la lista pública de asesores."
-              : "Tu perfil vuelve a aparecer en la lista pública de asesores.",
+              ? "You no longer appear on the public advisor list."
+              : "Your profile is visible again on the public advisor list.",
           });
         },
         onError: () => {
           setIsHidden(!next);
-          sileo.error({ title: "Error", description: "No se pudo actualizar la visibilidad. Intenta de nuevo." });
+          sileo.error({ title: "Error", description: "Could not update visibility. Please try again." });
         },
       }
     );
@@ -217,7 +217,7 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <div className="text-center py-12">
-        <p className="text-[var(--text-muted)]">Error al cargar el perfil</p>
+        <p className="text-[var(--text-muted)]">Failed to load profile</p>
       </div>
     );
   }
@@ -229,21 +229,21 @@ export default function ProfilePage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-              Mi Perfil
+              My Profile
             </h1>
             <p className="text-[var(--text-muted)] mt-1">
-              Configura tu información pública para atraer clientes
+              Set up your public profile to attract clients
             </p>
           </div>
           <Button onClick={handleSave} disabled={!hasChanges || updateProfile.isPending}>
             <Save className="w-4 h-4 mr-2" />
-            {updateProfile.isPending ? "Guardando..." : "Guardar"}
+            {updateProfile.isPending ? "Saving..." : "Save"}
           </Button>
         </div>
 
         {/* Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column - Identidad, Bio, Stats y Agendado */}
+          {/* Left column - identity, bio, stats, and bookings */}
           <div className="space-y-6">
             {/* Profile Card */}
             <Card>
@@ -293,7 +293,7 @@ export default function ProfilePage() {
                           setName(e.target.value);
                           setHasChanges(true);
                         }}
-                        placeholder="Tu nombre"
+                        placeholder="Your name"
                         className="font-heading text-xl font-bold"
                       />
                       <VerifiedBadge
@@ -304,7 +304,7 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-3 mt-2 flex-wrap">
                       <RatingStars rating={stats?.rating || 0} showValue size="sm" />
                       <span className="text-sm text-[var(--text-muted)]">
-                        {stats?.reviewCount || 0} reseñas
+                        {stats?.reviewCount || 0} reviews
                       </span>
                     </div>
                     {profile.categories && profile.categories.length > 0 && (
@@ -323,7 +323,7 @@ export default function ProfilePage() {
                         className="text-xs text-[var(--error)] hover:underline mt-2 flex items-center gap-1"
                       >
                         <X className="w-3 h-3" />
-                        Eliminar foto
+                        Remove photo
                       </button>
                     )}
                   </div>
@@ -336,10 +336,10 @@ export default function ProfilePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Pencil className="w-5 h-5" />
-                  Biografía
+                  Bio
                 </CardTitle>
                 <CardDescription>
-                  Cuéntale a los clientes sobre tu experiencia
+                  Tell clients about your experience
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -350,7 +350,7 @@ export default function ProfilePage() {
                     setBio(e.target.value);
                     setHasChanges(true);
                   }}
-                  placeholder="Ej: Soy un profesional con X años de experiencia..."
+                  placeholder="E.g. I am a professional with X years of experience..."
                 />
               </CardContent>
             </Card>
@@ -358,7 +358,7 @@ export default function ProfilePage() {
             {/* Stats */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-sm">Estadísticas</CardTitle>
+                <CardTitle className="text-sm">Statistics</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-4 text-center">
@@ -366,7 +366,7 @@ export default function ProfilePage() {
                     <div className="text-2xl font-heading font-bold text-[var(--primary)]">
                       {stats?.reviewCount || 0}
                     </div>
-                    <div className="text-xs text-[var(--text-muted)]">Reseñas</div>
+                    <div className="text-xs text-[var(--text-muted)]">Reviews</div>
                   </div>
                   <div className="p-4 rounded-lg bg-[var(--background)]">
                     <div className="text-2xl font-heading font-bold text-[var(--accent)]">
@@ -378,20 +378,20 @@ export default function ProfilePage() {
                     <div className="text-2xl font-heading font-bold text-[var(--success)]">
                       {profile.categories?.length || 0}
                     </div>
-                    <div className="text-xs text-[var(--text-muted)]">Rubros</div>
+                    <div className="text-xs text-[var(--text-muted)]">Categories</div>
                   </div>
                 </div>
               </CardContent>
             </Card>
-            {/* Configuración de agendado */}
+            {/* Booking settings */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="w-5 h-5 text-[var(--primary)]" />
-                  Configuración de agendado
+                  Booking settings
                 </CardTitle>
                 <CardDescription>
-                  Define con cuánta anticipación mínima los clientes pueden reservar
+                  Set the minimum advance notice required for clients to book
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -428,16 +428,16 @@ export default function ProfilePage() {
                     }}
                     className="w-24 text-center"
                   />
-                  <span className="text-sm text-[var(--text-muted)]">horas de anticipación</span>
+                  <span className="text-sm text-[var(--text-muted)]">hours advance notice</span>
                 </div>
                 <p className="text-xs text-[var(--text-muted)] mt-3">
-                  Ejemplo: si defines 6, los clientes no podrán reservar para las próximas 6 horas.
-                  Con 0, pueden agendar cualquier horario disponible del día.
+                  Example: if you set 6, clients cannot book within the next 6 hours.
+                  With 0, they can book any available time slot for the day.
                 </p>
               </CardContent>
             </Card>
 
-            {/* Visibilidad */}
+            {/* Visibility */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -446,28 +446,28 @@ export default function ProfilePage() {
                   ) : (
                     <Eye className="w-5 h-5 text-[var(--primary)]" />
                   )}
-                  Visibilidad en el directorio
+                  Directory visibility
                 </CardTitle>
                 <CardDescription>
-                  Controla si tu perfil aparece en la lista pública de asesores
+                  Control whether your profile appears on the public advisor list
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm font-medium text-[var(--text-primary)]">
-                      {isHidden ? "Oculto del listado público" : "Visible en el listado público"}
+                      {isHidden ? "Hidden from public listing" : "Visible on public listing"}
                     </p>
                     <p className="text-xs text-[var(--text-muted)] mt-1">
-                      Al ocultarte, sigues activo y puedes atender tus citas, pero los
-                      clientes no podrán encontrarte en el directorio.
+                      When hidden, you remain active and can attend your appointments, but
+                      clients will not be able to find you in the directory.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={handleToggleVisibility}
                     disabled={updateProfile.isPending}
-                    aria-label="Cambiar visibilidad del perfil"
+                    aria-label="Toggle profile visibility"
                     className={`relative w-12 h-6 rounded-full transition-colors flex-shrink-0 disabled:opacity-50 ${isHidden ? "bg-[var(--error)]" : "bg-[var(--success)]"}`}
                   >
                     <span
@@ -478,15 +478,15 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
 
-            {/* WhatsApp (Contacto admin) */}
+            {/* WhatsApp (admin contact) */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Phone className="w-5 h-5 text-[var(--success)]" />
-                  WhatsApp de contacto
+                  Contact WhatsApp
                 </CardTitle>
                 <CardDescription>
-                  Para comunicación con el equipo de Meti
+                  For communication with the Meti team
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -498,28 +498,28 @@ export default function ProfilePage() {
                   }}
                 />
                 <p className="text-xs text-[var(--text-muted)] mt-2">
-                  Este número solo será visible por los administradores del sistema para contactarte en caso de inconvenientes con la configuración.
+                  This number will only be visible to system administrators to contact you if there are issues with your setup.
                 </p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Right Column - Rubros, Documentos y Video */}
+          {/* Right Column - Categories, Documents and Video */}
           <div className="space-y-6">
-            {/* Rubros */}
+            {/* Categories */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-[var(--accent)]" />
-                  Rubros de experticia
+                  Areas of expertise
                 </CardTitle>
                 <CardDescription>
-                  Selecciona las áreas en las que ofreces asesorías
+                  Select the areas where you offer consultations
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {categories.length === 0 ? (
-                  <p className="text-sm text-[var(--text-muted)]">Cargando rubros...</p>
+                  <p className="text-sm text-[var(--text-muted)]">Loading categories...</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {categories.map((cat) => {
@@ -541,7 +541,7 @@ export default function ProfilePage() {
                 )}
                 {selectedCategoryIds.length === 0 && (
                   <p className="text-xs text-[var(--warning)] mt-3">
-                    Selecciona al menos un rubro para que los clientes te encuentren por área.
+                    Select at least one category so clients can find you by area.
                   </p>
                 )}
               </CardContent>
@@ -552,10 +552,10 @@ export default function ProfilePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText className="w-5 h-5" />
-                  Documentos de verificación
+                  Verification documents
                 </CardTitle>
                 <CardDescription>
-                  Sube certificados o licencias para verificar tu experiencia
+                  Upload certificates or licenses to verify your experience
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -563,21 +563,21 @@ export default function ProfilePage() {
                   value={documentType}
                   onChange={(value) => setDocumentType(value)}
                   options={[
-                    { value: "CERTIFICATE", label: "Certificado profesional" },
-                    { value: "LICENSE", label: "Licencia profesional" },
-                    { value: "DEGREE", label: "Título universitario" },
-                    { value: "RESUME", label: "Hoja de vida / CV" },
-                    { value: "OTHER", label: "Otro documento" },
+                    { value: "CERTIFICATE", label: "Professional certificate" },
+                    { value: "LICENSE", label: "Professional license" },
+                    { value: "DEGREE", label: "University degree" },
+                    { value: "RESUME", label: "Resume / CV" },
+                    { value: "OTHER", label: "Other document" },
                   ]}
                 />
 
                 <div className="border-2 border-dashed border-[var(--border)] rounded-xl p-6 text-center hover:border-[var(--primary)] transition-colors">
                   <Upload className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
                   <p className="text-sm text-[var(--text-muted)] mb-2">
-                    Arrastra un archivo o haz clic para seleccionar
+                    Drag a file or click to select
                   </p>
                   <p className="text-xs text-[var(--text-muted)] mb-3">
-                    PDF, JPEG o PNG (máx. 10MB)
+                    PDF, JPEG or PNG (max. 10MB)
                   </p>
                   <input
                     type="file"
@@ -592,14 +592,14 @@ export default function ProfilePage() {
                     onClick={() => document.getElementById("doc-upload")?.click()}
                     disabled={isUploading}
                   >
-                    {isUploading ? "Subiendo..." : "Seleccionar archivo"}
+                    {isUploading ? "Uploading..." : "Select file"}
                   </Button>
                 </div>
 
                 {documents.length > 0 && (
                   <div className="space-y-2">
                     <p className="text-sm font-medium text-[var(--text-primary)]">
-                      Documentos ({documents.length})
+                      Documents ({documents.length})
                     </p>
                     {documents.map((doc) => (
                       <div
@@ -629,12 +629,12 @@ export default function ProfilePage() {
                           }
                         >
                           {doc.manualStatus === "APPROVED"
-                            ? "Aprobado"
+                            ? "Approved"
                             : doc.manualStatus === "REJECTED"
-                              ? "Rechazado"
+                              ? "Rejected"
                               : doc.aiStatus === "COMPLETED"
-                                ? "Pendiente"
-                                : "Analizando"}
+                                ? "Pending"
+                                : "Analyzing"}
                         </Badge>
                       </div>
                     ))}
@@ -650,10 +650,10 @@ export default function ProfilePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Video className="w-5 h-5" />
-                  Video de presentación
+                  Introduction video
                 </CardTitle>
                 <CardDescription>
-                  Un video corto aumenta las reservas un 300%
+                  A short video increases bookings by 300%
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -665,7 +665,7 @@ export default function ProfilePage() {
                         className="w-full h-full"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
-                        title="Video de presentación"
+                        title="Introduction video"
                       />
                     </div>
                     <div className="flex gap-2">
@@ -686,7 +686,7 @@ export default function ProfilePage() {
                           setHasChanges(true);
                         }}
                       >
-                        Eliminar
+                        Delete
                       </Button>
                     </div>
                   </div>
@@ -695,15 +695,15 @@ export default function ProfilePage() {
                     <div className="border-2 border-dashed border-[var(--border)] rounded-xl p-8 text-center hover:border-[var(--primary)] transition-colors cursor-pointer">
                       <Video className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-3" />
                       <p className="font-medium text-[var(--text-primary)] mb-1">
-                        Sube tu video de presentación
+                        Upload your introduction video
                       </p>
                       <p className="text-sm text-[var(--text-muted)]">
-                        Pega una URL de YouTube
+                        Paste a YouTube URL
                       </p>
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-1.5">
-                        URL del video de YouTube
+                        YouTube video URL
                       </label>
                       <Input
                         value={videoUrl}

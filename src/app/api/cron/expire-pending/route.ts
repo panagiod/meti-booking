@@ -37,7 +37,7 @@ export async function GET(request: Request) {
       },
       data: {
         status: "CANCELLED",
-        cancelReason: "Pago no completado - expirado después de 15 minutos",
+        cancelReason: "Payment not completed - expired after 15 minutes",
         cancelledAt: now,
       },
     });

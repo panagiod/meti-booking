@@ -69,7 +69,7 @@ export default function ConfigPage() {
 
   const handleCreateCategory = async () => {
     if (!newName.trim()) {
-      dialog.showAlert("Campo requerido", "El nombre del rubro es requerido.", "warning");
+      dialog.showAlert("Required field", "Category name is required.", "warning");
       return;
     }
 
@@ -92,20 +92,20 @@ export default function ConfigPage() {
         await fetchCategories();
         setShowModal(false);
         resetForm();
-        dialog.showAlert("Éxito", "Rubro creado correctamente.", "success");
+        dialog.showAlert("Success", "Category created successfully.", "success");
       } else {
         const data = await res.json();
-        dialog.showAlert("Error", data.error || "Error al crear rubro", "error");
+        dialog.showAlert("Error", data.error || "Failed to create category", "error");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión. Intenta de nuevo.", "error");
+      dialog.showAlert("Error", "Connection error. Please try again.", "error");
     }
   };
 
   const handleDeleteCategory = async (id: string, name: string) => {
     const confirmed = await dialog.showConfirm(
-      "Eliminar rubro",
-      `¿Estás seguro de eliminar "${name}"? Esta acción no se puede deshacer.`,
+      "Delete category",
+      `Are you sure you want to delete "${name}"? This action cannot be undone.`,
       "warning"
     );
 
@@ -119,13 +119,13 @@ export default function ConfigPage() {
 
       if (res.ok) {
         await fetchCategories();
-        dialog.showAlert("Éxito", "Rubro eliminado correctamente.", "success");
+        dialog.showAlert("Success", "Category deleted successfully.", "success");
       } else {
         const data = await res.json();
-        dialog.showAlert("Error", data.error || "Error al eliminar", "error");
+        dialog.showAlert("Error", data.error || "Failed to delete", "error");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error al eliminar. Intenta de nuevo.", "error");
+      dialog.showAlert("Error", "Failed to delete. Please try again.", "error");
     }
   };
 
@@ -150,12 +150,12 @@ export default function ConfigPage() {
 
       if (res.ok) {
         setHasChanges(false);
-        dialog.showAlert("Éxito", "Configuración guardada correctamente.", "success");
+        dialog.showAlert("Success", "Settings saved successfully.", "success");
       } else {
-        dialog.showAlert("Error", "Error al guardar. Intenta de nuevo.", "error");
+        dialog.showAlert("Error", "Failed to save. Please try again.", "error");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión. Intenta de nuevo.", "error");
+      dialog.showAlert("Error", "Connection error. Please try again.", "error");
     } finally {
       setIsSaving(false);
     }
@@ -176,7 +176,7 @@ export default function ConfigPage() {
   };
 
   const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("es-CO", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "COP",
       minimumFractionDigits: 0,
@@ -192,20 +192,20 @@ export default function ConfigPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-              Configuración de Rubros
+              Category Settings
             </h1>
             <p className="text-[var(--text-muted)] mt-1">
-              Configura el precio mínimo y comisión para cada rubro de asesoría
+              Set the minimum price and commission for each consultation category
             </p>
           </div>
           <div className="flex gap-2">
             <Button variant="secondary" onClick={() => setShowModal(true)}>
               <Plus className="w-4 h-4 mr-2" />
-              Nuevo rubro
+              New category
             </Button>
             <Button onClick={handleSave} disabled={!hasChanges || isSaving}>
               <Save className="w-4 h-4 mr-2" />
-              {isSaving ? "Guardando..." : "Guardar cambios"}
+              {isSaving ? "Saving..." : "Save changes"}
             </Button>
           </div>
         </div>
@@ -215,10 +215,10 @@ export default function ConfigPage() {
           <CardContent className="p-4 flex items-start gap-3">
             <Settings className="w-5 h-5 text-[var(--accent)] mt-0.5 flex-shrink-0" />
             <div className="text-sm text-[var(--text-primary)]">
-              <p className="font-medium mb-1">Configuración por rubro</p>
+              <p className="font-medium mb-1">Per-category settings</p>
               <p className="text-[var(--text-secondary)]">
-                Cada rubro tiene su propio precio mínimo y porcentaje de comisión.
-                Los asesores de cada rubro deben respetar estas configuraciones.
+                Each category has its own minimum price and commission percentage.
+                Advisors in each category must follow these settings.
               </p>
             </div>
           </CardContent>
@@ -266,14 +266,14 @@ export default function ConfigPage() {
                     <div>
                       <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
                         <DollarSign className="w-4 h-4 inline mr-1" />
-                        Precio mínimo
+                        Minimum price
                       </label>
                       <div className="flex items-center gap-2">
                         <CurrencyInput value={Math.round(category.minimumPriceCents / 100)} onChange={(v) => handleUpdateCategory(category.id, "minimumPriceCents", v * 100)} className="w-40" min={100} />
                         <span className="text-sm text-[var(--text-muted)]">pesos</span>
                       </div>
                       <p className="text-xs text-[var(--text-muted)] mt-1">
-                        Los asesores no pueden cobrar menos de esto
+                        Advisors cannot charge less than this
                       </p>
                     </div>
 
@@ -281,7 +281,7 @@ export default function ConfigPage() {
                     <div>
                       <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
                         <Percent className="w-4 h-4 inline mr-1" />
-                        Fee de plataforma
+                        Platform fee
                       </label>
                       <div className="flex items-center gap-2">
                         <Input
@@ -302,7 +302,7 @@ export default function ConfigPage() {
                         <span className="text-sm text-[var(--text-muted)]">%</span>
                       </div>
                       <p className="text-xs text-[var(--text-muted)] mt-1">
-                        Porcentaje que se añade al precio del asesor
+                        Percentage added to the advisor price
                       </p>
                     </div>
 
@@ -310,7 +310,7 @@ export default function ConfigPage() {
                     <div>
                       <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
                         <DollarSign className="w-4 h-4 inline mr-1" />
-                        Fee máximo
+                        Maximum fee
                       </label>
                       <div className="flex items-center gap-2">
                         <CurrencyInput
@@ -322,7 +322,7 @@ export default function ConfigPage() {
                         <span className="text-sm text-[var(--text-muted)]">pesos</span>
                       </div>
                       <p className="text-xs text-[var(--text-muted)] mt-1">
-                        Tope máximo del fee (si el % supera este valor)
+                        Maximum fee cap (if the % exceeds this value)
                       </p>
                     </div>
                   </div>
@@ -330,24 +330,24 @@ export default function ConfigPage() {
                   {/* Example calculation */}
                   <div className="mt-4 p-3 rounded-lg bg-[var(--background)]">
                     <p className="text-xs font-medium text-[var(--text-muted)] mb-2">
-                      Ejemplo de cálculo (servicio de $50,000):
+                      Calculation example (service of $50,000):
                     </p>
                     <div className="flex justify-between text-sm">
-                      <span className="text-[var(--text-muted)]">Precio del asesor:</span>
+                      <span className="text-[var(--text-muted)]">Advisor price:</span>
                       <span className="text-[var(--text-primary)]">
                         {formatCurrency(example.advisor)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-[var(--text-muted)]">
-                        Fee ({category.feePercentage}%){example.appliedMax ? ` → Máx: ${formatCurrency(category.maxFeeCents)}` : ""}:
+                        Fee ({category.feePercentage}%){example.appliedMax ? ` → Max: ${formatCurrency(category.maxFeeCents)}` : ""}:
                       </span>
                       <span className={example.appliedMax ? "text-[var(--warning)] font-medium" : "text-[var(--text-primary)]"}>
                         {formatCurrency(example.fee)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm font-medium border-t border-[var(--border)] mt-2 pt-2">
-                      <span className="text-[var(--text-primary)]">Total cliente:</span>
+                      <span className="text-[var(--text-primary)]">Client total:</span>
                       <span className="text-[var(--primary)]">
                         {formatCurrency(example.total)}
                       </span>
@@ -364,40 +364,40 @@ export default function ConfigPage() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <Card className="w-full max-w-lg">
               <CardHeader>
-                <CardTitle>Nuevo rubro</CardTitle>
+                <CardTitle>New category</CardTitle>
                 <CardDescription>
-                  Crea un nuevo rubro de asesoría
+                  Create a new consultation category
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">Nombre *</label>
+                  <label className="block text-sm font-medium mb-1.5">Name *</label>
                   <Input
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Ej: Nutrición, Ejercicio, Coaching..."
+                    placeholder="E.g. Nutrition, Fitness, Coaching..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">Descripción</label>
+                  <label className="block text-sm font-medium mb-1.5">Description</label>
                   <Input
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
-                    placeholder="Breve descripción del rubro"
+                    placeholder="Brief category description"
                   />
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1.5">
-                      Precio mínimo ($)
+                      Minimum price ($)
                     </label>
                     <CurrencyInput value={newMinPrice} onChange={setNewMinPrice} min={100} />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1.5">
-                      Fee plataforma (%)
+                      Platform fee (%)
                     </label>
                     <Input
                       type="number"
@@ -410,7 +410,7 @@ export default function ConfigPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1.5">
-                      Fee máximo ($)
+                      Maximum fee ($)
                     </label>
                     <CurrencyInput value={newMaxFee} onChange={setNewMaxFee} min={0} />
                   </div>
@@ -448,9 +448,9 @@ export default function ConfigPage() {
                       </span>
                     </div>
                     <div>
-                      <p className="font-medium">{newName || "Nombre del rubro"}</p>
+                      <p className="font-medium">{newName || "Category name"}</p>
                       <p className="text-xs text-[var(--text-muted)]">
-                        Mínimo: ${newMinPrice} · Fee: {newFee}% · Máx: ${newMaxFee}
+                        Min: ${newMinPrice} · Fee: {newFee}% · Max: ${newMaxFee}
                       </p>
                     </div>
                   </div>
@@ -464,10 +464,10 @@ export default function ConfigPage() {
                       resetForm();
                     }}
                   >
-                    Cancelar
+                    Cancel
                   </Button>
                   <Button onClick={handleCreateCategory}>
-                    Crear rubro
+                    Create category
                   </Button>
                 </div>
               </CardContent>

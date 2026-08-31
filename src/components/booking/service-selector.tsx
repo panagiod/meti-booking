@@ -21,10 +21,10 @@ export function ServiceSelector({
     <div className="space-y-4">
       <div>
         <h2 className="font-heading text-xl font-bold text-[var(--text-primary)]">
-          Selecciona el servicio
+          Select a service
         </h2>
         <p className="text-sm text-[var(--text-muted)] mt-1">
-          Elige la asesoría que necesitas
+          Choose the session you need
         </p>
       </div>
 
@@ -38,7 +38,7 @@ export function ServiceSelector({
               : Math.round(promo.discountValue * 100)
             : 0;
           const priceAfterDiscount = Math.max(service.priceCents - discount, 0);
-          // Fee siempre sobre el precio original (el descuento lo absorbe el asesor)
+          // Fee is always calculated on the original price (discount is absorbed by the advisor)
           const fee = Math.round(service.priceCents * 0.15);
           const totalOriginal = service.priceCents + fee;
           const totalWithDiscount = priceAfterDiscount + fee;
@@ -63,7 +63,7 @@ export function ServiceSelector({
                       </h3>
                       {isSelected && (
                         <Badge variant="default" className="text-xs">
-                          Seleccionado
+                          Selected
                         </Badge>
                       )}
                       {promo && (

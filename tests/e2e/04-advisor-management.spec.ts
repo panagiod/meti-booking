@@ -3,54 +3,54 @@ import { newApi, withSession, BASE_URL } from "../helpers/api";
 import { prisma } from "../helpers/db";
 import { createActiveAdvisor, futureDate } from "../helpers/fixtures";
 
-test.describe("04 · Gestión del asesor", () => {
-  test("servicios: crear, listar, actualizar (PUT con id), desactivar y eliminar", async ({ request }) => {
+test.describe("04 · Advisor management", () => {
+  test("services: create, list, update (PUT with id), deactivate, and delete", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const advisor = withSession(api, fixture.sessionToken);
 
-    // Crear
+    // Create
     const created = await advisor.post("/api/advisor/services", {
-      name: "Consultoría estratégica",
-      description: "Sesión de consultoría.",
+      name: "Strategic consulting",
+      description: "Consulting session.",
       durationMin: 60,
       priceCents: 10000,
       rescheduleHoursMin: 24,
     });
     expect(created.status(), await created.text()).toBe(201);
     const service = (await created.json()).service;
-    expect(service.name).toBe("Consultoría estratégica");
+    expect(service.name).toBe("Strategic consulting");
 
-    // Listar
+    // List
     const list = await advisor.get("/api/advisor/services");
     expect(list.status()).toBe(200);
     const { services } = await list.json();
     expect(services.length).toBeGreaterThanOrEqual(2);
     expect(services.some((s: any) => s.id === service.id)).toBe(true);
 
-    // Actualizar con id (regresión: antes faltaba el id y devolvía 400)
+    // Update with id (regression: id was missing and returned 400)
     const updated = await advisor.put("/api/advisor/services", {
       id: service.id,
-      name: "Consultoría estratégica v2",
+      name: "Strategic consulting v2",
       durationMin: 90,
       priceCents: 15000,
     });
     expect(updated.status(), await updated.text()).toBe(200);
-    expect((await updated.json()).service.name).toBe("Consultoría estratégica v2");
+    expect((await updated.json()).service.name).toBe("Strategic consulting v2");
 
-    // PUT sin id → 400
-    const noId = await advisor.put("/api/advisor/services", { name: "sin id" });
+    // PUT without id → 400
+    const noId = await advisor.put("/api/advisor/services", { name: "no id" });
     expect(noId.status()).toBe(400);
 
-    // Validación zod: duración menor a 15 → 400
+    // Zod validation: duration less than 15 → 400
     const invalid = await advisor.post("/api/advisor/services", {
-      name: "Invalida",
+      name: "Invalid",
       durationMin: 5,
       priceCents: 10000,
     });
     expect(invalid.status()).toBe(400);
 
-    // Desactivar toggle
+    // Deactivate toggle
     const toggle = await advisor.put("/api/advisor/services", {
       id: service.id,
       isActive: false,
@@ -58,7 +58,7 @@ test.describe("04 · Gestión del asesor", () => {
     expect(toggle.status()).toBe(200);
     expect((await toggle.json()).service.isActive).toBe(false);
 
-    // Eliminar
+    // Delete
     const del = await advisor.del(`/api/advisor/services?id=${service.id}`);
     expect(del.status(), await del.text()).toBe(200);
 
@@ -66,7 +66,7 @@ test.describe("04 · Gestión del asesor", () => {
     expect(dbService).toBeNull();
   });
 
-  test("perfil: bio, bookingLeadHours y toggle isHidden", async ({ request }) => {
+  test("profile: bio, bookingLeadHours, and isHidden toggle", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const advisor = withSession(api, fixture.sessionToken);
@@ -74,13 +74,13 @@ test.describe("04 · Gestión del asesor", () => {
     const category = await prisma.category.findUnique({ where: { slug: "legal" } });
 
     const update = await advisor.put("/api/advisor/profile", {
-      bio: "Bio de prueba E2E",
+      bio: "E2E test bio",
       bookingLeadHours: 6,
       categoryIds: [category!.id],
     });
     expect(update.status(), await update.text()).toBe(200);
 
-    // Ocultarse: no debe borrar bio ni otros campos (regresión del PUT parcial)
+    // Hide: must not erase bio or other fields (partial PUT regression)
     const hide = await advisor.put("/api/advisor/profile", { isHidden: true });
     expect(hide.status()).toBe(200);
 
@@ -88,33 +88,33 @@ test.describe("04 · Gestión del asesor", () => {
     expect(get.status()).toBe(200);
     const { profile } = await get.json();
     expect(profile.isHidden).toBe(true);
-    expect(profile.bio).toBe("Bio de prueba E2E");
+    expect(profile.bio).toBe("E2E test bio");
     expect(profile.categories.length).toBe(1);
 
-    // bookingLeadHours no viene en el GET: verificar en DB
+    // bookingLeadHours is not in GET: verify in DB
     const dbProfile = await prisma.advisorProfile.findUnique({
       where: { id: fixture.advisorId },
     });
     expect(dbProfile?.bookingLeadHours).toBe(6);
 
-    // Oculto: no aparece en el listado público
+    // Hidden: does not appear in public listing
     const publicList = await api.get(`${BASE_URL}/api/services`);
     const { advisors } = await publicList.json();
     expect(advisors.some((a: any) => a.id === fixture.advisorId)).toBe(false);
 
-    // Volver a visible
+    // Show again
     const show = await advisor.put("/api/advisor/profile", { isHidden: false });
     expect(show.status()).toBe(200);
   });
 
-  test("horarios: guardar y recuperar", async ({ request }) => {
+  test("schedule: save and retrieve", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const advisor = withSession(api, fixture.sessionToken);
 
     const schedule = Array.from({ length: 7 }, (_, dow) => ({
       dayOfWeek: dow,
-      isActive: dow !== 0, // domingo libre
+      isActive: dow !== 0, // Sunday off
       startTime: "09:00",
       endTime: "17:00",
       lunchStart: "12:00",
@@ -128,14 +128,14 @@ test.describe("04 · Gestión del asesor", () => {
     const get = await advisor.get("/api/advisor/schedule");
     expect(get.status()).toBe(200);
     const { schedules } = await get.json();
-    // El PUT solo persiste días activos (domingo quedó fuera)
+    // PUT only persists active days (Sunday was excluded)
     expect(schedules.length).toBe(6);
     const monday = schedules.find((s: any) => s.dayOfWeek === 1);
     expect(monday.startTime).toBe("09:00");
     expect(monday.lunchStart).toBe("12:00");
   });
 
-  test("bloqueos: crear, listar y eliminar", async ({ request }) => {
+  test("blocked times: create, list, and delete", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const advisor = withSession(api, fixture.sessionToken);
@@ -145,7 +145,7 @@ test.describe("04 · Gestión del asesor", () => {
     const end = new Date(start.getTime() + 3 * 24 * 60 * 60 * 1000);
 
     const created = await advisor.post("/api/advisor/blocked-times", {
-      title: "Vacaciones E2E",
+      title: "E2E Vacation",
       startDate: start.toISOString(),
       endDate: end.toISOString(),
       isAllDay: true,
@@ -164,7 +164,7 @@ test.describe("04 · Gestión del asesor", () => {
     ).toBeNull();
   });
 
-  test("promociones: crear con descuento y consultar por servicio", async ({ request }) => {
+  test("promotions: create with discount and query by service", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const advisor = withSession(api, fixture.sessionToken);
@@ -176,7 +176,7 @@ test.describe("04 · Gestión del asesor", () => {
 
     const created = await advisor.post("/api/advisor/promotions", {
       serviceId: fixture.serviceId,
-      name: "Promo E2E 20%",
+      name: "E2E Promo 20%",
       discountType: "percentage",
       discountValue: 20,
       startAt: start.toISOString(),
@@ -184,17 +184,17 @@ test.describe("04 · Gestión del asesor", () => {
     });
     expect(created.status(), await created.text()).toBe(201);
 
-    // Consulta pública de promoción activa
+    // Public query for active promotion
     const pub = await api.get(`${BASE_URL}/api/promotions?serviceId=${fixture.serviceId}`);
     expect(pub.status()).toBe(200);
     const { promotion } = await pub.json();
     expect(promotion).toBeTruthy();
     expect(promotion.discountValue).toBe(20);
 
-    // Fecha fin <= inicio → 400
+    // End date <= start date → 400
     const invalid = await advisor.post("/api/advisor/promotions", {
       serviceId: fixture.serviceId,
-      name: "Invalida",
+      name: "Invalid",
       discountType: "percentage",
       discountValue: 20,
       startAt: end.toISOString(),

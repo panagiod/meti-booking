@@ -105,7 +105,7 @@ export async function PATCH(
     // Only PENDING appointments can be cancelled via this endpoint
     if (appointment.status !== "PENDING") {
       return NextResponse.json(
-        { error: "Solo las citas con pago pendiente pueden ser canceladas" },
+        { error: "Only appointments with pending payment can be cancelled" },
         { status: 400 }
       );
     }
@@ -115,7 +115,7 @@ export async function PATCH(
       where: { id: appointment.id },
       data: {
         status: "CANCELLED",
-        cancelReason: reason || (isClient ? "Cancelado por el cliente" : "Cancelado por el asesor"),
+        cancelReason: reason || (isClient ? "Cancelled by client" : "Cancelled by advisor"),
         cancelledAt: new Date(),
       },
     });

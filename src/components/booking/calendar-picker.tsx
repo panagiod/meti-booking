@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isBefore, startOfDay } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -27,7 +27,7 @@ export function CalendarPicker({
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   // Get day names
-  const dayNames = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   // Create a map of available dates for quick lookup
   const availableDatesMap = new Map(
@@ -38,10 +38,10 @@ export function CalendarPicker({
     <div className="space-y-4">
       <div>
         <h2 className="font-heading text-xl font-bold text-[var(--text-primary)]">
-          Selecciona una fecha
+          Select a date
         </h2>
         <p className="text-sm text-[var(--text-muted)] mt-1">
-          Elige el día de tu asesoría
+          Choose the day for your session
         </p>
       </div>
 
@@ -57,7 +57,7 @@ export function CalendarPicker({
               <ChevronLeft className="w-5 h-5" />
             </Button>
             <h3 className="font-heading font-semibold text-[var(--text-primary)] capitalize">
-              {format(currentMonth, "MMMM yyyy", { locale: es })}
+              {format(currentMonth, "MMMM yyyy", { locale: enUS })}
             </h3>
             <Button
               variant="ghost"
@@ -123,11 +123,11 @@ export function CalendarPicker({
           <div className="flex items-center justify-center gap-4 mt-4 text-xs text-[var(--text-muted)]">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-[var(--accent)]" />
-              Disponible
+              Available
             </span>
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-[var(--primary)]" />
-              Seleccionado
+              Selected
             </span>
           </div>
         </CardContent>

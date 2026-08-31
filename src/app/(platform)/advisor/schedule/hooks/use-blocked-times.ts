@@ -24,7 +24,7 @@ export function useBlockedTimes() {
 
   const createBlock = useCallback(async () => {
     if (!blockTitle.trim()) {
-      dialog.showAlert("Campo requerido", "El título es requerido", "warning");
+      dialog.showAlert("Required field", "Title is required", "warning");
       return;
     }
 
@@ -46,17 +46,17 @@ export function useBlockedTimes() {
         setBlockedTimes((prev) => [...prev, data.blockedTime]);
         setShowModal(false);
         resetForm();
-        dialog.showAlert("Éxito", "Horario bloqueado", "success");
+        dialog.showAlert("Success", "Time slot blocked", "success");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión", "error");
+      dialog.showAlert("Error", "Connection error", "error");
     }
   }, [blockTitle, blockStartDate, blockEndDate, dialog]);
 
   const deleteBlock = useCallback(async (id: string) => {
     const confirmed = await dialog.showConfirm(
-      "Eliminar bloqueo",
-      "¿Estás seguro de eliminar este bloqueo?",
+      "Remove block",
+      "Are you sure you want to remove this block?",
       "warning"
     );
 
@@ -67,9 +67,9 @@ export function useBlockedTimes() {
           credentials: "include",
         });
         setBlockedTimes((prev) => prev.filter((bt) => bt.id !== id));
-        dialog.showAlert("Éxito", "Bloqueo eliminado", "success");
+        dialog.showAlert("Success", "Block removed", "success");
       } catch (error) {
-        dialog.showAlert("Error", "Error al eliminar", "error");
+        dialog.showAlert("Error", "Failed to delete", "error");
       }
     }
   }, [dialog]);

@@ -5,11 +5,11 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 const serviceSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido"),
+  name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
   categoryId: z.string().optional(),
-  durationMin: z.number().min(15, "Mínimo 15 minutos").max(480, "Máximo 8 horas"),
-  priceCents: z.number().min(10000, "Precio mínimo $100"),
+  durationMin: z.number().min(15, "Minimum 15 minutes").max(480, "Maximum 8 hours"),
+  priceCents: z.number().min(10000, "Minimum price $100"),
   rescheduleHoursMin: z.number().min(0).max(168).default(24),
 });
 
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
 
     if (!advisorProfile.isActive) {
       return NextResponse.json(
-        { error: "No puedes crear servicios hasta ser aprobado por un administrador del sistema." },
+        { error: "You cannot create services until approved by a system administrator." },
         { status: 403 }
       );
     }

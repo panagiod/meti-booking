@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { join } from "node:path";
 import { readFile } from "node:fs/promises";
 
-export const alt = "Meti - Asesorías Profesionales Online";
+export const alt = "Meti - Professional Online Advisory";
 export const size = {
   width: 1200,
   height: 630,
@@ -80,7 +80,7 @@ export default async function Image() {
               marginBottom: 28,
             }}
           >
-            Asesorías Profesionales Online
+            Professional Online Advisory
           </div>
           <div
             style={{
@@ -93,7 +93,7 @@ export default async function Image() {
               textAlign: "center",
             }}
           >
-            Conecta con asesores expertos. Videollamadas, chat y gestión completa.
+            Connect with expert advisors. Video calls, chat, and complete session management.
           </div>
           <div
             style={{

@@ -23,7 +23,7 @@ export default function NewBlogPostPage() {
 
   const handleSubmit = async (status: "DRAFT" | "PUBLISHED") => {
     if (!form.title || !form.content) {
-      alert("Título y contenido son requeridos");
+      alert("Title and content are required");
       return;
     }
 
@@ -39,11 +39,11 @@ export default function NewBlogPostPage() {
         router.push("/admin/blog");
       } else {
         const data = await response.json();
-        alert(data.error || "Error al crear la entrada");
+        alert(data.error || "Failed to create post");
       }
     } catch (error) {
       console.error("Error creating post:", error);
-      alert("Error al crear la entrada");
+      alert("Failed to create post");
     } finally {
       setIsSaving(false);
     }
@@ -62,10 +62,10 @@ export default function NewBlogPostPage() {
           </Link>
           <div>
             <h1 className="font-heading text-2xl font-bold text-[var(--text-primary)]">
-              Nueva entrada
+              New post
             </h1>
             <p className="text-sm text-[var(--text-muted)]">
-              Crea una nueva entrada para el blog
+              Create a new blog post
             </p>
           </div>
         </div>
@@ -76,11 +76,11 @@ export default function NewBlogPostPage() {
             disabled={isSaving}
           >
             <Save className="w-4 h-4 mr-2" />
-            Guardar borrador
+            Save draft
           </Button>
           <Button onClick={() => handleSubmit("PUBLISHED")} disabled={isSaving}>
             <Eye className="w-4 h-4 mr-2" />
-            Publicar
+            Publish
           </Button>
         </div>
       </div>
@@ -94,13 +94,13 @@ export default function NewBlogPostPage() {
               htmlFor="title"
               className="text-sm font-medium text-[var(--text-primary)]"
             >
-              Título *
+              Title *
             </label>
             <Input
               id="title"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Título de la entrada"
+              placeholder="Post title"
             />
           </div>
 
@@ -116,7 +116,7 @@ export default function NewBlogPostPage() {
               id="excerpt"
               value={form.excerpt}
               onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
-              placeholder="Breve descripción de la entrada (opcional)"
+              placeholder="Brief post description (optional)"
               rows={2}
               className="flex w-full rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus-visible:outline-none focus-visible:border-[var(--primary)] focus-visible:ring-2 focus-visible:ring-[var(--primary)]/15 resize-none"
             />
@@ -125,7 +125,7 @@ export default function NewBlogPostPage() {
           {/* Cover Image */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-[var(--text-primary)]">
-              Imagen de portada
+              Cover image
             </label>
             <ImageUpload
               value={form.coverImage}
@@ -144,7 +144,7 @@ export default function NewBlogPostPage() {
             <RichEditor
               content={form.content}
               onChange={(content) => setForm({ ...form, content })}
-              placeholder="Escribe el contenido de tu entrada aquí..."
+              placeholder="Write your post content here..."
             />
           </div>
         </CardContent>

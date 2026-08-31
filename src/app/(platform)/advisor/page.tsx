@@ -9,7 +9,7 @@ import Link from "next/link";
 import { sileo } from "sileo";
 import { useAdvisorDashboard } from "@/lib/hooks";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import {
   Calendar,
   Briefcase,
@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 
 function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("es-CO", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 0,
@@ -30,16 +30,16 @@ function formatCurrency(cents: number) {
 export default function AdvisorDashboard() {
   const { data, isLoading, error } = useAdvisorDashboard();
 
-  // Alerta de nuevas reservas: muestra un toast por cada cita nueva
-  // desde la última vez que el asesor visitó su panel.
+  // New booking alert: shows a toast for each new appointment
+  // since the advisor last visited their dashboard.
   useEffect(() => {
     if (!data?.recentAppointments?.length) return;
     const lastSeenId = localStorage.getItem("meti-last-seen-appointment");
     for (const apt of data.recentAppointments) {
       if (apt.id !== lastSeenId) {
         sileo.action({
-          title: "🔔 Nueva reserva",
-          description: `${apt.clientName} reservó ${apt.serviceName} para ${format(new Date(apt.scheduledAt), "EEE d 'de' MMM 'a las' HH:mm", { locale: es })}`,
+          title: "🔔 New booking",
+          description: `${apt.clientName} booked ${apt.serviceName} for ${format(new Date(apt.scheduledAt), "EEE, MMM d 'at' HH:mm", { locale: enUS })}`,
           duration: 8000,
         });
       }
@@ -71,7 +71,7 @@ export default function AdvisorDashboard() {
           Dashboard
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Resumen de tu actividad como asesor
+          Overview of your activity as an advisor
         </p>
       </div>
 
@@ -81,7 +81,7 @@ export default function AdvisorDashboard() {
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Citas esta semana</p>
+                <p className="text-sm text-[var(--text-muted)]">Appointments this week</p>
                 <p className="text-2xl font-heading font-bold text-[var(--text-primary)] mt-1">
                   {stats.weekAppointments}
                 </p>
@@ -97,7 +97,7 @@ export default function AdvisorDashboard() {
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Servicios activos</p>
+                <p className="text-sm text-[var(--text-muted)]">Active services</p>
                 <p className="text-2xl font-heading font-bold text-[var(--text-primary)] mt-1">
                   {stats.servicesCount}
                 </p>
@@ -113,7 +113,7 @@ export default function AdvisorDashboard() {
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Ingresos del mes</p>
+                <p className="text-sm text-[var(--text-muted)]">Monthly revenue</p>
                 <p className="text-2xl font-heading font-bold text-[var(--text-primary)] mt-1">
                   {formatCurrency(stats.monthEarnings)}
                 </p>
@@ -129,7 +129,7 @@ export default function AdvisorDashboard() {
           <CardContent className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Calificación</p>
+                <p className="text-sm text-[var(--text-muted)]">Rating</p>
                 <p className="text-2xl font-heading font-bold text-[var(--text-primary)] mt-1">
                   {stats.rating > 0 ? stats.rating.toFixed(1) : "-"}
                 </p>
@@ -147,20 +147,20 @@ export default function AdvisorDashboard() {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg">Próximas citas</CardTitle>
+              <CardTitle className="text-lg">Upcoming appointments</CardTitle>
               <Link
                 href="/advisor/schedule"
                 className="text-sm text-[var(--primary)] hover:underline flex items-center gap-1"
               >
-                Ver todas <ArrowRight className="w-4 h-4" />
+                View all <ArrowRight className="w-4 h-4" />
               </Link>
             </CardHeader>
             <CardContent>
               {upcomingAppointments.length === 0 ? (
                 <EmptyState
                   icon={Calendar}
-                  title="Sin citas programadas"
-                  description="Cuando los clientes agenden asesorías, aparecerán aquí."
+                  title="No scheduled appointments"
+                  description="When clients book consultations, they will appear here."
                 />
               ) : (
                 <div className="space-y-4">
@@ -186,7 +186,7 @@ export default function AdvisorDashboard() {
                       </div>
                       <div className="text-right">
                         <p className="font-medium text-[var(--text-primary)]">
-                          {format(new Date(apt.scheduledAt), "d MMM, HH:mm", { locale: es })}
+                          {format(new Date(apt.scheduledAt), "d MMM, HH:mm", { locale: enUS })}
                         </p>
                         <p className="text-sm text-[var(--text-muted)]">
                           {apt.duration} min
@@ -204,13 +204,13 @@ export default function AdvisorDashboard() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Acciones rápidas</CardTitle>
+              <CardTitle className="text-lg">Quick actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button className="w-full justify-start" asChild>
                 <Link href="/advisor/services">
                   <Plus className="w-4 h-4 mr-2" />
-                  Crear servicio
+                  Create service
                 </Link>
               </Button>
               <Button
@@ -220,7 +220,7 @@ export default function AdvisorDashboard() {
               >
                 <Link href="/advisor/schedule">
                   <Calendar className="w-4 h-4 mr-2" />
-                  Configurar horarios
+                  Set up schedule
                 </Link>
               </Button>
               <Button
@@ -230,7 +230,7 @@ export default function AdvisorDashboard() {
               >
                 <Link href="/advisor/mercadopago">
                   <DollarSign className="w-4 h-4 mr-2" />
-                  Configurar pagos
+                  Set up payments
                 </Link>
               </Button>
             </CardContent>
@@ -239,11 +239,11 @@ export default function AdvisorDashboard() {
           <Card className="bg-gradient-to-br from-[var(--primary)] to-[var(--primary-hover)] text-white">
             <CardContent className="p-6">
               <h3 className="font-heading font-semibold mb-2">
-                💡 Consejo del día
+                💡 Tip of the day
               </h3>
               <p className="text-sm text-white/90">
-                Completa tu perfil con un video de presentación para atraer más
-                clientes. Los asesores con video reciben 3x más reservas.
+                Complete your profile with an introduction video to attract more
+                clients. Advisors with a video receive 3x more bookings.
               </p>
             </CardContent>
           </Card>

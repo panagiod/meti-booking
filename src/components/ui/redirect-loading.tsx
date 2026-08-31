@@ -7,18 +7,18 @@ import { cn } from "@/lib/utils";
 const STEPS = [
   {
     icon: ShieldCheck,
-    title: "Verificando tu sesión",
-    description: "Confirmando credenciales de acceso",
+    title: "Verifying your session",
+    description: "Confirming access credentials",
   },
   {
     icon: UserCheck,
-    title: "Validando tu cuenta",
-    description: "Revisando tu rol y permisos",
+    title: "Validating your account",
+    description: "Checking your role and permissions",
   },
   {
     icon: Sparkles,
-    title: "Preparando tu espacio",
-    description: "Cargando tu panel personalizado",
+    title: "Preparing your workspace",
+    description: "Loading your personalized dashboard",
   },
 ];
 
@@ -61,7 +61,7 @@ export function RedirectLoading() {
         </div>
 
         <h1 className="font-heading text-2xl sm:text-3xl font-bold text-[var(--text-primary)] animate-[fade-in-up_0.5s_var(--ease-out)_forwards]">
-          Bienvenido a Meti
+          Welcome to Meti
         </h1>
         <div
           key={step}
@@ -117,7 +117,7 @@ export function RedirectLoading() {
                 </span>
                 {done && (
                   <span className="ml-auto text-xs font-medium text-[var(--success)]">
-                    Listo
+                    Done
                   </span>
                 )}
               </div>
@@ -127,7 +127,7 @@ export function RedirectLoading() {
       </div>
 
       <p className="absolute bottom-6 text-xs text-[var(--text-muted)]">
-        Meti · Asesorías profesionales online
+        Meti · Professional online consultations
       </p>
     </div>
   );

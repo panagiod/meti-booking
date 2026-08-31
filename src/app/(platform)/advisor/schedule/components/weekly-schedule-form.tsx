@@ -27,7 +27,7 @@ export function WeeklyScheduleForm({
       <div className="flex justify-end">
         <Button onClick={onSave} disabled={!hasChanges}>
           <Save className="w-4 h-4 mr-2" />
-          Guardar horarios
+          Save schedule
         </Button>
       </div>
 
@@ -60,7 +60,7 @@ export function WeeklyScheduleForm({
               {day.isActive ? (
                 <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div>
-                    <label className="block text-xs text-[var(--text-muted)] mb-1">Inicio</label>
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">Start</label>
                     <Input
                       type="time"
                       value={day.startTime}
@@ -69,7 +69,7 @@ export function WeeklyScheduleForm({
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-[var(--text-muted)] mb-1">Fin</label>
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">End</label>
                     <Input
                       type="time"
                       value={day.endTime}
@@ -78,7 +78,7 @@ export function WeeklyScheduleForm({
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-[var(--text-muted)] mb-1">Almuerzo inicio</label>
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">Lunch start</label>
                     <Input
                       type="time"
                       value={day.lunchStart}
@@ -87,7 +87,7 @@ export function WeeklyScheduleForm({
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-[var(--text-muted)] mb-1">Almuerzo fin</label>
+                    <label className="block text-xs text-[var(--text-muted)] mb-1">Lunch end</label>
                     <Input
                       type="time"
                       value={day.lunchEnd}
@@ -98,7 +98,7 @@ export function WeeklyScheduleForm({
                 </div>
               ) : (
                 <div className="flex-1 text-sm text-[var(--text-muted)] italic">
-                  No disponible
+                  Not available
                 </div>
               )}
             </div>
@@ -107,7 +107,7 @@ export function WeeklyScheduleForm({
               <div className="mt-4 pt-4 border-t border-[var(--border)] flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-[var(--text-muted)]" />
-                  <span className="text-sm text-[var(--text-muted)]">Brecha:</span>
+                  <span className="text-sm text-[var(--text-muted)]">Gap:</span>
                   <Input
                     type="number"
                     value={day.gapMinutes}

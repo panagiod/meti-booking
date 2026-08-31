@@ -22,22 +22,22 @@ export default function NotFound() {
 
         {/* Message */}
         <h2 className="font-heading text-2xl md:text-3xl font-bold text-[var(--text-primary)] mb-4">
-          Página no encontrada
+          Page not found
         </h2>
         <p className="text-[var(--text-muted)] mb-8">
-          Lo sentimos, la página que buscas no existe o ha sido movida a otra ubicación.
+          Sorry, the page you are looking for does not exist or has been moved.
         </p>
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button onClick={() => window.history.back()} variant="secondary">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver atrás
+            Go back
           </Button>
           <Button asChild>
             <Link href="/">
               <Home className="w-4 h-4 mr-2" />
-              Ir al inicio
+              Go to home
             </Link>
           </Button>
         </div>
@@ -45,26 +45,26 @@ export default function NotFound() {
         {/* Helpful links */}
         <div className="mt-12 pt-8 border-t border-[var(--border)]">
           <p className="text-sm text-[var(--text-muted)] mb-4">
-            ¿Necesitas ayuda? Prueba estas opciones:
+            Need help? Try these options:
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <Link
               href="/services"
               className="text-[var(--primary)] hover:underline"
             >
-              Explorar asesores
+              Browse advisors
             </Link>
             <Link
               href="/dashboard"
               className="text-[var(--primary)] hover:underline"
             >
-              Mi panel
+              My dashboard
             </Link>
             <Link
               href="/login"
               className="text-[var(--primary)] hover:underline"
             >
-              Iniciar sesión
+              Sign in
             </Link>
           </div>
         </div>

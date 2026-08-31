@@ -6,36 +6,36 @@ const steps = [
   {
     icon: Search,
     number: "01",
-    title: "Busca",
+    title: "Search",
     description:
-      "Explora asesores por categoría, precio o calificación. Mira videos de presentación y reseñas de otros clientes.",
+      "Browse advisors by category, price, or rating. Watch introduction videos and read reviews from other clients.",
     color: "var(--primary)",
     bgColor: "var(--primary-light)",
   },
   {
     icon: Calendar,
     number: "02",
-    title: "Agenda",
+    title: "Book",
     description:
-      "Selecciona el servicio que necesitas y elige un horario disponible. Paga de forma segura con Mercado Pago.",
+      "Select the service you need and choose an available time slot. Pay securely with Mercado Pago.",
     color: "var(--accent)",
     bgColor: "var(--accent-light)",
   },
   {
     icon: Video,
     number: "03",
-    title: "Conecta",
+    title: "Connect",
     description:
-      "Únete a la videollamada al momento acordado. Comparte documentos por chat si es necesario.",
+      "Join the video call at the agreed time. Share documents via chat if needed.",
     color: "#8b5cf6",
     bgColor: "#ede9fe",
   },
   {
     icon: Star,
     number: "04",
-    title: "Califica",
+    title: "Rate",
     description:
-      "Después de la asesoría, califica tu experiencia. Tu feedback ayuda a otros clientes a elegir.",
+      "After your session, rate your experience. Your feedback helps other clients choose.",
     color: "var(--warning)",
     bgColor: "var(--warning-light)",
   },
@@ -47,10 +47,10 @@ export function HowItWorks() {
       <div className="container-meti">
         <div className="text-center mb-16">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
-            Cómo funciona
+            How it works
           </h2>
           <p className="text-lg text-[var(--text-muted)] max-w-2xl mx-auto">
-            Encontrar y agendar una asesoría profesional nunca fue tan fácil.
+            Finding and booking a professional advisory session has never been easier.
           </p>
         </div>
 

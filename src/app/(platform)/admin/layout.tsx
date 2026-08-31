@@ -30,17 +30,17 @@ const navigation = [
     icon: LayoutDashboard,
   },
   {
-    name: "Asesores",
+    name: "Advisors",
     href: "/admin/advisors",
     icon: Briefcase,
   },
   {
-    name: "Verificación",
+    name: "Verification",
     href: "/admin/verification",
     icon: CheckCircle,
   },
   {
-    name: "Usuarios",
+    name: "Users",
     href: "/admin/users",
     icon: Users,
   },
@@ -50,12 +50,12 @@ const navigation = [
     icon: BookOpen,
   },
   {
-    name: "Facturación",
+    name: "Billing",
     href: "/admin/invoices",
     icon: FileText,
   },
   {
-    name: "Configuración",
+    name: "Settings",
     href: "/admin/config",
     icon: Settings,
   },
@@ -80,7 +80,7 @@ export default function AdminLayout({
           router.push("/login");
           return;
         }
-        // Solo admin puede estar aquí
+        // Only admins can access this area
         const role = (data.user as any).role;
         if (role !== "ADMIN") {
           router.push(role === "ADVISOR" ? "/advisor" : "/dashboard");
@@ -103,7 +103,7 @@ export default function AdminLayout({
   };
 
   if (isLoading) {
-    return <LoadingPage fullScreen label="Verificando permisos de administrador" />;
+    return <LoadingPage fullScreen label="Verifying administrator permissions" />;
   }
 
   if (!user) {
@@ -145,7 +145,7 @@ export default function AdminLayout({
           <div className="px-4 py-3 border-b border-white/10">
             <div className="flex items-center gap-2 text-sm">
               <Shield className="w-4 h-4 text-[var(--accent)]" />
-              <span className="text-white/90">Panel de Administración</span>
+              <span className="text-white/90">Admin Dashboard</span>
             </div>
           </div>
 
@@ -207,7 +207,7 @@ export default function AdminLayout({
               onClick={handleSignOut}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Cerrar sesión
+              Sign out
             </Button>
           </div>
         </div>

@@ -1,7 +1,7 @@
 {
-  "name": "Meti",
+  "name": "Meti Booking",
   "short_name": "Meti",
-  "description": "Asesorías profesionales online — sabiduría experta, a un clic de distancia.",
+  "description": "Professional online advisory — expert wisdom, one click away.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fafafa",

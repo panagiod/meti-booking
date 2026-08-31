@@ -121,14 +121,14 @@ export async function POST(request: NextRequest) {
     // Validate format
     if (!publicKey.startsWith("APP_USR-")) {
       return NextResponse.json(
-        { error: "Public Key inválido. Debe comenzar con APP_USR-" },
+        { error: "Invalid Public Key. It must start with APP_USR-" },
         { status: 400 }
       );
     }
 
     if (!accessToken.startsWith("APP_USR-")) {
       return NextResponse.json(
-        { error: "Access Token inválido. Debe comenzar con APP_USR-" },
+        { error: "Invalid Access Token. It must start with APP_USR-" },
         { status: 400 }
       );
     }

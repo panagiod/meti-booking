@@ -84,10 +84,10 @@ export default function OnboardingPage() {
           }
         }
 
-        const userWithRole = data.user as any;
+        const userWithRolee = data.user as any;
 
-        // Si no hay ningún admin, mostrar onboarding siempre
-        // para que el primer usuario pueda elegir ser admin
+        // If there are no admins, always show onboarding
+        // so the first user can choose to be admin
         try {
           const adminRes = await fetch("/api/admin/setup");
           const { hasAdmins } = await adminRes.json();
@@ -97,9 +97,9 @@ export default function OnboardingPage() {
           }
         } catch {}
 
-        // Si ya hay admins y el usuario tiene rol, redirigir al panel correspondiente
-        if (userWithRole.role) {
-          switch (userWithRole.role) {
+        // If admins exist and user has a role, redirect to the appropriate dashboard
+        if (userWithRolee.role) {
+          switch (userWithRolee.role) {
             case "ADMIN":
               router.push("/admin");
               break;
@@ -157,7 +157,7 @@ export default function OnboardingPage() {
         router.push("/admin");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión. Intenta de nuevo.", "error");
+      dialog.showAlert("Error", "Connection error. Please try again.", "error");
     } finally {
       setIsSettingUp(false);
     }
@@ -176,7 +176,7 @@ export default function OnboardingPage() {
         router.push("/dashboard");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión. Intenta de nuevo.", "error");
+      dialog.showAlert("Error", "Connection error. Please try again.", "error");
     } finally {
       setIsSettingUp(false);
     }
@@ -185,8 +185,8 @@ export default function OnboardingPage() {
   const handleCategoriesSubmit = () => {
     if (selectedCategories.length === 0) {
       dialog.showAlert(
-        "Selección requerida",
-        "Por favor selecciona al menos un rubro de experticia.",
+        "Selection required",
+        "Please select at least one area of expertise.",
         "warning"
       );
       return;
@@ -207,8 +207,8 @@ export default function OnboardingPage() {
   const handleDocumentsSubmit = async () => {
     if (documents.length === 0) {
       dialog.showAlert(
-        "Documentos requeridos",
-        "Por favor carga al menos un documento de verificación.",
+        "Documents required",
+        "Please upload at least one verification document.",
         "warning"
       );
       return;
@@ -247,7 +247,7 @@ export default function OnboardingPage() {
     } catch (error) {
       dialog.showAlert(
         "Error",
-        "Error al enviar documentos. Intenta de nuevo.",
+        "Failed to submit documents. Please try again.",
         "error"
       );
     } finally {
@@ -275,16 +275,16 @@ export default function OnboardingPage() {
               <Clock className="w-8 h-8 text-[var(--warning)]" />
             </div>
             <h2 className="font-heading text-2xl font-bold text-[var(--text-primary)] mb-2">
-              ¡Solicitud enviada!
+              Application submitted!
             </h2>
             <p className="text-[var(--text-muted)] mb-4">
-              Tu perfil y documentos están siendo revisados. Te notificaremos cuando sea aprobado.
+              Your profile and documents are being reviewed. We will notify you when approved.
             </p>
             <p className="text-sm text-[var(--text-muted)]">
-              Mientras tanto, puedes explorar la plataforma como cliente.
+              In the meantime, you can explore the platform as a client.
             </p>
             <Button className="mt-6" onClick={() => router.push("/advisor")}>
-              Ir al Panel de Asesor
+              Go to Advisor Dashboard
             </Button>
           </CardContent>
         </Card>
@@ -305,26 +305,26 @@ export default function OnboardingPage() {
               onClick={() => setStep("categories")}
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
-              Volver
+              Back
             </Button>
-            <CardTitle className="text-center mt-8">Documentos de verificación</CardTitle>
+            <CardTitle className="text-center mt-8">Verification documents</CardTitle>
             <CardDescription className="text-center">
-              Carga documentos que acrediten tu experiencia profesional
+              Upload documents that verify your professional experience
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Document Type */}
             <div>
-              <label className="block text-sm font-medium mb-2">Tipo de documento</label>
+              <label className="block text-sm font-medium mb-2">Document type</label>
               <Select
                 value={documentType}
                 onChange={(value) => setDocumentType(value)}
                 options={[
-                  { value: "CERTIFICATE", label: "Certificado profesional" },
-                  { value: "LICENSE", label: "Licencia profesional" },
-                  { value: "DEGREE", label: "Título universitario" },
-                  { value: "RESUME", label: "Hoja de vida / CV" },
-                  { value: "OTHER", label: "Otro documento" },
+                  { value: "CERTIFICATE", label: "Professional certificate" },
+                  { value: "LICENSE", label: "Professional license" },
+                  { value: "DEGREE", label: "University degree" },
+                  { value: "RESUME", label: "Resume / CV" },
+                  { value: "OTHER", label: "Other document" },
                 ]}
               />
             </div>
@@ -333,10 +333,10 @@ export default function OnboardingPage() {
             <div className="border-2 border-dashed border-[var(--border)] rounded-lg p-6 text-center">
               <Upload className="w-8 h-8 text-[var(--text-muted)] mx-auto mb-2" />
               <p className="text-sm text-[var(--text-muted)] mb-2">
-                Arrastra archivos o haz clic para seleccionar
+                Drag files or click to select
               </p>
               <p className="text-xs text-[var(--text-muted)] mb-4">
-                PDF, JPEG, PNG o WebP (máx. 10MB cada uno)
+                PDF, JPEG, PNG or WebP (max. 10MB each)
               </p>
               <input
                 type="file"
@@ -351,14 +351,14 @@ export default function OnboardingPage() {
                 size="sm"
                 onClick={() => document.getElementById("file-upload")?.click()}
               >
-                Seleccionar archivos
+                Select files
               </Button>
             </div>
 
             {/* Uploaded Files */}
             {documents.length > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium">Archivos seleccionados:</p>
+                <p className="text-sm font-medium">Selected files:</p>
                 {documents.map((doc, index) => (
                   <div
                     key={index}
@@ -391,7 +391,7 @@ export default function OnboardingPage() {
                 </>
               ) : (
                 <>
-                  Enviar para verificación
+                  Submit for verification
                   <CheckCircle className="w-4 h-4 ml-2" />
                 </>
               )}
@@ -415,18 +415,18 @@ export default function OnboardingPage() {
               onClick={() => setStep("role")}
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
-              Volver
+              Back
             </Button>
-            <CardTitle className="text-center mt-8">Tus áreas de experticia</CardTitle>
+            <CardTitle className="text-center mt-8">Your areas of expertise</CardTitle>
             <CardDescription className="text-center">
-              Selecciona los rubros en los que tienes experiencia (puedes elegir varios)
+              Select the categories where you have experience (you can choose several)
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Selected count */}
             <div className="text-center">
               <Badge variant={selectedCategories.length > 0 ? "default" : "outline"}>
-                {selectedCategories.length} seleccionados
+                {selectedCategories.length} selected
               </Badge>
             </div>
 
@@ -468,10 +468,10 @@ export default function OnboardingPage() {
 
             {/* Bio */}
             <div>
-              <label className="block text-sm font-medium mb-2">Biografía (opcional)</label>
+              <label className="block text-sm font-medium mb-2">Bio (optional)</label>
               <textarea
                 className="w-full h-24 px-3 py-2 border border-[var(--border)] rounded-lg text-sm resize-none"
-                placeholder="Cuéntanos sobre tu experiencia..."
+                placeholder="Tell us about your experience..."
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
               />
@@ -482,7 +482,7 @@ export default function OnboardingPage() {
               onClick={handleCategoriesSubmit}
               disabled={selectedCategories.length === 0}
             >
-              Continuar
+              Continue
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </CardContent>
@@ -491,7 +491,7 @@ export default function OnboardingPage() {
     );
   }
 
-  // Role selection step
+  // Rolee selection step
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-[var(--secondary)] to-[var(--secondary-light)] flex items-center justify-center p-4">
@@ -501,10 +501,10 @@ export default function OnboardingPage() {
               <span className="text-2xl font-bold text-[var(--primary)]">M</span>
             </div>
             <CardTitle className="text-2xl font-heading">
-              ¡Bienvenido a Meti!
+              Welcome to Meti!
             </CardTitle>
             <CardDescription>
-              Hola {user.name}, ¿qué quieres hacer en Meti?
+              Hello {user.name}, what would you like to do on Meti?
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -520,10 +520,10 @@ export default function OnboardingPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-heading font-semibold text-[var(--text-primary)]">
-                    Ser Asesor
+                    Become an Advisor
                   </h3>
                   <p className="text-sm text-[var(--text-muted)]">
-                    Ofrece tus servicios profesionales. Requiere verificación de documentos.
+                    Offer your professional services. Requires document verification.
                   </p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-[var(--accent)] mt-1" />
@@ -542,10 +542,10 @@ export default function OnboardingPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-heading font-semibold text-[var(--text-primary)]">
-                    Cliente
+                    Client
                   </h3>
                   <p className="text-sm text-[var(--text-muted)]">
-                    Busca y agenda asesorías con profesionales.
+                    Endd and book consultations with professionals.
                   </p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-[var(--text-muted)]" />

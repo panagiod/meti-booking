@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Permite aislar el build de pruebas (Playwright) del dev server local
+  // Isolates the Playwright test build from the local dev server
   distDir: process.env.NEXT_DIST_DIR || ".next",
   output: "standalone",
 };

@@ -22,8 +22,8 @@ interface CreatePreferenceParams {
   payerEmail?: string;
 }
 
-// Crea una preferencia de Checkout Pro usando las credenciales del asesor
-// (modelo sin custodia: el pago llega directo a la cuenta MP del asesor).
+// Creates a Checkout Pro preference using the advisor's credentials
+// (no-custody model: payment goes directly to the advisor's MP account).
 export async function createCheckoutPreference({
   accessToken,
   items,
@@ -50,7 +50,7 @@ export async function createCheckoutPreference({
         pending: `${appUrl}/checkout/result?appointmentId=${externalReference}&status=pending`,
         failure: `${appUrl}/checkout/result?appointmentId=${externalReference}&status=failure`,
       },
-      // Nota: auto_return solo funciona en modo producción de MP, se omite por ahora
+      // Note: auto_return only works in MP production mode, omitted for now
       statement_descriptor: "Meti",
       metadata: {
         appointment_id: externalReference,
@@ -60,20 +60,20 @@ export async function createCheckoutPreference({
   });
 
   if (!preference.id || !preference.init_point) {
-    throw new Error("Mercado Pago no devolvió preference id/init_point");
+    throw new Error("Mercado Pago did not return preference id/init_point");
   }
 
   return {
     preferenceId: preference.id,
     initPoint: preference.init_point,
-    // El checkout de sandbox usa su propio subdominio; init_point (www)
-    // solo funciona con preferencias de producción.
+    // Sandbox checkout uses its own subdomain; init_point (www)
+    // only works with production preferences.
     sandboxInitPoint: preference.sandbox_init_point || null,
   };
 }
 
-// Obtiene el detalle de un pago desde la API de Mercado Pago usando el
-// access token del asesor (la verificación real nunca confía en el webhook).
+// Gets payment details from the Mercado Pago API using the
+// advisor's access token (real verification never trusts the webhook).
 export async function getPayment(accessToken: string, paymentId: string) {
   const client = new MercadoPagoConfig({ accessToken });
   return new Payment(client).get({ id: paymentId });

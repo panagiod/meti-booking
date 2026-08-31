@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
-// POST: Solicitar ser asesor
+// POST: Request to become an advisor
 export async function POST() {
   try {
     const headersList = await headers();
@@ -17,7 +17,7 @@ export async function POST() {
 
     const userId = session.user.id;
 
-    // Verificar que el usuario sea cliente
+    // Verify the user is a client
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -34,7 +34,7 @@ export async function POST() {
       return NextResponse.json({ error: "Admins cannot become advisors" }, { status: 400 });
     }
 
-    // Verificar que no tenga ya un perfil de asesor pendiente
+    // Verify they do not already have a pending advisor profile
     const existingAdvisor = await prisma.advisorProfile.findUnique({
       where: { userId },
     });
@@ -43,7 +43,7 @@ export async function POST() {
       return NextResponse.json({ error: "Already have an advisor profile" }, { status: 400 });
     }
 
-    // Crear perfil de asesor pendiente
+    // Create pending advisor profile
     await prisma.user.update({
       where: { id: userId },
       data: { role: "ADVISOR" },
@@ -52,18 +52,18 @@ export async function POST() {
     await prisma.advisorProfile.create({
       data: {
         userId: userId,
-        isActive: false, // Pendiente de aprobación
+        isActive: false, // Pending approval
       },
     });
 
-    // Eliminar ClientProfile
+    // Delete ClientProfile
     await prisma.clientProfile.deleteMany({
       where: { userId },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Tu solicitud ha sido enviada. El administrador revisará tu perfil.",
+      message: "Your request has been submitted. An administrator will review your profile.",
     });
   } catch (error) {
     console.error("Error requesting advisor role:", error);

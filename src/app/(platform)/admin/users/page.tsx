@@ -12,7 +12,7 @@ import { Search, Users, Mail } from "lucide-react";
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const [roleFilter, setRoleeFilter] = useState("all");
 
   const { data, isLoading } = useAdminUsers({
     role: roleFilter !== "all" ? roleFilter : undefined,
@@ -31,10 +31,10 @@ export default function UsersPage() {
       {/* Header */}
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          Gestión de Usuarios
+          User Management
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Administra clientes y asesores de la plataforma
+          Manage clients and advisors on the platform
         </p>
       </div>
 
@@ -44,7 +44,7 @@ export default function UsersPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Total usuarios</p>
+                <p className="text-sm text-[var(--text-muted)]">Total users</p>
                 <p className="text-2xl font-heading font-bold text-[var(--text-primary)]">
                   {users.length}
                 </p>
@@ -57,7 +57,7 @@ export default function UsersPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Clientes</p>
+                <p className="text-sm text-[var(--text-muted)]">Clients</p>
                 <p className="text-2xl font-heading font-bold text-[var(--accent)]">
                   {totalClients}
                 </p>
@@ -70,7 +70,7 @@ export default function UsersPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Asesores</p>
+                <p className="text-sm text-[var(--text-muted)]">Advisors</p>
                 <p className="text-2xl font-heading font-bold text-[var(--success)]">
                   {totalAdvisors}
                 </p>
@@ -87,7 +87,7 @@ export default function UsersPage() {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
               <Input
-                placeholder="Buscar por nombre o email..."
+                placeholder="Search by name or email..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -97,23 +97,23 @@ export default function UsersPage() {
               <Button
                 variant={roleFilter === "all" ? "default" : "secondary"}
                 size="sm"
-                onClick={() => setRoleFilter("all")}
+                onClick={() => setRoleeFilter("all")}
               >
-                Todos
+                All
               </Button>
               <Button
                 variant={roleFilter === "client" ? "default" : "secondary"}
                 size="sm"
-                onClick={() => setRoleFilter("client")}
+                onClick={() => setRoleeFilter("client")}
               >
-                Clientes
+                Clients
               </Button>
               <Button
                 variant={roleFilter === "advisor" ? "default" : "secondary"}
                 size="sm"
-                onClick={() => setRoleFilter("advisor")}
+                onClick={() => setRoleeFilter("advisor")}
               >
-                Asesores
+                Advisors
               </Button>
             </div>
           </div>
@@ -124,15 +124,15 @@ export default function UsersPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
-            {users.length} usuarios encontrados
+            {users.length} users found
           </CardTitle>
         </CardHeader>
         <CardContent>
           {users.length === 0 ? (
             <EmptyState
               icon={Users}
-              title="Sin usuarios registrados"
-              description="Cuando los usuarios se registren en la plataforma, aparecerán aquí."
+              title="No registered users"
+              description="When users sign up on the platform, they will appear here."
             />
           ) : (
             <div className="space-y-4">
@@ -164,8 +164,8 @@ export default function UsersPage() {
                           {user.role === "admin"
                             ? "Admin"
                             : user.role === "advisor"
-                            ? "Asesor"
-                            : "Cliente"}
+                            ? "Advisor"
+                            : "Client"}
                         </Badge>
                       </div>
                       <p className="text-sm text-[var(--text-muted)]">
@@ -176,7 +176,7 @@ export default function UsersPage() {
 
                   <div className="flex items-center gap-4">
                     <div className="text-sm text-[var(--text-secondary)]">
-                      {user.appointments} citas
+                      {user.appointments} appointments
                     </div>
                   </div>
                 </div>

@@ -57,29 +57,29 @@ export async function POST(request: NextRequest) {
 
     // Prepare analysis prompt
     const analysisPrompt = `
-Eres un experto en verificación de credenciales profesionales. Analiza el siguiente documento y proporciona un análisis detallado.
+You are an expert in verifying professional credentials. Analyze the following document and provide a detailed analysis.
 
-INFORMACIÓN DEL ASESOR:
-- Nombre: ${document.advisor.user.name}
-- Especialidad declarada: ${document.advisor.speciality || "No especificada"}
-- Tipo de documento: ${document.documentType}
+ADVISOR INFORMATION:
+- Name: ${document.advisor.user.name}
+- Declared specialty: ${document.advisor.speciality || "Not specified"}
+- Document type: ${document.documentType}
 
-TIPOS DE DOCUMENTOS VÁLIDOS:
-- CERTIFICATE: Certificados profesionales, constancias de competencia
-- LICENSE: Licencias profesionales, cédulas profesionales
-- DEGREE: Títulos universitarios, diplomas académicos
-- RESUME: Hoja de vida, CV actualizado
-- OTHER: Otros documentos de soporte
+VALID DOCUMENT TYPES:
+- CERTIFICATE: Professional certificates, competency records
+- LICENSE: Professional licenses, professional ID cards
+- DEGREE: University degrees, academic diplomas
+- RESUME: Resume, updated CV
+- OTHER: Other supporting documents
 
-POR FAVOR VERIFICA Y PROPORCIONA:
-1. ¿El documento es válido y legible?
-2. ¿El nombre en el documento coincide con el nombre del asesor?
-3. ¿El documento es relevante para la especialidad declarada?
-4. ¿El documento parece auténtico (no está alterado)?
-5. Calificación de confianza (0-100)
-6. Observaciones adicionales
+PLEASE VERIFY AND PROVIDE:
+1. Is the document valid and legible?
+2. Does the name on the document match the advisor's name?
+3. Is the document relevant to the declared specialty?
+4. Does the document appear authentic (not altered)?
+5. Confidence score (0-100)
+6. Additional observations
 
-Responde en JSON con esta estructura:
+Respond in JSON with this structure:
 {
   "isValid": boolean,
   "nameMatch": boolean,
@@ -99,7 +99,7 @@ Responde en JSON con esta estructura:
       relevanceScore: 85,
       authenticityScore: 80,
       overallScore: 82,
-      observations: `Documento tipo ${document.documentType} analizado. El documento parece legible y válido. Se requiere verificación manual para confirmar autenticidad.`,
+      observations: `Document type ${document.documentType} analyzed. The document appears legible and valid. Manual verification is required to confirm authenticity.`,
       recommendation: "REVIEW" as const,
     };
 

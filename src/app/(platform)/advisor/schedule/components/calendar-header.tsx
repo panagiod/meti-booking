@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfWeek, endOfWeek, addWeeks } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { ViewMode } from "../utils/schedule-utils";
 import { cn } from "@/lib/utils";
 
@@ -28,19 +28,19 @@ export function CalendarHeader({
 }: CalendarHeaderProps) {
   const getTitle = () => {
     if (viewMode === "month") {
-      return format(currentDate, "MMMM yyyy", { locale: es });
+      return format(currentDate, "MMMM yyyy", { locale: enUS });
     }
     if (viewMode === "week") {
       const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
       const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
-      return `${format(weekStart, "d 'de' MMM")} - ${format(weekEnd, "d 'de' MMM, yyyy", { locale: es })}`;
+      return `${format(weekStart, "d 'de' MMM")} - ${format(weekEnd, "d 'de' MMM, yyyy", { locale: enUS })}`;
     }
     if (viewMode === "day") {
-      return format(currentDate, "d 'de' MMMM, yyyy", { locale: es });
+      return format(currentDate, "MMMM d, yyyy", { locale: enUS });
     }
     const agendaStart = startOfWeek(currentDate, { weekStartsOn: 0 });
     const agendaEnd = addWeeks(agendaStart, 2);
-    return `${format(agendaStart, "d MMM")} - ${format(agendaEnd, "d MMM, yyyy", { locale: es })}`;
+    return `${format(agendaStart, "d MMM")} - ${format(agendaEnd, "d MMM, yyyy", { locale: enUS })}`;
   };
 
   return (
@@ -73,13 +73,13 @@ export function CalendarHeader({
                 viewMode === mode && "bg-[var(--secondary)] text-white"
               )}
             >
-              {mode === "month" ? "Mes" : mode === "week" ? "Semana" : mode === "day" ? "Día" : "Agenda"}
+              {mode === "month" ? "Month" : mode === "week" ? "Week" : mode === "day" ? "Day" : "Agenda"}
             </Button>
           ))}
         </div>
         <Button onClick={onBlockClick} className="bg-[var(--primary)] hover:bg-[var(--primary-hover)]">
           <Plus className="w-4 h-4 mr-1" />
-          Bloquear
+          Block
         </Button>
       </div>
     </div>

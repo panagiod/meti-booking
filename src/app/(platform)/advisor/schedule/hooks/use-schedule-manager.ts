@@ -74,10 +74,10 @@ export function useScheduleManager() {
 
       if (res.ok) {
         setHasChanges(false);
-        dialog.showAlert("Éxito", "Horarios guardados correctamente", "success");
+        dialog.showAlert("Success", "Schedule saved successfully", "success");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error de conexión", "error");
+      dialog.showAlert("Error", "Connection error", "error");
     }
   }, [schedule, dialog]);
 

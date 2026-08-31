@@ -87,10 +87,10 @@ export default function VerificationPage() {
 
       if (res.ok) {
         await fetchDocuments();
-        dialog.showAlert("Éxito", "Documento analizado correctamente", "success");
+        dialog.showAlert("Success", "Document analyzed successfully", "success");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error al analizar documento", "error");
+      dialog.showAlert("Error", "Failed to analyze document", "error");
     } finally {
       setIsAnalyzing(false);
     }
@@ -109,10 +109,10 @@ export default function VerificationPage() {
       if (res.ok) {
         await fetchDocuments();
         setSelectedDoc(null);
-        dialog.showAlert("Éxito", "Documento aprobado", "success");
+        dialog.showAlert("Success", "Document approved", "success");
       }
     } catch (error) {
-      dialog.showAlert("Error", "Error al aprobar", "error");
+      dialog.showAlert("Error", "Failed to approve", "error");
     } finally {
       setIsVerifying(false);
     }
@@ -120,8 +120,8 @@ export default function VerificationPage() {
 
   const handleReject = async (documentId: string) => {
     const reason = await dialog.showPrompt(
-      "Rechazar documento",
-      "¿Cuál es la razón del rechazo?"
+      "Reject document",
+      "What is the reason for rejection?"
     );
 
     if (reason) {
@@ -137,10 +137,10 @@ export default function VerificationPage() {
         if (res.ok) {
           await fetchDocuments();
           setSelectedDoc(null);
-          dialog.showAlert("Éxito", "Documento rechazado", "success");
+          dialog.showAlert("Success", "Document rejected", "success");
         }
       } catch (error) {
-        dialog.showAlert("Error", "Error al rechazar", "error");
+        dialog.showAlert("Error", "Failed to reject", "error");
       } finally {
         setIsVerifying(false);
       }
@@ -149,15 +149,15 @@ export default function VerificationPage() {
 
   const getStatusBadge = (doc: Document) => {
     if (doc.manualStatus === "APPROVED") {
-      return <Badge variant="success"><CheckCircle className="w-3 h-3 mr-1" /> Aprobado</Badge>;
+      return <Badge variant="success"><CheckCircle className="w-3 h-3 mr-1" /> Approved</Badge>;
     }
     if (doc.manualStatus === "REJECTED") {
-      return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" /> Rechazado</Badge>;
+      return <Badge variant="destructive"><XCircle className="w-3 h-3 mr-1" /> Rejected</Badge>;
     }
     if (doc.aiStatus === "COMPLETED") {
-      return <Badge variant="warning"><Brain className="w-3 h-3 mr-1" /> Pendiente revisión</Badge>;
+      return <Badge variant="warning"><Brain className="w-3 h-3 mr-1" /> Pending review</Badge>;
     }
-    return <Badge variant="outline"><Clock className="w-3 h-3 mr-1" /> Analizando</Badge>;
+    return <Badge variant="outline"><Clock className="w-3 h-3 mr-1" /> Analyzing</Badge>;
   };
 
   const pendingDocs = documents.filter(
@@ -175,10 +175,10 @@ export default function VerificationPage() {
         {/* Header */}
         <div>
           <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-            Verificación de Asesores
+            Advisor Verification
           </h1>
           <p className="text-[var(--text-muted)] mt-1">
-            Revisa y aprueba los documentos de los asesores
+            Review and approve advisor documents
           </p>
         </div>
 
@@ -188,7 +188,7 @@ export default function VerificationPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[var(--text-muted)]">Pendientes</p>
+                  <p className="text-sm text-[var(--text-muted)]">Pending</p>
                   <p className="text-2xl font-heading font-bold text-[var(--warning)]">
                     {pendingDocs.length}
                   </p>
@@ -201,7 +201,7 @@ export default function VerificationPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[var(--text-muted)]">Revisados</p>
+                  <p className="text-sm text-[var(--text-muted)]">Reviewed</p>
                   <p className="text-2xl font-heading font-bold text-[var(--success)]">
                     {reviewedDocs.length}
                   </p>
@@ -235,7 +235,7 @@ export default function VerificationPage() {
               className="mb-4"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Volver a la lista
+              Back to list
             </Button>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -278,7 +278,7 @@ export default function VerificationPage() {
                         className="inline-flex items-center gap-2 text-sm text-[var(--primary)] hover:underline"
                       >
                         <ExternalLink className="w-4 h-4" />
-                        Abrir en nueva pestaña
+                        Open in new tab
                       </a>
                     </div>
                   </CardContent>
@@ -292,7 +292,7 @@ export default function VerificationPage() {
                   <CardHeader>
                     <CardTitle className="text-sm flex items-center gap-2">
                       <User className="w-4 h-4" />
-                      Asesor
+                      Advisor
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -313,7 +313,7 @@ export default function VerificationPage() {
                 {/* Document details */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-sm">Detalles del documento</CardTitle>
+                    <CardTitle className="text-sm">Document details</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2 text-sm">
                     <div className="flex justify-between">
@@ -321,7 +321,7 @@ export default function VerificationPage() {
                       <span>{selectedDoc.documentType}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[var(--text-muted)]">Tamaño</span>
+                      <span className="text-[var(--text-muted)]">Size</span>
                       <span>{(selectedDoc.fileSize / 1024 / 1024).toFixed(2)} MB</span>
                     </div>
                     <div className="flex justify-between">
@@ -343,7 +343,7 @@ export default function VerificationPage() {
                     <CardHeader>
                       <CardTitle className="text-sm flex items-center gap-2">
                         <Brain className="w-4 h-4" />
-                        Análisis IA
+                        AI Analysis
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -375,7 +375,7 @@ export default function VerificationPage() {
                           disabled={isAnalyzing}
                         >
                           <Brain className="w-4 h-4 mr-1" />
-                          {isAnalyzing ? "Analizando..." : "Analizar con IA"}
+                          {isAnalyzing ? "Analyzing..." : "Analyze with AI"}
                         </Button>
                       )}
                       <div className="flex gap-2">
@@ -385,7 +385,7 @@ export default function VerificationPage() {
                           disabled={isVerifying}
                         >
                           <CheckCircle className="w-4 h-4 mr-1" />
-                          Aprobar
+                          Approve
                         </Button>
                         <Button
                           variant="destructive"
@@ -394,7 +394,7 @@ export default function VerificationPage() {
                           disabled={isVerifying}
                         >
                           <XCircle className="w-4 h-4 mr-1" />
-                          Rechazar
+                          Reject
                         </Button>
                       </div>
                     </CardContent>
@@ -406,7 +406,7 @@ export default function VerificationPage() {
                   <Card className="border-[var(--error)]">
                     <CardContent className="p-4">
                       <p className="text-sm font-medium text-[var(--error)] mb-1">
-                        Razón de rechazo
+                        Rejection reason
                       </p>
                       <p className="text-sm text-[var(--text-secondary)]">
                         {selectedDoc.rejectionReason}
@@ -420,14 +420,14 @@ export default function VerificationPage() {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>Documentos pendientes de revisión</CardTitle>
+              <CardTitle>Documents pending review</CardTitle>
             </CardHeader>
             <CardContent>
               {pendingDocs.length === 0 ? (
                 <EmptyState
                   icon={FileText}
-                  title="Sin documentos pendientes"
-                  description="Todos los documentos han sido revisados."
+                  title="No pending documents"
+                  description="All documents have been reviewed."
                 />
               ) : (
                 <div className="space-y-3">

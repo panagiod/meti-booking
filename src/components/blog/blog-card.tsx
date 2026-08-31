@@ -22,7 +22,7 @@ export function BlogCard({
   author,
 }: BlogCardProps) {
   const formattedDate = publishedAt
-    ? new Date(publishedAt).toLocaleDateString("es-CO", {
+    ? new Date(publishedAt).toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",

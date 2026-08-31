@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
-// GET: Listar facturas (con filtro por mes y estado)
+// GET: List invoices (with month and status filter)
 // Query: ?month=YYYY-MM&status=PENDING|PAID
 export async function GET(request: NextRequest) {
   try {
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       orderBy: [{ periodStart: "desc" }, { createdAt: "desc" }],
     });
 
-    // Estadísticas
+    // Statistics
     const totals = await prisma.invoice.aggregate({
       where: month ? where : undefined,
       _sum: { totalFeeCents: true },

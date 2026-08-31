@@ -63,10 +63,10 @@ export default function ProfilePage() {
         setImage(data.url);
       } else {
         const data = await res.json();
-        alert(data.error || "Error al subir la imagen");
+        alert(data.error || "Failed to upload image");
       }
     } catch (error) {
-      alert("Error de conexión");
+      alert("Connection error");
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -95,13 +95,13 @@ export default function ProfilePage() {
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
-        alert("Perfil actualizado correctamente");
+        alert("Profile updated successfully");
       } else {
         const data = await res.json();
-        alert(data.error || "Error al actualizar perfil");
+        alert(data.error || "Failed to update profile");
       }
     } catch (error) {
-      alert("Error de conexión");
+      alert("Connection error");
     } finally {
       setIsSaving(false);
     }
@@ -116,10 +116,10 @@ export default function ProfilePage() {
       {/* Header */}
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          Mi Perfil
+          My Profile
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Administra tu información personal
+          Manage your personal information
         </p>
       </div>
 
@@ -128,10 +128,10 @@ export default function ProfilePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
-            Información personal
+            Personal information
           </CardTitle>
           <CardDescription>
-            Actualiza tu nombre y foto de perfil
+            Update your name and profile photo
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -173,10 +173,10 @@ export default function ProfilePage() {
             </div>
             <div className="flex-1">
               <p className="font-medium text-[var(--text-primary)]">
-                Foto de perfil
+                Profile photo
               </p>
               <p className="text-sm text-[var(--text-muted)]">
-                JPEG, PNG o WebP (máx. 2MB)
+                JPEG, PNG or WebP (max. 2MB)
               </p>
               {image && (
                 <button
@@ -185,7 +185,7 @@ export default function ProfilePage() {
                   className="text-sm text-[var(--error)] hover:underline mt-1 flex items-center gap-1"
                 >
                   <X className="w-3 h-3" />
-                  Eliminar foto
+                  Remove photo
                 </button>
               )}
             </div>
@@ -194,12 +194,12 @@ export default function ProfilePage() {
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-              Nombre
+              Name
             </label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Tu nombre"
+              placeholder="Your name"
             />
           </div>
 
@@ -216,7 +216,7 @@ export default function ProfilePage() {
 
           <Button onClick={handleSave} disabled={isSaving || isUploading}>
             <Save className="w-4 h-4 mr-2" />
-            {isSaving ? "Guardando..." : "Guardar cambios"}
+            {isSaving ? "Saving..." : "Save changes"}
           </Button>
         </CardContent>
       </Card>

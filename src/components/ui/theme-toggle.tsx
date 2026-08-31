@@ -15,7 +15,7 @@ export function ThemeToggle({ className }: { className?: string }) {
     return (
       <button
         className={cn("p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors", className)}
-        aria-label="Cambiar tema"
+        aria-label="Toggle theme"
       >
         <Sun className="w-5 h-5" />
       </button>
@@ -31,7 +31,7 @@ export function ThemeToggle({ className }: { className?: string }) {
         "p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--border-light)] transition-colors",
         className
       )}
-      aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
     </button>

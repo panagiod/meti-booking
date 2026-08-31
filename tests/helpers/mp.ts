@@ -9,7 +9,7 @@ export const E2E_SKIP_MP_CHECKOUT = process.env.E2E_SKIP_MP_CHECKOUT === "1";
 export const MP_TEST_BUYER_EMAIL = process.env.MP_TEST_BUYER_EMAIL || "";
 export const MP_TEST_BUYER_PASSWORD = process.env.MP_TEST_BUYER_PASSWORD || "";
 
-// Tarjeta de prueba APROBADA del sandbox de Mercado Pago
+// Approved test card from the Mercado Pago sandbox
 export const TEST_CARD_APPROVED = {
   number: "5031 7557 3453 0604",
   expiry: "12/30",
@@ -18,18 +18,18 @@ export const TEST_CARD_APPROVED = {
   dni: "12345678",
 };
 
-// La cuenta sandbox del vendedor puede estar rota del lado de MP (crea
-// preferencias pero su checkout no carga). Se lanza este error para que la
-// suite marque el test como skipped con una razón clara, no como fallo.
+// The seller's sandbox account may be broken on MP's side (creates
+// preferences but its checkout won't load). This error is thrown so the
+// suite marks the test as skipped with a clear reason, not as a failure.
 export const MP_CHECKOUT_UNAVAILABLE = "MP_CHECKOUT_UNAVAILABLE";
 
 // ============================================================
-// Completa el checkout de Mercado Pago sandbox en el navegador.
-// Nota: el sandbox usa el mismo dominio del checkout real
-// (www.mercadopago.com.co); lo que define el modo prueba son las
-// credenciales del vendedor (pref_id de sandbox).
-// La UI de MP cambia con frecuencia: se usan múltiples selectores
-// de respaldo y timeouts generosos. Devuelve el paymentId real.
+// Completes Mercado Pago sandbox checkout in the browser.
+// Note: the sandbox uses the same checkout domain as production
+// (www.mercadopago.com.co); test mode is determined by the seller's
+// credentials (sandbox pref_id).
+// MP's UI changes frequently: multiple fallback selectors and generous
+// timeouts are used. Returns the real paymentId.
 // ============================================================
 export async function paySandboxCheckout(
   page: Page,
@@ -41,8 +41,8 @@ export async function paySandboxCheckout(
 
   await page.goto(initPoint, { waitUntil: "domcontentloaded", timeout: 60_000 });
 
-  // Detectar el error genérico de MP ("Hubo un error accediendo a esta pagina...")
-  // que aparece cuando la cuenta sandbox del vendedor no puede procesar checkouts.
+  // Detect MP's generic error ("Hubo un error accediendo a esta pagina...")
+  // which appears when the seller's sandbox account cannot process checkouts.
   try {
     await page.waitForFunction(
       () => document.body.innerText.includes("error") && document.body.innerText.length < 600,
@@ -53,10 +53,10 @@ export async function paySandboxCheckout(
     }
   } catch (e) {
     if (e instanceof Error && e.message === MP_CHECKOUT_UNAVAILABLE) throw e;
-    // waitForFunction timeout = página cargó normal, continuar
+    // waitForFunction timeout = page loaded normally, continue
   }
 
-  // Si MP pide iniciar sesión como comprador de prueba, usar las credenciales
+  // If MP asks to sign in as a test buyer, use the credentials
   if (MP_TEST_BUYER_EMAIL && MP_TEST_BUYER_PASSWORD) {
     await clickIfPresent(page, ['text="Iniciar sesión"', 'button:has-text("Ingresar")', 'text="Ingresa a tu cuenta"']);
     const emailInput = page.locator('input[type="email"], input[name="user_id"], input[name="email"]').first();
@@ -69,13 +69,13 @@ export async function paySandboxCheckout(
     }
   }
 
-  // Algunas versiones del checkout muestran un paso de "tipo de documento"
+  // Some checkout versions show a document type step
   await selectIfPresent(page, [
     'select[name="docType"]',
     'select[id="docType"]',
   ], "DNI");
 
-  // Elegir pago con tarjeta si hay tabs de medios de pago
+  // Choose card payment if payment method tabs are shown
   await clickIfPresent(page, [
     'img[alt="Visa"]',
     'div[data-qa="card-type-selector"] >> text=Visa',
@@ -83,7 +83,7 @@ export async function paySandboxCheckout(
     'text="Tarjeta de crédito"',
   ]);
 
-  // Si hay tarjetas guardadas de runs anteriores: "usar nueva tarjeta"
+  // If saved cards from previous runs exist: "use new card"
   await clickIfPresent(page, [
     'text="Nueva tarjeta"',
     'button:has-text("nueva tarjeta")',
@@ -91,7 +91,7 @@ export async function paySandboxCheckout(
   ]);
 
   const inputFns: Array<[string[], string]> = [
-    // [selectores de respaldo, valor]
+    // [fallback selectors, value]
     [['input[name="cardNumber"]', '#cardNumber', '[data-checkout="cardNumber"]'], TEST_CARD_APPROVED.number],
     [['input[name="cardholderName"]', '#cardholderName', '[data-checkout="cardholderName"]'], TEST_CARD_APPROVED.holder],
     [['input[name="cardExpirationDate"]', '#cardExpirationDate', '[data-checkout="cardExpirationDate"]'], TEST_CARD_APPROVED.expiry],
@@ -104,14 +104,14 @@ export async function paySandboxCheckout(
     await fillIfPresent(page, selectors, value);
   }
 
-  // Botón pagar
+  // Pay button
   const payButton = page.locator(
     'button:has-text("Pagar"), input[type="submit"], button[type="submit"]'
   ).first();
   await expect(payButton).toBeVisible({ timeout: 30_000 });
   await payButton.click();
 
-  // Esperar a que MP redirija de vuelta a la app
+  // Wait for MP to redirect back to the app
   await page.waitForURL(
     (url) => url.origin === new URL(BASE_URL).origin && url.pathname.includes("/checkout/result"),
     { timeout: 90_000 }
@@ -130,7 +130,7 @@ async function fillIfPresent(page: Page, selectors: string[], value: string) {
         await loc.fill(value);
         return;
       } catch {
-        // probar siguiente selector
+        // try next selector
       }
     }
   }
@@ -145,7 +145,7 @@ async function clickIfPresent(page: Page, selectors: string[]) {
         await page.waitForTimeout(800);
         return;
       } catch {
-        // probar siguiente selector
+        // try next selector
       }
     }
   }
@@ -159,7 +159,7 @@ async function selectIfPresent(page: Page, selectors: string[], value: string) {
         await loc.selectOption(value, { timeout: 5_000 });
         return;
       } catch {
-        // probar siguiente selector
+        // try next selector
       }
     }
   }

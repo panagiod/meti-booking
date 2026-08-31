@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("es-CO", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 0,
@@ -40,28 +40,28 @@ function CheckoutContent() {
   const [promotion, setPromotion] = useState<any>(null);
 
   const advisorId = searchParams.get("advisorId");
-  const advisorName = searchParams.get("advisorName") || "Asesor";
+  const advisorName = searchParams.get("advisorName") || "Advisor";
   const serviceId = searchParams.get("serviceId");
-  const serviceName = searchParams.get("serviceName") || "Servicio";
+  const serviceName = searchParams.get("serviceName") || "Service";
   const servicePrice = Number(searchParams.get("servicePrice") || "0");
   const duration = Number(searchParams.get("duration") || "60");
-  const date = searchParams.get("date") || "Por definir";
-  const time = searchParams.get("time") || "Por definir";
+  const date = searchParams.get("date") || "TBD";
+  const time = searchParams.get("time") || "TBD";
 
-  // Calcular descuento si hay promoción activa (fijo viene en pesos, convertir a centavos)
+  // Calculate discount if there is an active promotion (fixed amount is in pesos, convert to cents)
   const discountCents = promotion
     ? promotion.discountType === "percentage"
       ? Math.round(servicePrice * promotion.discountValue / 100)
       : Math.min(Math.round(promotion.discountValue * 100), servicePrice)
     : 0;
   const priceAfterDiscount = Math.max(servicePrice - discountCents, 0);
-  // El fee siempre se calcula sobre el precio ORIGINAL (el descuento lo absorbe el asesor)
+  // Fee is always calculated on the ORIGINAL price (the advisor absorbs the discount)
   const serviceFee = Math.round(servicePrice * 0.15);
   const totalOriginal = servicePrice + serviceFee;
   const serviceTotal = priceAfterDiscount + serviceFee;
 
   useEffect(() => {
-    // Consume el booking pendiente guardado antes del login (lo deja /redirect sin borrar)
+    // Consume the pending booking saved before login (left by /redirect without clearing)
     localStorage.removeItem("meti-pending-booking");
     checkLoginStatus();
     if (advisorId) {
@@ -137,8 +137,8 @@ function CheckoutContent() {
 
     if (!advisorHasMP) {
       dialog.showAlert(
-        "Pago no disponible",
-        "Este asesor aún no ha configurado su cuenta de Mercado Pago.",
+        "Payment unavailable",
+        "This advisor has not set up their Mercado Pago account yet.",
         "warning"
       );
       return;
@@ -167,12 +167,12 @@ function CheckoutContent() {
 
       const { initPoint } = await res.json();
 
-      // Redirigir al checkout de Mercado Pago (el pago confirma la cita vía webhook)
+      // Redirect to Mercado Pago checkout (payment confirms the appointment via webhook)
       localStorage.removeItem("meti-pending-booking");
       window.location.href = initPoint;
     } catch (error) {
       console.error("Error:", error);
-      dialog.showAlert("Error", "Error al crear la cita. Intenta de nuevo.", "error");
+      dialog.showAlert("Error", "Failed to create appointment. Please try again.", "error");
       setIsProcessing(false);
     }
   };
@@ -183,9 +183,9 @@ function CheckoutContent() {
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
-            <p className="text-[var(--text-muted)] mb-4">No hay datos de reserva</p>
+            <p className="text-[var(--text-muted)] mb-4">No booking data</p>
             <Button onClick={() => router.push("/services")}>
-              Explorar servicios
+              Browse services
             </Button>
           </CardContent>
         </Card>
@@ -193,7 +193,7 @@ function CheckoutContent() {
     );
   }
 
-  // Success state (ahora se maneja en /checkout/result tras el pago en MP)
+  // Success state (now handled in /checkout/result after MP payment)
 
   // Main checkout view
   return (
@@ -224,14 +224,14 @@ function CheckoutContent() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-heading font-semibold text-[var(--text-primary)] text-lg">
-                          Inicia sesión para continuar
+                          Sign in to continue
                         </h3>
                         <p className="text-sm text-[var(--text-muted)]">
-                          Necesitas una cuenta para realizar esta compra
+                          You need an account to complete this purchase
                         </p>
                       </div>
                       <Button onClick={handleLogin} size="lg">
-                        Iniciar sesión
+                        Sign in
                       </Button>
                     </div>
                   </CardContent>
@@ -246,10 +246,10 @@ function CheckoutContent() {
                       <TestTube className="w-5 h-5 text-[var(--warning)] flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="font-medium text-[var(--text-primary)]">
-                          Este asesor está en modo prueba
+                          This advisor is in test mode
                         </p>
                         <p className="text-sm text-[var(--text-muted)] mt-1">
-                          El pago no es real. El asesor esta probando sus servicios antes de ofrecerlos al público.
+                          Payment is not real. The advisor is testing their services before offering them publicly.
                         </p>
                       </div>
                     </div>
@@ -261,7 +261,7 @@ function CheckoutContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <CreditCard className="w-5 h-5" />
-                    Método de pago
+                    Payment method
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -271,10 +271,10 @@ function CheckoutContent() {
                         <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
                         <div>
                           <p className="font-medium text-[var(--text-primary)]">
-                            Pago no disponible
+                            Payment unavailable
                           </p>
                           <p className="text-sm text-[var(--text-muted)]">
-                            Este asesor aún no ha configurado su cuenta de Mercado Pago.
+                            This advisor has not set up their Mercado Pago account yet.
                           </p>
                         </div>
                       </div>
@@ -287,14 +287,14 @@ function CheckoutContent() {
                         </div>
                         <div>
                           <p className="font-medium text-[var(--text-primary)]">Mercado Pago</p>
-                          <p className="text-sm text-[var(--text-muted)]">Tarjeta de crédito, débito o dinero en cuenta</p>
+                          <p className="text-sm text-[var(--text-muted)]">Credit card, debit card, or account balance</p>
                         </div>
                       </div>
                     </div>
                   )}
                   <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
                     <Shield className="w-4 h-4" />
-                    Pago seguro con Mercado Pago
+                    Secure payment with Mercado Pago
                   </div>
                 </CardContent>
               </Card>
@@ -306,11 +306,11 @@ function CheckoutContent() {
                       <span className="text-sm">⚠️</span>
                     </div>
                     <div className="text-sm">
-                      <p className="font-medium text-[var(--text-primary)] mb-1">Política de cancelación</p>
+                      <p className="font-medium text-[var(--text-primary)] mb-1">Cancellation policy</p>
                       <ul className="text-[var(--text-muted)] space-y-1">
-                        <li>• Reagendar gratis con 24h de anticipación</li>
-                        <li>• Cancelar sin reagendar = sin devolución</li>
-                        <li>• No presentarse = sin devolución</li>
+                        <li>• Reschedule for free with 24 hours notice</li>
+                        <li>• Cancel without rescheduling = no refund</li>
+                        <li>• No-show = no refund</li>
                       </ul>
                     </div>
                   </div>
@@ -339,7 +339,7 @@ function CheckoutContent() {
                         {(() => {
                           const [y, m, d] = date.split("-");
                           const dt = new Date(Number(y), Number(m) - 1, Number(d));
-                          return dt.toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+                          return dt.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
                         })()}
                       </span>
                     </div>
@@ -371,7 +371,7 @@ function CheckoutContent() {
                       <span className="text-[var(--text-primary)]">Total</span>
                       <span className="text-[var(--primary)]">{formatCurrency(serviceTotal)}</span>
                     </div>
-                    <p className="text-xs text-[var(--text-muted)]">Incluye todos los costos</p>
+                    <p className="text-xs text-[var(--text-muted)]">Includes all costs</p>
                   </div>
 
                   <Button
@@ -382,17 +382,17 @@ function CheckoutContent() {
                     {isProcessing ? (
                       <div className="flex items-center gap-2">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Procesando...
+                        Processing...
                       </div>
                     ) : isLoggedIn === false ? (
                       <>
                         <LogIn className="w-5 h-5 mr-2" />
-                        Iniciar sesión para pagar
+                        Sign in to pay
                       </>
                     ) : (
                       <>
                         <CreditCard className="w-5 h-5 mr-2" />
-                        Pagar {formatCurrency(serviceTotal)}
+                        Pay {formatCurrency(serviceTotal)}
                       </>
                     )}
                   </Button>

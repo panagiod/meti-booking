@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// POST: Registrar usuario como cliente
+// POST: Register user as client
 export async function POST(request: NextRequest) {
   const { userId } = await request.json();
 
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Verificar que el usuario exista
+    // Verify the user exists
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -19,13 +19,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Verificar que ya tenga ClientProfile (se crea en el hook)
+    // Verify they already have a ClientProfile (created in the hook)
     const clientProfile = await prisma.clientProfile.findUnique({
       where: { userId },
     });
 
     if (!clientProfile) {
-      // Crear ClientProfile si no existe
+      // Create ClientProfile if it does not exist
       await prisma.clientProfile.create({
         data: {
           userId: userId,

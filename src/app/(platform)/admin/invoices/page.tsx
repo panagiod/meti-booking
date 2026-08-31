@@ -11,10 +11,10 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { sileo } from "sileo";
 import { Send, FileText, CheckCircle2, Receipt } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 
 function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(cents / 100);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "COP", minimumFractionDigits: 0 }).format(cents / 100);
 }
 
 export default function InvoicesPage() {
@@ -42,9 +42,9 @@ export default function InvoicesPage() {
     },
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["admin-invoices"] });
-      sileo.success({ title: "Facturas generadas", description: `${res.creators || res.created} creadas, ${res.updated} actualizadas para ${res.month}.` });
+      sileo.success({ title: "Invoices generated", description: `${res.creators || res.created} created, ${res.updated} updated for ${res.month}.` });
     },
-    onError: () => sileo.error({ title: "Error", description: "No se pudieron generar las facturas." }),
+    onError: () => sileo.error({ title: "Error", description: "Could not generate invoices." }),
   });
 
   const markPaidMutation = useMutation({
@@ -53,7 +53,7 @@ export default function InvoicesPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-invoices"] });
-      sileo.success({ title: "Factura actualizada" });
+      sileo.success({ title: "Invoice updated" });
     },
   });
 
@@ -62,12 +62,12 @@ export default function InvoicesPage() {
   const invoices = data?.invoices || [];
   const pendingFee = data?.stats?.totalPendingFeeCents || 0;
 
-  // Opciones de meses (últimos 6)
+  // Month options (last 6)
   const monthOptions = Array.from({ length: 6 }, (_, i) => {
     const d = new Date();
     d.setMonth(d.getMonth() - i);
     const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    return { value: val, label: format(new Date(d.getFullYear(), d.getMonth(), 1), "MMMM yyyy", { locale: es }) };
+    return { value: val, label: format(new Date(d.getFullYear(), d.getMonth(), 1), "MMMM yyyy", { locale: enUS }) };
   });
 
   return (
@@ -75,14 +75,14 @@ export default function InvoicesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">Facturación</h1>
-          <p className="text-[var(--text-muted)] mt-1">Gestiona las facturas de fees para asesores</p>
+          <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">Billing</h1>
+          <p className="text-[var(--text-muted)] mt-1">Manage fee invoices for advisors</p>
         </div>
         <div className="flex items-center gap-3">
           <Select options={monthOptions} value={month} onChange={setMonth} />
           <Button onClick={() => generateMutation.mutate()} disabled={generateMutation.isPending}>
             <Send className="w-4 h-4 mr-2" />
-            {generateMutation.isPending ? "Generando..." : "Generar facturas"}
+            {generateMutation.isPending ? "Generating..." : "Generate invoices"}
           </Button>
         </div>
       </div>
@@ -91,13 +91,13 @@ export default function InvoicesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-6">
-            <p className="text-sm text-[var(--text-muted)]">Fees pendientes ({month})</p>
+            <p className="text-sm text-[var(--text-muted)]">Fees pending ({month})</p>
             <p className="text-2xl font-heading font-bold text-[var(--warning)]">{formatCurrency(pendingFee)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
-            <p className="text-sm text-[var(--text-muted)]">Facturas del mes</p>
+            <p className="text-sm text-[var(--text-muted)]">Invoices this month</p>
             <p className="text-2xl font-heading font-bold text-[var(--text-primary)]">{invoices.length}</p>
           </CardContent>
         </Card>
@@ -117,8 +117,8 @@ export default function InvoicesPage() {
           <CardContent className="p-12">
             <EmptyState
               icon={Receipt}
-              title="Sin facturas para este mes"
-              description="Genera las facturas para calcular los fees pendientes de cada asesor."
+              title="No invoices for this month"
+              description="Generate invoices to calculate each advisor's pending fees."
             />
           </CardContent>
         </Card>
@@ -129,11 +129,11 @@ export default function InvoicesPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[var(--border)] text-left">
-                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Asesor</th>
-                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Período</th>
-                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Citas</th>
-                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Ingresos</th>
-                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Fee a pagar</th>
+                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Advisor</th>
+                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Period</th>
+                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Appointments</th>
+                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Revenue</th>
+                    <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Fee due</th>
                     <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Estado</th>
                     <th className="px-4 py-3 font-medium text-[var(--text-muted)]">Acciones</th>
                   </tr>
@@ -146,7 +146,7 @@ export default function InvoicesPage() {
                         <p className="text-xs text-[var(--text-muted)]">{inv.advisorEmail}</p>
                       </td>
                       <td className="px-4 py-3 text-[var(--text-secondary)]">
-                        {format(new Date(inv.periodStart), "MMM yyyy", { locale: es })}
+                        {format(new Date(inv.periodStart), "MMM yyyy", { locale: enUS })}
                       </td>
                       <td className="px-4 py-3 text-[var(--text-secondary)]">{inv.appointmentCount}</td>
                       <td className="px-4 py-3 text-[var(--text-secondary)]">{formatCurrency(inv.totalEarningsCents)}</td>
@@ -155,7 +155,7 @@ export default function InvoicesPage() {
                         {inv.status === "PAID" ? (
                           <Badge variant="success">Pagada</Badge>
                         ) : (
-                          <Badge variant="outline">Pendiente</Badge>
+                          <Badge variant="outline">Pending</Badge>
                         )}
                       </td>
                       <td className="px-4 py-3">

@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, DollarSign, AlertCircle, Tag } from "lucide-react";
@@ -37,10 +37,10 @@ export function BookingSummary({
     <div className="space-y-4">
       <div>
         <h2 className="font-heading text-xl font-bold text-[var(--text-primary)]">
-          Resumen de tu reserva
+          Booking summary
         </h2>
         <p className="text-sm text-[var(--text-muted)] mt-1">
-          Revisa los detalles antes de confirmar
+          Review the details before confirming
         </p>
       </div>
 
@@ -68,7 +68,7 @@ export function BookingSummary({
             </div>
             <div>
               <p className="font-medium text-[var(--text-primary)]">
-                {format(daySlots.date, "EEEE d 'de' MMMM, yyyy", { locale: es })}
+                {format(daySlots.date, "EEEE, MMMM d, yyyy", { locale: enUS })}
               </p>
             </div>
           </div>
@@ -81,7 +81,7 @@ export function BookingSummary({
             <div>
               <p className="font-medium text-[var(--text-primary)]">{time}</p>
               <p className="text-sm text-[var(--text-muted)]">
-                Duración: {formatDuration(service.durationMin)}
+                Duration: {formatDuration(service.durationMin)}
               </p>
             </div>
           </div>
@@ -91,7 +91,7 @@ export function BookingSummary({
             {discountCents > 0 && (
               <>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[var(--text-muted)]">Valor original</span>
+                  <span className="text-[var(--text-muted)]">Original price</span>
                   <span className="text-[var(--text-muted)] line-through">{formatCurrency(totalOriginal)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -112,7 +112,7 @@ export function BookingSummary({
               </span>
             </div>
             <p className="text-xs text-[var(--text-muted)] mt-1">
-              Incluye todos los costos
+              Includes all costs
             </p>
           </div>
 
@@ -121,11 +121,11 @@ export function BookingSummary({
             <AlertCircle className="w-4 h-4 text-[var(--text-muted)] mt-0.5 flex-shrink-0" />
             <div className="text-xs text-[var(--text-muted)]">
               <p className="font-medium text-[var(--text-secondary)] mb-1">
-                Política de cambios
+                Change policy
               </p>
               <p>
-                Reagendar gratis con {service.rescheduleHoursMin || 24}h de
-                anticipación. Cancelar sin reagendar = sin devolución.
+                Reschedule for free with {service.rescheduleHoursMin || 24}h advance
+                notice. Cancel without rescheduling = no refund.
               </p>
             </div>
           </div>
@@ -139,10 +139,10 @@ export function BookingSummary({
             {isProcessing ? (
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Procesando...
+                Processing...
               </div>
             ) : (
-              "Continuar al pago"
+              "Continue to payment"
             )}
           </Button>
         </CardContent>

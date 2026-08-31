@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { notifyAppointmentReminder } from "@/lib/notify";
 
-// Cron diario (ver vercel.json): envía recordatorios de asesorías
-// programadas para las próximas 24 horas.
+// Daily cron (see vercel.json): sends reminders for consultations
+// scheduled in the next 24 hours.
 export async function GET(request: Request) {
-  // Proteger el endpoint con el secreto de cron (Vercel lo inyecta en el header)
+  // Protect the endpoint with the cron secret (Vercel injects it in the header)
   const authHeader = request.headers.get("authorization");
   if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,8 +15,8 @@ export async function GET(request: Request) {
     const now = new Date();
     const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-    // Citas confirmadas que empiezan entre 22h y 26h desde ahora
-    // (ventana amplia para cubrir el cron diario exacto)
+    // Confirmed appointments starting between 22h and 26h from now
+    // (wide window to cover the exact daily cron run)
     const startWindow = new Date(now.getTime() + 22 * 60 * 60 * 1000);
     const endWindow = new Date(now.getTime() + 26 * 60 * 60 * 1000);
 
@@ -24,7 +24,7 @@ export async function GET(request: Request) {
       where: {
         status: "CONFIRMED",
         scheduledAt: { gte: startWindow, lte: endWindow },
-        // Evitar re-enviar si ya se notificó (marcador en la cita)
+        // Avoid re-sending if already notified (marker on the appointment)
         reminderSentAt: null,
       },
       select: { id: true },

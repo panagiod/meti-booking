@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
 
-// GET: Historial de mensajes de la videollamada
+// GET: Video call chat message history
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ appointmentId: string }> }
@@ -52,7 +52,7 @@ const messageSchema = z.object({
   body: z.string().min(1).max(2000),
 });
 
-// POST: Persistir un mensaje del chat
+// POST: Persist a chat message
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ appointmentId: string }> }

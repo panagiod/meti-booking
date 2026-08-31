@@ -5,8 +5,8 @@ import { randomUUID } from "crypto";
 
 config({ path: resolve(__dirname, "../../.env.test") });
 
-// El cliente Prisma generado es ESM; el loader de Playwright transpila a CJS.
-// tsx registra un require-hook que permite cargarlo sin errores de import.meta.
+// The generated Prisma client is ESM; Playwright's loader transpiles to CJS.
+// tsx registers a require-hook that allows loading it without import.meta errors.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { register } = require("tsx/cjs/api");
 register();
@@ -32,7 +32,7 @@ export interface TestUser {
   role: "ADMIN" | "ADVISOR" | "CLIENT";
 }
 
-// Crea un usuario directamente en la DB (sin pasar por la API de sign-up)
+// Creates a user directly in the DB (without going through the sign-up API)
 export async function createUserDirect(
   role: "ADMIN" | "ADVISOR" | "CLIENT",
   email?: string
@@ -58,8 +58,8 @@ export async function createUserDirect(
   return { id: user.id, email: user.email, role };
 }
 
-// Crea una sesión de better-auth válida para un usuario (se inserta directo en
-// la tabla sessions, que es lo que auth.api.getSession consulta).
+// Creates a valid better-auth session for a user (inserted directly into the
+// sessions table, which is what auth.api.getSession queries).
 export async function createSession(userId: string): Promise<string> {
   const token = `e2e-${randomUUID()}`;
   await prisma.session.create({
@@ -76,17 +76,15 @@ export function sessionCookie(token: string): string {
   return `better-auth.session_token=${token}`;
 }
 
-// Registro de emails creados durante el run (para limpieza defensiva)
+// Registry of emails created during the run (for defensive cleanup)
 export const createdEmails: string[] = [];
 
 export function trackEmail(email: string) {
   createdEmails.push(email);
 }
 
-// ============================================================
-// CLEANUP SEGURO: solo borra datos de usuarios e2e.*
-// NUNCA toca otros usuarios ni registros ajenos.
-// ============================================================
+// SAFE CLEANUP: only deletes e2e.* user data
+// NEVER touches other users or unrelated records.
 export async function cleanupE2EData() {
   const e2eUsers = await prisma.user.findMany({
     where: { email: { startsWith: E2E_EMAIL_PREFIX } },
@@ -94,13 +92,13 @@ export async function cleanupE2EData() {
   });
 
   if (e2eUsers.length === 0) {
-    console.log("  [cleanup] No hay usuarios e2e que limpiar");
+    console.log("  [cleanup] No e2e users to clean up");
     return 0;
   }
 
   const userIds = e2eUsers.map((u: { id: string }) => u.id);
 
-  // Advisor profiles ligados a usuarios e2e
+  // Advisor profiles linked to e2e users
   const advisorProfiles = await prisma.advisorProfile.findMany({
     where: { userId: { in: userIds } },
     select: { id: true },
@@ -108,7 +106,7 @@ export async function cleanupE2EData() {
   const advisorIds = advisorProfiles.map((p: { id: string }) => p.id);
 
   if (advisorIds.length > 0) {
-    // Citas donde el asesor o el cliente es e2e
+    // Appointments where the advisor or client is e2e
     await prisma.appointment.deleteMany({
       where: {
         OR: [
@@ -137,7 +135,7 @@ export async function cleanupE2EData() {
 
   const deleted = await prisma.user.deleteMany({ where: { id: { in: userIds } } });
 
-  console.log(`  [cleanup] Usuarios e2e eliminados: ${deleted.count}`);
+  console.log(`  [cleanup] E2e users removed: ${deleted.count}`);
   return deleted.count;
 }
 

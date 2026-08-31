@@ -58,7 +58,7 @@ export const latinAmericanCountries: Country[] = [
   },
   {
     code: "DO",
-    name: "Rep. Dominicana",
+    name: "Dominican Republic",
     dialCode: "+1",
     mask: "XXX XXX-XXXX",
     placeholder: "809 123-4567",
@@ -93,7 +93,7 @@ export const latinAmericanCountries: Country[] = [
   },
   {
     code: "MX",
-    name: "México",
+    name: "Mexico",
     dialCode: "+52",
     mask: "XX XXXX-XXXX",
     placeholder: "55 1234-5678",
@@ -107,7 +107,7 @@ export const latinAmericanCountries: Country[] = [
   },
   {
     code: "PA",
-    name: "Panamá",
+    name: "Panama",
     dialCode: "+507",
     mask: "XXXX-XXXX",
     placeholder: "6123-4567",
@@ -121,7 +121,7 @@ export const latinAmericanCountries: Country[] = [
   },
   {
     code: "PE",
-    name: "Perú",
+    name: "Peru",
     dialCode: "+51",
     mask: "XXX XXX-XXXX",
     placeholder: "999 123-456",

@@ -15,62 +15,62 @@ import {
 const benefits = [
   {
     icon: DollarSign,
-    title: "Tú pones el precio",
+    title: "You set the price",
     description:
-      "Define cuánto quieres ganar por asesoría. La plataforma añade una comisión transparente visible al cliente, nunca oculta de tu ganancia.",
+      "Define how much you want to earn per session. The platform adds a transparent fee visible to the client, never hidden from your earnings.",
   },
   {
     icon: Calendar,
-    title: "Control total de tu agenda",
+    title: "Full control of your schedule",
     description:
-      "Configura tu horario por día de semana, almuerzos, gaps entre citas y fechas bloqueadas. Sin límite de citas diarias.",
+      "Configure your schedule by day of week, lunch breaks, gaps between appointments, and blocked dates. No daily appointment limit.",
   },
   {
     icon: Video,
-    title: "Todo desde tu casa",
+    title: "Everything from home",
     description:
-      "Las asesorías se realizan por videollamada integrada con chat. No necesitas instalar nada — solo dale click a 'Unirse'.",
+      "Sessions are conducted via integrated video calls with chat. No installation needed — just click 'Join'.",
   },
   {
     icon: Clock,
-    title: "Pagos automáticos",
+    title: "Automatic payments",
     description:
-      "El cliente paga al agendar y el dinero llega directo a tu cuenta de Mercado Pago. Sin cobros manuales, sin seguimiento.",
+      "The client pays when booking and funds arrive directly to your Mercado Pago account. No manual invoicing, no follow-up.",
   },
   {
     icon: TrendingUp,
-    title: "Visibilidad y reputación",
+    title: "Visibility and reputation",
     description:
-      "Tu perfil público muestra tus servicios, experiencia y calificaciones de clientes. A más valor, más clientes te encuentran.",
+      "Your public profile shows your services, experience, and client ratings. Higher value brings more clients to you.",
   },
   {
     icon: Shield,
-    title: "Seguridad primero",
+    title: "Security first",
     description:
-      "Tus credenciales de pago son privadas (las ingresas tú directamente en Mercado Pago). Nunca las toca la plataforma.",
+      "Your payment credentials are private (you enter them directly in Mercado Pago). The platform never touches them.",
   },
 ];
 
 const steps = [
   {
     number: "1",
-    title: "Regístrate",
-    description: "Crea tu cuenta en minutos con Google o email.",
+    title: "Sign up",
+    description: "Create your account in minutes with Google or email.",
   },
   {
     number: "2",
-    title: "Verifica tu perfil",
-    description: "Sube tus documentos profesionales. Un administrador revisa y aprueba tu cuenta.",
+    title: "Verify your profile",
+    description: "Upload your professional documents. An administrator reviews and approves your account.",
   },
   {
     number: "3",
-    title: "Configura tus servicios",
-    description: "Crea tus servicios, define precios, horarios y conecta tu Mercado Pago.",
+    title: "Set up your services",
+    description: "Create your services, set prices, schedules, and connect your Mercado Pago.",
   },
   {
     number: "4",
-    title: "Recibe clientes",
-    description: "Los clientes te encuentran, agendan y pagan. Tú solo das la asesoría.",
+    title: "Receive clients",
+    description: "Clients find you, book, and pay. You deliver the advisory session.",
   },
 ];
 
@@ -81,17 +81,17 @@ export default function ResourcesPage() {
       <section className="bg-gradient-to-br from-[var(--secondary)] to-[var(--secondary-light)] text-white py-20 px-4">
         <div className="container-meti max-w-4xl mx-auto text-center">
           <h1 className="font-heading text-4xl md:text-5xl font-extrabold mb-6">
-            Comparte tu experiencia,
+            Share your expertise,
             <br />
-            <span className="text-[var(--accent)]">cobra por tu sabiduría</span>
+            <span className="text-[var(--accent)]">earn from your knowledge</span>
           </h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">
-            Meti te permite monetizar tu conocimiento profesional ofreciendo asesorías por
-            videollamada a clientes que buscan tu experiencia. Tú pones el precio, tú defines
-            tu horario, tú controlas tu negocio.
+            Meti lets you monetize your professional knowledge by offering advisory sessions via
+            video call to clients seeking your experience. You set the price, you define
+            your schedule, you control your business.
           </p>
           <Button size="lg" className="text-base px-8" asChild>
-            <Link href="/register">Quiero ser asesor</Link>
+            <Link href="/register">Become an advisor</Link>
           </Button>
         </div>
       </section>
@@ -99,7 +99,7 @@ export default function ResourcesPage() {
       {/* Benefits */}
       <section className="container-meti py-20">
         <h2 className="font-heading text-3xl font-bold text-[var(--text-primary)] text-center mb-12">
-          ¿Por qué unirse a Meti?
+          Why join Meti?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {benefits.map((benefit) => {
@@ -127,7 +127,7 @@ export default function ResourcesPage() {
       <section className="bg-[var(--background)] py-20 px-4">
         <div className="container-meti max-w-4xl">
           <h2 className="font-heading text-3xl font-bold text-[var(--text-primary)] text-center mb-12">
-            ¿Cómo empiezo?
+            How do I get started?
           </h2>
           <div className="space-y-8">
             {steps.map((step, i) => (
@@ -152,13 +152,13 @@ export default function ResourcesPage() {
       {/* CTA final */}
       <section className="container-meti py-20 text-center">
         <h2 className="font-heading text-3xl font-bold text-[var(--text-primary)] mb-4">
-          ¿Listo para empezar?
+          Ready to get started?
         </h2>
         <p className="text-[var(--text-muted)] mb-8 max-w-xl mx-auto">
-          Únete a la red de profesionales de Meti y empieza a ofrecer tus servicios a clientes que buscan tu experiencia.
+          Join Meti&apos;s network of professionals and start offering your services to clients seeking your expertise.
         </p>
         <Button size="lg" className="text-base px-8" asChild>
-          <Link href="/register">Crear mi cuenta de asesor</Link>
+          <Link href="/register">Create my advisor account</Link>
         </Button>
       </section>
     </div>

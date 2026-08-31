@@ -37,7 +37,7 @@ export function VerifiedBadge({
         )}
       >
         <CheckCircle className={iconSizes[size]} />
-        Verificado
+        Verified
       </span>
     );
   }
@@ -53,7 +53,7 @@ export function VerifiedBadge({
         )}
       >
         <Clock className={iconSizes[size]} />
-        En verificación
+        Under review
       </span>
     );
   }
@@ -69,7 +69,7 @@ export function VerifiedBadge({
         )}
       >
         <XCircle className={iconSizes[size]} />
-        No verificado
+        Not verified
       </span>
     );
   }

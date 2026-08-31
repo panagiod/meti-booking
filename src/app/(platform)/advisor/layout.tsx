@@ -29,32 +29,32 @@ const navigation = [
     icon: LayoutDashboard,
   },
   {
-    name: "Mis Servicios",
+    name: "My Services",
     href: "/advisor/services",
     icon: Briefcase,
   },
   {
-    name: "Horarios",
+    name: "Schedule",
     href: "/advisor/schedule",
     icon: Calendar,
   },
   {
-    name: "Mi Perfil",
+    name: "My Profile",
     href: "/advisor/profile",
     icon: User,
   },
   {
-    name: "Pagos",
+    name: "Payments",
     href: "/advisor/payments",
     icon: CreditCard,
   },
   {
-    name: "Promociones",
+    name: "Promotions",
     href: "/advisor/promotions",
     icon: Tag,
   },
   {
-    name: "Configuración MP",
+    name: "MP Settings",
     href: "/advisor/mercadopago",
     icon: Settings,
   },
@@ -80,7 +80,7 @@ export default function AdvisorLayout({
           return;
         }
         setUser(data.user);
-        // Verificar rol: solo asesor puede estar aquí (admin va a /admin)
+        // Verify role: only advisors can access this area (admins go to /admin)
         const role = (data.user as any).role;
         if (role !== "ADVISOR") {
           router.push(role === "ADMIN" ? "/admin" : "/dashboard");
@@ -102,7 +102,7 @@ export default function AdvisorLayout({
   };
 
   if (isLoading) {
-    return <LoadingPage fullScreen label="Verificando tu sesión" />;
+    return <LoadingPage fullScreen label="Verifying your session" />;
   }
 
   if (!user) {
@@ -189,7 +189,7 @@ export default function AdvisorLayout({
                   {user.name}
                 </p>
                 <p className="text-xs text-[var(--text-muted)] truncate">
-                  Asesor
+                  Advisor
                 </p>
               </div>
             </div>
@@ -199,7 +199,7 @@ export default function AdvisorLayout({
               onClick={handleSignOut}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Cerrar sesión
+              Sign out
             </Button>
           </div>
         </div>

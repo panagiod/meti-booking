@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// POST: Registrar usuario como asesor
+// POST: Register user as advisor
 export async function POST(request: NextRequest) {
   const { userId, bio, categoryIds } = await request.json();
 
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Verificar que el usuario exista
+    // Verify the user exists
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Verificar que no sea ya asesor
+    // Verify they are not already an advisor
     const existingAdvisor = await prisma.advisorProfile.findUnique({
       where: { userId },
     });
@@ -28,22 +28,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Already an advisor" }, { status: 400 });
     }
 
-    // Actualizar rol
+    // Update role
     await prisma.user.update({
       where: { id: userId },
       data: { role: "ADVISOR" },
     });
 
-    // Crear perfil de asesor
+    // Create advisor profile
     const advisorProfile = await prisma.advisorProfile.create({
       data: {
         userId: userId,
         bio: bio || null,
-        isActive: false, // Pendiente de aprobación
+        isActive: false, // Pending approval
       },
     });
 
-    // Asociar categorías
+    // Associate categories
     if (categoryIds && categoryIds.length > 0) {
       await prisma.advisorCategory.createMany({
         data: categoryIds.map((categoryId: string) => ({
@@ -53,14 +53,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Eliminar ClientProfile si existe
+    // Delete ClientProfile if it exists
     await prisma.clientProfile.deleteMany({
       where: { userId },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Tu solicitud ha sido enviada. El administrador revisará tu perfil.",
+      message: "Your request has been submitted. An administrator will review your profile.",
     });
   } catch (error) {
     console.error("Error creating advisor:", error);

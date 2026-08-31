@@ -48,12 +48,12 @@ export default function CallPage({
             if (apt) {
               setAppointment(apt);
 
-              // Validar si la cita está dentro del rango de tiempo
+              // Validate whether the appointment is within the time window
               const now = new Date();
               const start = new Date(apt.scheduledAt);
               const end = new Date(start.getTime() + apt.durationMin * 60000);
 
-              // Permitir ingresar 5 minutos antes del inicio
+              // Allow joining 5 minutes before start
               const startWithBuffer = new Date(start.getTime() - 5 * 60000);
 
               if (now < startWithBuffer) {
@@ -82,7 +82,7 @@ export default function CallPage({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <LoadingPage label="Cargando..." />
+        <LoadingPage label="Loading..." />
       </div>
     );
   }
@@ -93,7 +93,7 @@ export default function CallPage({
 
   const userRole = (user as any).role === "ADVISOR" ? "advisor" : "client";
 
-  // Si la cita ya terminó, mostrar mensaje
+  // If the appointment has already ended, show a message
   if (timeStatus === "after" && !inCall) {
     return (
       <div className="min-h-screen bg-[var(--background)]">
@@ -111,21 +111,21 @@ export default function CallPage({
                 <Clock className="w-8 h-8 text-[var(--error)]" />
               </div>
               <h2 className="font-heading text-xl font-bold text-[var(--text-primary)] mb-2">
-                La sesión ya finalizó
+                The session has ended
               </h2>
               <p className="text-[var(--text-muted)] mb-6">
-                Esta asesoría ya pasó. Si necesitas otra cita, podés agendar una nueva.
+                This consultation has passed. If you need another appointment, you can book a new one.
               </p>
               <div className="flex flex-col gap-3">
                 {userRole === "advisor" ? (
                   <Button onClick={() => router.push("/advisor/schedule")}>
                     <Calendar className="w-4 h-4 mr-2" />
-                    Ver mi agenda
+                    View my schedule
                   </Button>
                 ) : (
                   <Button onClick={() => router.push("/services")}>
                     <Calendar className="w-4 h-4 mr-2" />
-                    Agendar otra cita
+                    Book another appointment
                   </Button>
                 )}
               </div>
@@ -136,7 +136,7 @@ export default function CallPage({
     );
   }
 
-  // Si es muy pronto para ingresar
+  // If it is too early to join
   if (timeStatus === "before" && !inCall) {
     return (
       <div className="min-h-screen bg-[var(--background)]">

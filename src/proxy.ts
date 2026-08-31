@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Rutas públicas (no requieren sesión)
+// Public routes (no session required)
 const publicRoutes = [
   "/",
   "/login",
@@ -16,12 +16,12 @@ const publicRoutes = [
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Permitir rutas públicas
+  // Allow public routes
   if (publicRoutes.some((route) => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
-  // Permitir archivos estáticos y assets
+  // Allow static files and assets
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
@@ -31,10 +31,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Verificar si hay sesión (cookie presente)
+  // Check if there is a session (cookie present)
   const sessionCookie = request.cookies.get("better-auth.session_token");
   if (!sessionCookie) {
-    // Sin sesión: checkout y call son públicos
+    // No session: checkout and call are public
     if (pathname.startsWith("/checkout") || pathname.startsWith("/call")) {
       return NextResponse.next();
     }

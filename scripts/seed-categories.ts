@@ -7,70 +7,70 @@ const categories = [
   {
     name: "Legal",
     slug: "legal",
-    description: "Abogados, contratos, derecho corporativo, laboral, civil",
+    description: "Lawyers, contracts, corporate law, labor law, civil law",
     icon: "Scale",
     color: "#FF6B35",
   },
   {
-    name: "Finanzas",
+    name: "Finance",
     slug: "finanzas",
-    description: "Inversiones, planificación financiera, contabilidad, impuestos",
+    description: "Investments, financial planning, accounting, taxes",
     icon: "TrendingUp",
     color: "#00D4AA",
   },
   {
-    name: "Salud",
+    name: "Health",
     slug: "salud",
-    description: "Psicología, nutrición, coaching de vida, bienestar",
+    description: "Psychology, nutrition, life coaching, wellness",
     icon: "Heart",
     color: "#EF4444",
   },
   {
-    name: "Tecnología",
+    name: "Technology",
     slug: "tecnologia",
-    description: "IT, marketing digital, desarrollo web, ciberseguridad",
+    description: "IT, digital marketing, web development, cybersecurity",
     icon: "Cpu",
     color: "#8B5CF6",
   },
   {
-    name: "Educación",
+    name: "Education",
     slug: "educacion",
-    description: "Tutorías, formación profesional, idiomas, preparación académica",
+    description: "Tutoring, professional training, languages, academic prep",
     icon: "GraduationCap",
     color: "#F59E0B",
   },
   {
-    name: "Negocios",
+    name: "Business",
     slug: "negocios",
-    description: "Consultoría empresarial, emprendimiento, management, estrategia",
+    description: "Business consulting, entrepreneurship, management, strategy",
     icon: "Briefcase",
     color: "#1A1A2E",
   },
   {
-    name: "Diseño",
+    name: "Design",
     slug: "diseno",
-    description: "Diseño gráfico, UX/UI, branding, arquitectura",
+    description: "Graphic design, UX/UI, branding, architecture",
     icon: "Palette",
     color: "#EC4899",
   },
   {
-    name: "Ingeniería",
+    name: "Engineering",
     slug: "ingenieria",
-    description: "Ingeniería civil, industrial, mecánica, electrical",
+    description: "Civil, industrial, mechanical, electrical engineering",
     icon: "Wrench",
     color: "#6366F1",
   },
   {
     name: "Marketing",
     slug: "marketing",
-    description: "Estrategia digital, redes sociales, SEO, publicidad",
+    description: "Digital strategy, social media, SEO, advertising",
     icon: "Megaphone",
     color: "#14B8A6",
   },
   {
-    name: "Recursos Humanos",
+    name: "Human Resources",
     slug: "recursos-humanos",
-    description: "Selección de personal, capacitación, legislación laboral",
+    description: "Recruitment, training, labor law compliance",
     icon: "Users",
     color: "#F97316",
   },
@@ -85,7 +85,7 @@ async function seedCategories() {
   });
 
   try {
-    console.log("🌱 Poblando categorías...\n");
+    console.log("🌱 Seeding categories...\n");
 
     for (const category of categories) {
       // Check if exists
@@ -99,13 +99,13 @@ async function seedCategories() {
           "INSERT INTO categories (id, name, slug, description, icon, color, \"isActive\", \"createdAt\", \"updatedAt\") VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, true, NOW(), NOW())",
           [category.name, category.slug, category.description, category.icon, category.color]
         );
-        console.log(`✅ Creada: ${category.name}`);
+        console.log(`✅ Created: ${category.name}`);
       } else {
-        console.log(`⏭️  Ya existe: ${category.name}`);
+        console.log(`⏭️  Already exists: ${category.name}`);
       }
     }
 
-    console.log("\n✅ Categorías pobladas correctamente");
+    console.log("\n✅ Categories seeded successfully");
   } catch (error) {
     console.error("❌ Error:", error);
   } finally {

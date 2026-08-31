@@ -15,11 +15,11 @@ async function waitForStatus(appointmentId: string, status: string, timeoutMs = 
     if (apt?.status === status) return apt;
     await new Promise((r) => setTimeout(r, 2_000));
   }
-  throw new Error(`Appointment ${appointmentId} nunca llegó a ${status}`);
+  throw new Error(`Appointment ${appointmentId} never reached ${status}`);
 }
 
-test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
-  test("preferencia sandbox: initPoint válido y cita PENDING con isTest", async ({ request }) => {
+test.describe("06 · Mercado Pago sandbox purchase flow", () => {
+  test("sandbox preference: valid initPoint and PENDING appointment with isTest", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
     const client = await createClient(request);
@@ -39,13 +39,13 @@ test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
     expect(appointment.status).toBe("PENDING");
     expect(appointment.isTest).toBe(true);
 
-    // El precio incluye el fee de categoría Legal (15%)
+    // Price includes Legal category fee (15%)
     expect(appointment.totalCents).toBe(11500);
     expect(appointment.platformFee).toBe(1500);
     expect(appointment.advisorEarning).toBe(10000);
   });
 
-  test("compra completa en sandbox: pago con tarjeta de prueba → cita CONFIRMED", async ({ request, page }) => {
+  test("full sandbox purchase: test card payment → CONFIRMED appointment", async ({ request, page }) => {
     test.skip(E2E_SKIP_MP_CHECKOUT, "E2E_SKIP_MP_CHECKOUT=1");
 
     const api = newApi(request);
@@ -61,8 +61,8 @@ test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
     expect(res.status(), await res.text()).toBe(201);
     const { appointment, initPoint, preferenceId } = await res.json();
 
-    // Sesión del cliente en el navegador (para que /checkout/result pueda
-    // consultar la cita tras el redirect de MP)
+    // Client session in the browser (so /checkout/result can
+    // query the appointment after MP redirect)
     await page.context().addCookies([
       {
         name: "better-auth.session_token",
@@ -76,19 +76,19 @@ test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
         if (e.message === MP_CHECKOUT_UNAVAILABLE) {
           test.skip(
             true,
-            "El checkout sandbox del vendedor de prueba no carga (cuenta de prueba de MP rota). La preferencia y el resto del flujo ya están validados."
+            "The seller's sandbox checkout does not load (broken MP test account). The preference and rest of the flow are already validated."
           );
         }
         throw e;
       }
     );
-    expect(paymentId, "MP sandbox no devolvió payment_id").toBeTruthy();
+    expect(paymentId, "MP sandbox did not return payment_id").toBeTruthy();
 
-    // La cita debe confirmarse (result page verifica contra la API sandbox)
+    // Appointment must be confirmed (result page verifies against sandbox API)
     const confirmed = await waitForStatus(appointment.id, "CONFIRMED");
     expect(confirmed.paymentId).toBe(paymentId);
 
-    // El webhook (notificación sintética con el payment real) confirma idempotente
+    // Webhook (synthetic notification with real payment) confirms idempotently
     const webhook = await api.post(`${BASE_URL}/api/webhooks/mercadopago`, {
       data: {
         type: "payment",
@@ -99,7 +99,7 @@ test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
     expect(webhook.status()).toBe(200);
     expect((await webhook.json()).ok).toBe(true);
 
-    // Verificación directa: ya confirmada → alreadyConfirmed
+    // Direct verification: already confirmed → alreadyConfirmed
     const verify = await withSession(api, client.sessionToken).post(
       `/api/appointments/${appointment.id}/verify`,
       { paymentId }
@@ -109,7 +109,7 @@ test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
     expect(verifyData.alreadyConfirmed || verifyData.confirmed).toBe(true);
   });
 
-  test("webhook: paths de error e idempotencia sin pago real", async ({ request }) => {
+  test("webhook: error paths and idempotency without real payment", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
     const client = await createClient(request);
@@ -123,7 +123,7 @@ test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
     expect(res.status(), await res.text()).toBe(201);
     const { appointment, preferenceId } = await res.json();
 
-    // Cita desconocida → 404
+    // Unknown appointment → 404
     const unknown = await api.post(`${BASE_URL}/api/webhooks/mercadopago`, {
       data: {
         type: "payment",
@@ -133,7 +133,7 @@ test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
     });
     expect(unknown.status()).toBe(404);
 
-    // Sin paymentId (solo preference) → 400
+    // Without paymentId (preference only) → 400
     const noPayment = await api.post(`${BASE_URL}/api/webhooks/mercadopago`, {
       data: {
         type: "payment",
@@ -142,19 +142,19 @@ test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
     });
     expect(noPayment.status()).toBe(400);
 
-    // Topic que no manejamos → 200 ignorado
+    // Topic we don't handle → 200 ignored
     const ignored = await api.post(`${BASE_URL}/api/webhooks/mercadopago`, {
       data: { type: "chargeback" },
     });
     expect(ignored.status()).toBe(200);
     expect((await ignored.json()).ignored).toBe("chargeback");
 
-    // GET del webhook responde ok (healthcheck de MP)
+    // GET on webhook responds ok (MP healthcheck)
     const health = await api.get(`${BASE_URL}/api/webhooks/mercadopago`);
     expect(health.status()).toBe(200);
   });
 
-  test("verify con paymentId falso no confirma la cita", async ({ request }) => {
+  test("verify with fake paymentId does not confirm the appointment", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
     const client = await createClient(request);
@@ -171,17 +171,17 @@ test.describe("06 · Flujo de compra con Mercado Pago sandbox", () => {
       `/api/appointments/${appointment.id}/verify`,
       { paymentId: "0000000000" }
     );
-    // getPayment con id inválido puede devolver 404/404 en MP → la app responde
-    // ok:false o 500/502 según el error; lo importante: la cita NO se confirma
+    // getPayment with invalid id may return 404 on MP → app responds
+    // ok:false or 500/502 depending on error; important: appointment is NOT confirmed
     const after = await prisma.appointment.findUnique({ where: { id: appointment.id } });
     expect(after?.status).toBe("PENDING");
     expect(after?.paymentId).toBeNull();
     void verify;
   });
 
-  test("compra sin credenciales MP del asesor → 400 con mensaje claro", async ({ request }) => {
+  test("purchase without advisor MP credentials → 400 with clear message", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request); // sin MP
+    const fixture = await createActiveAdvisor(request); // no MP
     const client = await createClient(request);
 
     const res = await withSession(api, client.sessionToken).post("/api/appointments", {

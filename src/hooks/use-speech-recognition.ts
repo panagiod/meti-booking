@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 
-// Declaración de tipos para Web Speech API
+// Type declarations for Web Speech API
 declare global {
   interface Window {
     SpeechRecognition: any;
@@ -32,7 +32,7 @@ interface UseSpeechRecognitionReturn {
   error: string | null;
 }
 
-// Verificar soporte del navegador
+// Check browser support
 function getSpeechRecognition(): any | null {
   if (typeof window === "undefined") return null;
   const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -40,7 +40,7 @@ function getSpeechRecognition(): any | null {
 }
 
 export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}): UseSpeechRecognitionReturn {
-  const { language = "es-CO", onSegment, onTranscriptReady } = options;
+  const { language = "en-US", onSegment, onTranscriptReady } = options;
 
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
@@ -52,7 +52,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
 
   const start = useCallback(() => {
     if (!isSupported) {
-      setError("Tu navegador no soporta reconocimiento de voz. Te recomendamos usar Chrome.");
+      setError("Your browser does not support speech recognition. We recommend using Chrome.");
       return;
     }
 
@@ -100,17 +100,17 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
       recognition.onerror = (event: any) => {
         console.error("Speech recognition error:", event.error);
         if (event.error === "not-allowed") {
-          setError("Permiso de micrófono denegado.");
+          setError("Microphone permission denied.");
         } else if (event.error === "no-speech") {
-          // Silencio, no es error
+          // Silence, not an error
         } else {
-          setError(`Error de reconocimiento: ${event.error}`);
+          setError(`Recognition error: ${event.error}`);
         }
       };
 
       recognition.onend = () => {
         setIsListening(false);
-        // Reiniciar si debería estar escuchando
+        // Restart if it should still be listening
         if (recognitionRef.current) {
           try {
             recognition.start();
@@ -121,7 +121,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
       recognitionRef.current = recognition;
       recognition.start();
     } catch (err) {
-      setError("Error al iniciar reconocimiento de voz.");
+      setError("Error starting speech recognition.");
     }
   }, [isSupported, language, onSegment]);
 
@@ -135,7 +135,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}):
     onTranscriptReady?.(transcript);
   }, [transcript, onTranscriptReady]);
 
-  // Limpiar al desmontar
+  // Clean up on unmount
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {

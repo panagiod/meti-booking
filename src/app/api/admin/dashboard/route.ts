@@ -92,7 +92,7 @@ export async function GET() {
         id: a.id,
         name: a.user.name,
         email: a.user.email,
-        speciality: a.speciality || "Sin especificar",
+        speciality: a.speciality || "Unspecified",
         status: a.isActive ? "active" : "pending",
         joinDate: a.user.createdAt.toISOString(),
       })),

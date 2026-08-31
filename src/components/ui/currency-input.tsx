@@ -3,20 +3,20 @@
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-// Formatea un número al estilo colombiano: 1000000 → 1'000.000
+// Formats a number in Colombian style: 1000000 → 1'000.000
 function formatCOP(n: number): string {
   if (isNaN(n)) return "";
   const abs = Math.abs(Math.trunc(n));
-  const s = abs.toLocaleString("es-CO"); // "1.000.000"
+  const s = abs.toLocaleString("en-US"); // "1.000.000"
   const firstDot = s.indexOf(".");
-  // Si hay dos separadores, el primero (millones) usa apóstrofe
+  // If there are two separators, the first one (millions) uses an apostrophe
   if (firstDot !== -1 && s.indexOf(".", firstDot + 1) !== -1) {
     return s.slice(0, firstDot) + "'" + s.slice(firstDot + 1);
   }
   return s;
 }
 
-// Input de moneda con máscara. value/onChange operan en pesos (número entero).
+// Currency input with mask. value/onChange operate in pesos (whole number).
 export function CurrencyInput({
   value,
   onChange,

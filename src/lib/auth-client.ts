@@ -1,7 +1,7 @@
 import { createAuthClient } from "better-auth/react";
 
-// En previews de Vercel la URL cambia por deployment: si no hay env configurada,
-// se deriva del origin actual del browser (funciona en prod y staging).
+// On Vercel previews the URL changes per deployment: if no env is configured,
+// it is derived from the browser's current origin (works in prod and staging).
 const baseURL =
   process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
   (typeof window !== "undefined"

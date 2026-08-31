@@ -59,7 +59,7 @@ function ToolbarDivider() {
 export function RichEditor({
   content,
   onChange,
-  placeholder = "Escribe el contenido aquí...",
+  placeholder = "Write your content here...",
 }: RichEditorProps) {
   const editor = useEditor({
     extensions: [

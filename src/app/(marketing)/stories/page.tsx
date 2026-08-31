@@ -7,60 +7,60 @@ import { Star } from "lucide-react";
 const stories = [
   {
     name: "Laura García",
-    role: "Cliente",
-    text: "Necesitaba asesoría urgente para constituir mi empresa y encontré a un abogado especializado en el mismo día. En menos de una hora ya tenía claras las opciones. La agendé para la siguiente semana y fue increíblemente práctica.",
+    role: "Client",
+    text: "I needed urgent advice to incorporate my company and found a specialized lawyer the same day. In less than an hour I had clarity on my options. I booked for the following week and it was incredibly practical.",
     advisor: "Dra. María López",
-    service: "Constitución de empresa",
+    service: "Company incorporation",
     rating: 5,
     avatar: "L",
     avatarColor: "#00D4AA",
   },
   {
     name: "Carlos Mendoza",
-    role: "Asesor",
-    text: "Meti me permitió convertir mi experiencia en consultoría empresarial en un ingreso adicional estable. En el primer mes completé 8 asesorías sin invertir en marketing. La plataforma me trae los clientes.",
+    role: "Advisor",
+    text: "Meti allowed me to turn my business consulting experience into a steady additional income. In my first month I completed 8 advisory sessions without investing in marketing. The platform brings me clients.",
     advisor: null,
-    service: "Consultoría estratégica",
+    service: "Strategic consulting",
     rating: 5,
     avatar: "C",
     avatarColor: "#FF6B35",
   },
   {
     name: "Ana Rodríguez",
-    role: "Cliente",
-    text: "Como emprendedora, tener acceso rápido a un coach de vida me ha ayudado a tomar decisiones más claras. El proceso de agendar es súper sencillo y las videollamadas funcionan perfecto.",
+    role: "Client",
+    text: "As an entrepreneur, having quick access to a life coach has helped me make clearer decisions. The booking process is super simple and the video calls work perfectly.",
     advisor: "Ing. Andrés Paredes",
-    service: "Coaching profesional",
+    service: "Professional coaching",
     rating: 5,
     avatar: "A",
     avatarColor: "#776cff",
   },
   {
     name: "Diego Torres",
-    role: "Asesor",
-    text: "Llevo 6 meses como asesor en Meti y he dado más de 100 asesorías. El sistema de horarios flexibles me permite trabajar cuando quiero, y los pagos siempre llegan a tiempo a mi cuenta de Mercado Pago.",
+    role: "Advisor",
+    text: "I've been an advisor on Meti for 6 months and have delivered more than 100 sessions. The flexible schedule system lets me work when I want, and payments always arrive on time to my Mercado Pago account.",
     advisor: null,
-    service: "Desarrollo web y tecnología",
+    service: "Web development and technology",
     rating: 5,
     avatar: "D",
     avatarColor: "#EB3F00",
   },
   {
     name: "Sofía Martínez",
-    role: "Cliente",
-    text: "Encontré a una nutricionista que me diseñó un plan personalizado. Lo mejor es que puedo agendar desde mi celular en cualquier momento, sin llamadas telefónicas. Todo es muy profesional.",
+    role: "Client",
+    text: "I found a nutritionist who designed a personalized plan for me. The best part is I can book from my phone anytime, without phone calls. Everything is very professional.",
     advisor: "Dra. Carolina Peña",
-    service: "Nutrición y bienestar",
+    service: "Nutrition and wellness",
     rating: 5,
     avatar: "S",
     avatarColor: "#0303A3",
   },
   {
     name: "Roberto Álvarez",
-    role: "Asesor",
-    text: "Meti me permitió escalar mi práctica independiente. Antes solo tenía clientes por referidos, ahora recibo reservas constantemente. El panel de control es muy claro: veo mis citas, mis pagos y mis estadísticas.",
+    role: "Advisor",
+    text: "Meti allowed me to scale my independent practice. Before I only had referral clients; now I receive bookings constantly. The dashboard is very clear: I see my appointments, payments, and stats.",
     advisor: null,
-    service: "Finanzas personales",
+    service: "Personal finance",
     rating: 4,
     avatar: "R",
     avatarColor: "#FCC836",
@@ -68,10 +68,10 @@ const stories = [
 ];
 
 const stats = [
-  { value: "500+", label: "Asesores activos" },
-  { value: "10,000+", label: "Asesorías realizadas" },
-  { value: "4.9★", label: "Calificación promedio" },
-  { value: "98%", label: "Clientes satisfechos" },
+  { value: "500+", label: "Active advisors" },
+  { value: "10,000+", label: "Sessions completed" },
+  { value: "4.9★", label: "Average rating" },
+  { value: "98%", label: "Satisfied clients" },
 ];
 
 export default function StoriesPage() {
@@ -81,10 +81,10 @@ export default function StoriesPage() {
       <section className="bg-gradient-to-br from-[var(--secondary)] to-[var(--secondary-light)] text-white py-20 px-4">
         <div className="container-meti max-w-4xl mx-auto text-center">
           <h1 className="font-heading text-4xl md:text-5xl font-extrabold mb-6">
-            Historias de éxito
+            Success stories
           </h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            Personas reales que transformaron su experiencia profesional y sus proyectos con Meti
+            Real people who transformed their professional experience and projects with Meti
           </p>
         </div>
       </section>
@@ -142,17 +142,17 @@ export default function StoriesPage() {
         <Card className="bg-[var(--secondary)] text-white">
           <CardContent className="p-12">
             <h2 className="font-heading text-2xl font-bold mb-3">
-              ¿Listo para empezar tu propia historia?
+              Ready to start your own story?
             </h2>
             <p className="text-white/70 mb-6 max-w-lg mx-auto">
-              Únete a cientos de profesionales que ya están transformando sus carreras con Meti.
+              Join hundreds of professionals who are already transforming their careers with Meti.
             </p>
             <div className="flex gap-4 justify-center">
               <Button className="px-8" asChild>
-                <Link href="/services">Explorar asesores</Link>
+                <Link href="/services">Browse advisors</Link>
               </Button>
               <Button variant="secondary" className="px-8 border-white text-white hover:bg-white hover:text-[var(--secondary)]" asChild>
-                <Link href="/register">Quiero ser asesor</Link>
+                <Link href="/register">Become an advisor</Link>
               </Button>
             </div>
           </CardContent>

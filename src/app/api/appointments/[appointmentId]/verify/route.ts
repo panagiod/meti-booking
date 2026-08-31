@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getPayment } from "@/lib/mercadopago";
 import { notifyAppointmentConfirmed } from "@/lib/notify";
 
-// POST: Verificar pago directamente con MP y confirmar la cita
+// POST: Verify payment directly with MP and confirm the appointment
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ appointmentId: string }> }
@@ -33,7 +33,7 @@ export async function POST(
       return NextResponse.json({ error: "Advisor has no MP credentials" }, { status: 400 });
     }
 
-    // Verificar el pago directamente con la API de MP (sin custodia)
+    // Verify payment directly with the MP API (no custody)
     const payment = await getPayment(appointment.advisor.mpAccessToken, paymentId);
 
     if (payment?.status === "approved") {
@@ -42,7 +42,7 @@ export async function POST(
         where: { id: appointment.id },
         data: { status: "CONFIRMED", paymentId },
       });
-      // Enviar emails de confirmación solo si estaba pendiente (evita duplicados)
+      // Send confirmation emails only if it was pending (avoids duplicates)
       if (wasPending) {
         try {
           await notifyAppointmentConfirmed(appointment.id);

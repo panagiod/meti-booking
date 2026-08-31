@@ -7,70 +7,70 @@ const categories = [
   {
     name: "Legal",
     slug: "legal",
-    description: "Abogados, contratos, derecho corporativo, laboral, civil",
+    description: "Lawyers, contracts, corporate law, labor law, civil law",
     icon: "Scale",
     color: "#FF6B35",
     minimumPriceCents: 50000, // $500
     feePercentage: 15,
   },
   {
-    name: "Finanzas",
+    name: "Finance",
     slug: "finanzas",
-    description: "Inversiones, planificación financiera, contabilidad, impuestos",
+    description: "Investments, financial planning, accounting, taxes",
     icon: "TrendingUp",
     color: "#00D4AA",
     minimumPriceCents: 50000, // $500
     feePercentage: 15,
   },
   {
-    name: "Salud",
+    name: "Health",
     slug: "salud",
-    description: "Psicología, nutrición, coaching de vida, bienestar",
+    description: "Psychology, nutrition, life coaching, wellness",
     icon: "Heart",
     color: "#EF4444",
     minimumPriceCents: 30000, // $300
     feePercentage: 12,
   },
   {
-    name: "Tecnología",
+    name: "Technology",
     slug: "tecnologia",
-    description: "IT, marketing digital, desarrollo web, ciberseguridad",
+    description: "IT, digital marketing, web development, cybersecurity",
     icon: "Cpu",
     color: "#8B5CF6",
     minimumPriceCents: 40000, // $400
     feePercentage: 15,
   },
   {
-    name: "Educación",
+    name: "Education",
     slug: "educacion",
-    description: "Tutorías, formación profesional, idiomas, preparación académica",
+    description: "Tutoring, professional training, languages, academic prep",
     icon: "GraduationCap",
     color: "#F59E0B",
     minimumPriceCents: 25000, // $250
     feePercentage: 12,
   },
   {
-    name: "Negocios",
+    name: "Business",
     slug: "negocios",
-    description: "Consultoría empresarial, emprendimiento, management, estrategia",
+    description: "Business consulting, entrepreneurship, management, strategy",
     icon: "Briefcase",
     color: "#1A1A2E",
     minimumPriceCents: 50000, // $500
     feePercentage: 18,
   },
   {
-    name: "Diseño",
+    name: "Design",
     slug: "diseno",
-    description: "Diseño gráfico, UX/UI, branding, arquitectura",
+    description: "Graphic design, UX/UI, branding, architecture",
     icon: "Palette",
     color: "#EC4899",
     minimumPriceCents: 35000, // $350
     feePercentage: 15,
   },
   {
-    name: "Ingeniería",
+    name: "Engineering",
     slug: "ingenieria",
-    description: "Ingeniería civil, industrial, mecánica, electrical",
+    description: "Civil, industrial, mechanical, electrical engineering",
     icon: "Wrench",
     color: "#6366F1",
     minimumPriceCents: 45000, // $450
@@ -79,16 +79,16 @@ const categories = [
   {
     name: "Marketing",
     slug: "marketing",
-    description: "Estrategia digital, redes sociales, SEO, publicidad",
+    description: "Digital strategy, social media, SEO, advertising",
     icon: "Megaphone",
     color: "#14B8A6",
     minimumPriceCents: 35000, // $350
     feePercentage: 15,
   },
   {
-    name: "Recursos Humanos",
+    name: "Human Resources",
     slug: "recursos-humanos",
-    description: "Selección de personal, capacitación, legislación laboral",
+    description: "Recruitment, training, labor law compliance",
     icon: "Users",
     color: "#F97316",
     minimumPriceCents: 40000, // $400
@@ -104,7 +104,7 @@ async function updateCategories() {
   });
 
   try {
-    console.log(" Actualizando categorías con precios y fees...\n");
+    console.log(" Updating categories with prices and fees...\n");
 
     for (const category of categories) {
       const existing = await pool.query(
@@ -119,18 +119,18 @@ async function updateCategories() {
            WHERE slug = $3`,
           [category.minimumPriceCents, category.feePercentage, category.slug]
         );
-        console.log(`✅ Actualizada: ${category.name} - Mínimo: $${category.minimumPriceCents / 100}, Fee: ${category.feePercentage}%`);
+        console.log(`✅ Updated: ${category.name} - Minimum: $${category.minimumPriceCents / 100}, Fee: ${category.feePercentage}%`);
       } else {
         await pool.query(
           `INSERT INTO categories (id, name, slug, description, icon, color, "minimumPriceCents", "feePercentage", "isActive", "createdAt", "updatedAt") 
            VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, $7, true, NOW(), NOW())`,
           [category.name, category.slug, category.description, category.icon, category.color, category.minimumPriceCents, category.feePercentage]
         );
-        console.log(`✅ Creada: ${category.name}`);
+        console.log(`✅ Created: ${category.name}`);
       }
     }
 
-    console.log("\n✅ Categorías actualizadas correctamente");
+    console.log("\n✅ Categories updated successfully");
   } catch (error) {
     console.error("❌ Error:", error);
   } finally {

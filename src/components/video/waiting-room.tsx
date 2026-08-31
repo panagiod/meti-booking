@@ -12,7 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { LoadingPage } from "../ui/loading";
 
 interface WaitingRoomProps {
@@ -30,6 +30,8 @@ interface AppointmentData {
   client: { name: string };
   status: string;
 }
+
+const START_TIME_MESSAGE = "It's time to start!";
 
 export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProps) {
   const [appointment, setAppointment] = useState<AppointmentData | null>(null);
@@ -65,7 +67,7 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
       const diff = scheduled.getTime() - now.getTime();
 
       if (diff <= 0) {
-        setTimeLeft("¡Es hora de comenzar!");
+        setTimeLeft(START_TIME_MESSAGE);
         return;
       }
 
@@ -90,7 +92,7 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <LoadingPage label="Cargando sala de espera..." />
+        <LoadingPage label="Loading waiting room..." />
       </div>
     );
   }
@@ -99,13 +101,13 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
     return (
       <Card className="w-full max-w-md mx-auto">
         <CardContent className="p-8 text-center">
-          <p className="text-[var(--text-muted)]">Cita no encontrada</p>
+          <p className="text-[var(--text-muted)]">Appointment not found</p>
         </CardContent>
       </Card>
     );
   }
 
-  const isTime = timeLeft === "¡Es hora de comenzar!";
+  const isTime = timeLeft === START_TIME_MESSAGE;
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -113,7 +115,7 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
         <div className="w-16 h-16 rounded-full bg-[var(--primary-light)] flex items-center justify-center mx-auto mb-4">
           <Video className="w-8 h-8 text-[var(--primary)]" />
         </div>
-        <CardTitle className="text-xl">Sala de espera</CardTitle>
+        <CardTitle className="text-xl">Waiting room</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Appointment Info */}
@@ -121,7 +123,7 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
           <div className="flex items-center gap-3 text-sm">
             <User className="w-4 h-4 text-[var(--text-muted)]" />
             <span className="text-[var(--text-muted)]">
-              {userRole === "advisor" ? "Cliente:" : "Asesor:"}
+              {userRole === "advisor" ? "Client:" : "Advisor:"}
             </span>
             <span className="font-medium text-[var(--text-primary)]">
               {userRole === "advisor"
@@ -132,17 +134,17 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
 
           <div className="flex items-center gap-3 text-sm">
             <Calendar className="w-4 h-4 text-[var(--text-muted)]" />
-            <span className="text-[var(--text-muted)]">Fecha:</span>
+            <span className="text-[var(--text-muted)]">Date:</span>
             <span className="font-medium text-[var(--text-primary)]">
-              {format(new Date(appointment.scheduledAt), "d 'de' MMMM, yyyy", {
-                locale: es,
+              {format(new Date(appointment.scheduledAt), "MMMM d, yyyy", {
+                locale: enUS,
               })}
             </span>
           </div>
 
           <div className="flex items-center gap-3 text-sm">
             <Clock className="w-4 h-4 text-[var(--text-muted)]" />
-            <span className="text-[var(--text-muted)]">Hora:</span>
+            <span className="text-[var(--text-muted)]">Time:</span>
             <span className="font-medium text-[var(--text-primary)]">
               {format(new Date(appointment.scheduledAt), "HH:mm")} •{" "}
               {appointment.durationMin} min
@@ -154,12 +156,12 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
         <div className="text-center py-4">
           {isTime ? (
             <Badge variant="success" className="text-lg px-4 py-2">
-              ¡Es hora de comenzar!
+              {START_TIME_MESSAGE}
             </Badge>
           ) : (
             <div>
               <p className="text-sm text-[var(--text-muted)] mb-2">
-                La asesoría comienza en:
+                Your session starts in:
               </p>
               <p className="text-3xl font-heading font-bold text-[var(--primary)]">
                 {timeLeft}
@@ -177,21 +179,21 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
         >
           {isTime ? (
             <>
-              Unirse a la videollamada
+              Join video call
               <ArrowRight className="w-5 h-5 ml-2" />
             </>
           ) : (
             <>
               <Clock className="w-5 h-5 mr-2" />
-              Esperando...
+              Waiting...
             </>
           )}
         </Button>
 
         <p className="text-xs text-center text-[var(--text-muted)]">
           {userRole === "advisor"
-            ? "El cliente se unirá cuando comience la asesoría"
-            : "El asesor te dará acceso cuando comience la asesoría"}
+            ? "The client will join when the session begins"
+            : "Your advisor will grant access when the session begins"}
         </p>
       </CardContent>
     </Card>

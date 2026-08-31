@@ -21,7 +21,7 @@ import { Plus, Briefcase, Clock, DollarSign, Edit, Trash2, Eye, EyeOff, AlertTri
 import { sileo } from "sileo";
 
 function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("es-CO", {
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "COP",
     minimumFractionDigits: 0,
@@ -52,8 +52,8 @@ export default function ServicesPage() {
 
   const handleDelete = async (id: string, name: string) => {
     const confirmed = await dialog.showConfirm(
-      "Eliminar servicio",
-      `¿Estás seguro de eliminar "${name}"? Esta acción no se puede deshacer.`,
+      "Delete service",
+      `Are you sure you want to delete "${name}"? This action cannot be undone.`,
       "warning"
     );
 
@@ -61,10 +61,10 @@ export default function ServicesPage() {
       setDeletingId(id);
       deleteService.mutate(id, {
         onSuccess: () => {
-          sileo.success({ title: "Servicio eliminado", description: `"${name}" fue eliminado correctamente.` });
+          sileo.success({ title: "Service deleted", description: `"${name}" was deleted successfully.` });
         },
         onError: () => {
-          sileo.error({ title: "Error", description: "No se pudo eliminar el servicio. Intenta de nuevo." });
+          sileo.error({ title: "Error", description: "Could not delete service. Please try again." });
         },
         onSettled: () => {
           setDeletingId(null);
@@ -79,14 +79,14 @@ export default function ServicesPage() {
       {
         onSuccess: () => {
           sileo.success({
-            title: service.isActive ? "Servicio desactivado" : "Servicio activado",
+            title: service.isActive ? "Service deactivated" : "Service activated",
             description: service.isActive
-              ? "Los clientes ya no podrán agendar este servicio."
-              : "Los clientes ya pueden agendar este servicio.",
+              ? "Clients will no longer be able to book this service."
+              : "Clients can now book this service.",
           });
         },
         onError: () => {
-          sileo.error({ title: "Error", description: "No se pudo cambiar el estado del servicio." });
+          sileo.error({ title: "Error", description: "Could not change service status." });
         },
       }
     );
@@ -100,15 +100,15 @@ export default function ServicesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-            Mis Servicios
+            My Services
           </h1>
           <p className="text-[var(--text-muted)] mt-1">
-            Gestiona los servicios que ofreces a tus clientes
+            Manage the services you offer to your clients
           </p>
         </div>
         <Button onClick={() => setShowModal(true)} disabled={!isActive}>
           <Plus className="w-4 h-4 mr-2" />
-          Nuevo servicio
+          New service
         </Button>
       </div>
 
@@ -119,7 +119,7 @@ export default function ServicesPage() {
             <div className="flex items-center gap-3">
               <AlertTriangle className="w-5 h-5 text-[var(--warning)] flex-shrink-0" />
               <p className="text-sm text-[var(--text-primary)]">
-                <strong>Su cuenta de asesor está pendiente de aprobación.</strong> No podrás crear servicios ni recibir clientes hasta que un administrador verifique tu perfil y documentos.
+                <strong>Your advisor account is pending approval.</strong> You will not be able to create services or receive clients until an administrator verifies your profile and documents.
               </p>
             </div>
           </CardContent>
@@ -132,13 +132,13 @@ export default function ServicesPage() {
           <CardContent className="p-12">
             <EmptyState
               icon={Briefcase}
-              title={isActive ? "No tienes servicios creados" : "Servicios no disponibles"}
+              title={isActive ? "No services created yet" : "Services unavailable"}
               description={isActive
-                ? "Crea tu primer servicio para que los clientes puedan agendar asesorías contigo."
-                : "Necesitas ser aprobado por un administrador antes de crear servicios."
+                ? "Create your first service so clients can book consultations with you."
+                : "You need to be approved by an administrator before creating services."
               }
               action={isActive ? {
-                label: "Crear primer servicio",
+                label: "Create first service",
                 onClick: () => setShowModal(true),
               } : undefined}
             />
@@ -156,7 +156,7 @@ export default function ServicesPage() {
                         {service.name}
                       </h3>
                       <Badge variant={service.isActive ? "success" : "outline"}>
-                        {service.isActive ? "Activo" : "Inactivo"}
+                        {service.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </div>
                     {service.description && (
@@ -171,12 +171,12 @@ export default function ServicesPage() {
                       </div>
                       <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
                         <DollarSign className="w-4 h-4" />
-                        {formatCurrency(service.priceCents)} tu ganancia
+                        {formatCurrency(service.priceCents)} your earnings
                       </div>
                       {service.category && (
                         <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
                           <Tag className="w-4 h-4" />
-                          {service.category.name} ({service.category.feePercentage}%, Máx: {formatCurrency(service.category.maxFeeCents)})
+                          {service.category.name} ({service.category.feePercentage}%, Max: {formatCurrency(service.category.maxFeeCents)})
                         </div>
                       )}
                     </div>
@@ -224,7 +224,7 @@ export default function ServicesPage() {
                 <div className="mt-4 pt-4 border-t border-[var(--border)]">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-[var(--text-muted)]">
-                      Precio final para el cliente
+                      Endal price for client
                     </span>
                     <span className="font-heading font-bold text-[var(--text-primary)]">
                       {formatCurrency(
@@ -251,23 +251,23 @@ export default function ServicesPage() {
             if (editingService) {
               updateService.mutate(data, {
                 onSuccess: () => {
-                  sileo.success({ title: "Servicio actualizado", description: "Los cambios se guardaron correctamente." });
+                  sileo.success({ title: "Service updated", description: "Changes were saved successfully." });
                   setShowModal(false);
                   setEditingService(null);
                 },
                 onError: (err: any) => {
-                  sileo.error({ title: "Error", description: err.message || "No se pudo actualizar el servicio." });
+                  sileo.error({ title: "Error", description: err.message || "Could not update service." });
                 },
               });
             } else {
               createService.mutate(data, {
                 onSuccess: () => {
-                  sileo.success({ title: "Servicio creado", description: "Tu nuevo servicio ya está disponible para los clientes." });
+                  sileo.success({ title: "Service created", description: "Your new service is now available to clients." });
                   setShowModal(false);
                   setEditingService(null);
                 },
                 onError: (err: any) => {
-                  sileo.error({ title: "Error", description: err.message || "No se pudo crear el servicio." });
+                  sileo.error({ title: "Error", description: err.message || "Could not create service." });
                 },
               });
             }
@@ -328,7 +328,7 @@ function ServiceModal({
   // Category options for Select
   const categoryOptions = categories.map((cat) => ({
     value: cat.id,
-    label: `${cat.name} (Fee: ${cat.feePercentage}%, Máx: ${formatCurrency(cat.maxFeeCents)})`,
+    label: `${cat.name} (Fee: ${cat.feePercentage}%, Max: ${formatCurrency(cat.maxFeeCents)})`,
   }));
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -349,12 +349,12 @@ function ServiceModal({
       <Card className="w-full max-w-lg">
         <CardContent className="p-6">
           <h2 className="font-heading text-xl font-bold mb-4">
-            {service ? "Editar servicio" : "Nuevo servicio"}
+            {service ? "Edit service" : "New service"}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                Nombre del servicio *
+                Service name *
               </label>
               <Input
                 value={name}
@@ -365,35 +365,35 @@ function ServiceModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                Rubro *
+                Category *
               </label>
               <Select
                 options={categoryOptions}
                 value={categoryId}
                 onChange={setCategoryId}
-                placeholder="Selecciona un rubro"
+                placeholder="Select a category"
               />
               {selectedCategory && (
                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                  Fee de plataforma: {feePercentage}% • Fee máximo: {formatCurrency(maxFeeCents)} • Precio mínimo: {formatCurrency(minimumPriceCents)}
+                  Platform fee: {feePercentage}% • Max fee: {formatCurrency(maxFeeCents)} • Minimum price: {formatCurrency(minimumPriceCents)}
                 </p>
               )}
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                Descripción
+                Description
               </label>
               <textarea
                 className="w-full h-20 px-3.5 py-2.5 text-sm border border-[var(--border)] rounded-lg focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/15 resize-none"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe qué incluye este servicio..."
+                placeholder="Describe what this service includes..."
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                  Duración (minutos) *
+                  Duration (minutes) *
                 </label>
                 <Input
                   type="number"
@@ -406,7 +406,7 @@ function ServiceModal({
               </div>
               <div>
                 <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                  Tu ganancia ($) *
+                  Your earnings ($) *
                 </label>
                 <CurrencyInput
                   value={price}
@@ -416,32 +416,32 @@ function ServiceModal({
                 />
                 {price < minimumPriceDollars && (
                   <p className="text-xs text-[var(--error)] mt-1">
-                    El precio mínimo para este rubro es {formatCurrency(minimumPriceCents)}
+                    The minimum price for this category is {formatCurrency(minimumPriceCents)}
                   </p>
                 )}
               </div>
             </div>
             <div className="p-3 rounded-lg bg-[var(--background)] text-sm space-y-1">
               <div className="flex justify-between">
-                <span className="text-[var(--text-muted)]">Tu ganancia:</span>
+                <span className="text-[var(--text-muted)]">Your earnings:</span>
                 <span className="font-medium">{formatCurrency(priceCents)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[var(--text-muted)]">
-                  Fee ({feePercentage}%){appliedMaxFee ? ` → Máx: ${formatCurrency(maxFeeCents)}` : ""}:
+                  Fee ({feePercentage}%){appliedMaxFee ? ` → Max: ${formatCurrency(maxFeeCents)}` : ""}:
                 </span>
                 <span className={appliedMaxFee ? "font-medium text-[var(--warning)]" : "font-medium"}>
                   {formatCurrency(platformFee)}
                 </span>
               </div>
               <div className="flex justify-between pt-1 border-t border-[var(--border)]">
-                <span className="text-[var(--text-muted)]">Precio final cliente:</span>
+                <span className="text-[var(--text-muted)]">Endal client price:</span>
                 <span className="font-bold text-[var(--primary)]">{formatCurrency(totalForClient)}</span>
               </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-                Reagenda mínima (horas antes)
+                Minimum reschedule notice (hours before)
               </label>
               <Input
                 type="number"
@@ -476,10 +476,10 @@ function ServiceModal({
             </div>
             <div className="flex justify-end gap-3 pt-4">
               <Button type="button" variant="secondary" onClick={onClose}>
-                Cancelar
+                Cancel
               </Button>
               <Button type="submit" disabled={isLoading || price < minimumPriceDollars}>
-                {isLoading ? "Guardando..." : service ? "Guardar cambios" : "Crear servicio"}
+                {isLoading ? "Saving..." : service ? "Save changes" : "Create service"}
               </Button>
             </div>
           </form>

@@ -37,13 +37,13 @@ export function ImageUpload({
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Error al subir la imagen");
+        throw new Error(data.error || "Failed to upload image");
       }
 
       const data = await response.json();
       onChange(data.url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al subir la imagen");
+      setError(err instanceof Error ? err.message : "Failed to upload image");
     } finally {
       setIsUploading(false);
     }
@@ -120,7 +120,7 @@ export function ImageUpload({
             <>
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--primary)] border-t-transparent" />
               <span className="text-sm text-[var(--text-muted)]">
-                Subiendo imagen...
+                Uploading image...
               </span>
             </>
           ) : (
@@ -129,7 +129,7 @@ export function ImageUpload({
                 <ImageIcon className="h-6 w-6 text-[var(--primary)]" />
               </div>
               <span className="text-sm text-[var(--text-muted)]">
-                Haz clic o arrastra una imagen
+                Click or drag an image here
               </span>
               <span className="text-xs text-[var(--text-muted)]">
                 JPEG, PNG o WebP (max 5MB)

@@ -8,125 +8,125 @@ export default function TermsOfServicePage() {
         <CardContent className="p-8 md:p-12 space-y-8">
           <div>
             <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)] mb-2">
-              Condiciones del Servicio
+              Terms of Service
             </h1>
             <p className="text-sm text-[var(--text-muted)]">
-              Última actualización: 15 de agosto de 2026
+              Last updated: August 15, 2026
             </p>
           </div>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                1. Descripción del servicio
+                1. Service description
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Meti es una plataforma que conecta profesionales independientes (asesores) con clientes que buscan asesoría especializada. Los servicios se prestan por videollamada y los pagos se procesan a través de Mercado Pago.
+                Meti is a platform that connects independent professionals (advisors) with clients seeking specialized advisory services. Services are delivered via video call and payments are processed through Mercado Pago.
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                2. Cuentas de usuario
+                2. User accounts
               </h2>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>Para usar Meti debes crear una cuenta a través de Google OAuth.</li>
-                <li>Eres responsable de mantener la confidencialidad de tu cuenta.</li>
-                <li>Debes proporcionar información precisa y actualizada.</li>
-                <li>Solo puedes crear una cuenta por persona.</li>
+                <li>To use Meti you must create an account through Google OAuth.</li>
+                <li>You are responsible for maintaining the confidentiality of your account.</li>
+                <li>You must provide accurate and up-to-date information.</li>
+                <li>You may only create one account per person.</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                3. Roles de usuario
+                3. User roles
               </h2>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li><strong>Cliente:</strong> busca y agenda asesorías con profesionales.</li>
-                <li><strong>Asesor:</strong> ofrece servicios de asesoría profesional, configura sus propios precios, horarios y credenciales de pago.</li>
-                <li><strong>Administrador:</strong> gestiona la plataforma, verifica asesores y configura comisiones.</li>
+                <li><strong>Client:</strong> searches for and books advisory sessions with professionals.</li>
+                <li><strong>Advisor:</strong> offers professional advisory services, sets their own prices, schedules, and payment credentials.</li>
+                <li><strong>Administrator:</strong> manages the platform, verifies advisors, and configures fees.</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                4. Pagos y comisiones
+                4. Payments and fees
               </h2>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>Los pagos se procesan directamente a través de la cuenta de Mercado Pago del asesor (modelo sin custodia).</li>
-                <li>Meti cobra una comisión por servicio, visible en el checkout antes del pago.</li>
-                <li>El precio final incluye: precio del asesor + comisión de la plataforma.</li>
-                <li>Los reembolsos se gestionan según la política de cancelación del asesor.</li>
+                <li>Payments are processed directly through the advisor&apos;s Mercado Pago account (non-custodial model).</li>
+                <li>Meti charges a service fee, visible at checkout before payment.</li>
+                <li>The final price includes: advisor price + platform fee.</li>
+                <li>Refunds are handled according to the advisor&apos;s cancellation policy.</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                5. Cancelación y reagendamiento
+                5. Cancellation and rescheduling
               </h2>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li><strong>Reagendar:</strong> gratis con anticipación mínima configurable por el asesor.</li>
-                <li><strong>Cancelar sin reagendar:</strong> sin devolución del pago.</li>
-                <li><strong>No presentarse:</strong> sin devolución del pago.</li>
-                <li>La anticipación mínima para reagendar se muestra al momento de la reserva.</li>
+                <li><strong>Reschedule:</strong> free with minimum advance notice configurable by the advisor.</li>
+                <li><strong>Cancel without rescheduling:</strong> no payment refund.</li>
+                <li><strong>No-show:</strong> no payment refund.</li>
+                <li>The minimum advance notice for rescheduling is shown at the time of booking.</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                6. Videollamadas
+                6. Video calls
               </h2>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>Las asesorías se realizan por videollamada a través de la plataforma.</li>
-                <li>El enlace de videollamada se envía después de confirmar el pago.</li>
-                <li>Meti no se hace responsable por problemas de conectividad del usuario.</li>
-                <li>Las grabaciones de videollamadas se almacenan según la configuración del asesor.</li>
+                <li>Advisory sessions are conducted via video call through the platform.</li>
+                <li>The video call link is sent after payment is confirmed.</li>
+                <li>Meti is not responsible for user connectivity issues.</li>
+                <li>Video call recordings are stored according to the advisor&apos;s configuration.</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                7. Contenido y conducta
+                7. Content and conduct
               </h2>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>No se permite contenido ilegal, ofensivo o que viole los derechos de terceros.</li>
-                <li>Los asesores deben mantener un comportamiento profesional.</li>
-                <li>Meti se reserva el derecho de suspender cuentas que violen estas condiciones.</li>
+                <li>Illegal, offensive, or third-party rights-violating content is not permitted.</li>
+                <li>Advisors must maintain professional conduct.</li>
+                <li>Meti reserves the right to suspend accounts that violate these terms.</li>
               </ul>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                8. Propiedad intelectual
+                8. Intellectual property
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Todo el contenido de la plataforma (diseño, código, marca) es propiedad de Meti. Los asesores conservan los derechos sobre su contenido profesional (biografía, especialidades).
+                All platform content (design, code, brand) is owned by Meti. Advisors retain rights to their professional content (biography, specialties).
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                9. Limitación de responsabilidad
+                9. Limitation of liability
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Meti actúa como intermediario entre asesores y clientes. No somos parte de la relación contractual entre asesor y cliente. No garantizamos la calidad de los servicios prestados por los asesores.
+                Meti acts as an intermediary between advisors and clients. We are not part of the contractual relationship between advisor and client. We do not guarantee the quality of services provided by advisors.
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                10. Cambios en las condiciones
+                10. Changes to these terms
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Nos reservamos el derecho de modificar estas condiciones en cualquier momento. Los cambios significativos se comunicarán a través de la plataforma.
+                We reserve the right to modify these terms at any time. Significant changes will be communicated through the platform.
               </p>
             </section>
 
             <section className="space-y-4">
               <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                11. Contacto
+                11. Contact
               </h2>
               <p className="text-[var(--text-secondary)] leading-relaxed">
-                Para preguntas sobre estas condiciones, contáctanos a través de{" "}
+                For questions about these terms, contact us at{" "}
                 <a href="mailto:edwaramayadiaz@gmail.com" className="text-[var(--primary)] hover:underline">
                   edwaramayadiaz@gmail.com
                 </a>.
@@ -135,7 +135,7 @@ export default function TermsOfServicePage() {
 
             <div className="pt-4 border-t border-[var(--border)]">
               <Link href="/" className="text-sm text-[var(--primary)] hover:underline">
-                ← Volver al inicio
+                ← Back to home
               </Link>
             </div>
           </CardContent>

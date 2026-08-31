@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET: Promoción activa para un servicio (endpoint público)
-// Se usa al crear cita para aplicar descuento.
+// GET: Active promotion for a service (public endpoint)
+// Used when creating an appointment to apply a discount.
 // Query params: ?serviceId=xxx&advisorId=yyy
 export async function GET(request: NextRequest) {
   try {
     const serviceId = request.nextUrl.searchParams.get("serviceId");
     if (!serviceId) {
-      return NextResponse.json({ error: "serviceId requerido" }, { status: 400 });
+      return NextResponse.json({ error: "serviceId is required" }, { status: 400 });
     }
 
     const now = new Date();
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
         discountValue: true,
         endAt: true,
       },
-      orderBy: { discountValue: "desc" }, // Mayor descuento primero
+      orderBy: { discountValue: "desc" }, // Highest discount first
     });
 
     return NextResponse.json({ promotion: promotion || null });

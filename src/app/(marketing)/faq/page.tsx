@@ -3,36 +3,36 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const faqs = [
   {
-    question: "¿Cómo funciona Meti?",
-    answer: "Meti conecta profesionales independientes con personas que buscan asesoría especializada. Buscas el servicio que necesitas, eliges fecha y horario, pagas con Mercado Pago y te unes a la videollamada desde la plataforma.",
+    question: "How does Meti work?",
+    answer: "Meti connects independent professionals with people seeking specialized advisory services. You search for the service you need, choose a date and time, pay with Mercado Pago, and join the video call from the platform.",
   },
   {
-    question: "¿Cuánto cuesta usar Meti como cliente?",
-    answer: "No hay costo por usar la plataforma como cliente. Solo pagas el valor del servicio del asesor, más una comisión de la plataforma que se muestra transparentmente en el checkout antes de pagar.",
+    question: "How much does Meti cost as a client?",
+    answer: "There is no cost to use the platform as a client. You only pay the advisor's service price plus a platform fee that is shown transparently at checkout before you pay.",
   },
   {
-    question: "¿Cómo puedo ser asesor en Meti?",
-    answer: "Regístrate como usuario, completa el proceso de verificación con tus documentos profesionales, crea tus servicios y horarios. Un administrador verificará tu perfil para que puedas recibir clientes.",
+    question: "How can I become an advisor on Meti?",
+    answer: "Register as a user, complete the verification process with your professional documents, and create your services and schedule. An administrator will verify your profile so you can receive clients.",
   },
   {
-    question: "¿Qué pasa si cancelo una asesoría?",
-    answer: "Puedes reagendar gratis con al menos 24 horas de anticipación. Cancelar sin reagendar no genera devolución del pago, según la política de cancelación del asesor.",
+    question: "What happens if I cancel an advisory session?",
+    answer: "You can reschedule for free with at least 24 hours of advance notice. Canceling without rescheduling does not result in a payment refund, according to the advisor's cancellation policy.",
   },
   {
-    question: "¿Cómo se realizan los pagos?",
-    answer: "Los pagos se procesan a través de Mercado Pago. Cada asesor configura sus propias credenciales de Mercado Pago para recibir los pagos directamente. La plataforma cobra una comisión transparente que se muestra en el checkout.",
+    question: "How are payments processed?",
+    answer: "Payments are processed through Mercado Pago. Each advisor configures their own Mercado Pago credentials to receive payments directly. The platform charges a transparent fee shown at checkout.",
   },
   {
-    question: "¿Cómo son las videollamadas?",
-    answer: "Las asesorías se realizan por videollamada integrada en la plataforma a través de LiveKit. No necesitas instalar nada adicional; solo dale click a 'Unirse' en tu cita y la videollamada se abrirá automáticamente.",
+    question: "How do video calls work?",
+    answer: "Advisory sessions are conducted via integrated video calls on the platform through LiveKit. You do not need to install anything else; just click 'Join' on your appointment and the video call will open automatically.",
   },
   {
-    question: "¿Puedo cambiar mi contraseña o método de acceso?",
-    answer: "Actualmente puedes iniciar sesión con Google o con tu email y contraseña. Si creaste tu cuenta con email y contraseña, puedes usar ese método. Si usaste Google, inicia sesión con Google.",
+    question: "Can I change my password or sign-in method?",
+    answer: "You can currently sign in with Google or with your email and password. If you created your account with email and password, use that method. If you used Google, sign in with Google.",
   },
   {
-    question: "¿Mis datos están seguros?",
-    answer: "Sí. No vendemos tu información personal. Los pagos se procesan por Mercado Pago con encriptación SSL/TLS. Las videollamadas están protegidas con credenciales únicas por sesión. Consulta nuestra Política de Privacidad para más detalles.",
+    question: "Is my data secure?",
+    answer: "Yes. We do not sell your personal information. Payments are processed through Mercado Pago with SSL/TLS encryption. Video calls are protected with unique credentials per session. See our Privacy Policy for more details.",
   },
 ];
 
@@ -40,10 +40,10 @@ export default function FAQPage() {
   return (
     <div className="container-meti py-16 max-w-3xl">
       <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)] mb-2">
-        Preguntas frecuentes
+        Frequently asked questions
       </h1>
       <p className="text-[var(--text-muted)] mb-8">
-        Encuentra respuestas a las dudas más comunes sobre Meti
+        Find answers to the most common questions about Meti
       </p>
 
       <div className="space-y-4">
@@ -63,10 +63,10 @@ export default function FAQPage() {
 
       <div className="mt-8 text-center">
         <p className="text-sm text-[var(--text-muted)] mb-3">
-          ¿No encontraste lo que buscabas?
+          Didn&apos;t find what you were looking for?
         </p>
         <Link href="/services" className="text-sm text-[var(--primary)] font-medium hover:underline">
-          Explorar asesores
+          Browse advisors
         </Link>
       </div>
     </div>

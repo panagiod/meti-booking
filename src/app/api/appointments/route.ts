@@ -72,9 +72,9 @@ export async function POST(request: NextRequest) {
       maxFeeCents = service.category.maxFeeCents;
     }
 
-    // Calculate prices — el fee SIEMPRE se calcula sobre el precio ORIGINAL
-    // (el descuento lo absorbe el asesor, la plataforma mantiene su comisión)
-    // Si el fee supera maxFeeCents, se usa maxFeeCents.
+    // Calculate prices — the fee is ALWAYS calculated on the ORIGINAL price
+    // (the advisor absorbs the discount; the platform keeps its commission).
+    // If the fee exceeds maxFeeCents, maxFeeCents is used.
     const { advisorEarning, platformFee, totalCents } = calculatePrices({
       servicePriceCents: service.priceCents,
       feePercentage,
@@ -82,8 +82,8 @@ export async function POST(request: NextRequest) {
       discountCents,
     });
 
-    // Parsear fecha/hora local (Colombia) del ISO y construir el timestamp UTC
-    // explícitamente — independiente del timezone del servidor.
+    // Parse local date/time (Colombia) from ISO and build the UTC timestamp
+    // explicitly — independent of the server timezone.
     const parsedDate = parseLocalISO(scheduledAt);
 
     // Create appointment as PENDING: blocks the slot immediately and is
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
 
     try {
       // Create the Checkout Pro preference with the ADVISOR's credentials
-      // (sin custodia: el pago llega directo a la cuenta del asesor).
+      // (no custody: payment goes directly to the advisor's account).
       const { preferenceId, initPoint, sandboxInitPoint } =
         await createCheckoutPreference({
           accessToken: advisorProfile.mpAccessToken,
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
         data: { mpPreferenceId: preferenceId },
       });
 
-      // En modo prueba, el checkout debe ir al subdominio sandbox de MP
+      // In test mode, checkout must use MP's sandbox subdomain
       const checkoutUrl = isTest && sandboxInitPoint ? sandboxInitPoint : initPoint;
 
       return NextResponse.json(
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
       await prisma.appointment.delete({ where: { id: appointment.id } });
       console.error("Error creating MP preference:", prefError);
       return NextResponse.json(
-        { error: "No se pudo iniciar el pago en Mercado Pago. Intenta de nuevo." },
+        { error: "Could not start payment in Mercado Pago. Please try again." },
         { status: 502 }
       );
     }

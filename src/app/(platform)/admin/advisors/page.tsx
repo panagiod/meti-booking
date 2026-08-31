@@ -33,21 +33,21 @@ export default function AdvisorsPage() {
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
 
-    if (diffDays > 0) return `${diffDays} día${diffDays > 1 ? "s" : ""}`;
-    if (diffHours > 0) return `${diffHours} hora${diffHours > 1 ? "s" : ""}`;
-    return "Recién registrado";
+    if (diffDays > 0) return `${diffDays} day${diffDays > 1 ? "s" : ""}`;
+    if (diffHours > 0) return `${diffHours} hour${diffHours > 1 ? "s" : ""}`;
+    return "Just registered";
   };
 
   const handleContactWhatsApp = (phone: string, name: string) => {
     const cleanPhone = phone.replace(/[^0-9+]/g, "");
-    const message = encodeURIComponent(`Hola ${name}, somos el equipo de Meti. Queremos ayudarte con la configuración de tu cuenta.`);
+    const message = encodeURIComponent(`Hello ${name}, we are the Meti team. We want to help you set up your account.`);
     window.open(`https://wa.me/${cleanPhone}?text=${message}`, "_blank");
   };
 
   const handleApprove = async (id: string, name: string) => {
     const confirmed = await dialog.showConfirm(
-      "Aprobar asesor",
-      `¿Estás seguro de aprobar a ${name}?`,
+      "Approve advisor",
+      `Are you sure you want to approve ${name}?`,
       "info"
     );
 
@@ -56,11 +56,11 @@ export default function AdvisorsPage() {
         { advisorId: id, action: "approve" },
         {
           onSuccess: () => {
-            dialog.showAlert("Éxito", "Asesor aprobado correctamente", "success");
+            dialog.showAlert("Success", "Advisor approved successfully", "success");
             refetch();
           },
           onError: () => {
-            dialog.showAlert("Error", "Error al aprobar asesor", "error");
+            dialog.showAlert("Error", "Failed to approve advisor", "error");
           },
         }
       );
@@ -69,8 +69,8 @@ export default function AdvisorsPage() {
 
   const handleReject = async (id: string, name: string) => {
     const confirmed = await dialog.showConfirm(
-      "Rechazar asesor",
-      `¿Estás seguro de rechazar a ${name}? Se convertirá en cliente.`,
+      "Reject advisor",
+      `Are you sure you want to reject ${name}? They will be converted to a client.`,
       "warning"
     );
 
@@ -79,11 +79,11 @@ export default function AdvisorsPage() {
         { advisorId: id, action: "reject" },
         {
           onSuccess: () => {
-            dialog.showAlert("Éxito", "Asesor rechazado. Ahora es cliente.", "success");
+            dialog.showAlert("Success", "Advisor rejected. They are now a client.", "success");
             refetch();
           },
           onError: () => {
-            dialog.showAlert("Error", "Error al rechazar asesor", "error");
+            dialog.showAlert("Error", "Failed to reject advisor", "error");
           },
         }
       );
@@ -92,8 +92,8 @@ export default function AdvisorsPage() {
 
   const handleSuspend = async (id: string, name: string) => {
     const confirmed = await dialog.showConfirm(
-      "Suspender asesor",
-      `¿Estás seguro de suspender a ${name}?`,
+      "Suspend advisor",
+      `Are you sure you want to suspend ${name}?`,
       "warning"
     );
 
@@ -102,11 +102,11 @@ export default function AdvisorsPage() {
         { advisorId: id, action: "suspend" },
         {
           onSuccess: () => {
-            dialog.showAlert("Éxito", "Asesor suspendido", "success");
+            dialog.showAlert("Success", "Advisor suspended", "success");
             refetch();
           },
           onError: () => {
-            dialog.showAlert("Error", "Error al suspender asesor", "error");
+            dialog.showAlert("Error", "Failed to suspend advisor", "error");
           },
         }
       );
@@ -121,10 +121,10 @@ export default function AdvisorsPage() {
         {/* Header */}
         <div>
           <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-            Gestión de Asesores
+            Advisor Management
           </h1>
           <p className="text-[var(--text-muted)] mt-1">
-            Administra los profesionales de la plataforma
+            Manage professionals on the platform
           </p>
         </div>
 
@@ -135,7 +135,7 @@ export default function AdvisorsPage() {
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
                 <Input
-                  placeholder="Buscar por nombre, email o especialidad..."
+                  placeholder="Search by name, email, or specialty..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -147,21 +147,21 @@ export default function AdvisorsPage() {
                   size="sm"
                   onClick={() => setStatusFilter("all")}
                 >
-                  Todos
+                  All
                 </Button>
                 <Button
                   variant={statusFilter === "active" ? "default" : "secondary"}
                   size="sm"
                   onClick={() => setStatusFilter("active")}
                 >
-                  Activos
+                  Active
                 </Button>
                 <Button
                   variant={statusFilter === "pending" ? "default" : "secondary"}
                   size="sm"
                   onClick={() => setStatusFilter("pending")}
                 >
-                  Pendientes
+                  Pending
                 </Button>
               </div>
             </div>
@@ -172,15 +172,15 @@ export default function AdvisorsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">
-              {advisors.length} asesores encontrados
+              {advisors.length} advisors found
             </CardTitle>
           </CardHeader>
           <CardContent>
             {advisors.length === 0 ? (
               <EmptyState
                 icon={Briefcase}
-                title="Sin asesores registrados"
-                description="Cuando los profesionales se registren y elijan ser asesores, aparecerán aquí."
+                title="No registered advisors"
+                description="When professionals sign up and choose to become advisors, they will appear here."
               />
             ) : (
               <div className="space-y-4">
@@ -205,12 +205,12 @@ export default function AdvisorsPage() {
                               advisor.status === "active" ? "success" : "warning"
                             }
                           >
-                            {advisor.status === "active" ? "Activo" : "Pendiente"}
+                            {advisor.status === "active" ? "Active" : "Pending"}
                           </Badge>
                           {advisor.mpMode === "TEST" && (
                             <Badge variant="warning" className="flex items-center gap-1">
                               <TestTube className="w-3 h-3" />
-                              Modo prueba · {getTimeElapsed(advisor.joinDate)}
+                              Test mode · {getTimeElapsed(advisor.joinDate)}
                             </Badge>
                           )}
                         </div>
@@ -238,10 +238,10 @@ export default function AdvisorsPage() {
 
                     <div className="flex flex-wrap items-center gap-4 text-sm">
                       <div className="text-[var(--text-secondary)]">
-                        {advisor.services} servicios
+                        {advisor.services} services
                       </div>
                       <div className="text-[var(--text-secondary)]">
-                        {advisor.appointments} citas
+                        {advisor.appointments} appointments
                       </div>
                     </div>
 
@@ -254,7 +254,7 @@ export default function AdvisorsPage() {
                             disabled={updateStatus.isPending}
                           >
                             <CheckCircle className="w-4 h-4 mr-1" />
-                            Aprobar
+                            Approve
                           </Button>
                           <Button
                             size="sm"
@@ -263,7 +263,7 @@ export default function AdvisorsPage() {
                             disabled={updateStatus.isPending}
                           >
                             <XCircle className="w-4 h-4 mr-1" />
-                            Rechazar
+                            Reject
                           </Button>
                         </>
                       ) : (
@@ -273,7 +273,7 @@ export default function AdvisorsPage() {
                           onClick={() => handleSuspend(advisor.id, advisor.name)}
                           disabled={updateStatus.isPending}
                         >
-                          Suspender
+                          Suspend
                         </Button>
                       )}
                     </div>

@@ -3,8 +3,8 @@ import { newApi, signupClient, withSession, BASE_URL } from "../helpers/api";
 import { prisma } from "../helpers/db";
 import { createAdmin } from "../helpers/fixtures";
 
-test.describe("02 · Onboarding asesor y aprobación admin", () => {
-  test("cliente solicita ser asesor → perfil inactivo → no puede crear servicios", async ({ request }) => {
+test.describe("02 · Advisor onboarding and admin approval", () => {
+  test("client requests to become advisor → inactive profile → cannot create services", async ({ request }) => {
     const api = newApi(request);
     const { userId, sessionToken } = await signupClient(api);
 
@@ -19,16 +19,16 @@ test.describe("02 · Onboarding asesor y aprobación admin", () => {
     expect(advisor).toBeTruthy();
     expect(advisor!.isActive).toBe(false);
 
-    // Inactivo: crear servicio debe fallar con 403
+    // Inactive: creating a service must fail with 403
     const createService = await withSession(api, sessionToken).post("/api/advisor/services", {
-      name: "Servicio no permitido",
+      name: "Service not allowed",
       durationMin: 60,
       priceCents: 10000,
     });
     expect(createService.status()).toBe(403);
   });
 
-  test("admin aprueba al asesor → queda activo y puede crear servicios; luego suspend", async ({ request }) => {
+  test("admin approves advisor → becomes active and can create services; then suspend", async ({ request }) => {
     const api = newApi(request);
     const { userId, sessionToken } = await signupClient(api);
     await withSession(api, sessionToken).post("/api/client/become-advisor");
@@ -39,20 +39,20 @@ test.describe("02 · Onboarding asesor y aprobación admin", () => {
     const admin = await createAdmin(request);
     const adminApi = withSession(api, admin.sessionToken);
 
-    // Aprobar
+    // Approve
     const approve = await adminApi.post(`/api/admin/advisors/${advisor!.id}`, { action: "approve" });
     expect(approve.status(), await approve.text()).toBe(200);
     expect((await approve.json()).isActive).toBe(true);
 
-    // Ahora sí puede crear servicio
+    // Now can create a service
     const createService = await withSession(api, sessionToken).post("/api/advisor/services", {
-      name: "Consultoría aprobada",
+      name: "Approved consulting",
       durationMin: 60,
       priceCents: 10000,
     });
     expect(createService.status(), await createService.text()).toBe(201);
 
-    // Suspender
+    // Suspend
     const suspend = await adminApi.post(`/api/admin/advisors/${advisor!.id}`, { action: "suspend" });
     expect(suspend.status(), await suspend.text()).toBe(200);
     expect((await suspend.json()).isActive).toBe(false);
@@ -61,7 +61,7 @@ test.describe("02 · Onboarding asesor y aprobación admin", () => {
     expect(after!.isActive).toBe(false);
   });
 
-  test("action inválido en admin advisors → 400", async ({ request }) => {
+  test("invalid action on admin advisors → 400", async ({ request }) => {
     const api = newApi(request);
     const admin = await createAdmin(request);
     const { userId } = await (async () => {
@@ -78,7 +78,7 @@ test.describe("02 · Onboarding asesor y aprobación admin", () => {
     expect(res.status()).toBe(400);
   });
 
-  test("cliente sin perfil de asesor no puede acceder a endpoints de asesor", async ({ request }) => {
+  test("client without advisor profile cannot access advisor endpoints", async ({ request }) => {
     const api = newApi(request);
     const { sessionToken } = await signupClient(api);
 

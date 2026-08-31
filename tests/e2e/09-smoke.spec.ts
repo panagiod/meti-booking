@@ -3,8 +3,8 @@ import { createActiveAdvisor, localDateStr } from "../helpers/fixtures";
 import { prisma } from "../helpers/db";
 import { parseLocalISO } from "../../src/lib/timezone";
 
-test.describe("09 · Smoke: render de páginas clave", () => {
-  test("landing renderiza sin errores", async ({ page }) => {
+test.describe("09 · Smoke: key page rendering", () => {
+  test("landing renders without errors", async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/");
@@ -12,7 +12,7 @@ test.describe("09 · Smoke: render de páginas clave", () => {
     expect(errors).toEqual([]);
   });
 
-  test("login y register renderizan sus formularios", async ({ page }) => {
+  test("login and register render their forms", async ({ page }) => {
     await page.goto("/login");
     await expect(page.locator("form")).toBeVisible();
 
@@ -20,33 +20,33 @@ test.describe("09 · Smoke: render de páginas clave", () => {
     await expect(page.locator("form")).toBeVisible();
   });
 
-  test("listado de asesores renderiza tarjetas", async ({ page, request }) => {
+  test("advisor listing renders cards", async ({ page, request }) => {
     await createActiveAdvisor(request);
     await page.goto("/services", { waitUntil: "domcontentloaded" });
-    await expect(page.locator('text="E2E Asesor"').first()).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator('text="E2E Advisor"').first()).toBeVisible({ timeout: 30_000 });
   });
 
-  test("perfil público del asesor renderiza selector de servicios", async ({ page, request }) => {
+  test("advisor public profile renders service selector", async ({ page, request }) => {
     const fixture = await createActiveAdvisor(request);
     await page.goto(`/advisor/${fixture.advisorId}`);
-    await expect(page.locator('text="Consultoría E2E"').first()).toBeVisible();
+    await expect(page.locator('text="E2E Consulting"').first()).toBeVisible();
   });
 
-  test("checkout sin datos de reserva muestra estado vacío", async ({ page }) => {
+  test("checkout without booking data shows empty state", async ({ page }) => {
     await page.goto("/checkout");
-    await expect(page.locator('text="No hay datos de reserva"')).toBeVisible();
+    await expect(page.locator('text="No booking data"')).toBeVisible();
   });
 
-  test("redirect muestra el loading premium", async ({ page }) => {
+  test("redirect shows the premium loading state", async ({ page }) => {
     await page.goto("/redirect");
-    await expect(page.locator('text="Bienvenido a Meti"')).toBeVisible();
-    await expect(page.locator('text="Verificando tu sesión"')).toBeVisible();
+    await expect(page.locator('text="Welcome to Meti"')).toBeVisible();
+    await expect(page.locator('text="Verifying your session"')).toBeVisible();
   });
 
-  test("slots: horario activo genera slots disponibles y filtra domingo", async ({ request }) => {
+  test("slots: active schedule generates available slots and filters Sunday", async ({ request }) => {
     const fixture = await createActiveAdvisor(request);
 
-    // Busca un lunes futuro
+    // Find a future Monday
     const d = new Date();
     d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7));
     const dateStr = localDateStr(d);
@@ -60,20 +60,20 @@ test.describe("09 · Smoke: render de páginas clave", () => {
     expect(slots.some((s: any) => s.available)).toBe(true);
     expect(slots[0].time).toBe("08:00");
 
-    // Sin parámetros → 400
+    // Missing parameters → 400
     const missing = await request.get(`/api/slots?advisorId=${fixture.advisorId}`);
     expect(missing.status()).toBe(400);
   });
 
-  test("slots: cita existente bloquea el slot correspondiente", async ({ request }) => {
+  test("slots: existing appointment blocks the corresponding slot", async ({ request }) => {
     const fixture = await createActiveAdvisor(request);
 
     const d = new Date();
     d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7));
     const dateStr = localDateStr(d);
 
-    // Con gap de 15 min y duración de 60, los slots van cada 75 min:
-    // 08:00, 09:15, 10:30... Usamos un slot real (09:15 hora Colombia).
+    // With a 15-min gap and 60-min duration, slots are every 75 min:
+    // 08:00, 09:15, 10:30... Use a real slot (09:15 Colombia time).
     const scheduledAt = parseLocalISO(`${dateStr}T09:15`)!;
 
     await prisma.appointment.create({

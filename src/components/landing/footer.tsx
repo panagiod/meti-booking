@@ -4,21 +4,21 @@ import { Logo } from "@/components/ui/logo";
 
 const footerLinks = {
   platform: [
-    { name: "Cómo funciona", href: "#como-funciona" },
-    { name: "Explorar asesores", href: "/services" },
-    { name: "Preguntas frecuentes", href: "/faq" },
+    { name: "How it works", href: "#como-funciona" },
+    { name: "Browse advisors", href: "/services" },
+    { name: "FAQ", href: "/faq" },
   ],
   advisors: [
-    { name: "Ser asesor", href: "/register" },
-    { name: "Recursos para asesores", href: "/resources" },
-    { name: "Historias de éxito", href: "/stories" },
+    { name: "Become an advisor", href: "/register" },
+    { name: "Resources for advisors", href: "/resources" },
+    { name: "Success stories", href: "/stories" },
     { name: "Blog", href: "/blog" },
   ],
   legal: [
-    { name: "Términos de servicio", href: "/terms" },
-    { name: "Política de privacidad", href: "/privacy" },
-    { name: "Política de cookies", href: "/cookies" },
-    { name: "Cancelaciones y reembolsos", href: "/refunds" },
+    { name: "Terms of service", href: "/terms" },
+    { name: "Privacy policy", href: "/privacy" },
+    { name: "Cookie policy", href: "/cookies" },
+    { name: "Cancellations and refunds", href: "/refunds" },
   ],
 };
 
@@ -33,7 +33,7 @@ export function Footer() {
               <Logo className="h-10 w-auto" />
             </Link>
             <p className="text-white/70 text-sm mb-4">
-              Conecta con asesores profesionales expertos por videollamada.
+              Connect with expert professional advisors via video call.
             </p>
             <div className="space-y-2 text-sm text-white/60">
               <div className="flex items-center gap-2">
@@ -45,7 +45,7 @@ export function Footer() {
 
           {/* Links */}
           <div>
-            <h4 className="font-heading font-semibold mb-4">Plataforma</h4>
+            <h4 className="font-heading font-semibold mb-4">Platform</h4>
             <ul className="space-y-2">
               {footerLinks.platform.map((link) => (
                 <li key={link.name}>
@@ -61,7 +61,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-heading font-semibold mb-4">Asesores</h4>
+            <h4 className="font-heading font-semibold mb-4">Advisors</h4>
             <ul className="space-y-2">
               {footerLinks.advisors.map((link) => (
                 <li key={link.name}>
@@ -96,7 +96,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-white/60">
-            © {new Date().getFullYear()} Meti. Todos los derechos reservados.
+            © {new Date().getFullYear()} Meti. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link

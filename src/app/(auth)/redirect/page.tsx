@@ -13,11 +13,11 @@ export default function RedirectPage() {
   useEffect(() => {
     const handleRedirect = async () => {
       try {
-        // El booking pendiente se lee de forma SÍNCRONA antes de cualquier await.
-        // En dev, StrictMode ejecuta este effect dos veces seguidas; si la lectura
-        // ocurriera después del getSession, la segunda ejecución podría encontrar
-        // el booking ya consumido por /checkout y caería en el redirect por rol
-        // (dashboard). Al decidir síncronamente, ambos runs toman la misma ruta.
+        // Read pending booking synchronously before any await.
+        // In dev, StrictMode runs this effect twice; if reading happened
+        // after getSession, the second run could find the booking already
+        // consumed by /checkout and fall through to role-based redirect
+        // (dashboard). Deciding synchronously keeps both runs on the same path.
         const pendingBooking = localStorage.getItem("meti-pending-booking");
         if (pendingBooking) {
           let valid = false;
@@ -27,14 +27,14 @@ export default function RedirectPage() {
           } catch (e) {}
 
           if (valid) {
-            // No se elimina aquí: el checkout lo consume al montarse.
+            // Not removed here: checkout consumes it on mount.
             setCheckingOut(true);
             const params = new URLSearchParams(JSON.parse(pendingBooking));
             router.push(`/checkout?${params.toString()}`);
             return;
           }
 
-          // Booking inválido: limpiar y continuar con el redirect normal
+          // Invalid booking: clear and continue with normal redirect
           localStorage.removeItem("meti-pending-booking");
         }
 
@@ -47,7 +47,7 @@ export default function RedirectPage() {
 
         const user = data.user as any;
 
-        // Primer usuario del sistema → automáticamente admin
+        // First user in the system → automatically admin
         if (user.role === "CLIENT") {
           try {
             const res = await fetch("/api/admin/setup");

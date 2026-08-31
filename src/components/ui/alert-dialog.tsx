@@ -53,7 +53,7 @@ export function AlertDialog({ state }: AlertDialogProps) {
             <Input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Escribe tu respuesta..."
+              placeholder="Type your answer..."
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -67,11 +67,11 @@ export function AlertDialog({ state }: AlertDialogProps) {
         <DialogFooter>
           {type === "confirm" || type === "prompt" ? (
             <Button variant="secondary" onClick={close}>
-              Cancelar
+              Cancel
             </Button>
           ) : null}
           <Button onClick={onConfirm}>
-            {type === "confirm" ? "Aceptar" : type === "prompt" ? "Aceptar" : "Entendido"}
+            {type === "confirm" ? "Accept" : type === "prompt" ? "Accept" : "Got it"}
           </Button>
         </DialogFooter>
       </DialogContent>

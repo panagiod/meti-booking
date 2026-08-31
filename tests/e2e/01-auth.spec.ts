@@ -4,7 +4,7 @@ import { prisma, trackEmail } from "../helpers/db";
 import { randomUUID } from "crypto";
 
 test.describe("01 · Auth", () => {
-  test("sign-up crea usuario CLIENT con ClientProfile (hook better-auth)", async ({ request }) => {
+  test("sign-up creates CLIENT user with ClientProfile (better-auth hook)", async ({ request }) => {
     const api = newApi(request);
     const { userId } = await signupClient(api);
 
@@ -17,7 +17,7 @@ test.describe("01 · Auth", () => {
     expect(user!.client).toBeTruthy();
   });
 
-  test("sign-in con contraseña incorrecta devuelve error", async ({ request }) => {
+  test("sign-in with wrong password returns error", async ({ request }) => {
     const api = newApi(request);
     const email = `e2e.badpass.${randomUUID().slice(0, 8)}@meti.test`;
     trackEmail(email);
@@ -37,7 +37,7 @@ test.describe("01 · Auth", () => {
     expect(signIn.status()).toBeGreaterThanOrEqual(400);
   });
 
-  test("endpoint protegido sin sesión devuelve 401", async ({ request }) => {
+  test("protected endpoint without session returns 401", async ({ request }) => {
     const api = newApi(request);
     const res = await api.get(`${BASE_URL}/api/client/appointments`);
     expect(res.status()).toBe(401);
@@ -46,7 +46,7 @@ test.describe("01 · Auth", () => {
     expect(advisorRes.status()).toBe(401);
   });
 
-  test("sesión de cliente accede a sus endpoints y recibe 403 en endpoints de admin", async ({ request }) => {
+  test("client session accesses its endpoints and gets 403 on admin endpoints", async ({ request }) => {
     const api = newApi(request);
     const { sessionToken } = await signupClient(api);
 

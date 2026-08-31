@@ -37,7 +37,7 @@ export interface SignupResult {
   sessionToken: string;
 }
 
-// Registro real vía la API de better-auth (valida el flujo de auth de la app)
+// Real sign-up via the better-auth API (validates the app's auth flow)
 export async function signupClient(
   api: APIRequestContext
 ): Promise<SignupResult> {
@@ -51,10 +51,10 @@ export async function signupClient(
     data: {
       email,
       password: "e2e-password-123",
-      name: "E2E Cliente",
+      name: "E2E Client",
     },
   });
-  expect(res.status(), `sign-up falló: ${await res.text()}`).toBe(200);
+  expect(res.status(), `sign-up failed: ${await res.text()}`).toBe(200);
 
   const data = await res.json();
   expect(data.user?.id).toBeTruthy();
@@ -63,7 +63,7 @@ export async function signupClient(
     headers: authHeaders,
     data: { email, password: "e2e-password-123" },
   });
-  expect(signIn.status(), `sign-in falló: ${await signIn.text()}`).toBe(200);
+  expect(signIn.status(), `sign-in failed: ${await signIn.text()}`).toBe(200);
 
   const sessionToken = await extractSessionToken(signIn);
   expect(sessionToken).toBeTruthy();
@@ -71,7 +71,7 @@ export async function signupClient(
   return { userId: data.user.id, email, sessionToken: sessionToken! };
 }
 
-// Extrae la cookie de sesión del Set-Cookie de la respuesta de sign-in
+// Extracts the session cookie from the sign-in Set-Cookie response
 export async function extractSessionToken(
   res: Awaited<ReturnType<APIRequestContext["post"]>>
 ): Promise<string | null> {

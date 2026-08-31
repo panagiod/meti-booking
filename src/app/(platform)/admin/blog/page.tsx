@@ -50,7 +50,7 @@ export default function AdminBlogPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("¿Estás seguro de que deseas eliminar esta entrada?")) {
+    if (!confirm("Are you sure you want to delete this post?")) {
       return;
     }
 
@@ -83,13 +83,13 @@ export default function AdminBlogPage() {
             Blog
           </h1>
           <p className="text-[var(--text-muted)] mt-1">
-            Gestiona las entradas del blog
+            Manage blog posts
           </p>
         </div>
         <Link href="/admin/blog/new">
           <Button>
             <Plus className="w-4 h-4 mr-2" />
-            Nueva entrada
+            New post
           </Button>
         </Link>
       </div>
@@ -100,10 +100,10 @@ export default function AdminBlogPage() {
           <CardContent className="p-12">
             <EmptyState
               icon={FileText}
-              title="Sin entradas"
-              description="Crea tu primera entrada del blog para compartir contenido con tus usuarios."
+              title="No posts yet"
+              description="Create your first blog post to share content with your users."
               action={{
-                label: "Crear entrada",
+                label: "Create post",
                 onClick: () => router.push("/admin/blog/new"),
               }}
             />
@@ -113,7 +113,7 @@ export default function AdminBlogPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">
-              {posts.length} {posts.length === 1 ? "entrada" : "entradas"}
+              {posts.length} {posts.length === 1 ? "post" : "posts"}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -133,7 +133,7 @@ export default function AdminBlogPage() {
                           post.status === "PUBLISHED" ? "default" : "secondary"
                         }
                       >
-                        {post.status === "PUBLISHED" ? "Publicado" : "Borrador"}
+                        {post.status === "PUBLISHED" ? "Published" : "Draft"}
                       </Badge>
                     </div>
                     {post.excerpt && (
@@ -142,14 +142,14 @@ export default function AdminBlogPage() {
                       </p>
                     )}
                     <div className="flex items-center gap-4 mt-2 text-xs text-[var(--text-muted)]">
-                      <span>Por {post.author.name}</span>
+                      <span>By {post.author.name}</span>
                       <span>
-                        {new Date(post.createdAt).toLocaleDateString("es-CO")}
+                        {new Date(post.createdAt).toLocaleDateString("en-US")}
                       </span>
                       {post.publishedAt && (
                         <span>
-                          Publicado{" "}
-                          {new Date(post.publishedAt).toLocaleDateString("es-CO")}
+                          Published{" "}
+                          {new Date(post.publishedAt).toLocaleDateString("en-US")}
                         </span>
                       )}
                     </div>

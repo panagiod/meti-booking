@@ -26,14 +26,14 @@ export async function POST(request: NextRequest) {
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: "Tipo de archivo inválido. Permitidos: JPEG, PNG, WebP" },
+        { error: "Invalid file type. Allowed: JPEG, PNG, WebP" },
         { status: 400 }
       );
     }
 
     if (file.size > 2 * 1024 * 1024) {
       return NextResponse.json(
-        { error: "El archivo debe pesar menos de 2MB" },
+        { error: "File must be smaller than 2MB" },
         { status: 400 }
       );
     }

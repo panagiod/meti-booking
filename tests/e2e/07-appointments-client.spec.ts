@@ -3,8 +3,8 @@ import { newApi, withSession, BASE_URL } from "../helpers/api";
 import { prisma } from "../helpers/db";
 import { createActiveAdvisor, createClient } from "../helpers/fixtures";
 
-test.describe("07 · Citas del cliente", () => {
-  test("cliente lista sus citas con detalle de asesor y servicio", async ({ request }) => {
+test.describe("07 · Client appointments", () => {
+  test("client lists their appointments with advisor and service details", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const client = await createClient(request);
@@ -23,7 +23,7 @@ test.describe("07 · Citas del cliente", () => {
         platformFee: 1500,
       },
     });
-    // Cita de OTRO cliente (no debe aparecer en la lista del cliente)
+    // Appointment for ANOTHER client (must not appear in client's list)
     await prisma.appointment.create({
       data: {
         clientId: other.userId,
@@ -44,10 +44,10 @@ test.describe("07 · Citas del cliente", () => {
     expect(appointments.length).toBe(1);
     expect(appointments[0].id).toBe(apt.id);
     expect(appointments[0].advisor.user.name).toBeTruthy();
-    expect(appointments[0].service.name).toBe("Consultoría E2E");
+    expect(appointments[0].service.name).toBe("E2E Consulting");
   });
 
-  test("detalle de cita: solo participantes (403 para ajenos)", async ({ request }) => {
+  test("appointment detail: participants only (403 for outsiders)", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const client = await createClient(request);
@@ -77,7 +77,7 @@ test.describe("07 · Citas del cliente", () => {
     expect(forbidden.status()).toBe(403);
   });
 
-  test("reseña: solo citas COMPLETED y solo el cliente", async ({ request }) => {
+  test("review: only COMPLETED appointments and only the client", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const client = await createClient(request);
@@ -96,31 +96,31 @@ test.describe("07 · Citas del cliente", () => {
       },
     });
 
-    // Reseñar cita completada como cliente
+    // Review completed appointment as client
     const review = await withSession(api, client.sessionToken).post(
       `/api/appointments/${completed.id}/review`,
-      { rating: 5, comment: "Excelente asesoría E2E" }
+      { rating: 5, comment: "Excellent E2E advisory" }
     );
     expect(review.status(), await review.text()).toBe(201);
     const { review: createdReview } = await review.json();
     expect(createdReview.rating).toBe(5);
 
-    // El asesor NO puede reseñar
+    // Advisor CANNOT review
     const advisorReview = await withSession(api, fixture.sessionToken).post(
       `/api/appointments/${completed.id}/review`,
       { rating: 1 }
     );
     expect(advisorReview.status()).toBe(403);
 
-    // Actualizar reseña existente
+    // Update existing review
     const updateReview = await withSession(api, client.sessionToken).post(
       `/api/appointments/${completed.id}/review`,
-      { rating: 4, comment: "Actualizada" }
+      { rating: 4, comment: "Updated" }
     );
     expect(updateReview.status()).toBe(200);
     expect((await updateReview.json()).updated).toBe(true);
 
-    // Reseñar cita PENDING → 400
+    // Review PENDING appointment → 400
     const pending = await prisma.appointment.create({
       data: {
         clientId: client.userId,
@@ -141,7 +141,7 @@ test.describe("07 · Citas del cliente", () => {
     expect(invalidReview.status()).toBe(400);
   });
 
-  test("chat: solo participantes acceden y pueden postear", async ({ request }) => {
+  test("chat: only participants can access and post", async ({ request }) => {
     const api = newApi(request);
     const fixture = await createActiveAdvisor(request);
     const client = await createClient(request);
@@ -161,22 +161,22 @@ test.describe("07 · Citas del cliente", () => {
       },
     });
 
-    // Cliente postea mensaje
+    // Client posts message
     const postMsg = await withSession(api, client.sessionToken).post(
       `/api/appointments/${apt.id}/chat`,
-      { body: "Hola, ¿listo para la asesoría?" }
+      { body: "Hello, ready for the advisory?" }
     );
     expect(postMsg.status(), await postMsg.text()).toBe(201);
 
-    // Historial visible para el cliente
+    // History visible to client
     const history = await withSession(api, client.sessionToken).get(`/api/appointments/${apt.id}/chat`);
     expect(history.status()).toBe(200);
     const { messages } = await history.json();
     expect(messages.length).toBe(1);
-    expect(messages[0].body).toBe("Hola, ¿listo para la asesoría?");
+    expect(messages[0].body).toBe("Hello, ready for the advisory?");
     expect(messages[0].senderRole).toBe("client");
 
-    // Intruso no puede ver el chat
+    // Intruder cannot view chat
     const intruderHistory = await withSession(api, intruder.sessionToken).get(
       `/api/appointments/${apt.id}/chat`
     );

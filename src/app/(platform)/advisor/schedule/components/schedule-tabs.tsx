@@ -23,7 +23,7 @@ export function ScheduleTabs({ activeTab, onTabChange }: ScheduleTabsProps) {
         )}
       >
         <Settings className="w-4 h-4 inline mr-2" />
-        Horario semanal
+        Weekly schedule
       </button>
       <button
         onClick={() => onTabChange("calendar")}

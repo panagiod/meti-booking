@@ -33,20 +33,20 @@ export function BlockTimeModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Bloquear horario</CardTitle>
+          <CardTitle>Block time slot</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1.5">Título *</label>
+            <label className="block text-sm font-medium mb-1.5">Title *</label>
             <Input
               value={title}
               onChange={(e) => onTitleChange(e.target.value)}
-              placeholder="Ej: Vacaciones, Día personal..."
+              placeholder="E.g. Vacation, Personal day..."
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1.5">Inicio *</label>
+              <label className="block text-sm font-medium mb-1.5">Start *</label>
               <Input
                 type="datetime-local"
                 value={startDate}
@@ -54,7 +54,7 @@ export function BlockTimeModal({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1.5">Fin *</label>
+              <label className="block text-sm font-medium mb-1.5">End *</label>
               <Input
                 type="datetime-local"
                 value={endDate}
@@ -64,9 +64,9 @@ export function BlockTimeModal({
           </div>
           <div className="flex justify-end gap-3 pt-4">
             <Button variant="secondary" onClick={onCancel}>
-              Cancelar
+              Cancel
             </Button>
-            <Button onClick={onConfirm}>Bloquear</Button>
+            <Button onClick={onConfirm}>Block</Button>
           </div>
         </CardContent>
       </Card>

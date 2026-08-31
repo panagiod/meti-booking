@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { format, isToday, getHours, getMinutes } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { Appointment, BlockedTime, getItemsForDay, getStatusColor } from "../utils/schedule-utils";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +30,7 @@ export function WeekView({ calendarDays, blockedTimes, appointments }: WeekViewP
                 )}
               >
                 <div className="text-xs text-[var(--text-muted)]">
-                  {format(day, "EEE", { locale: es })}
+                  {format(day, "EEE", { locale: enUS })}
                 </div>
                 <div
                   className={cn(

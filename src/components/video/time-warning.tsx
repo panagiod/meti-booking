@@ -58,13 +58,13 @@ export function TimeWarning({ scheduledAt, durationMin }: TimeWarningProps) {
       {status === "ended" ? (
         <>
           <AlertTriangle className="w-5 h-5" />
-          <span className="font-medium">Sesión finalizada</span>
+          <span className="font-medium">Session ended</span>
         </>
       ) : (
         <>
           <Clock className="w-5 h-5" />
           <span className="font-medium">
-            {status === "critical" ? "La sesión termina en" : "Tiempo restante:"}{" "}
+            {status === "critical" ? "Session ends in" : "Time remaining:"}{" "}
             {timeString}
           </span>
         </>

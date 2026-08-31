@@ -11,7 +11,7 @@ import { useDialog } from "@/hooks/use-dialog";
 import { Calendar, Clock, Video, Star, MessageSquare, CreditCard, XCircle } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { sileo } from "sileo";
 import { cn } from "@/lib/utils";
 
@@ -69,22 +69,22 @@ export default function AppointmentsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "CONFIRMED":
-        return <Badge variant="success">Confirmada</Badge>;
+        return <Badge variant="success">Confirmed</Badge>;
       case "IN_PROGRESS":
-        return <Badge variant="default">En progreso</Badge>;
+        return <Badge variant="default">In progress</Badge>;
       case "COMPLETED":
-        return <Badge variant="secondary">Completada</Badge>;
+        return <Badge variant="secondary">Completed</Badge>;
       case "CANCELLED":
-        return <Badge variant="destructive">Cancelada</Badge>;
+        return <Badge variant="destructive">Cancelled</Badge>;
       case "PENDING":
-        return <Badge variant="warning">Pago pendiente</Badge>;
+        return <Badge variant="warning">Payment pending</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat("es-CO", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "COP",
       minimumFractionDigits: 0,
@@ -109,13 +109,13 @@ export default function AppointmentsPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Error al guardar la reseña");
+        throw new Error(data.error || "Failed to save review");
       }
-      sileo.success({ title: "¡Gracias por tu reseña!", description: "Tu calificación ayuda a otros clientes." });
+      sileo.success({ title: "Thank you for your review!", description: "Your rating helps other clients." });
       setReviewAppointment(null);
       await fetchAppointments();
     } catch (err: any) {
-      sileo.error({ title: "Error", description: err.message || "No se pudo guardar la reseña." });
+      sileo.error({ title: "Error", description: err.message || "Could not save review." });
     } finally {
       setIsSubmitting(false);
     }
@@ -123,8 +123,8 @@ export default function AppointmentsPage() {
 
   const handleCancelAppointment = async (appointment: Appointment) => {
     const confirmed = await dialog.showConfirm(
-      "Cancelar cita",
-      `¿Estás seguro de cancelar la cita de ${appointment.service.name} con ${appointment.advisor.user.name}? Esta acción no se puede deshacer.`,
+      "Cancel appointment",
+      `Are you sure you want to cancel the appointment for ${appointment.service.name} con ${appointment.advisor.user.name}? This action cannot be undone.`,
       "warning"
     );
     if (!confirmed) return;
@@ -135,16 +135,16 @@ export default function AppointmentsPage() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ reason: "Cancelado por el cliente" }),
+        body: JSON.stringify({ reason: "Cancelled by client" }),
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Error al cancelar la cita");
+        throw new Error(data.error || "Failed to cancel appointment");
       }
-      sileo.success({ title: "Cita cancelada", description: "El horario ha sido liberado." });
+      sileo.success({ title: "Appointment cancelled", description: "The time slot has been released." });
       await fetchAppointments();
     } catch (err: any) {
-      sileo.error({ title: "Error", description: err.message || "No se pudo cancelar la cita." });
+      sileo.error({ title: "Error", description: err.message || "Could not cancel appointment." });
     } finally {
       setCancellingId(null);
     }
@@ -159,12 +159,12 @@ export default function AppointmentsPage() {
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Error al generar link de pago");
+        throw new Error(data.error || "Failed to generate payment link");
       }
       const { initPoint } = await res.json();
       window.location.href = initPoint;
     } catch (err: any) {
-      sileo.error({ title: "Error", description: err.message || "No se pudo generar el link de pago." });
+      sileo.error({ title: "Error", description: err.message || "Could not generate payment link." });
       setRetryingId(null);
     }
   };
@@ -176,10 +176,10 @@ export default function AppointmentsPage() {
       {/* Header */}
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          Mis Citas
+          My Appointments
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Administra tus asesorías programadas
+          Manage your scheduled consultations
         </p>
       </div>
 
@@ -190,21 +190,21 @@ export default function AppointmentsPage() {
           size="sm"
           onClick={() => setFilter("all")}
         >
-          Todas
+          All
         </Button>
         <Button
           variant={filter === "upcoming" ? "default" : "secondary"}
           size="sm"
           onClick={() => setFilter("upcoming")}
         >
-          Próximas
+          Upcoming
         </Button>
         <Button
           variant={filter === "past" ? "default" : "secondary"}
           size="sm"
           onClick={() => setFilter("past")}
         >
-          Pasadas
+          Past
         </Button>
       </div>
 
@@ -214,10 +214,10 @@ export default function AppointmentsPage() {
           <CardContent className="p-12">
             <EmptyState
               icon={Calendar}
-              title="No tienes citas"
-              description="Explora nuestros asesores y agenda tu primera asesoría."
+              title="No appointments yet"
+              description="Browse our advisors and book your first consultation."
               action={{
-                label: "Explorar asesores",
+                label: "Browse advisors",
                 onClick: () => (window.location.href = "/services"),
               }}
             />
@@ -248,7 +248,7 @@ export default function AppointmentsPage() {
                         {apt.service.name}
                       </p>
                       <p className="text-sm text-[var(--text-muted)]">
-                        con {apt.advisor.user.name}
+                        with {apt.advisor.user.name}
                       </p>
                     </div>
                   </div>
@@ -256,7 +256,7 @@ export default function AppointmentsPage() {
                   <div className="flex items-center gap-4 text-sm">
                     <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
                       <Calendar className="w-4 h-4" />
-                      {format(new Date(apt.scheduledAt), "d MMM yyyy", { locale: es })}
+                      {format(new Date(apt.scheduledAt), "d MMM yyyy", { locale: enUS })}
                     </div>
                     <div className="flex items-center gap-1.5 text-[var(--text-secondary)]">
                       <Clock className="w-4 h-4" />
@@ -281,7 +281,7 @@ export default function AppointmentsPage() {
                           ) : (
                             <>
                               <CreditCard className="w-4 h-4 mr-1" />
-                              Pagar
+                              Pay
                             </>
                           )}
                         </Button>
@@ -296,7 +296,7 @@ export default function AppointmentsPage() {
                           ) : (
                             <>
                               <XCircle className="w-4 h-4 mr-1" />
-                              Cancelar
+                              Cancel
                             </>
                           )}
                         </Button>
@@ -306,7 +306,7 @@ export default function AppointmentsPage() {
                       <Button size="sm" asChild>
                         <Link href={`/call/${apt.id}`}>
                           <Video className="w-4 h-4 mr-1" />
-                          Unirse
+                          Join
                         </Link>
                       </Button>
                     )}
@@ -320,7 +320,7 @@ export default function AppointmentsPage() {
                         ) : (
                           <>
                             <MessageSquare className="w-4 h-4 mr-1" />
-                            Reseña
+                            Review
                           </>
                         )}
                       </Button>
@@ -339,12 +339,12 @@ export default function AppointmentsPage() {
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle className="text-lg">
-                {reviewAppointment.review ? "Tu reseña" : "Califica tu asesoría"}
+                {reviewAppointment.review ? "Your review" : "Rate your consultation"}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-[var(--text-muted)]">
-                {reviewAppointment.service.name} con {reviewAppointment.advisor.user.name}
+                {reviewAppointment.service.name} with {reviewAppointment.advisor.user.name}
               </p>
 
               {/* Stars */}
@@ -357,7 +357,7 @@ export default function AppointmentsPage() {
                       "transition-transform hover:scale-110",
                       star <= rating ? "text-[var(--star)]" : "text-[var(--star-empty)]"
                     )}
-                    aria-label={`${star} estrellas`}
+                    aria-label={`${star} stars`}
                   >
                     <Star className="w-8 h-8 fill-current" />
                   </button>
@@ -368,21 +368,21 @@ export default function AppointmentsPage() {
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                placeholder="Cuéntanos sobre tu experiencia (opcional)..."
+                placeholder="Tell us about your experience (optional)..."
                 rows={3}
                 className="w-full px-3 py-2 text-sm border border-[var(--border)] rounded-lg bg-[var(--surface)] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary)] resize-none"
               />
 
               <div className="flex gap-3 justify-end pt-2">
                 <Button variant="secondary" onClick={() => setReviewAppointment(null)}>
-                  Cerrar
+                  Close
                 </Button>
                 <Button onClick={submitReview} disabled={isSubmitting || rating === 0}>
                   {isSubmitting
-                    ? "Guardando..."
+                    ? "Saving..."
                     : reviewAppointment.review
-                      ? "Actualizar reseña"
-                      : "Enviar reseña"}
+                      ? "Update review"
+                      : "Submit review"}
                 </Button>
               </div>
             </CardContent>

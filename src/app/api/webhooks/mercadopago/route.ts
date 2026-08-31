@@ -11,36 +11,36 @@ interface PaymentNotification {
   external_reference?: string;
 }
 
-// POST: Webhook de Mercado Pago (Checkout Pro)
-// Recibe notificaciones de payment y merchant_order. NUNCA se confía en el
-// body: el pago se verifica contra la API de MP con el access token del asesor.
+// POST: Mercado Pago webhook (Checkout Pro)
+// Receives payment and merchant_order notifications. NEVER trust the
+// body: payment is verified against the MP API with the advisor's access token.
 export async function POST(request: NextRequest) {
   try {
     const notification = (await request.json()) as PaymentNotification;
     const topic = notification.type;
 
-    // Temas que no manejamos (chargebacks, refunds...): aceptar silenciosamente
+    // Topics we don't handle (chargebacks, refunds...): accept silently
     if (topic && topic !== "payment" && topic !== "merchant_order") {
       return NextResponse.json({ ok: true, ignored: topic });
     }
 
-    // Buscar la cita según el tipo de notificación
+    // Find the appointment based on notification type
     let appointmentId: string | null = null;
     const paymentId: string | null = notification.data?.id || null;
 
     if (topic === "merchant_order") {
-      // La orden de mercado incluye external_reference = appointment id
+      // Merchant order includes external_reference = appointment id
       appointmentId = notification.external_reference || null;
     } else if (topic === "payment" || topic === undefined) {
-      // 1) Por payment id ya registrado
+      // 1) By already registered payment id
       if (paymentId) {
         const found = await prisma.appointment.findFirst({
           where: { paymentId },
         });
         if (found) appointmentId = found.id;
       }
-      // 2) Por la preferencia desde la que se pagó (MP usa preferred_id,
-      //    pero aceptamos ambas variantes por compatibilidad)
+      // 2) By the preference used for payment (MP uses preferred_id,
+      //    but we accept both variants for compatibility)
       const preferenceId = notification.preferred_id || notification.preference_id || notification.data?.preferred_id;
       if (!appointmentId && preferenceId) {
         const found = await prisma.appointment.findFirst({
@@ -48,14 +48,14 @@ export async function POST(request: NextRequest) {
         });
         if (found) appointmentId = found.id;
       }
-      // 3) Por external_reference (algunas versiones de MP lo incluyen)
+      // 3) By external_reference (some MP versions include it)
       if (!appointmentId && notification.external_reference) {
         appointmentId = notification.external_reference;
       }
     }
 
     if (!appointmentId) {
-      // Sin cita conocida: pedir reintento más tarde
+      // No known appointment: request retry later
       return NextResponse.json(
         { error: "Appointment not found" },
         { status: 404 }
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // No-op si ya está confirmada (idempotencia)
+    // No-op if already confirmed (idempotency)
     if (appointment.status === "CONFIRMED" && paymentId && !appointment.paymentId) {
       await prisma.appointment.update({
         where: { id: appointment.id },
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificación real del pago con el token del asesor (sin custodia)
+    // Actual payment verification with the advisor's token (no custody)
     let payment;
     try {
       payment = await getPayment(appointment.advisor.mpAccessToken, paymentId);
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
           paymentId,
         },
       });
-      // Emails de confirmación (solo si venía de PENDING, evita duplicados)
+      // Confirmation emails (only if it was PENDING, avoids duplicates)
       if (wasPending) {
         try {
           await notifyAppointmentConfirmed(appointment.id);
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ok: true, confirmed: true });
     }
 
-    // Pago pendiente, rechazado, en proceso... no confirmar aún
+    // Pending, rejected, in process... do not confirm yet
     await prisma.appointment.update({
       where: { id: appointment.id },
       data: { paymentId },
@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// MP responde a GET con un 200 para validar que el webhook está vivo
+// MP responds to GET with 200 to validate that the webhook is alive
 export async function GET() {
   return NextResponse.json({ ok: true });
 }

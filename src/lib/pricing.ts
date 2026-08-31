@@ -1,7 +1,7 @@
-// Cálculo central de precios de una cita.
-// Regla de negocio: el fee de la plataforma SIEMPRE se calcula sobre el precio
-// ORIGINAL del servicio; el descuento (promoción) lo absorbe el asesor.
-// Si el fee calculado supera maxFeeCents, se usa maxFeeCents.
+// Central appointment pricing calculation.
+// Business rule: the platform fee is ALWAYS calculated on the ORIGINAL
+// service price; the advisor absorbs the discount (promotion).
+// If the calculated fee exceeds maxFeeCents, maxFeeCents is used.
 export function calculatePrices({
   servicePriceCents,
   feePercentage,
@@ -16,7 +16,7 @@ export function calculatePrices({
   const advisorEarning = Math.max(servicePriceCents - discountCents, 0);
   let platformFee = Math.round(servicePriceCents * (feePercentage / 100));
 
-  // Aplicar fee máximo si está configurado
+  // Apply maximum fee if configured
   if (maxFeeCents && platformFee > maxFeeCents) {
     platformFee = maxFeeCents;
   }
