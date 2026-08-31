@@ -46,6 +46,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | Greek date formatting | `src/lib/date-locale.ts` |
 | Booking UI | `src/app/(marketing)/book/page.tsx` |
 | Slot logic + validation | `src/lib/slots.ts`, `src/lib/slot-booking.ts` |
+| Lead time / pricing | `src/lib/booking-config.ts`, `src/app/api/checkout/quote/route.ts` |
 | Auth middleware | `src/proxy.ts` (keep public APIs allowlisted) |
 | Admin auth | `src/lib/admin-auth.ts`, `admin/layout.tsx` |
 | MP encryption | `src/lib/encryption.ts`, `src/lib/advisor-mp.ts` |
@@ -61,6 +62,8 @@ Password: `Demo1234!` locally — admin: `admin@demo.meti-booking.local`
 
 Flags: `--reset` (schedule), `--reset-content` (CMS)
 
+Close fixed audit issues: `./scripts/close-resolved-issues.sh`
+
 ## Do not assume
 
 - Multiple session types on public site — **reformer only**
@@ -69,6 +72,8 @@ Flags: `--reset` (schedule), `--reset-content` (CMS)
 - COP currency — everything is **EUR**
 - Colombia timezone — use **Europe/Athens** via `timezone.ts`
 - Greek genitive months — use **nominative** via `date-locale.ts`
+- `bookingLeadHours` default is **2h** — use `resolveBookingLeadHours()`
+- Hardcoded fees — use **`GET /api/checkout/quote`**
 - `/api/advisors` needs auth — must be **public** for `/book`
 - Payments work — MP not configured on demo; Stripe planned
 - External image URLs — use `/public/images/` or admin upload

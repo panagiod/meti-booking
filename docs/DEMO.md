@@ -16,6 +16,8 @@ Run the reformer booking app locally in ~5 minutes.
 | 8-week booking horizon | ✅ |
 | EUR pricing | ✅ |
 | Europe/Athens timezone | ✅ |
+| 2h booking lead time | ✅ |
+| Server pricing on /book | ✅ |
 | EN + Greek (ΕΛ) + Greek fonts | ✅ |
 | Greek dates (nominative months) | ✅ e.g. Σεπτέμβριος |
 | Admin calendar (`/admin/schedule`) | ✅ |

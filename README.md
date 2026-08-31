@@ -20,6 +20,7 @@ Book **reformer sessions** online: pick a date, time, sign in, pay.
 | **Capacity** | 3 clients per time slot |
 | **Currency** | EUR (€) |
 | **Timezone** | Europe/Athens |
+| **Booking lead time** | 2 hours minimum (`resolveBookingLeadHours`) |
 | **Languages** | EN + ΕΛ (Noto Sans / GFS Didot for Greek) |
 | **Demo password** | `Demo1234!` (or `DEMO_PASSWORD` env) |
 | **Admin** | `admin@demo.meti-booking.local` |
@@ -64,6 +65,7 @@ See [docs/ADMIN.md](docs/ADMIN.md) for details.
 | `pnpm test:e2e` | Playwright |
 | `pnpm exec tsx scripts/generate-brand-assets.ts` | Regenerate favicons + OG image |
 | `pnpm exec tsx scripts/reset-studio-schedule.ts` | Reset schedule to Mon/Wed/Sat 14:00–17:00 |
+| `./scripts/close-resolved-issues.sh` | Close fixed GitHub issues (#1, #9, #11–#31) |
 
 ---
 
@@ -89,6 +91,7 @@ src/
     studio-content*.ts   # CMS logic
     studio-schedule.ts   # Calendar defaults
     timezone.ts          # Europe/Athens slot times
+    booking-config.ts    # resolveBookingLeadHours() — 2h default
     date-locale.ts       # Greek nominative month names
     proxy.ts             # Auth middleware (public routes)
   i18n/locales/          # EN + EL copy (fallbacks)
@@ -108,6 +111,7 @@ public/uploads/studio/   # Admin-uploaded images (local dev)
 | [docs/DEMO.md](docs/DEMO.md) | Demo walkthrough |
 | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Deploy to Vercel / VPS |
 | [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) | OAuth, payments, images |
+| [docs/RESOLVED_ISSUES.md](docs/RESOLVED_ISSUES.md) | Audit fixes + GitHub issue close script |
 | [AGENTS.md](AGENTS.md) | Cursor / CI notes |
 
 ---

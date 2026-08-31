@@ -25,6 +25,7 @@
 | **Greek typography** | Noto Sans (body) + GFS Didot (headlines) when `lang="el"` |
 | **Greek dates** | Nominative month names (Σεπτέμβριος) via `date-locale.ts` |
 | **Security** | Admin server guard, proxy middleware, MP token encryption |
+| **Lead time** | **2 hours** minimum before first bookable slot (`booking-config.ts`) |
 | **Payments** | Mercado Pago in code — **not on demo**; server-side checkout quotes |
 | **Legacy** | Meti advisory marketplace: `/services`, advisor/admin dashboards, LiveKit |
 
@@ -310,6 +311,8 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 | Admin/advisor UI Greek | Not translated |
 | Timezone Europe/Athens | ✅ Done |
 | Server slot validation | ✅ Done |
+| Booking lead time (2h) | ✅ Done (`booking-config.ts`) |
+| Server checkout quote | ✅ Done (`/book` summary + checkout) |
 | MP token encryption | ✅ Done |
 | Admin route guard | ✅ Done |
 | EUR currency | ✅ Done |
@@ -320,7 +323,22 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 
 ### GitHub issues
 
-[#1](https://github.com/panagiod/meti-booking/issues/1)–[#31](https://github.com/panagiod/meti-booking/issues/31) — payments, security audit, hosting. Many audit items (#11–#25) addressed in Aug 2026.
+**Fixed (close with `./scripts/close-resolved-issues.sh`):** #1, #9, #11–#31 — see [RESOLVED_ISSUES.md](./RESOLVED_ISSUES.md).
+
+**Still open:** #2–#8 (payments/OAuth), #10 (permanent deploy).
+
+### Recent commits (Aug 2026)
+
+| Commit | Change |
+|--------|--------|
+| `8ebf9d6` | Standardize `bookingLeadHours` to 2h |
+| `8c33ca4` | Booking summary uses server checkout quote |
+| `6059a06` | Docs sync (audit batch) |
+| `a09d577` | Greek nominative month names |
+| `40ec61f` | Public `/api/advisors` + `/api/services` |
+| `2025a7b` | EUR, MP encryption, admin guard, CMS/blob/demo |
+| `84cd32c` | Bootstrap auth, payment verify, checkout quotes |
+| `73aaf61` | Timezone, slot validation, 8-week horizon |
 
 ---
 
@@ -330,23 +348,11 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 2. `git pull` on `main`.
 3. `docker compose up -d` → `.env` → `pnpm install` → `pnpm demo:setup` → `pnpm dev`.
 4. **Scope:** reformer-only public site unless asked otherwise.
-5. **Copy:** admin CMS overrides DB; code defaults in `en.ts`/`el.ts`/`site-config.ts`.
-6. **Schedule:** admin calendar or `studio-schedule.ts` + `demo-setup.ts`.
+5. **Lead time:** use `resolveBookingLeadHours()` from `booking-config.ts` (default 2h).
+6. **Pricing:** use `GET /api/checkout/quote` — never hardcode fees client-side.
 7. **Timezone:** always use `src/lib/timezone.ts` — never raw `Date` for slot logic.
 8. **Public APIs:** keep `/api/advisors`, `/api/slots`, `/api/studio` on proxy allowlist.
-9. **Schema changes:** `pnpm db:migrate` + update `demo-setup.ts`.
-
-### Recent commits (Aug 2026)
-
-| Commit | Change |
-|--------|--------|
-| `a09d577` | Greek nominative month names |
-| `40ec61f` | Public `/api/advisors` + `/api/services` for booking |
-| `2025a7b` | EUR, MP encryption, admin guard, blob/CMS/demo hardening |
-| `84cd32c` | Bootstrap auth, payment verify, server checkout quotes |
-| `73aaf61` | Europe/Athens timezone, slot validation, 8-week horizon |
-| `8b520cb` | Reset schedule script (Mon/Wed/Sat 2–5pm) |
-| `40347bd` | Admin persistence across saves and demo re-runs |
+9. **Close fixed issues:** `./scripts/close-resolved-issues.sh` after verifying on `main`.
 
 ---
 
@@ -359,5 +365,6 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 | [DEMO.md](./DEMO.md) | Local demo walkthrough |
 | [DEPLOYMENT.md](./DEPLOYMENT.md) | Production deploy |
 | [INTEGRATIONS.md](./INTEGRATIONS.md) | OAuth, payments, images |
+| [RESOLVED_ISSUES.md](./RESOLVED_ISSUES.md) | **Audit fixes + issue tracker** |
 | [DEPLOYMENT_STATUS.md](../DEPLOYMENT_STATUS.md) | Live demo URL |
 | [AGENTS.md](../AGENTS.md) | Cursor agent notes |

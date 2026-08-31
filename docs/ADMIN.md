@@ -42,7 +42,8 @@ Controls when customers can book on the public `/book` page.
 3. **Set gap between slots** — minutes between session start times (default 10)
 4. **Set lunch break** — optional `lunch start` / `lunch end` to block mid-day slots
 5. **Save schedule** — updates public booking immediately
-6. **Block dates** — holidays/closures; blocked days hidden from `/book`
+6. **Block dates** — holidays/closures; blocked days hidden from `/book`  
+   For a **single day**, set the same **From** and **To** date.
 
 ### APIs (admin auth required)
 
