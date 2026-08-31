@@ -17,6 +17,7 @@ export const siteConfig = {
   email: "hello@flowpilates.studio",
   hours: "Mon–Fri 6am–8pm · Sat 8am–2pm",
   images: {
+    /** Reformer pilates only — bundled studio photos (Pexels, free license) */
     hero: "/images/hero.jpg",
     reformer: "/images/reformer.jpg",
   },

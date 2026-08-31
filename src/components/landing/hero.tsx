@@ -18,7 +18,7 @@ export function Hero() {
               alt={t.hero.imageAlt}
               fill
               priority
-              className="object-cover object-center"
+              className="object-cover object-[center_25%]"
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </div>

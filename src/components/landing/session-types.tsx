@@ -35,9 +35,9 @@ export function SessionTypes() {
         <div className="relative aspect-[16/11] w-full sm:aspect-[16/10] lg:aspect-auto lg:min-h-[22rem]">
           <Image
             src={siteConfig.images.reformer}
-            alt={t.sessions.types.reformer.name}
+            alt={t.hero.imageAlt}
             fill
-            className="object-cover transition duration-700 group-hover:scale-[1.02]"
+            className="object-cover object-center transition duration-700 group-hover:scale-[1.02]"
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </div>
