@@ -25,7 +25,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Flow Pilates — Book Reformer Sessions Online",
+  title: "MeTi Pilates — Book Reformer Sessions Online",
   description:
     "Book reformer pilates sessions online. Pick a time, show up, move well.",
   icons: {
@@ -38,16 +38,16 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   openGraph: {
-    title: "Flow Pilates — Book Reformer Sessions Online",
+    title: "MeTi Pilates — Book Reformer Sessions Online",
     description:
       "Book reformer pilates sessions online. Pick a time, show up, move well.",
-    siteName: "Flow Pilates",
+    siteName: "MeTi Pilates",
     type: "website",
     url: "https://meti.cognilab.dev",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Flow Pilates — Book Reformer Sessions Online",
+    title: "MeTi Pilates — Book Reformer Sessions Online",
     description:
       "Book reformer pilates sessions online. Pick a time, show up, move well.",
   },
@@ -72,7 +72,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "Flow Pilates",
+              name: "MeTi Pilates",
               description: "Book reformer pilates sessions online.",
               url: "https://meti.cognilab.dev",
               applicationCategory: "BusinessApplication",

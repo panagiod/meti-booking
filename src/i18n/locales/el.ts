@@ -2,7 +2,7 @@ import type { Messages } from "../types";
 
 const el: Messages = {
   meta: {
-    title: "Flow Pilates — Κράτηση Reformer",
+    title: "MeTi Pilates — Κράτηση Reformer",
     description:
       "Κλείστε μαθήματα reformer online. Επιλέξτε ώρα, ελάτε, κινηθείτε καλά.",
   },
@@ -81,7 +81,7 @@ const el: Messages = {
     welcomeBack: "Καλώς ήρθατε",
     signInSubtitle: "Συνδεθείτε για να ολοκληρώσετε την κράτηση",
     createAccount: "Δημιουργία λογαριασμού",
-    createAccountSubtitle: "Εγγραφείτε στο Flow Pilates για κράτηση reformer",
+    createAccountSubtitle: "Εγγραφείτε στο MeTi Pilates για κράτηση reformer",
     continueGoogle: "Συνέχεια με Google",
     connecting: "Σύνδεση…",
     orDivider: "ή",

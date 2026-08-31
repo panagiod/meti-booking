@@ -1,8 +1,8 @@
 /**
- * Flow Pilates — studio branding, imagery, and content.
+ * MeTi Pilates — studio branding, imagery, and content.
  */
 export const siteConfig = {
-  name: "Flow Pilates",
+  name: "MeTi Pilates",
   tagline: "Reformer pilates studio in the heart of the city",
   description:
     "Book reformer sessions online. Pick a time, show up, move well.",
@@ -14,7 +14,7 @@ export const siteConfig = {
   deliveryMode: "in-person" as const,
   location: "123 Wellness Ave, Studio 2",
   phone: "(555) 012-3456",
-  email: "hello@flowpilates.studio",
+  email: "hello@meti-pilates.studio",
   hours: "Mon–Fri 6am–8pm · Sat 8am–2pm",
   images: {
     /** Reformer pilates only — bundled studio photos (Pexels, free license) */

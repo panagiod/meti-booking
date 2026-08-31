@@ -2,7 +2,7 @@ import type { Messages } from "../types";
 
 const en: Messages = {
   meta: {
-    title: "Flow Pilates — Book Reformer Sessions Online",
+    title: "MeTi Pilates — Book Reformer Sessions Online",
     description: "Book reformer pilates sessions online. Pick a time, show up, move well.",
   },
   nav: {
@@ -79,7 +79,7 @@ const en: Messages = {
     welcomeBack: "Welcome back",
     signInSubtitle: "Sign in to complete your booking",
     createAccount: "Create your account",
-    createAccountSubtitle: "Join Flow Pilates to book reformer sessions",
+    createAccountSubtitle: "Join MeTi Pilates to book reformer sessions",
     continueGoogle: "Continue with Google",
     connecting: "Connecting…",
     orDivider: "or",

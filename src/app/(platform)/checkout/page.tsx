@@ -41,7 +41,7 @@ function CheckoutContent() {
   const [promotion, setPromotion] = useState<any>(null);
 
   const advisorId = searchParams.get("advisorId");
-  const advisorName = searchParams.get("advisorName") || "Flow Pilates";
+  const advisorName = searchParams.get("advisorName") || "MeTi Pilates";
   const serviceId = searchParams.get("serviceId");
   const rawServiceName = searchParams.get("serviceName") || "Service";
   const serviceName =

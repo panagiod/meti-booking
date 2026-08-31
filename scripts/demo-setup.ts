@@ -12,7 +12,7 @@ const DEMO_USERS = {
     role: "ADMIN" as const,
   },
   advisor: {
-    email: "instructor@flowpilates.studio",
+    email: "instructor@meti-pilates.studio",
     name: "Emma Rivera",
     role: "ADVISOR" as const,
   },
