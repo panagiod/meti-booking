@@ -208,7 +208,7 @@ Tunnel URL is **ephemeral** (`*.trycloudflare.com`) — dies when VM stops. See 
 | Payments | MP not connected — checkout shows "Payment unavailable" |
 | Stripe / Revolut + Apple/Google Pay | Planned (#2, #4, #5, #6, #7) |
 | Permanent hosting | #10 — Render blueprint in `render.yaml` |
-| OG image | `opengraph-image.tsx` still shows old "Meti advisory" branding |
+| OG image | ✅ MeTi Pilates reformer hero (`opengraph-image.tsx` + `public/og-image.png`) |
 | Guest checkout | #8 — not implemented |
 | Full Greek | Dashboard/legal pages still English |
 

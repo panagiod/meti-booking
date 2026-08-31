@@ -2,21 +2,19 @@ import { ImageResponse } from "next/og";
 import { join } from "node:path";
 import { readFile } from "node:fs/promises";
 
-export const alt = "Meti - Professional Online Advisory";
+export const alt = "MeTi Pilates — Book Reformer Sessions Online";
 export const size = {
   width: 1200,
   height: 630,
 };
 export const contentType = "image/png";
 
-const geistData = await readFile(
-  join(
-    process.cwd(),
-    "node_modules/.pnpm/next@16.3.0_@babel+core@7.29.7_@playwright+test@1.62.1_@types+node@20.19.43_react-dom@19.2.8_react@19.2.8__react@19.2.8/node_modules/next/dist/compiled/@vercel/og/Geist-Regular.ttf"
-  )
-);
-
 export default async function Image() {
+  const heroData = await readFile(
+    join(process.cwd(), "public/images/hero.jpg")
+  );
+  const heroSrc = `data:image/jpeg;base64,${heroData.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -24,99 +22,87 @@ export default async function Image() {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
-          fontFamily: "Geist",
-          color: "white",
+          position: "relative",
+          background: "#121110",
         }}
       >
+        <img
+          src={heroSrc}
+          alt=""
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center 30%",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(105deg, rgba(18,17,16,0.92) 0%, rgba(18,17,16,0.72) 42%, rgba(18,17,16,0.25) 100%)",
+          }}
+        />
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            padding: "60px 80px",
+            justifyContent: "center",
+            padding: "72px 80px",
+            position: "relative",
+            zIndex: 1,
+            color: "#fdfcfa",
+            maxWidth: "720px",
           }}
         >
           <div
             style={{
-              width: 100,
-              height: 100,
-              borderRadius: 24,
-              background: "linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 32,
-              fontSize: 48,
-              fontWeight: 400,
-              color: "white",
+              fontSize: 16,
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              color: "rgba(253,252,250,0.72)",
+              marginBottom: 20,
             }}
           >
-            M
+            Reformer pilates
           </div>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 80,
-              fontWeight: 400,
-              marginBottom: 16,
+              fontSize: 88,
+              fontWeight: 500,
+              lineHeight: 1.02,
               letterSpacing: "-0.03em",
+              fontFamily: "Georgia, serif",
             }}
           >
-            <span style={{ color: "#ff6b35" }}>Meti</span>
+            MeTi Pilates
+          </div>
+          <div
+            style={{
+              fontSize: 32,
+              marginTop: 24,
+              color: "rgba(253,252,250,0.9)",
+              lineHeight: 1.35,
+            }}
+          >
+            Book your session online
           </div>
           <div
             style={{
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 38,
-              fontWeight: 400,
-              marginBottom: 28,
-            }}
-          >
-            Professional Online Advisory
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 22,
-              color: "rgba(255,255,255,0.7)",
-              maxWidth: 650,
-              textAlign: "center",
-            }}
-          >
-            Connect with expert advisors. Video calls, chat, and complete session management.
-          </div>
-          <div
-            style={{
-              width: 100,
-              height: 4,
-              borderRadius: 2,
-              background: "linear-gradient(90deg, #ff6b35, #00d4aa)",
               marginTop: 36,
+              fontSize: 18,
+              color: "rgba(253,252,250,0.65)",
             }}
-          />
+          >
+            Tue, Thu, Sat · 2pm–5pm
+          </div>
         </div>
       </div>
     ),
-    {
-      ...size,
-      fonts: [
-        {
-          name: "Geist",
-          data: geistData,
-          style: "normal",
-          weight: 400,
-        },
-      ],
-    }
+    { ...size }
   );
 }
