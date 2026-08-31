@@ -23,9 +23,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Meti - Professional Online Advisory",
+  title: "Flow Pilates — Book Pilates Sessions Online",
   description:
-    "Connect with professional advisors online. Video calls, chat, and complete advisory session management.",
+    "Book mat, reformer, and private pilates sessions online. Choose your class, pick a time slot, and pay securely.",
   icons: {
     icon: [
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
@@ -36,18 +36,18 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   openGraph: {
-    title: "Meti - Professional Online Advisory",
+    title: "Flow Pilates — Book Pilates Sessions Online",
     description:
-      "Connect with professional advisors online. Video calls, chat, and complete advisory session management.",
-    siteName: "Meti",
+      "Book mat, reformer, and private pilates sessions online. Choose your class, pick a time slot, and pay securely.",
+    siteName: "Flow Pilates",
     type: "website",
     url: "https://meti.cognilab.dev",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Meti - Professional Online Advisory",
+    title: "Flow Pilates — Book Pilates Sessions Online",
     description:
-      "Connect with professional advisors online. Video calls, chat, and complete advisory session management.",
+      "Book mat, reformer, and private pilates sessions online. Choose your class, pick a time slot, and pay securely.",
   },
   metadataBase: new URL("https://meti.cognilab.dev"),
 };

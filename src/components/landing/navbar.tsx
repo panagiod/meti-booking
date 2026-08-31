@@ -29,7 +29,7 @@ export function Navbar() {
     });
   }, []);
 
-  const isServicesActive = pathname === "/services" || pathname.startsWith("/advisor/");
+  const isBookActive = pathname === "/book" || pathname.startsWith("/advisor/");
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -63,12 +63,8 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-3">
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <Button variant={isServicesActive ? "default" : "ghost"} size="sm" asChild>
-              <Link
-                href="/services"
-              >
-                Browse advisors
-              </Link>
+            <Button variant={isBookActive ? "default" : "ghost"} size="sm" asChild>
+              <Link href="/book">Book a session</Link>
             </Button>
           </nav>
           <ThemeToggle />
@@ -117,16 +113,16 @@ export function Navbar() {
       >
         <div className="container-meti py-4 space-y-3">
           <Link
-            href="/services"
+            href="/book"
             className={cn(
               "block py-2 text-sm font-medium transition-colors",
-              isServicesActive
+              isBookActive
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-secondary)] hover:text-[var(--primary)]"
             )}
             onClick={() => setMobileMenuOpen(false)}
           >
-            Browse advisors
+            Book a session
           </Link>
           <div className="pt-3 border-t border-[var(--border)] space-y-2">
             {user ? (

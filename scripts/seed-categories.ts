@@ -5,10 +5,10 @@ config({ path: resolve(__dirname, "../.env") });
 
 const categories = [
   {
-    name: "Legal",
-    slug: "legal",
-    description: "Lawyers, contracts, corporate law, labor law, civil law",
-    icon: "Scale",
+    name: "Pilates",
+    slug: "pilates",
+    description: "Mat, reformer, and private pilates sessions",
+    icon: "Heart",
     color: "#FF6B35",
   },
   {

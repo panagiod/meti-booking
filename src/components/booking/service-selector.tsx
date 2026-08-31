@@ -10,21 +10,25 @@ interface ServiceSelectorProps {
   services: Service[];
   selectedService: Service | null;
   onSelect: (service: Service) => void;
+  title?: string;
+  subtitle?: string;
 }
 
 export function ServiceSelector({
   services,
   selectedService,
   onSelect,
+  title = "Select a service",
+  subtitle = "Choose the session you need",
 }: ServiceSelectorProps) {
   return (
     <div className="space-y-4">
       <div>
         <h2 className="font-heading text-xl font-bold text-[var(--text-primary)]">
-          Select a service
+          {title}
         </h2>
         <p className="text-sm text-[var(--text-muted)] mt-1">
-          Choose the session you need
+          {subtitle}
         </p>
       </div>
 

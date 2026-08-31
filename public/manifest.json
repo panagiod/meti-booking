@@ -1,8 +1,8 @@
 {
-  "name": "Meti Booking",
-  "short_name": "Meti",
-  "description": "Professional online advisory — expert wisdom, one click away.",
-  "start_url": "/",
+  "name": "Flow Pilates",
+  "short_name": "Flow Pilates",
+  "description": "Book mat, reformer, and private pilates sessions online.",
+  "start_url": "/book",
   "display": "standalone",
   "background_color": "#fafafa",
   "theme_color": "#ff6b35",

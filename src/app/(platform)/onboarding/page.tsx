@@ -84,7 +84,7 @@ export default function OnboardingPage() {
           }
         }
 
-        const userWithRolee = data.user as any;
+        const userWithRole = data.user as any;
 
         // If there are no admins, always show onboarding
         // so the first user can choose to be admin
@@ -98,8 +98,8 @@ export default function OnboardingPage() {
         } catch {}
 
         // If admins exist and user has a role, redirect to the appropriate dashboard
-        if (userWithRolee.role) {
-          switch (userWithRolee.role) {
+        if (userWithRole.role) {
+          switch (userWithRole.role) {
             case "ADMIN":
               router.push("/admin");
               break;
@@ -491,7 +491,7 @@ export default function OnboardingPage() {
     );
   }
 
-  // Rolee selection step
+  // Role selection step
   return (
     <>
       <div className="min-h-screen bg-gradient-to-br from-[var(--secondary)] to-[var(--secondary-light)] flex items-center justify-center p-4">

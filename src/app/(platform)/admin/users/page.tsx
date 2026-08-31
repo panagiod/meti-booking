@@ -12,7 +12,7 @@ import { Search, Users, Mail } from "lucide-react";
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [roleFilter, setRoleeFilter] = useState("all");
+  const [roleFilter, setRoleFilter] = useState("all");
 
   const { data, isLoading } = useAdminUsers({
     role: roleFilter !== "all" ? roleFilter : undefined,
@@ -97,21 +97,21 @@ export default function UsersPage() {
               <Button
                 variant={roleFilter === "all" ? "default" : "secondary"}
                 size="sm"
-                onClick={() => setRoleeFilter("all")}
+                onClick={() => setRoleFilter("all")}
               >
                 All
               </Button>
               <Button
                 variant={roleFilter === "client" ? "default" : "secondary"}
                 size="sm"
-                onClick={() => setRoleeFilter("client")}
+                onClick={() => setRoleFilter("client")}
               >
                 Clients
               </Button>
               <Button
                 variant={roleFilter === "advisor" ? "default" : "secondary"}
                 size="sm"
-                onClick={() => setRoleeFilter("advisor")}
+                onClick={() => setRoleFilter("advisor")}
               >
                 Advisors
               </Button>

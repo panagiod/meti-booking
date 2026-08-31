@@ -1,41 +1,41 @@
 "use client";
 
-import { Search, Calendar, Video, Star } from "lucide-react";
+import { Calendar, Clock, CreditCard, Sparkles } from "lucide-react";
 
 const steps = [
   {
-    icon: Search,
+    icon: Sparkles,
     number: "01",
-    title: "Search",
+    title: "Pick a session",
     description:
-      "Browse advisors by category, price, or rating. Watch introduction videos and read reviews from other clients.",
+      "Choose mat, reformer, private, or duo — each with clear duration and pricing.",
     color: "var(--primary)",
     bgColor: "var(--primary-light)",
   },
   {
     icon: Calendar,
     number: "02",
-    title: "Book",
+    title: "Select a date",
     description:
-      "Select the service you need and choose an available time slot. Pay securely with Mercado Pago.",
+      "Browse the studio calendar and see which days have openings for your session type.",
     color: "var(--accent)",
     bgColor: "var(--accent-light)",
   },
   {
-    icon: Video,
+    icon: Clock,
     number: "03",
-    title: "Connect",
+    title: "Choose a time slot",
     description:
-      "Join the video call at the agreed time. Share documents via chat if needed.",
+      "Pick an available time that fits your schedule. Slots update in real time as others book.",
     color: "#8b5cf6",
     bgColor: "#ede9fe",
   },
   {
-    icon: Star,
+    icon: CreditCard,
     number: "04",
-    title: "Rate",
+    title: "Confirm & pay",
     description:
-      "After your session, rate your experience. Your feedback helps other clients choose.",
+      "Sign in, review your booking, and pay securely. You'll get a confirmation right away.",
     color: "var(--warning)",
     bgColor: "var(--warning-light)",
   },
@@ -47,17 +47,16 @@ export function HowItWorks() {
       <div className="container-meti">
         <div className="text-center mb-16">
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
-            How it works
+            How booking works
           </h2>
           <p className="text-lg text-[var(--text-muted)] max-w-2xl mx-auto">
-            Finding and booking a professional advisory session has never been easier.
+            Reserve your pilates session in four simple steps — no phone calls required.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
             <div key={step.number} className="relative group">
-              {/* Connector line */}
               {index < steps.length - 1 && (
                 <div className="hidden lg:block absolute top-10 left-[calc(50%+40px)] w-[calc(100%-80px)] h-0.5 bg-gradient-to-r from-[var(--border)] to-transparent">
                   <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-2 rotate-45 border-r border-t border-[var(--border)] bg-[var(--surface)]" />
@@ -65,7 +64,6 @@ export function HowItWorks() {
               )}
 
               <div className="text-center">
-                {/* Icon */}
                 <div className="relative inline-flex mb-6">
                   <div
                     className="flex items-center justify-center w-20 h-20 rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
@@ -81,7 +79,6 @@ export function HowItWorks() {
                   </span>
                 </div>
 
-                {/* Content */}
                 <h3 className="font-heading text-xl font-bold text-[var(--text-primary)] mb-2">
                   {step.title}
                 </h3>

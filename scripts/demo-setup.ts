@@ -12,8 +12,8 @@ const DEMO_USERS = {
     role: "ADMIN" as const,
   },
   advisor: {
-    email: "advisor@demo.meti-booking.local",
-    name: "Demo Advisor",
+    email: "instructor@flowpilates.studio",
+    name: "Emma Rivera",
     role: "ADVISOR" as const,
   },
   client: {
@@ -80,15 +80,29 @@ async function main() {
         advisor = await prisma.advisorProfile.create({
           data: {
             userId: user.id,
-            bio: "Demo advisor profile for showcasing the booking flow.",
+            bio: "Certified STOTT Pilates instructor with 8+ years teaching mat, reformer, and private sessions.",
+            speciality: "Pilates & Movement",
             isActive: true,
             isVerified: true,
             verificationStatus: "APPROVED",
+            bookingLeadHours: 2,
+          },
+        });
+      } else {
+        await prisma.advisorProfile.update({
+          where: { id: advisor.id },
+          data: {
+            bio: "Certified STOTT Pilates instructor with 8+ years teaching mat, reformer, and private sessions.",
+            speciality: "Pilates & Movement",
+            isActive: true,
+            isVerified: true,
+            verificationStatus: "APPROVED",
+            bookingLeadHours: 2,
           },
         });
       }
 
-      const category = await prisma.category.findUnique({ where: { slug: "legal" } });
+      const category = await prisma.category.findUnique({ where: { slug: "pilates" } });
       if (category) {
         await prisma.advisorCategory.deleteMany({ where: { advisorId: advisor.id } });
         await prisma.advisorCategory.create({
@@ -97,38 +111,71 @@ async function main() {
       }
 
       await prisma.advisorSchedule.deleteMany({ where: { advisorId: advisor.id } });
+      // Mon–Fri: 6am–8pm with lunch break
       for (let dayOfWeek = 1; dayOfWeek <= 5; dayOfWeek++) {
         await prisma.advisorSchedule.create({
           data: {
             advisorId: advisor.id,
             dayOfWeek,
-            startTime: "09:00",
-            endTime: "17:00",
+            startTime: "06:00",
+            endTime: "20:00",
             lunchStart: "12:00",
             lunchEnd: "13:00",
-            gapMinutes: 15,
+            gapMinutes: 10,
           },
         });
       }
+      // Saturday: 8am–2pm
+      await prisma.advisorSchedule.create({
+        data: {
+          advisorId: advisor.id,
+          dayOfWeek: 6,
+          startTime: "08:00",
+          endTime: "14:00",
+          lunchStart: null,
+          lunchEnd: null,
+          gapMinutes: 10,
+        },
+      });
 
       await prisma.advisorService.deleteMany({ where: { advisorId: advisor.id } });
       await prisma.advisorService.createMany({
         data: [
           {
             advisorId: advisor.id,
-            name: "Strategic Consulting",
-            description: "60-minute strategy session for demo bookings.",
-            durationMin: 60,
-            priceCents: 100000,
+            name: "Mat Pilates",
+            description: "Core-focused group mat class. All levels welcome.",
+            durationMin: 55,
+            priceCents: 2800,
             isActive: true,
+            categoryId: category?.id,
           },
           {
             advisorId: advisor.id,
-            name: "Quick Q&A",
-            description: "30-minute focused advisory call.",
-            durationMin: 30,
-            priceCents: 50000,
+            name: "Reformer Session",
+            description: "Equipment-based full-body workout on the reformer.",
+            durationMin: 50,
+            priceCents: 4500,
             isActive: true,
+            categoryId: category?.id,
+          },
+          {
+            advisorId: advisor.id,
+            name: "Private Session",
+            description: "One-on-one tailored instruction for your goals.",
+            durationMin: 60,
+            priceCents: 7500,
+            isActive: true,
+            categoryId: category?.id,
+          },
+          {
+            advisorId: advisor.id,
+            name: "Duo Session",
+            description: "Semi-private session for you and a friend.",
+            durationMin: 60,
+            priceCents: 5500,
+            isActive: true,
+            categoryId: category?.id,
           },
         ],
       });

@@ -1,13 +1,16 @@
 import { cn } from "@/lib/utils";
+import { siteConfig } from "@/lib/site-config";
 
 // Inline logo wordmark with theme-adaptive color (currentColor)
 export function Logo({ className }: { className?: string }) {
+  const initial = siteConfig.name.charAt(0);
+
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 200 48"
+      viewBox="0 0 220 48"
       className={cn("text-[var(--text-primary)]", className)}
-      aria-label="Meti"
+      aria-label={siteConfig.name}
       role="img"
     >
       <rect x="0" y="4" width="40" height="40" rx="8" fill="#ff6b35" />
@@ -20,7 +23,7 @@ export function Logo({ className }: { className?: string }) {
         fontWeight="800"
         fontSize="24"
       >
-        M
+        {initial}
       </text>
       <text
         x="52"
@@ -28,9 +31,9 @@ export function Logo({ className }: { className?: string }) {
         fill="currentColor"
         fontFamily="system-ui,sans-serif"
         fontWeight="700"
-        fontSize="28"
+        fontSize="22"
       >
-        Meti
+        {siteConfig.name}
       </text>
     </svg>
   );

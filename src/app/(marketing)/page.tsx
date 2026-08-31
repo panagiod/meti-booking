@@ -1,15 +1,17 @@
 import { Hero } from "@/components/landing/hero";
-import { Categories } from "@/components/landing/categories";
+import { SessionTypes } from "@/components/landing/session-types";
 import { HowItWorks } from "@/components/landing/how-it-works";
-import { CTAAdvisor } from "@/components/landing/cta-advisor";
+import { StudioInfo } from "@/components/landing/studio-info";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <Categories />
+      <div id="sessions">
+        <SessionTypes />
+      </div>
       <HowItWorks />
-      <CTAAdvisor />
+      <StudioInfo />
     </>
   );
 }
