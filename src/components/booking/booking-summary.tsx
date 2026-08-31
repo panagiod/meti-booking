@@ -36,16 +36,14 @@ export function BookingSummary({
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="font-heading text-xl font-bold text-[var(--text-primary)]">
-          Booking summary
+        <h2 className="font-heading text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
+          Confirm booking
         </h2>
-        <p className="text-sm text-[var(--text-muted)] mt-1">
-          Review the details before confirming
-        </p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">Review your session details</p>
       </div>
 
-      <Card>
-        <CardContent className="p-6 space-y-4">
+      <Card className="border-[var(--border)] shadow-none">
+        <CardContent className="space-y-4 p-6">
           {/* Service */}
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-lg bg-[var(--primary-light)] flex items-center justify-center flex-shrink-0">

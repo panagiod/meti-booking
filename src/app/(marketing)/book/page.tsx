@@ -2,35 +2,23 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { RatingStars } from "@/components/ui/rating-stars";
-import { VerifiedBadge } from "@/components/ui/verified-badge";
+import Link from "next/link";
 import { ServiceSelector } from "@/components/booking/service-selector";
 import { CalendarPicker } from "@/components/booking/calendar-picker";
 import { TimeSlotPicker } from "@/components/booking/time-slot-picker";
 import { BookingSummary } from "@/components/booking/booking-summary";
+import { BookingSteps } from "@/components/booking/booking-steps";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { LoadingPage } from "@/components/ui/loading";
 import { authClient } from "@/lib/auth-client";
 import { getAvailableDates, type TimeSlot } from "@/lib/slots";
 import { siteConfig } from "@/lib/site-config";
-import { ArrowLeft, MapPin } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface Advisor {
   id: string;
   name: string;
-  image: string | null;
-  speciality: string | null;
-  bio: string | null;
-  isVerified: boolean;
-  mpMode: string;
-  bookingLeadHours: number;
-  rating: number;
-  reviewCount: number;
-  categories: string[];
   services: Array<{
     id: string;
     name: string;
@@ -47,6 +35,7 @@ interface Advisor {
     lunchEnd: string | null;
     gapMinutes: number;
   }>;
+  bookingLeadHours: number;
 }
 
 export default function BookPage() {
@@ -69,20 +58,19 @@ export default function BookPage() {
     try {
       const studioRes = await fetch("/api/studio");
       if (!studioRes.ok) {
-        setLoadError("The studio is not set up yet. Please run the demo setup script.");
+        setLoadError("Studio not available. Please try again later.");
         return;
       }
       const { studio } = await studioRes.json();
       const advisorRes = await fetch(`/api/advisors/${studio.advisorId}`);
       if (!advisorRes.ok) {
-        setLoadError("Could not load instructor schedule.");
+        setLoadError("Could not load schedule.");
         return;
       }
       const data = await advisorRes.json();
       setAdvisor(data.advisor);
-    } catch (error) {
-      console.error("Error loading studio:", error);
-      setLoadError("Something went wrong loading the booking page.");
+    } catch {
+      setLoadError("Something went wrong. Please refresh the page.");
     } finally {
       setIsLoading(false);
     }
@@ -124,7 +112,7 @@ export default function BookPage() {
               };
             }
           } catch {
-            // ignore per-day fetch errors
+            // ignore
           }
         })
       );
@@ -217,136 +205,74 @@ export default function BookPage() {
 
   if (loadError || !advisor) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <p className="text-[var(--text-muted)] text-center max-w-md">
-          {loadError || "Studio not available"}
-        </p>
+      <div className="flex min-h-[60vh] items-center justify-center px-5">
+        <p className="text-center text-[var(--text-muted)]">{loadError || "Studio not available"}</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="min-h-screen bg-[var(--background)]">
-        <div className="border-b border-[var(--border)] bg-[var(--surface)]">
-          <div className="container-meti py-6">
-            <h1 className="font-heading text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
-              Book a pilates session
-            </h1>
-            <p className="text-sm text-[var(--text-muted)] mt-1">
-              {siteConfig.name} · {siteConfig.location}
-            </p>
-          </div>
-        </div>
-
-        {step !== "service" && (
-          <div className="sticky top-16 z-30 bg-[var(--surface)]/80 backdrop-blur-lg border-b border-[var(--border)]">
-            <div className="container-meti flex items-center h-12">
-              <Button variant="ghost" size="sm" onClick={handleBack}>
-                <ArrowLeft className="w-4 h-4 mr-2" />
+      <div className="min-h-screen bg-[var(--background)] pt-24 pb-16">
+        <div className="mx-auto max-w-lg px-5 sm:px-8">
+          <div className="mb-8 flex items-center justify-between">
+            {step !== "service" ? (
+              <button
+                type="button"
+                onClick={handleBack}
+                className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4" />
                 Back
-              </Button>
-            </div>
+              </button>
+            ) : (
+              <Link
+                href="/"
+                className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Home
+              </Link>
+            )}
+            <p className="text-xs text-[var(--text-muted)]">{siteConfig.location}</p>
           </div>
-        )}
 
-        <div className="container-meti py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-1 space-y-6">
-              <Card className="relative overflow-hidden">
-                {advisor.mpMode === "TEST" && (
-                  <div className="absolute top-3.5 -right-8 z-10 rotate-45 bg-[var(--warning)] text-white text-[10px] font-bold px-8 py-0.5 shadow-md pointer-events-none">
-                    DEMO
-                  </div>
-                )}
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-full bg-[var(--primary-light)] flex items-center justify-center shrink-0">
-                      <span className="text-xl font-bold text-[var(--primary)]">
-                        {advisor.name?.charAt(0) || "F"}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h2 className="font-heading text-xl font-bold text-[var(--text-primary)]">
-                          {advisor.name}
-                        </h2>
-                        {advisor.isVerified && <VerifiedBadge isVerified size="sm" />}
-                      </div>
-                      <p className="text-[var(--text-muted)]">
-                        {advisor.speciality || "Certified Pilates Instructor"}
-                      </p>
-                      <RatingStars
-                        rating={advisor.rating}
-                        showValue
-                        size="sm"
-                        reviewCount={advisor.reviewCount}
-                        className="mt-2"
-                      />
-                    </div>
-                  </div>
+          <BookingSteps current={step} />
 
-                  <div className="mt-4 flex items-center gap-2 text-sm text-[var(--text-muted)]">
-                    <MapPin className="w-4 h-4" />
-                    In-studio at {siteConfig.location}
-                  </div>
+          <div className="mt-10">
+            {step === "service" && (
+              <ServiceSelector
+                services={advisor.services}
+                selectedService={selectedService}
+                onSelect={handleServiceSelect}
+              />
+            )}
 
-                  {advisor.bio && (
-                    <p className="mt-4 text-sm text-[var(--text-secondary)] leading-relaxed">
-                      {advisor.bio}
-                    </p>
-                  )}
+            {step === "date" && selectedService && (
+              <CalendarPicker
+                availableDates={mergedDates.length ? mergedDates : availableDates}
+                selectedDate={selectedDate}
+                onSelect={handleDateSelect}
+              />
+            )}
 
-                  {advisor.categories.length > 0 && (
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {advisor.categories.map((cat) => (
-                        <Badge key={cat} variant="secondary" className="text-xs">
-                          {cat}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
+            {step === "time" && selectedDaySlots && (
+              <TimeSlotPicker
+                daySlots={selectedDaySlots}
+                selectedTime={selectedTime}
+                onSelect={handleTimeSelect}
+              />
+            )}
 
-            <div className="lg:col-span-2">
-              {step === "service" && (
-                <ServiceSelector
-                  services={advisor.services}
-                  selectedService={selectedService}
-                  onSelect={handleServiceSelect}
-                  title="Select a session"
-                  subtitle="Choose the pilates session you'd like to book"
-                />
-              )}
-
-              {step === "date" && selectedService && (
-                <CalendarPicker
-                  availableDates={availableDates}
-                  selectedDate={selectedDate}
-                  onSelect={handleDateSelect}
-                />
-              )}
-
-              {step === "time" && selectedDaySlots && (
-                <TimeSlotPicker
-                  daySlots={selectedDaySlots}
-                  selectedTime={selectedTime}
-                  onSelect={handleTimeSelect}
-                />
-              )}
-
-              {step === "summary" && selectedDaySlots && selectedTime && selectedService && (
-                <BookingSummary
-                  service={selectedService}
-                  daySlots={selectedDaySlots}
-                  time={selectedTime}
-                  onConfirm={handleConfirm}
-                  isProcessing={isProcessing}
-                />
-              )}
-            </div>
+            {step === "summary" && selectedDaySlots && selectedTime && selectedService && (
+              <BookingSummary
+                service={selectedService}
+                daySlots={selectedDaySlots}
+                time={selectedTime}
+                onConfirm={handleConfirm}
+                isProcessing={isProcessing}
+              />
+            )}
           </div>
         </div>
       </div>

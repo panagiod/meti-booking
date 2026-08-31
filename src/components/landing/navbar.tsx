@@ -1,152 +1,82 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { Menu, X, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { cn } from "@/lib/utils";
-import { authClient } from "@/lib/auth-client";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Logo } from "@/components/ui/logo";
+import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 export function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const [user, setUser] = useState<{ role?: string } | null>(null);
+  const isHome = pathname === "/";
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     authClient.getSession().then(({ data }) => {
-      if (data) setUser(data.user);
+      if (data?.user) setUser(data.user as { role?: string });
     });
   }, []);
 
-  const isBookActive = pathname === "/book" || pathname.startsWith("/advisor/");
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-  const handleSignOut = async () => {
-    await authClient.signOut();
-    setUser(null);
-    router.push("/");
-  };
+  const dashboardHref =
+    user?.role === "ADMIN" ? "/admin" : user?.role === "ADVISOR" ? "/advisor" : "/dashboard";
 
-  const getDashboardHref = () => {
-    const role = user?.role;
-    if (role === "ADMIN") return "/admin";
-    if (role === "ADVISOR") return "/advisor";
-    return "/dashboard";
-  };
+  const onHero = isHome && !scrolled;
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300",
-        isScrolled
-          ? "border-b border-[var(--border)] bg-[var(--surface)]/95 backdrop-blur-lg shadow-sm"
-          : "bg-transparent"
+        "fixed top-0 inset-x-0 z-50 transition-all duration-300",
+        onHero
+          ? "bg-transparent"
+          : "bg-[var(--surface)]/90 backdrop-blur-md border-b border-[var(--border)]"
       )}
     >
-      <div className="container-meti flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
-          <Logo className="h-10 w-auto" />
-        </Link>
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+        <Logo variant={onHero ? "light" : "default"} />
 
-
-        {/* Desktop Actions */}
-        <div className="hidden md:flex items-center gap-3">
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
-            <Button variant={isBookActive ? "default" : "ghost"} size="sm" asChild>
-              <Link href="/book">Book a session</Link>
-            </Button>
-          </nav>
-          <ThemeToggle />
+        <nav className="flex items-center gap-3 sm:gap-6">
           {user ? (
-            <>
-              <Button variant="secondary" size="sm" asChild>
-                <Link href={getDashboardHref()}>My dashboard</Link>
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                <LogOut className="w-4 h-4 mr-1" />
-                Sign out
-              </Button>
-            </>
+            <Link
+              href={dashboardHref}
+              className={cn(
+                "text-sm font-medium transition-colors",
+                onHero ? "text-white/90 hover:text-white" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              Account
+            </Link>
           ) : (
-            <>
-              <Button variant="secondary" size="sm" asChild>
-                <Link href="/login">Sign in</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/register">Sign up</Link>
-              </Button>
-            </>
+            <Link
+              href="/login"
+              className={cn(
+                "text-sm font-medium transition-colors",
+                onHero ? "text-white/90 hover:text-white" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+              )}
+            >
+              Sign in
+            </Link>
           )}
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-        >
-          {mobileMenuOpen ? (
-            <X className="w-5 h-5" />
-          ) : (
-            <Menu className="w-5 h-5" />
-          )}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      <div
-        className={cn(
-          "md:hidden border-t border-[var(--border)] bg-[var(--surface)] overflow-hidden transition-all duration-300",
-          mobileMenuOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
-        )}
-      >
-        <div className="container-meti py-4 space-y-3">
           <Link
             href="/book"
             className={cn(
-              "block py-2 text-sm font-medium transition-colors",
-              isBookActive
-                ? "text-[var(--primary)]"
-                : "text-[var(--text-secondary)] hover:text-[var(--primary)]"
+              "rounded-full px-5 py-2 text-sm font-medium transition-all",
+              onHero
+                ? "bg-white text-[var(--secondary)] hover:bg-white/90"
+                : "bg-[var(--primary)] text-white hover:bg-[var(--primary-hover)]"
             )}
-            onClick={() => setMobileMenuOpen(false)}
           >
-            Book a session
+            Book
           </Link>
-          <div className="pt-3 border-t border-[var(--border)] space-y-2">
-            {user ? (
-              <>
-                <Button variant="secondary" className="w-full" asChild>
-                  <Link href={getDashboardHref()} onClick={() => setMobileMenuOpen(false)}>My dashboard</Link>
-                </Button>
-                <Button variant="ghost" className="w-full" onClick={() => { handleSignOut(); setMobileMenuOpen(false); }}>
-                  <LogOut className="w-4 h-4 mr-1" />
-                  Sign out
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="secondary" className="w-full" asChild>
-                  <Link href="/login">Sign in</Link>
-                </Button>
-                <Button className="w-full" asChild>
-                  <Link href="/register">Sign up</Link>
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
+        </nav>
       </div>
     </header>
   );

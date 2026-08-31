@@ -37,16 +37,14 @@ export function CalendarPicker({
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="font-heading text-xl font-bold text-[var(--text-primary)]">
-          Select a date
+        <h2 className="font-heading text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
+          Pick a date
         </h2>
-        <p className="text-sm text-[var(--text-muted)] mt-1">
-          Choose the day for your session
-        </p>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">When would you like to come in?</p>
       </div>
 
-      <Card>
-        <CardContent className="p-4">
+      <Card className="border-[var(--border)] shadow-none">
+        <CardContent className="p-4 sm:p-5">
           {/* Month navigation */}
           <div className="flex items-center justify-between mb-4">
             <Button

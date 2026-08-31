@@ -70,8 +70,8 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "Meti",
-              description: "Professional online advisory platform. Connect with expert advisors via video call.",
+              name: "Flow Pilates",
+              description: "Book reformer and mat pilates sessions online.",
               url: "https://meti.cognilab.dev",
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",

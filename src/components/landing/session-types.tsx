@@ -1,56 +1,47 @@
-"use client";
-
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Clock, DollarSign } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 
 export function SessionTypes() {
   return (
-    <section className="py-20 bg-[var(--background)]">
-      <div className="container-meti">
-        <div className="text-center mb-12">
-          <h2 className="font-heading text-3xl md:text-4xl font-bold text-[var(--text-primary)] mb-4">
-            Choose your session
+    <section id="sessions" className="bg-[var(--background)] py-20 sm:py-28">
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="mb-12 max-w-lg">
+          <h2 className="font-heading text-3xl font-semibold tracking-tight text-[var(--text-primary)] sm:text-4xl">
+            Sessions
           </h2>
-          <p className="text-lg text-[var(--text-muted)] max-w-2xl mx-auto">
-            Mat, reformer, private, and duo sessions — all bookable online with real-time availability.
+          <p className="mt-3 text-[var(--text-muted)]">
+            Mat, reformer, private, and duo — all bookable online with live availability.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {siteConfig.sessionTypes.map((session, index) => (
-            <Link key={session.slug} href="/book" className="group">
-              <div
-                className="p-6 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full"
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <h3 className="font-heading font-semibold text-lg text-[var(--text-primary)] mb-2">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {siteConfig.sessionTypes.map((session) => (
+            <Link
+              key={session.slug}
+              href="/book"
+              className="group overflow-hidden rounded-2xl bg-[var(--surface)] shadow-sm ring-1 ring-[var(--border)] transition hover:shadow-md hover:ring-[var(--primary)]/30"
+            >
+              <div className="relative aspect-[4/3] overflow-hidden">
+                <Image
+                  src={siteConfig.images[session.imageKey]}
+                  alt={session.name}
+                  fill
+                  className="object-cover transition duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, 25vw"
+                />
+              </div>
+              <div className="p-5">
+                <h3 className="font-heading text-lg font-semibold text-[var(--text-primary)]">
                   {session.name}
                 </h3>
-                <p className="text-sm text-[var(--text-muted)] mb-4">{session.description}</p>
-                <div className="flex items-center gap-4 text-xs text-[var(--text-secondary)]">
-                  <span className="inline-flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    {session.duration}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <DollarSign className="w-3.5 h-3.5" />
-                    from ${session.priceFrom}
-                  </span>
-                </div>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">{session.description}</p>
+                <p className="mt-3 text-sm font-medium text-[var(--primary)]">
+                  {session.duration} · from ${session.priceFrom}
+                </p>
               </div>
             </Link>
           ))}
-        </div>
-
-        <div className="text-center mt-10">
-          <Link
-            href="/book"
-            className="inline-flex items-center gap-2 text-[var(--primary)] font-semibold hover:gap-3 transition-all duration-300"
-          >
-            Book a session
-            <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
       </div>
     </section>

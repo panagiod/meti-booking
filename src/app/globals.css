@@ -7,31 +7,28 @@
    ============================================ */
 
 :root {
-  /* Primary Colors */
-  --primary: #ff6b35;
-  --primary-hover: #e55a2b;
-  --primary-light: #fff3ed;
-  --primary-dark: #cc5229;
+  /* Pilates studio palette — sage, cream, warm charcoal */
+  --primary: #5c6b5c;
+  --primary-hover: #4a574a;
+  --primary-light: #eef1ec;
+  --primary-dark: #3d483d;
 
-  /* Secondary Colors */
-  --secondary: #1a1a2e;
-  --secondary-light: #2d2d44;
-  --secondary-dark: #0f0f1a;
+  --secondary: #2a2926;
+  --secondary-light: #3d3b37;
+  --secondary-dark: #1a1917;
 
-  /* Accent Colors */
-  --accent: #00d4aa;
-  --accent-hover: #00b894;
-  --accent-light: #e6faf5;
-  --accent-dark: #00a88a;
+  --accent: #a68b6a;
+  --accent-hover: #92785a;
+  --accent-light: #f3ede6;
+  --accent-dark: #7a6349;
 
-  /* Neutral Colors */
-  --background: #fafafa;
+  --background: #f8f6f2;
   --surface: #ffffff;
-  --border: #e5e7eb;
-  --border-light: #f3f4f6;
-  --text-primary: #1a1a2e;
-  --text-secondary: #4b5563;
-  --text-muted: #6b7280;
+  --border: #e8e4dc;
+  --border-light: #f0ece6;
+  --text-primary: #2a2926;
+  --text-secondary: #5c5852;
+  --text-muted: #8a847c;
 
   /* Semantic Colors */
   --success: #10b981;
@@ -71,8 +68,8 @@
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.06);
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.2);
-  --shadow-primary: 0 4px 14px 0 rgb(255 107 53 / 0.35);
-  --shadow-accent: 0 4px 14px 0 rgb(0 212 170 / 0.35);
+  --shadow-primary: 0 4px 14px 0 rgb(92 107 92 / 0.2);
+  --shadow-accent: 0 4px 14px 0 rgb(166 139 106 / 0.25);
 
   /* Transitions */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);

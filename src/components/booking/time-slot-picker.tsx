@@ -24,16 +24,16 @@ export function TimeSlotPicker({
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="font-heading text-xl font-bold text-[var(--text-primary)]">
-          Select a time
+        <h2 className="font-heading text-2xl font-semibold tracking-tight text-[var(--text-primary)]">
+          Pick a time
         </h2>
-        <p className="text-sm text-[var(--text-muted)] mt-1">
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           {format(daySlots.date, "EEEE, MMMM d", { locale: enUS })}
         </p>
       </div>
 
-      <Card>
-        <CardContent className="p-4">
+      <Card className="border-[var(--border)] shadow-none">
+        <CardContent className="p-4 sm:p-5">
           {availableSlots.length > 0 ? (
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {availableSlots.map((slot) => {

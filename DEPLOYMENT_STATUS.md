@@ -1,10 +1,18 @@
-# Live Demo Deployment
+# Live Demo Deployment — Flow Pilates
 
 ## Current public demo (Cloudflare Tunnel)
 
-**URL:** https://sin-building-cardiovascular-lifetime.trycloudflare.com
+**Homepage:** https://sin-building-cardiovascular-lifetime.trycloudflare.com  
+**Book sessions:** https://sin-building-cardiovascular-lifetime.trycloudflare.com/book
 
-> ⚠️ This is a temporary `*.trycloudflare.com` URL. It stays up while this cloud agent VM is running. For a permanent free hostname, use Render or Vercel (below).
+> ⚠️ Temporary `*.trycloudflare.com` URL — stays up while this cloud agent VM is running.
+
+### Customer booking flow
+
+1. Open **/book**
+2. Choose a session type (Mat, Reformer, Private, Duo)
+3. Pick a date and available time slot
+4. Sign in and confirm booking
 
 ### Demo accounts
 
@@ -12,9 +20,9 @@ Password for all: `Demo1234!`
 
 | Role | Email |
 |---|---|
-| Admin | `admin@demo.meti-booking.local` |
-| Advisor | `advisor@demo.meti-booking.local` |
 | Client | `client@demo.meti-booking.local` |
+| Instructor | `instructor@flowpilates.studio` |
+| Admin | `admin@demo.meti-booking.local` |
 
 ### What works
 
