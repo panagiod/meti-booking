@@ -1,0 +1,493 @@
+// Prisma schema for Meti - Professional Advisory Platform
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// AUTH & USERS (compatible with better-auth)
+// ============================================
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          UserRole  @default(CLIENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  admin         AdminProfile?
+  advisor       AdvisorProfile?
+  client        ClientProfile?
+  sessions      Session[]
+  accounts      Account[]
+  appointments  Appointment[] @relation("ClientAppointments")
+  blogPosts     BlogPost[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  ADVISOR
+  CLIENT
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+// ============================================
+// METI CUSTOM MODELS
+// ============================================
+
+model AdminProfile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  level     String  @default("GESTOR") // "SUPERADMIN" | "GESTOR"
+  createdAt DateTime @default(now())
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admin_profiles")
+}
+
+// ============================================
+// ADVISOR
+// ============================================
+
+model AdvisorProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  bio             String?  @db.Text
+  speciality      String?  // Deprecated: use categories instead
+  videoUrl        String?  // Video de presentación
+  isActive        Boolean  @default(true)
+  isHidden        Boolean  @default(false) // Asesor se oculta del listado público
+  
+  // Verification fields
+  isVerified      Boolean  @default(false)
+  verificationStatus String @default("NONE") // NONE | PENDING_AI | PENDING_MANUAL | APPROVED | REJECTED
+  verificationNotes String? @db.Text
+
+  // Booking
+  bookingLeadHours Int      @default(24) // Anticipación mínima para agendar (horas)
+
+  // Contact (admin only)
+  whatsappPhone    String?  // Teléfono de WhatsApp para contacto admin
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Mercado Pago credentials
+  mpMode          String   @default("PRODUCTION") // "TEST" | "PRODUCTION"
+  mpPublicKey     String?
+  mpAccessToken   String?  // Encrypted
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services        AdvisorService[]
+  schedule        AdvisorSchedule[]
+  promotions      Promotion[]
+  appointments    Appointment[]
+  documents       AdvisorDocument[]
+  invoices        Invoice[]
+  categories      AdvisorCategory[]
+  blockedTimes    BlockedTime[]
+
+  @@map("advisor_profiles")
+}
+
+// ============================================
+// CATEGORIES (Rubros de experticia)
+// ============================================
+
+model Category {
+  id                String   @id @default(cuid())
+  name              String   @unique // "Legal", "Finanzas", "Salud"
+  slug              String   @unique // "legal", "finanzas", "salud"
+  description       String?  @db.Text
+  icon              String?  // Icon name from lucide
+  color             String?  // Hex color
+  
+  // Pricing configuration per category
+  minimumPriceCents Int      @default(10000) // $100 minimum in cents
+  feePercentage     Float    @default(15.0)  // 15% platform fee
+  maxFeeCents       Int      @default(100000) // Fee máximo $1,000 en centavos
+  
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  advisors          AdvisorCategory[]
+  services          AdvisorService[]
+
+  @@map("categories")
+}
+
+model AdvisorCategory {
+  id          String   @id @default(cuid())
+  advisorId   String
+  categoryId  String
+  createdAt   DateTime @default(now())
+
+  advisor     AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([advisorId, categoryId])
+  @@map("advisor_categories")
+}
+
+// ============================================
+// BLOCKED TIMES (Vacaciones, bloqueos, etc.)
+// ============================================
+
+model BlockedTime {
+  id            String   @id @default(cuid())
+  advisorId     String
+  title         String   // "Vacaciones", "Día personal", "Bloqueo médico"
+  startDate     DateTime // Fecha/hora inicio
+  endDate       DateTime // Fecha/hora fin
+  isAllDay      Boolean  @default(true) // Si es todo el día o horario específico
+  reason        String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  advisor       AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+
+  @@index([advisorId, startDate, endDate])
+  @@map("blocked_times")
+}
+
+// ============================================
+// SERVICES
+// ============================================
+
+model AdvisorService {
+  id                  String   @id @default(cuid())
+  advisorId           String
+  categoryId          String?  // Rubro del servicio (define fee y precio mínimo)
+  name                String   // "Consulta General"
+  description         String?  @db.Text
+  durationMin         Int      // 30, 60, 90, 120...
+  priceCents          Int      // What advisor wants to earn (in cents)
+  rescheduleHoursMin  Int      @default(24) // Minimum hours to reschedule
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  advisor             AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+  category            Category?      @relation(fields: [categoryId], references: [id])
+  appointments        Appointment[]
+  promotions          Promotion[]
+
+  @@map("advisor_services")
+}
+
+// ============================================
+// SCHEDULE (Recurring by day of week)
+// ============================================
+
+model AdvisorSchedule {
+  id            String   @id @default(cuid())
+  advisorId     String
+  dayOfWeek     Int      // 0=Sun, 1=Mon, 2=Tue... 6=Sat
+  startTime     String   // "09:00"
+  endTime       String   // "17:00"
+  lunchStart    String?  // "12:00"
+  lunchEnd      String?  // "13:00"
+  gapMinutes    Int      @default(15) // Gap between appointments
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  advisor       AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+
+  @@unique([advisorId, dayOfWeek])
+  @@map("advisor_schedules")
+}
+
+// ============================================
+// DOCUMENTS FOR VERIFICATION
+// ============================================
+
+model AdvisorDocument {
+  id            String   @id @default(cuid())
+  advisorId     String
+  documentType  String   // "CERTIFICATE" | "LICENSE" | "DEGREE" | "RESUME" | "OTHER"
+  fileName      String
+  fileUrl       String
+  fileSize      Int      // in bytes
+  mimeType      String   // "application/pdf", "image/jpeg", etc.
+  
+  // AI Analysis
+  aiAnalysis    String?  @db.Text // JSON with AI analysis results
+  aiScore       Float?   // 0-100 confidence score
+  aiStatus      String?  // "PENDING" | "COMPLETED" | "FAILED"
+  
+  // Manual Verification
+  verifiedBy    String?  // Admin user ID
+  verifiedAt    DateTime?
+  manualStatus  String?  // "APPROVED" | "REJECTED"
+  rejectionReason String? @db.Text
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  advisor       AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+
+  @@map("advisor_documents")
+}
+
+// ============================================
+// PROMOTIONS
+// ============================================
+
+model Promotion {
+  id            String   @id @default(cuid())
+  advisorId     String
+  serviceId     String
+  name          String   // "Black Friday Legal"
+  discountType  String   // "percentage" | "fixed"
+  discountValue Float    // 20 (percentage) or 10000 (fixed amount in cents)
+  startAt       DateTime
+  endAt         DateTime
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  advisor       AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+  service       AdvisorService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("promotions")
+}
+
+// ============================================
+// INVOICING (facturación mensual de fees)
+// ============================================
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+}
+
+model Invoice {
+  id                 String        @id @default(cuid())
+  advisorId          String
+  periodStart        DateTime      // Inicio del período (primer día del mes)
+  periodEnd          DateTime      // Fin del período (último día del mes)
+  totalFeeCents      Int           // Suma de platformFee de las citas del mes
+  totalEarningsCents Int           // Suma de advisorEarning de las citas del mes
+  appointmentCount   Int
+  status             InvoiceStatus @default(PENDING)
+  paidAt             DateTime?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  advisor            AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+
+  @@unique([advisorId, periodStart, periodEnd])
+  @@map("invoices")
+}
+
+// ============================================
+// CLIENT
+// ============================================
+
+model ClientProfile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("client_profiles")
+}
+
+// ============================================
+// APPOINTMENTS
+// ============================================
+
+model Appointment {
+  id              String            @id @default(cuid())
+  clientId        String
+  advisorId       String
+  serviceId       String
+  scheduledAt     DateTime          // Date and time of appointment
+  durationMin     Int
+  status          AppointmentStatus @default(PENDING)
+
+  // Payment
+  totalCents      Int               // Final price (service + fee)
+  advisorEarning  Int               // What advisor earns
+  platformFee     Int               // Platform fee
+  discountCents   Int  @default(0)  // Descuento aplicado (promoción)
+  isTest          Boolean @default(false) // Cita creada en modo prueba MP
+  paymentId       String?           // Mercado Pago payment ID
+  mpPreferenceId  String?           // Mercado Pago preference ID (Checkout Pro)
+
+  // LiveKit
+  liveKitRoomId   String?
+  recordingUrl    String?
+  recordingEgressId String?          // Egress activo de LiveKit (grabación en curso)
+
+  // AI Notes
+  transcript      String?           @db.Text  // Transcripción completa de la llamada
+  summary         String?           @db.Text  // Resumen generado por IA
+
+  // Cancellation
+  cancelReason    String?
+  cancelledAt     DateTime?
+
+  // Notifications
+  reminderSentAt  DateTime?          // Último recordatorio enviado (cron 24h)
+
+  // Timestamps
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  client          User              @relation("ClientAppointments", fields: [clientId], references: [id])
+  advisor         AdvisorProfile    @relation(fields: [advisorId], references: [id])
+  service         AdvisorService    @relation(fields: [serviceId], references: [id])
+  review          Review?
+  chatMessages    ChatMessage[]
+
+  @@map("appointments")
+}
+
+enum AppointmentStatus {
+  PENDING         // Waiting for payment
+  CONFIRMED       // Payment received, confirmed
+  IN_PROGRESS     // In videocall
+  COMPLETED       // Advisory completed
+  CANCELLED       // Cancelled
+  NO_SHOW         // Client didn't show up
+}
+
+// ============================================
+// REVIEWS
+// ============================================
+
+model Review {
+  id            String   @id @default(cuid())
+  appointmentId String   @unique
+  rating        Int      // 1-5
+  comment       String?  @db.Text
+  createdAt     DateTime @default(now())
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+// ============================================
+// CHAT PERSISTENTE (videollamada)
+// ============================================
+
+model ChatMessage {
+  id            String   @id @default(cuid())
+  appointmentId String
+  senderId      String
+  senderName    String
+  senderRole    String   // "advisor" | "client"
+  body          String   @db.Text
+  createdAt     DateTime @default(now())
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@index([appointmentId, createdAt])
+  @@map("chat_messages")
+}
+
+// ============================================
+// PLATFORM CONFIG
+// ============================================
+
+model PlatformConfig {
+  id                String   @id @default(cuid())
+  feePercentage     Float    @default(15.0) // 15%
+  minimumPriceCents Int      @default(10000) // $100 minimum
+  updatedAt         DateTime @updatedAt
+
+  @@map("platform_configs")
+}
+
+// ============================================
+// BLOG
+// ============================================
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model BlogPost {
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  excerpt       String?    @db.Text
+  content       String     @db.Text
+  coverImage    String?
+  authorId      String
+  status        BlogStatus @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  author        User       @relation(fields: [authorId], references: [id])
+
+  @@index([status, publishedAt])
+  @@map("blog_posts")
+}

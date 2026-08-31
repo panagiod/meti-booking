@@ -1,0 +1,80 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    name: Unit (Vitest)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prisma generate
+        run: pnpm db:generate
+
+      - name: Run unit tests
+        run: pnpm test:unit
+
+  e2e:
+    name: E2E (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Prisma generate
+        run: pnpm db:generate
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Crear .env.test desde secrets
+        run: |
+          cat > .env.test << 'EOF'
+          TEST_DATABASE_URL="${{ secrets.TEST_DATABASE_URL }}"
+          MP_TEST_PUBLIC_KEY="${{ secrets.MP_TEST_PUBLIC_KEY }}"
+          MP_TEST_ACCESS_TOKEN="${{ secrets.MP_TEST_ACCESS_TOKEN }}"
+          MP_TEST_BUYER_EMAIL="${{ secrets.MP_TEST_BUYER_EMAIL }}"
+          MP_TEST_BUYER_PASSWORD="${{ secrets.MP_TEST_BUYER_PASSWORD }}"
+          E2E_BASE_URL="http://localhost:3100"
+          E2E_SKIP_MP_CHECKOUT="${{ secrets.E2E_SKIP_MP_CHECKOUT || '0' }}"
+          EOF
+
+      - name: Run E2E tests
+        run: pnpm test:e2e
+
+      - name: Upload traces on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7

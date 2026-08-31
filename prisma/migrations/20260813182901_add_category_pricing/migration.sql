@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "categories" ADD COLUMN     "feePercentage" DOUBLE PRECISION NOT NULL DEFAULT 15.0,
+ADD COLUMN     "minimumPriceCents" INTEGER NOT NULL DEFAULT 10000;

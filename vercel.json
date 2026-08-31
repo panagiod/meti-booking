@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/reminders",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron/expire-pending",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-cancelled",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

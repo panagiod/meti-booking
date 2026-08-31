@@ -1,0 +1,11 @@
+{
+  "name": "Meti Booking",
+  "install": "corepack enable && pnpm install",
+  "start": "pnpm db:generate",
+  "terminals": [
+    {
+      "name": "dev-server",
+      "command": "pnpm dev"
+    }
+  ]
+}
