@@ -15,8 +15,8 @@
 | **Languages** | English + Greek (`EN \| ΕΛ`); cookie `flow-locale` |
 | **Session** | **Reformer Session** — 50 min, €45 demo |
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |
-| **Weekly schedule** | **Tue, Thu, Sat** · **2pm–5pm** → 3 slots/day |
-| **Admin calendar** | `/admin/schedule` — hours + blocked dates |
+| **Weekly schedule** | **Admin-configurable** — any days/hours (demo: Mon, Wed, Sat) |
+| **Admin calendar** | `/admin/schedule` — open days, hours, blocked dates (DB) |
 | **Admin CMS** | `/admin/content` — text, images, contact (DB-backed) |
 | **Greek typography** | Noto Sans (body) + GFS Didot (headlines) when `lang="el"` |
 | **OG / favicons** | Reformer hero image + MeTi branding |
