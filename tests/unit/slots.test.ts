@@ -15,7 +15,7 @@ describe("lib/slots — generateAvailableSlots", () => {
   it("generates slots based on duration and schedule range", () => {
     const slots = generateAvailableSlots(baseSchedule, 60);
     expect(slots.map((s) => s.time)).toEqual(["09:00", "10:00", "11:00"]);
-    expect(slots.every((s) => s.available)).toBe(true);
+    expect(slots.every((s) => s.available && s.remaining === 1)).toBe(true);
   });
 
   it("does not generate a slot that exceeds the end of the schedule", () => {
@@ -51,11 +51,44 @@ describe("lib/slots — generateAvailableSlots", () => {
     expect(slots.map((s) => s.time)).toEqual(["09:00", "10:30", "13:00"]);
   });
 
-  it("marks slots that conflict with existing appointments as unavailable (UTC→local)", () => {
-    // Existing appointment at 14:00 UTC = 09:00 Colombia local
+  it("marks slots as unavailable when capacity is reached at the same start time", () => {
     const aptStart = new Date("2026-08-17T14:00:00.000Z");
     const aptEnd = new Date("2026-08-17T15:00:00.000Z");
-    const slots = generateAvailableSlots(baseSchedule, 60, [{ start: aptStart, end: aptEnd }]);
+    const appointments = [
+      { start: aptStart, end: aptEnd },
+      { start: aptStart, end: aptEnd },
+      { start: aptStart, end: aptEnd },
+    ];
+    const slots = generateAvailableSlots(baseSchedule, 60, appointments, [], undefined, undefined, 3);
+    const nine = slots.find((s) => s.time === "09:00");
+    expect(nine?.available).toBe(false);
+    expect(nine?.booked).toBe(3);
+    expect(nine?.remaining).toBe(0);
+    expect(slots.find((s) => s.time === "10:00")?.available).toBe(true);
+  });
+
+  it("allows booking when under capacity at the same start time", () => {
+    const aptStart = new Date("2026-08-17T14:00:00.000Z");
+    const aptEnd = new Date("2026-08-17T15:00:00.000Z");
+    const slots = generateAvailableSlots(
+      baseSchedule,
+      60,
+      [{ start: aptStart, end: aptEnd }],
+      [],
+      undefined,
+      undefined,
+      3
+    );
+    const nine = slots.find((s) => s.time === "09:00");
+    expect(nine?.available).toBe(true);
+    expect(nine?.booked).toBe(1);
+    expect(nine?.remaining).toBe(2);
+  });
+
+  it("marks slots unavailable when capacity is 1 and slot is taken", () => {
+    const aptStart = new Date("2026-08-17T14:00:00.000Z");
+    const aptEnd = new Date("2026-08-17T15:00:00.000Z");
+    const slots = generateAvailableSlots(baseSchedule, 60, [{ start: aptStart, end: aptEnd }], [], undefined, undefined, 1);
     expect(slots.find((s) => s.time === "09:00")?.available).toBe(false);
     expect(slots.find((s) => s.time === "10:00")?.available).toBe(true);
   });

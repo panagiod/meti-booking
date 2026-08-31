@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { generateAvailableSlots } from "@/lib/slots";
 import { APP_TIMEZONE_OFFSET_HOURS } from "@/lib/timezone";
+import { siteConfig } from "@/lib/site-config";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -110,7 +111,15 @@ export async function GET(request: NextRequest) {
       gapMinutes: schedule.gapMinutes,
     };
 
-    const slots = generateAvailableSlots(scheduleData, service.durationMin, appointments, [], undefined, minStartTime);
+    const slots = generateAvailableSlots(
+      scheduleData,
+      service.durationMin,
+      appointments,
+      [],
+      requestDate,
+      minStartTime,
+      siteConfig.slotCapacity
+    );
 
     return NextResponse.json({ slots });
   } catch (error) {

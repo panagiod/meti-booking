@@ -60,6 +60,8 @@ const en: Messages = {
     pickDateSub: "When would you like to come in?",
     pickTime: "Pick a time",
     noSlots: "No slots available this day",
+    spotsLeft: "{remaining} left",
+    slotFull: "Full",
     confirm: "Confirm",
     confirmSub: "Review before payment",
     session: "Session",

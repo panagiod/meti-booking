@@ -9,6 +9,8 @@ export const siteConfig = {
   studioCategorySlug: "pilates",
   /** Only this session type is offered on the public site */
   primarySessionSlug: "reformer",
+  /** Max reformer machines / clients per session time */
+  slotCapacity: 3,
   deliveryMode: "in-person" as const,
   location: "123 Wellness Ave, Studio 2",
   phone: "(555) 012-3456",

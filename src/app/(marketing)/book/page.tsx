@@ -219,8 +219,8 @@ export default function BookPage() {
 
   return (
   <>
-    <div className="studio-booking mx-auto max-w-xl px-6 py-10 lg:px-8 lg:py-14">
-      <div className="mb-10 flex items-center justify-between">
+    <div className="studio-booking studio-container max-w-xl py-8 sm:py-10 lg:py-14">
+      <div className="mb-8 sm:mb-10">
         {step !== "date" ? (
           <button
             type="button"
@@ -243,7 +243,7 @@ export default function BookPage() {
 
       <BookingSteps current={step} singleService />
 
-      <div className="mt-10">
+      <div className="mt-8 sm:mt-10">
         {step === "date" && selectedService && (
           <CalendarPicker
             availableDates={mergedDates.length ? mergedDates : availableDates}

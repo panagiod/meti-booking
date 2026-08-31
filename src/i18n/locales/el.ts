@@ -62,6 +62,8 @@ const el: Messages = {
     pickDateSub: "Πότε θέλετε να έρθετε;",
     pickTime: "Επιλέξτε ώρα",
     noSlots: "Δεν υπάρχουν διαθέσιμες ώρες αυτή την ημέρα",
+    spotsLeft: "{remaining} διαθέσιμα",
+    slotFull: "Πλήρες",
     confirm: "Επιβεβαίωση",
     confirmSub: "Ελέγξτε πριν την πληρωμή",
     session: "Μάθημα",

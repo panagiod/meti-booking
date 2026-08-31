@@ -46,13 +46,17 @@ export function CalendarPicker({
   const availableDatesMap = new Map(availableDates.map((d) => [d.dateStr, d]));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       <div>
-        <h2 className="font-display text-3xl text-[var(--studio-ink)]">{t.booking.pickDate}</h2>
-        <p className="mt-2 text-[var(--studio-muted)]">{t.booking.pickDateSub}</p>
+        <h2 className="font-display text-2xl text-[var(--studio-ink)] sm:text-3xl">
+          {t.booking.pickDate}
+        </h2>
+        <p className="mt-2 text-sm text-[var(--studio-muted)] sm:text-base">
+          {t.booking.pickDateSub}
+        </p>
       </div>
 
-      <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-5 sm:p-6">
+      <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-4 sm:p-6">
         <div className="mb-5 flex items-center justify-between">
           <button
             type="button"
@@ -81,7 +85,7 @@ export function CalendarPicker({
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-1">
+        <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
           {Array.from({ length: (monthStart.getDay() + 6) % 7 }).map((_, i) => (
             <div key={`empty-${i}`} />
           ))}
@@ -101,7 +105,7 @@ export function CalendarPicker({
                 disabled={!isAvailable || isPast || !isCurrentMonth}
                 onClick={() => dayData && onSelect(dayData)}
                 className={cn(
-                  "h-10 rounded-lg text-sm transition",
+                  "flex h-11 items-center justify-center rounded-lg text-sm transition sm:h-10",
                   !isCurrentMonth && "text-transparent",
                   isCurrentMonth && !isAvailable && "text-[var(--studio-muted)]/40",
                   isCurrentMonth &&

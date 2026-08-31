@@ -21,34 +21,37 @@ export function Navbar() {
     user?.role === "ADMIN" ? "/admin" : user?.role === "ADVISOR" ? "/advisor" : "/dashboard";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--studio-line)] bg-[var(--studio-bg)]/90 backdrop-blur-md">
-      <div className="mx-auto flex h-[4.25rem] max-w-[76rem] items-center justify-between px-6 lg:px-10">
+    <header className="sticky top-0 z-50 border-b border-[var(--studio-line)] bg-[var(--studio-bg)]/95 backdrop-blur-md">
+      <div className="studio-container flex h-16 items-center justify-between gap-3 sm:h-[4.25rem]">
         <Logo />
 
-        <nav className="flex items-center gap-3 sm:gap-6">
+        <nav className="flex shrink-0 items-center gap-2 sm:gap-4">
           <LanguageSwitcher />
           <Link
             href="#sessions"
-            className="hidden text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)] sm:inline"
+            className="hidden text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)] md:inline"
           >
             {t.nav.sessions}
           </Link>
           {user ? (
             <Link
               href={dashboardHref}
-              className="text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)]"
+              className="hidden text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)] sm:inline"
             >
               {t.nav.account}
             </Link>
           ) : (
             <Link
               href="/login"
-              className="text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)]"
+              className="hidden text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)] sm:inline"
             >
               {t.nav.signIn}
             </Link>
           )}
-          <Link href="/book" className="studio-btn studio-btn-primary !py-2.5 !px-5 text-sm">
+          <Link
+            href="/book"
+            className="studio-btn studio-btn-primary !px-4 !py-2 text-xs sm:!px-5 sm:!py-2.5 sm:text-sm"
+          >
             {t.nav.bookNow}
           </Link>
         </nav>

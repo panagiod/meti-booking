@@ -9,16 +9,25 @@
   --studio-accent: #2c382c;
   --studio-accent-hover: #1f281f;
   --studio-warm: #f3ede6;
+  --studio-container: 76rem;
 
   background: var(--studio-bg);
   color: var(--studio-ink);
   font-family: var(--font-dm-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .studio .font-display {
   font-family: var(--font-cormorant), Georgia, serif;
   font-weight: 500;
   letter-spacing: -0.03em;
+}
+
+.studio-container {
+  width: 100%;
+  max-width: var(--studio-container);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
 }
 
 .studio-btn {
@@ -32,6 +41,7 @@
   font-weight: 500;
   letter-spacing: 0.01em;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .studio-btn-primary {
@@ -62,4 +72,11 @@
 .studio-booking .font-display {
   font-family: var(--font-cormorant), Georgia, serif;
   font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .studio-btn {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8125rem;
+  }
 }

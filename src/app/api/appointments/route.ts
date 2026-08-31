@@ -6,6 +6,8 @@ import { z } from "zod";
 import { createCheckoutPreference } from "@/lib/mercadopago";
 import { parseLocalISO } from "@/lib/timezone";
 import { calculatePrices } from "@/lib/pricing";
+import { siteConfig } from "@/lib/site-config";
+import type { Prisma } from "@/generated/prisma/client";
 
 const appointmentSchema = z.object({
   advisorId: z.string(),
@@ -85,24 +87,40 @@ export async function POST(request: NextRequest) {
     // Parse local date/time (Colombia) from ISO and build the UTC timestamp
     // explicitly — independent of the server timezone.
     const parsedDate = parseLocalISO(scheduledAt);
+    if (!parsedDate) {
+      return NextResponse.json({ error: "Invalid date/time" }, { status: 400 });
+    }
 
-    // Create appointment as PENDING: blocks the slot immediately and is
-    // confirmed by the Mercado Pago webhook once payment is approved.
     const isTest = advisorProfile.mpMode === "TEST";
-    const appointment = await prisma.appointment.create({
-      data: {
-        clientId: session.user.id,
-        advisorId: advisorProfile.id,
-        serviceId: serviceId,
-        scheduledAt: parsedDate || new Date(scheduledAt),
-        durationMin: service.durationMin,
-        status: "PENDING",
-        totalCents,
-        advisorEarning,
-        platformFee,
-        discountCents,
-        isTest,
-      },
+
+    const appointment = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const bookedCount = await tx.appointment.count({
+        where: {
+          advisorId: advisorProfile.id,
+          scheduledAt: parsedDate,
+          status: { in: ["CONFIRMED", "IN_PROGRESS", "PENDING"] },
+        },
+      });
+
+      if (bookedCount >= siteConfig.slotCapacity) {
+        throw new Error("SLOT_FULL");
+      }
+
+      return tx.appointment.create({
+        data: {
+          clientId: session.user.id,
+          advisorId: advisorProfile.id,
+          serviceId: serviceId,
+          scheduledAt: parsedDate,
+          durationMin: service.durationMin,
+          status: "PENDING",
+          totalCents,
+          advisorEarning,
+          platformFee,
+          discountCents,
+          isTest,
+        },
+      });
     });
 
     try {
@@ -144,6 +162,12 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
+    if (error instanceof Error && error.message === "SLOT_FULL") {
+      return NextResponse.json(
+        { error: "This time slot is fully booked. Please choose another time." },
+        { status: 409 }
+      );
+    }
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: "Validation error", details: error.format() },

@@ -56,6 +56,8 @@ export type Messages = {
     pickDateSub: string;
     pickTime: string;
     noSlots: string;
+    spotsLeft: string;
+    slotFull: string;
     confirm: string;
     confirmSub: string;
     session: string;

@@ -1,6 +1,7 @@
 import { addDays, format, startOfDay, isSameDay, getDay, isWithinInterval } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { utcMinutesToLocal } from "@/lib/timezone";
+import { siteConfig } from "@/lib/site-config";
 
 export interface Schedule {
   dayOfWeek: number;
@@ -33,6 +34,9 @@ export interface BlockedTime {
 export interface TimeSlot {
   time: string;
   available: boolean;
+  booked: number;
+  capacity: number;
+  remaining: number;
 }
 
 export interface DaySlots {
@@ -52,6 +56,19 @@ function minutesToTime(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
   return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+}
+
+function appointmentStartMinutesLocal(start: Date): number {
+  return utcMinutesToLocal(start.getUTCHours() * 60 + start.getUTCMinutes());
+}
+
+export function countBookingsAtSlotTime(
+  slotStartMinutes: number,
+  existingAppointments: Array<{ start: Date }>
+): number {
+  return existingAppointments.filter(
+    (apt) => appointmentStartMinutesLocal(apt.start) === slotStartMinutes
+  ).length;
 }
 
 function isSlotBlocked(
@@ -94,7 +111,8 @@ export function generateAvailableSlots(
   existingAppointments: Array<{ start: Date; end: Date }> = [],
   blockedTimes: BlockedTime[] = [],
   slotDate?: Date,
-  minStartTime?: Date
+  minStartTime?: Date,
+  slotCapacity: number = 1
 ): TimeSlot[] {
   const slots: TimeSlot[] = [];
   const start = timeToMinutes(schedule.startTime);
@@ -119,15 +137,8 @@ export function generateAvailableSlots(
     }
 
     const slotTime = minutesToTime(current);
-
-    // Check if slot conflicts with existing appointments
-    // Appointments are stored in UTC; convert to local time (Colombia)
-    // to compare with slots (which are generated in local time).
-    const hasAppointmentConflict = existingAppointments.some((apt) => {
-      const aptStartLocal = utcMinutesToLocal(apt.start.getUTCHours() * 60 + apt.start.getUTCMinutes());
-      const aptEndLocal = utcMinutesToLocal(apt.end.getUTCHours() * 60 + apt.end.getUTCMinutes());
-      return current < aptEndLocal && current + serviceDuration > aptStartLocal;
-    });
+    const booked = countBookingsAtSlotTime(current, existingAppointments);
+    const remaining = Math.max(slotCapacity - booked, 0);
 
     // Check if slot conflicts with blocked times
     const hasBlockedConflict = slotDate
@@ -144,7 +155,10 @@ export function generateAvailableSlots(
 
     slots.push({
       time: slotTime,
-      available: !hasAppointmentConflict && !hasBlockedConflict && !isTooSoon,
+      available: remaining > 0 && !hasBlockedConflict && !isTooSoon,
+      booked,
+      capacity: slotCapacity,
+      remaining,
     });
 
     current += serviceDuration + gap;
@@ -186,7 +200,8 @@ export function getAvailableDates(
         [],
         blockedTimes,
         date,
-        minStartTime
+        minStartTime,
+        siteConfig.slotCapacity
       );
       const hasAvailability = slots.some((s) => s.available);
 
