@@ -8,9 +8,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
-# Workflow de desarrollo
+# Development workflow
 
-- **SIEMPRE crear un PR para nuevos desarrollos** (nunca commitear directo a `main`). Usar `gh pr create` con título y descripción descriptivos, y reportar la URL del PR.
-- El CI (GitHub Actions) corre las pruebas en cada PR: `pnpm test:unit` y `pnpm test:e2e`. Verificar que pasen antes de pedir merge.
-- DB de pruebas: proyecto Neon `meti-test` (config en `.env.test`, gitignored). Los tests E2E usan el puerto 3100 y limpian solo usuarios `e2e.*`.
-- Al cambiar `prisma/schema.prisma`: crear migración con `pnpm db:migrate` y regenerar cliente.
+- **ALWAYS create a PR for new development** (never commit directly to `main`). Use `gh pr create` with a descriptive title and description, and report the PR URL.
+- CI (GitHub Actions) runs tests on every PR: `pnpm test:unit` and `pnpm test:e2e`. Verify they pass before requesting a merge.
+- Test database: Neon project `meti-test` (config in `.env.test`, gitignored). E2E tests use port 3100 and only clean up `e2e.*` users.
+- When changing `prisma/schema.prisma`: create a migration with `pnpm db:migrate` and regenerate the client.

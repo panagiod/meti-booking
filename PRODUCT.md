@@ -8,152 +8,152 @@ web
 
 ## Users
 
-**Asesores (Profesionales):**
-- Profesionales independientes de diversos rubros (legal, financiero, salud, tecnología, educación, etc.)
-- Quieren monetizar su experiencia ofreciendo asesorías por videollamada
-- Necesitan control total sobre su agenda, precios y disponibilidad
-- Buscan una plataforma que les facilite la gestión sin complicaciones técnicas
+**Advisors (Professionals):**
+- Independent professionals across various fields (legal, financial, health, technology, education, etc.)
+- Want to monetize their expertise by offering advisory sessions via video call
+- Need full control over their schedule, prices, and availability
+- Look for a platform that simplifies management without technical complexity
 
-**Clientes:**
-- Personas naturales y PyMEs que buscan asesoría profesional especializada
-- Prefieren la comodidad de atenderse desde cualquier lugar (100% online)
-- Valoran la transparencia de precios y la facilidad de agendado
-- Quieren una experiencia segura y profesional
+**Clients:**
+- Individuals and small businesses seeking specialized professional advice
+- Prefer the convenience of being served from anywhere (100% online)
+- Value price transparency and easy scheduling
+- Want a secure, professional experience
 
-**Administradores:**
-- Equipo de Meti encargado de gestionar la plataforma
-- Nivel Superadmin: Control total del sistema
-- Nivel Gestor: Resolución de problemas con la plataforma
-- Configuran fees, supervisan operaciones, gestionan facturación
+**Administrators:**
+- Meti team responsible for managing the platform
+- Superadmin level: Full system control
+- Manager level: Platform issue resolution
+- Configure fees, oversee operations, manage billing
 
 ## Product Purpose
 
-Meti conecta profesionales que quieren ofrecer asesorías con clientes que buscan orientación especializada. La plataforma elimina las barreras de geografía y logística, permitiendo que las asesorías ocurran por videollamada con la misma calidad que una reunión presencial.
+Meti connects professionals who want to offer advisory sessions with clients seeking specialized guidance. The platform removes geography and logistics barriers, allowing advisory sessions to happen via video call with the same quality as an in-person meeting.
 
-**Éxito se define como:**
-- Asesores que activan sus servicios y reciben clientes regularmente
-- Clientes que encuentran el asesor adecuado y completan asesorías satisfactorias
-- Transacciones de pago fluidas y transparentes
-- Retención de asesores satisfechos con la plataforma
+**Success is defined as:**
+- Advisors who activate their services and regularly receive clients
+- Clients who find the right advisor and complete satisfactory sessions
+- Smooth, transparent payment transactions
+- Retention of advisors satisfied with the platform
 
 ## Positioning
 
-Meti se diferencia por:
-- **Modelo de precio justo:** El asesor define cuánto quiere ganar; la plataforma añade un fee transparente, no oculta comisiones
-- **Gestión de agenda potente:** Configuración recurrente por día de semana, almuerzos, brechas entre citas, sin límite de citas diarias
-- **100% online con chat:** Videollamada integrada + chat de texto persistente durante la asesoría
-- **Promociones flexibles:** Los asesores pueden crear descuentos por fechas especiales (porcentaje o monto fijo)
-- **Política clara de cancelación:** Reagendar siempre gratis (con anticipación mínima configurable), cancelar sin devolución
-- **Modo oscuro:** Tema claro/oscuro con toggle en toda la plataforma
+Meti differentiates itself through:
+- **Fair pricing model:** The advisor sets how much they want to earn; the platform adds a transparent fee, with no hidden commissions
+- **Powerful schedule management:** Recurring configuration by day of week, lunch breaks, gaps between appointments, no daily appointment limit
+- **100% online with chat:** Integrated video call + persistent text chat during the session
+- **Flexible promotions:** Advisors can create discounts for special dates (percentage or fixed amount)
+- **Clear cancellation policy:** Always free to reschedule (with configurable minimum notice), cancel without refund
+- **Dark mode:** Light/dark theme with toggle across the platform
 
 ## Operating Context
 
-- **Flujo del cliente:** Buscar → Explorar perfiles → Seleccionar servicio → Elegir fecha/horario → Pagar con Mercado Pago → Unirse a videollamada → Calificar
-- **Flujo del asesor:** Registrar → Configurar perfil y credenciales MP → Crear servicios → Definir horarios → (Opcional) Crear promociones → Atender asesorías → Recibir facturación mensual
-- **Flujo del admin:** Gestionar asesores → Configurar fees y precios mínimos → Supervisar transacciones → Generar facturas de cobro de fees
-- **Pagos:** Mercado Pago Checkout PRO, cada asesor usa sus propias credenciales (modelo sin custodia)
-- **Videollamada:** LiveKit Cloud con grabación (Egress a S3) y chat persistente
-- **Notificaciones:** Emails de confirmación y recordatorios (Resend) + toasts in-app (Sileo)
+- **Client flow:** Search → Browse profiles → Select service → Choose date/time → Pay with Mercado Pago → Join video call → Rate
+- **Advisor flow:** Register → Configure profile and MP credentials → Create services → Set schedule → (Optional) Create promotions → Attend sessions → Receive monthly billing
+- **Admin flow:** Manage advisors → Configure fees and minimum prices → Oversee transactions → Generate fee invoices
+- **Payments:** Mercado Pago Checkout PRO, each advisor uses their own credentials (non-custodial model)
+- **Video calls:** LiveKit Cloud with recording (Egress to S3) and persistent chat
+- **Notifications:** Confirmation and reminder emails (Resend) + in-app toasts (Sileo)
 
 ## Capabilities and Constraints
 
-**Capacidades confirmadas:**
-- Autenticación con Google OAuth **y email/contraseña** (better-auth, con vinculación de cuentas)
-- Roles de usuario con control de acceso por área (CLIENT → dashboard, ADVISOR → advisor, ADMIN → admin)
-- Primer usuario del sistema se convierte automáticamente en ADMIN
-- Múltiples servicios por asesor con duración y precio variable
-- Horarios recurrentes por día de semana (configuración por el asesor) + bloques de tiempo
-- Generación automática de slots disponibles que bloquean horarios ya reservados
-- Booking con confirmación automática al pagar
-- Checkout con Mercado Pago (cada asesor registra sus credenciales)
-- Videollamada LiveKit con chat de texto persistente y grabación (Egress a S3)
-- Sistema de reseñas (rating 1-5 + comentario)
-- Promociones por fechas especiales (descuento porcentaje o monto fijo)
-- Panel admin con configuración de fees y precios mínimos, verificación de asesores y facturación mensual
-- Facturación mensual desglosada de fees para asesores (admin marca pagadas)
-- Notificaciones por email (confirmación de pago, nueva reserva, recordatorio 24h antes)
-- Toasts in-app con Sileo (feedback de acciones y alerta de nuevas reservas)
-- Modo oscuro (toggle en navbar y dashboards)
-- Páginas públicas: FAQ, recursos para asesores, historias de éxito, términos, privacidad, cookies, reembolsos
+**Confirmed capabilities:**
+- Authentication with Google OAuth **and email/password** (better-auth, with account linking)
+- User roles with area-based access control (CLIENT → dashboard, ADVISOR → advisor, ADMIN → admin)
+- First system user automatically becomes ADMIN
+- Multiple services per advisor with variable duration and price
+- Recurring schedule by day of week (advisor-configured) + time blocks
+- Automatic generation of available slots that block already-booked times
+- Booking with automatic confirmation on payment
+- Checkout with Mercado Pago (each advisor registers their credentials)
+- LiveKit video call with persistent text chat and recording (Egress to S3)
+- Review system (1–5 rating + comment)
+- Special-date promotions (percentage or fixed discount)
+- Admin panel with fee and minimum price configuration, advisor verification, and monthly billing
+- Monthly itemized fee billing for advisors (admin marks as paid)
+- Email notifications (payment confirmation, new booking, 24h reminder)
+- In-app toasts with Sileo (action feedback and new booking alerts)
+- Dark mode (toggle in navbar and dashboards)
+- Public pages: FAQ, advisor resources, success stories, terms, privacy, cookies, refunds
 
-**Restricciones:**
-- No se permiten asesorías gratis (tope mínimo configurable por admin)
-- El fee es markup (se añade al precio del asesor, no se descuenta)
-- Cancelación: reagendar gratis con anticipación mínima (configurable por servicio), cancelar/no-show sin devolución
-- Modalidad: 100% online (videollamada obligatoria)
-- Pago: solo vía Mercado Pago (sin otros métodos en MVP)
-- El descuento de una promoción lo absorbe el asesor (la plataforma mantiene su fee sobre el precio original)
+**Constraints:**
+- Free advisory sessions are not allowed (minimum price configurable by admin)
+- Fee is a markup (added to advisor price, not deducted)
+- Cancellation: free reschedule with minimum notice (configurable per service), cancel/no-show without refund
+- Modality: 100% online (video call required)
+- Payment: Mercado Pago only (no other methods in MVP)
+- Promotion discount is absorbed by the advisor (platform keeps its fee on the original price)
 
-**Decisiones abiertas:**
-- Soporte post-MVP: chat en vivo (fuera de la llamada), SMS, push notifications
+**Open decisions:**
+- Post-MVP support: live chat (outside the call), SMS, push notifications
 
 ## Brand Commitments
 
-- **Nombre:** Meti (inspirado en la diosa griega Metis, diosa de la sabiduría y la prudencia)
-- **Dominio:** meti.cognilab.dev
-- **Tono visual:** Energético / Bold (naranja vibrante + azul oscuro)
-- **Voz:** Profesional pero cercana, directa, confiable
+- **Name:** Meti (inspired by the Greek goddess Metis, goddess of wisdom and prudence)
+- **Domain:** meti.cognilab.dev
+- **Visual tone:** Energetic / Bold (vibrant orange + dark blue)
+- **Voice:** Professional but approachable, direct, trustworthy
 
 ## Test Accounts
 
-Cuentas de prueba para QA y automatización (TestSprite). Todas usan la misma contraseña.
+Test accounts for QA and automation (TestSprite). All use the same password.
 
-| Rol | Email | Password |
+| Role | Email | Password |
 |---|---|---|
 | **Admin** | edwaramayadiaz@gmail.com | Control2486 |
-| **Asesor** | amayadiazedwarorlando@gmail.com | Control2486 |
-| **Cliente** | edwarorlandoamayadiaztest@gmail.com | Control2486 |
+| **Advisor** | amayadiazedwarorlando@gmail.com | Control2486 |
+| **Client** | edwarorlandoamayadiaztest@gmail.com | Control2486 |
 
-- **URL principal:** https://meti.cognilab.dev
-- **Datos del asesor de prueba:** 2 servicios activos (Consultoría estratégica $100.000 / Planificación financiera $80.000), agenda Lun–Vie 09:00–17:00 (almuerzo 12:00–13:00), perfil verificado
-- **Nota:** el asesor aún no tiene credenciales de Mercado Pago conectadas; el checkout mostrará "Pago no disponible" hasta configurarlas
+- **Main URL:** https://meti.cognilab.dev
+- **Test advisor data:** 2 active services (Strategic consulting $100,000 / Financial planning $80,000), schedule Mon–Fri 09:00–17:00 (lunch 12:00–13:00), verified profile
+- **Note:** the advisor does not yet have Mercado Pago credentials connected; checkout will show "Payment unavailable" until configured
 
 ## Test Matrix (TestSprite)
 
-**Flujos públicos (sin login):**
-1. Landing: hero, categorías, cómo funciona, CTA
-2. Explorar asesores (búsqueda)
-3. Perfil de asesor: info, servicios, video (si aplica), calendario
-4. Páginas legales: FAQ, recursos, historias, términos, privacidad, cookies, reembolsos
-5. Reserva: seleccionar servicio → fecha → hora (slots no disponibles deben ocultarse)
+**Public flows (no login):**
+1. Landing: hero, categories, how it works, CTA
+2. Browse advisors (search)
+3. Advisor profile: info, services, video (if applicable), calendar
+4. Legal pages: FAQ, resources, stories, terms, privacy, cookies, refunds
+5. Booking: select service → date → time (unavailable slots should be hidden)
 
-**Flujos autenticados (cliente):**
-6. Login con email/contraseña
-7. Dashboard: citas (filtros), perfil
-8. Booking completo hasta checkout (requiere MP del asesor para pagar)
-9. Cerrar sesión
+**Authenticated flows (client):**
+6. Login with email/password
+7. Dashboard: appointments (filters), profile
+8. Full booking through checkout (requires advisor MP to pay)
+9. Log out
 
-**Flujos autenticados (asesor):**
-10. Dashboard con alerta de nuevas reservas (toast)
-11. CRUD de servicios (crear, editar, activar/desactivar, eliminar) — feedback con toasts
-12. Agenda: vista mes/semana/día/agenda con citas
-13. Promociones: crear, activar/desactivar, eliminar
-14. Pagos: ver facturas mensuales
-15. Configuración Mercado Pago
+**Authenticated flows (advisor):**
+10. Dashboard with new booking alert (toast)
+11. Service CRUD (create, edit, activate/deactivate, delete) — feedback with toasts
+12. Schedule: month/week/day/agenda views with appointments
+13. Promotions: create, activate/deactivate, delete
+14. Payments: view monthly invoices
+15. Mercado Pago configuration
 
-**Flujos autenticados (admin):**
-16. Dashboard con estadísticas
-17. Verificación de documentos de asesores
-18. Facturación: generar facturas del mes, marcar pagadas
-19. Usuarios y configuración de fees
+**Authenticated flows (admin):**
+16. Dashboard with statistics
+17. Advisor document verification
+18. Billing: generate monthly invoices, mark as paid
+19. Users and fee configuration
 
-**Controles de acceso:**
-20. Cliente NO debe acceder a /advisor ni /admin
-21. Asesor NO debe acceder a /admin
-22. Admin NO debe acceder a /advisor
+**Access controls:**
+20. Client must NOT access /advisor or /admin
+21. Advisor must NOT access /admin
+22. Admin must NOT access /advisor
 
 ## Product Principles
 
-1. **Transparencia total:** El asesor siempre sabe cuánto gana y cuánto cobra la plataforma; el cliente ve el precio final sin sorpresas
-2. **Flexibilidad para el asesor:** Control completo sobre servicios, horarios, precios y promociones
-3. **Experiencia fluida para el cliente:** Desde buscar hasta agendar y asistir, el proceso debe ser rápido e intuitivo
-4. **Escalabilidad sin complejidad:** Modelo sin custodia de pagos que permite crecer sin infraestructura de cobros
-5. **Claridad en las reglas:** Políticas de cancelación y reagenda claras desde el primer contacto
+1. **Full transparency:** The advisor always knows how much they earn and how much the platform charges; the client sees the final price with no surprises
+2. **Flexibility for advisors:** Complete control over services, schedules, prices, and promotions
+3. **Smooth client experience:** From search to booking and attending, the process must be fast and intuitive
+4. **Scalability without complexity:** Non-custodial payment model that allows growth without payment infrastructure
+5. **Clear rules:** Cancellation and reschedule policies are clear from first contact
 
 ## Accessibility & Inclusion
 
-- Interface responsive (desktop y mobile)
-- Contraste de colores WCAG AA (en modo claro y oscuro)
-- Navegación por teclado
-- Textos alternativos en imágenes
-- Formularios accesibles con labels y validación clara
+- Responsive interface (desktop and mobile)
+- WCAG AA color contrast (in light and dark mode)
+- Keyboard navigation
+- Alt text on images
+- Accessible forms with labels and clear validation

@@ -4,29 +4,29 @@
 
 ## World
 
-**Meti: Energía y Conexión**
+**Meti: Energy and Connection**
 
-Meti habita en el mundo de la **confianza activa** — donde la sabiduría profesional se encuentra con la tecnología accesible. No es corporativa ni fría; es vibrante, directa y humana. El mundo de Meti es el de las conexiones que importan: un abogado que clarifica una duda compleja, un coach que transforma una carrera, un financiero que da seguridad en decisiones críticas.
+Meti lives in the world of **active trust** — where professional wisdom meets accessible technology. It is not corporate or cold; it is vibrant, direct, and human. Meti's world is one of connections that matter: a lawyer clarifying a complex question, a coach transforming a career, a financial advisor bringing confidence to critical decisions.
 
-**Cultural home:** La intersección entre SaaS moderno (Linear, Notion) y plataformas de servicios humanos (Airbnb Experiences, Masterclass). La energía de una startup tech con la calidez de un servicio personal.
+**Cultural home:** The intersection between modern SaaS (Linear, Notion) and human service platforms (Airbnb Experiences, Masterclass). The energy of a tech startup with the warmth of a personal service.
 
-**Physical scene:** Profesionales trabajando desde hogares y oficinas pequeñas, conectándose con clientes a través de pantallas. La plataforma debe sentirse como un espacio profesional, acogedor y eficiente — no como un formulario frío ni como una app sobreestilizada.
+**Physical scene:** Professionals working from homes and small offices, connecting with clients through screens. The platform should feel like a professional, welcoming, and efficient space — not a cold form or an over-styled app.
 
 ## Voice and Tone
 
-- **Directo:** Sin rodeos, claro en acciones y precios
-- **Confiable:** Profesional pero accesible, nunca arrogante ni genérico
-- **Empoderador:** El asesor se siente dueño de su negocio; el cliente se siente seguro de su elección
-- **Transparente:** Sin letra pequeña, sin sorpresas, sin ocultar información
+- **Direct:** No fluff, clear in actions and prices
+- **Trustworthy:** Professional but accessible, never arrogant or generic
+- **Empowering:** The advisor feels in control of their business; the client feels confident in their choice
+- **Transparent:** No fine print, no surprises, no hidden information
 
 ## Color Strategy
 
-**Full Palette — Energético y Bold**
+**Full Palette — Energetic and Bold**
 
 ```
-Primary:    #FF6B35 (Naranja Vibrante) — Acción, energía, CTA principal
-Secondary:  #1A1A2E (Azul Profundo) — Confianza, autoridad, headers
-Accent:     #00D4AA (Turquesa) — Éxito, confirmación, positividad
+Primary:    #FF6B35 (Vibrant Orange) — Action, energy, primary CTA
+Secondary:  #1A1A2E (Deep Blue) — Trust, authority, headers
+Accent:     #00D4AA (Turquoise) — Success, confirmation, positivity
 
 Neutral BG:     #FAFAFA
 Neutral Surface: #FFFFFF
@@ -41,18 +41,18 @@ Semantic:
   Star:    #FBBF24
 ```
 
-**Light mode only en MVP** (escena: profesionales trabajando en interiores, luz natural, pantallas). Dark mode post-MVP.
+**Light mode only in MVP** (scene: professionals working indoors, natural light, screens). Dark mode post-MVP.
 
 ## Typography
 
 **Headlines:** Plus Jakarta Sans (Bold, Extrabold)
-- Razón: Moderno, geométrico, tiene presencia sin ser agresivo. Funciona bien en tamaños grandes y pequeños.
+- Reason: Modern, geometric, has presence without being aggressive. Works well at large and small sizes.
 
 **Body:** Inter (Regular, Medium)
-- Razón: Excelente legibilidad, amplio soporte, familiar para usuarios tech.
+- Reason: Excellent readability, broad support, familiar to tech users.
 
-**Monospace (precios, datos):** JetBrains Mono
-- Razón: Claridad numérica, asociación con transparencia y datos.
+**Monospace (prices, data):** JetBrains Mono
+- Reason: Numeric clarity, association with transparency and data.
 
 **Scale:**
 ```
@@ -69,14 +69,14 @@ Caption:    0.75rem (12px)
 ## Component Language
 
 **Buttons:**
-- Primary: Fondo #FF6B35, texto blanco, hover #E55A2B
-- Secondary: Fondo transparente, borde #1A1A2E, texto #1A1A2E
-- Ghost: Fondo transparente, texto #FF6B35
-- Border radius: 8px (consistente)
+- Primary: Background #FF6B35, white text, hover #E55A2B
+- Secondary: Transparent background, border #1A1A2E, text #1A1A2E
+- Ghost: Transparent background, text #FF6B35
+- Border radius: 8px (consistent)
 
 **Cards:**
-- Fondo blanco, sombra sutil (0 1px 3px rgba(0,0,0,0.1))
-- Hover: sombra ligeramente más intensa
+- White background, subtle shadow (0 1px 3px rgba(0,0,0,0.1))
+- Hover: slightly stronger shadow
 - Border radius: 12px
 - Padding: 24px
 
@@ -84,17 +84,17 @@ Caption:    0.75rem (12px)
 - Border: 1px solid #E5E7EB
 - Focus: border #FF6B35, ring 2px rgba(255,107,53,0.2)
 - Border radius: 8px
-- Height: 44px (mínimo para touch targets)
+- Height: 44px (minimum for touch targets)
 
 **Navigation:**
-- Sticky header, fondo blanco con blur backdrop
-- Logo a la izquierda, links al centro, CTA a la derecha
-- Mobile: hamburger menu con slide-in
+- Sticky header, white background with blur backdrop
+- Logo on the left, links in the center, CTA on the right
+- Mobile: hamburger menu with slide-in
 
 **Rating Stars:**
 - Color: #FBBF24
-- Tamaño: 16px-20px
-- Vacías: #E5E7EB
+- Size: 16px–20px
+- Empty: #E5E7EB
 
 ## Spacing and Layout
 
@@ -118,70 +118,70 @@ Caption:    0.75rem (12px)
 
 **Layout:**
 - Max width: 1280px (container)
-- Grid: 12 columnas, gap 24px
+- Grid: 12 columns, gap 24px
 - Responsive breakpoints: 640px (sm), 768px (md), 1024px (lg), 1280px (xl)
 
 ## Imagery and Illustration
 
-**Fotografía:**
-- Personas reales (no stock genérico)
-- Profesionales en ambientes de trabajo reales
-- Colores naturales, iluminación suave
-- Composición: personas como protagonistas, no decorativas
+**Photography:**
+- Real people (not generic stock)
+- Professionals in real work environments
+- Natural colors, soft lighting
+- Composition: people as protagonists, not decorative
 
-**Ilustraciones:**
-- Estilo lineal con acentos de color (#FF6B35, #00D4AA)
-- No cartoon, no 3D renders
-- Funcional: explicar conceptos, no decorar
+**Illustrations:**
+- Linear style with color accents (#FF6B35, #00D4AA)
+- Not cartoon, not 3D renders
+- Functional: explain concepts, not decorate
 
-**Iconos:**
-- Lucide React (consistentes, limpios)
-- Tamaño: 20px-24px en UI, 32px-48px en features
-- Color: hereda del texto o usa acento
+**Icons:**
+- Lucide React (consistent, clean)
+- Size: 20px–24px in UI, 32px–48px in features
+- Color: inherits from text or uses accent
 
 ## Motion
 
-**Principios:**
-- Funcional: guiar la atención, no entretener
-- Rápido: 150ms-300ms para transiciones de estado
-- Suave: ease-out para entradas, ease-in-out para movimientos
+**Principles:**
+- Functional: guide attention, not entertain
+- Fast: 150ms–300ms for state transitions
+- Smooth: ease-out for entrances, ease-in-out for movement
 
-**Animaciones principales:**
-- Fade in: elementos aparecen con opacidad de 0 a 1
-- Slide up: contenido entra desde abajo (20px offset)
-- Scale: botones y cards en hover (1.02 scale)
-- Skeleton: carga de contenido con shimmer
+**Main animations:**
+- Fade in: elements appear with opacity 0 to 1
+- Slide up: content enters from below (20px offset)
+- Scale: buttons and cards on hover (1.02 scale)
+- Skeleton: content loading with shimmer
 
 ## Signature Interactions
 
-1. **Video Preview en Hover:** Las tarjetas de asesor muestran un preview del video de presentación al pasar el mouse (auto-play, muted)
-2. **Booking Widget Sticky:** En el perfil del asesor, el widget de reserva se mantiene visible al hacer scroll
-3. **Slot Selection Animado:** Los horarios disponibles aparecen con una transición escalonada
-4. **Fee Transparency:** En checkout, el desglose de precio se muestra con una animación de revelación
-5. **Rating Interaction:** Las estrellas de calificación tienen un micro-animación al seleccionar
+1. **Video Preview on Hover:** Advisor cards show a preview of the introduction video on mouse hover (auto-play, muted)
+2. **Sticky Booking Widget:** On the advisor profile, the booking widget stays visible while scrolling
+3. **Animated Slot Selection:** Available time slots appear with a staggered transition
+4. **Fee Transparency:** At checkout, the price breakdown is revealed with an animation
+5. **Rating Interaction:** Rating stars have a micro-animation on selection
 
 ## Accessibility
 
-- Contraste mínimo WCAG AA (4.5:1 para texto, 3:1 para gráficos)
-- Focus visible en todos los elementos interactivos
-- Skip links para navegación por teclado
-- ARIA labels en componentes complejos
-- Alt text en todas las imágenes
-- Reduced motion: respetar prefers-reduced-motion
+- Minimum WCAG AA contrast (4.5:1 for text, 3:1 for graphics)
+- Visible focus on all interactive elements
+- Skip links for keyboard navigation
+- ARIA labels on complex components
+- Alt text on all images
+- Reduced motion: respect prefers-reduced-motion
 
 ## Responsive Behavior
 
-**Mobile (0-640px):**
-- Stack vertical de contenido
-- Bottom navigation para acciones principales
-- Cards a ancho completo
-- Booking widget como bottom sheet
+**Mobile (0–640px):**
+- Vertical content stack
+- Bottom navigation for primary actions
+- Full-width cards
+- Booking widget as bottom sheet
 
-**Tablet (641-1024px):**
-- Grid de 2 columnas para cards
-- Sidebar colapsable en dashboard
+**Tablet (641–1024px):**
+- 2-column card grid
+- Collapsible sidebar in dashboard
 
 **Desktop (1025px+):**
-- Grid de 3-4 columnas para cards
-- Sidebar permanente en dashboard
-- Booking widget sticky en perfil
+- 3–4 column card grid
+- Permanent sidebar in dashboard
+- Sticky booking widget on profile
