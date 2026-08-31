@@ -39,7 +39,7 @@ Controls when customers can book on the public `/book` page.
 
 ### What you can do
 
-1. **Enable/disable days** — toggle Mon–Sun; max **3 active days** enforced
+1. **Enable exactly 3 days** — toggle Mon–Sun; must have **3 active days** to save
 2. **Set start/end times** per day — preview shows slot count
 3. **Save schedule** — updates public booking immediately
 4. **Block dates** — holidays/closures; blocked days hidden from `/book`

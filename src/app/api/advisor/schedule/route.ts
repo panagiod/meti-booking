@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
+import { validateStudioSchedule } from "@/lib/studio-schedule";
 
 const scheduleSchema = z.object({
   schedules: z.array(
@@ -75,6 +76,11 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     const { schedules } = scheduleSchema.parse(body);
+
+    const validationError = validateStudioSchedule(schedules);
+    if (validationError) {
+      return NextResponse.json({ error: validationError }, { status: 400 });
+    }
 
     // Delete existing schedules and recreate
     await prisma.advisorSchedule.deleteMany({

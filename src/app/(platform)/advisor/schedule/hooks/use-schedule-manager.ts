@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useDialog } from "@/hooks/use-dialog";
 import { DaySchedule, defaultSchedule } from "../utils/schedule-utils";
+import { STUDIO_MAX_ACTIVE_DAYS } from "@/lib/studio-schedule";
 
 export function useScheduleManager() {
   const dialog = useDialog();
@@ -46,13 +47,25 @@ export function useScheduleManager() {
   }, [loadData]);
 
   const toggleDay = useCallback((dayOfWeek: number) => {
-    setSchedule((prev) =>
-      prev.map((d) =>
+    setSchedule((prev) => {
+      const day = prev.find((d) => d.dayOfWeek === dayOfWeek);
+      if (!day) return prev;
+
+      if (!day.isActive && prev.filter((d) => d.isActive).length >= STUDIO_MAX_ACTIVE_DAYS) {
+        dialog.showAlert(
+          "Limit reached",
+          `You can only enable ${STUDIO_MAX_ACTIVE_DAYS} days per week.`,
+          "warning"
+        );
+        return prev;
+      }
+
+      return prev.map((d) =>
         d.dayOfWeek === dayOfWeek ? { ...d, isActive: !d.isActive } : d
-      )
-    );
+      );
+    });
     setHasChanges(true);
-  }, []);
+  }, [dialog]);
 
   const updateTime = useCallback((dayOfWeek: number, field: keyof DaySchedule, value: string) => {
     setSchedule((prev) =>
@@ -75,6 +88,9 @@ export function useScheduleManager() {
       if (res.ok) {
         setHasChanges(false);
         dialog.showAlert("Success", "Schedule saved successfully", "success");
+      } else {
+        const data = await res.json().catch(() => ({}));
+        dialog.showAlert("Error", data.error || "Could not save schedule", "error");
       }
     } catch (error) {
       dialog.showAlert("Error", "Connection error", "error");

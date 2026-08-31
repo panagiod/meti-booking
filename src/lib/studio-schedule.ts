@@ -46,6 +46,23 @@ export function weeklyScheduleTemplate(): StudioDaySchedule[] {
   }));
 }
 
+const WEEKDAY_ORDER = [1, 2, 3, 4, 5, 6, 0] as const;
+
+/** Keep at most N schedule rows for public booking (studio policy: 3 days/week). */
+export function capWeeklyScheduleRows<T extends { dayOfWeek: number }>(
+  rows: T[],
+  maxDays: number = STUDIO_MAX_ACTIVE_DAYS
+): T[] {
+  if (rows.length <= maxDays) return rows;
+  return [...rows]
+    .sort(
+      (a, b) =>
+        WEEKDAY_ORDER.indexOf(a.dayOfWeek as (typeof WEEKDAY_ORDER)[number]) -
+        WEEKDAY_ORDER.indexOf(b.dayOfWeek as (typeof WEEKDAY_ORDER)[number])
+    )
+    .slice(0, maxDays);
+}
+
 export function mergeScheduleFromDb(
   dbSchedules: Array<{
     dayOfWeek: number;
@@ -57,12 +74,19 @@ export function mergeScheduleFromDb(
     gapMinutes: number;
   }>
 ): StudioDaySchedule[] {
+  const capped = capWeeklyScheduleRows(
+    dbSchedules.filter((s) => s.isActive !== false)
+  );
+  const activeDays = new Set(capped.map((s) => s.dayOfWeek));
+
   return weeklyScheduleTemplate().map((day) => {
-    const dbDay = dbSchedules.find((s) => s.dayOfWeek === day.dayOfWeek);
-    if (!dbDay) return day;
+    const dbDay = capped.find((s) => s.dayOfWeek === day.dayOfWeek);
+    if (!dbDay || !activeDays.has(day.dayOfWeek)) {
+      return { ...day, isActive: false };
+    }
     return {
       ...day,
-      isActive: dbDay.isActive,
+      isActive: true,
       startTime: dbDay.startTime,
       endTime: dbDay.endTime,
       lunchStart: dbDay.lunchStart || "",
@@ -86,12 +110,8 @@ export type ScheduleInput = {
 export function validateStudioSchedule(schedules: ScheduleInput[]): string | null {
   const active = schedules.filter((s) => s.isActive);
 
-  if (active.length === 0) {
-    return "Enable at least one day for bookings.";
-  }
-
-  if (active.length > STUDIO_MAX_ACTIVE_DAYS) {
-    return `You can enable at most ${STUDIO_MAX_ACTIVE_DAYS} days per week.`;
+  if (active.length !== STUDIO_MAX_ACTIVE_DAYS) {
+    return `Enable exactly ${STUDIO_MAX_ACTIVE_DAYS} days per week.`;
   }
 
   const dayNames: Record<number, string> = {

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { generateAvailableSlots } from "@/lib/slots";
 import { APP_TIMEZONE_OFFSET_HOURS } from "@/lib/timezone";
 import { siteConfig } from "@/lib/site-config";
+import { capWeeklyScheduleRows } from "@/lib/studio-schedule";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -38,16 +39,20 @@ export async function GET(request: NextRequest) {
     const requestDate = new Date(date);
     const dayOfWeek = requestDate.getDay();
 
-    const schedule = await prisma.advisorSchedule.findUnique({
-      where: {
-        advisorId_dayOfWeek: {
-          advisorId,
-          dayOfWeek,
-        },
-      },
+    const allSchedules = await prisma.advisorSchedule.findMany({
+      where: { advisorId, isActive: true },
+      orderBy: { dayOfWeek: "asc" },
     });
 
-    if (!schedule || !schedule.isActive) {
+    const allowedDaySet = new Set(
+      capWeeklyScheduleRows(allSchedules).map((s) => s.dayOfWeek)
+    );
+    const daySchedule =
+      allowedDaySet.has(dayOfWeek)
+        ? allSchedules.find((s: (typeof allSchedules)[number]) => s.dayOfWeek === dayOfWeek)
+        : undefined;
+
+    if (!daySchedule) {
       return NextResponse.json({ slots: [] });
     }
 
@@ -119,12 +124,12 @@ export async function GET(request: NextRequest) {
 
     // Generate available slots
     const scheduleData = {
-      dayOfWeek: schedule.dayOfWeek,
-      startTime: schedule.startTime,
-      endTime: schedule.endTime,
-      lunchStart: schedule.lunchStart,
-      lunchEnd: schedule.lunchEnd,
-      gapMinutes: schedule.gapMinutes,
+      dayOfWeek: daySchedule.dayOfWeek,
+      startTime: daySchedule.startTime,
+      endTime: daySchedule.endTime,
+      lunchStart: daySchedule.lunchStart,
+      lunchEnd: daySchedule.lunchEnd,
+      gapMinutes: daySchedule.gapMinutes,
     };
 
     const slots = generateAvailableSlots(
