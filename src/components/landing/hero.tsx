@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
-import { useTranslations } from "@/components/providers/locale-provider";
+import { useTranslations, useStudioBranding } from "@/components/providers/locale-provider";
 
 export function Hero() {
   const t = useTranslations();
+  const studio = useStudioBranding();
   const session = siteConfig.sessionTypes[0];
 
   return (
@@ -15,7 +16,7 @@ export function Hero() {
         <div className="grid items-center gap-0 lg:grid-cols-2 lg:min-h-[calc(100vh-4.25rem)]">
           <div className="relative order-1 aspect-[4/3] w-full overflow-hidden sm:aspect-[16/10] lg:order-2 lg:aspect-auto lg:min-h-full">
             <Image
-              src={siteConfig.images.hero}
+              src={studio.images.hero}
               alt={t.hero.imageAlt}
               fill
               priority
@@ -36,7 +37,7 @@ export function Hero() {
             </p>
             {session && (
               <p className="mt-4 text-sm text-[var(--studio-ink)]">
-                {t.sessions.types.reformer.duration} · {t.sessions.fromPrice} €{session.priceFrom}
+                {t.sessions.types.reformer.duration} · {t.sessions.fromPrice} €{studio.sessionPriceFrom}
               </p>
             )}
             <div className="mt-8 sm:mt-10">
@@ -45,7 +46,7 @@ export function Hero() {
               </Link>
             </div>
             <p className="mt-8 text-sm leading-relaxed text-[var(--studio-muted)] sm:mt-12">
-              {siteConfig.location}
+              {studio.location}
               <span className="mx-2 hidden text-[var(--studio-line)] sm:inline">·</span>
               <span className="mt-1 block sm:mt-0 sm:inline">{t.common.hours}</span>
             </p>

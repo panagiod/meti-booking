@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { resolveStudioAdvisor } from "@/lib/studio-advisor";
 import { mergeScheduleFromDb } from "@/lib/studio-schedule";
+import { getStudioContent } from "@/lib/studio-content-server";
 import { siteConfig, REFORMER_SERVICE_NAME } from "@/lib/site-config";
 
 export async function GET() {
@@ -17,7 +18,7 @@ export async function GET() {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
 
-    const [schedules, blockedTimes, service] = await Promise.all([
+    const [schedules, blockedTimes, service, content] = await Promise.all([
       prisma.advisorSchedule.findMany({
         where: { advisorId: advisor.id },
         orderBy: { dayOfWeek: "asc" },
@@ -31,11 +32,12 @@ export async function GET() {
         orderBy: { createdAt: "asc" },
         select: { durationMin: true, name: true },
       }),
+      getStudioContent(),
     ]);
 
     return NextResponse.json({
       studio: {
-        name: siteConfig.name,
+        name: content.name,
         advisorId: advisor.id,
         instructorName: advisor.user.name,
         instructorEmail: advisor.user.email,

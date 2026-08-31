@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { siteConfig } from "@/lib/site-config";
+import { useStudioBranding } from "@/components/providers/locale-provider";
 
 export function Logo({ className }: { className?: string }) {
+  const studio = useStudioBranding();
+
   return (
     <Link
       href="/"
@@ -11,7 +13,7 @@ export function Logo({ className }: { className?: string }) {
         className
       )}
     >
-      {siteConfig.name}
+      {studio.name}
     </Link>
   );
 }

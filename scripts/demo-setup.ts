@@ -154,6 +154,10 @@ async function main() {
     console.log(`  ✓ ${account.role.toLowerCase()}: ${account.email}`);
   }
 
+  const { ensureStudioContentSeed } = await import("../src/lib/studio-content-server");
+  await ensureStudioContentSeed();
+  console.log("[demo-setup] Studio website content seeded.");
+
   await prisma.$disconnect();
 
   console.log("\n[demo-setup] Demo environment is ready.\n");

@@ -16,11 +16,23 @@ import {
   type Locale,
   type Messages,
 } from "@/i18n";
+import {
+  buildDefaultStudioContent,
+  mergeMessages,
+  localeContentFromStudio,
+  studioBranding,
+} from "@/lib/studio-content";
+import type { StudioContentData } from "@/lib/studio-content-types";
+
+export type StudioBranding = ReturnType<typeof studioBranding>;
 
 type LocaleContextValue = {
   locale: Locale;
   messages: Messages;
   setLocale: (locale: Locale) => void;
+  studio: StudioBranding;
+  contentLoaded: boolean;
+  refreshStudioContent: () => Promise<void>;
 };
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
@@ -50,29 +62,70 @@ function persistLocale(locale: Locale) {
   document.documentElement.lang = locale;
 }
 
+const defaultContent = buildDefaultStudioContent();
+const defaultBranding = studioBranding(defaultContent);
+
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
   const [ready, setReady] = useState(false);
+  const [studioContent, setStudioContent] = useState<StudioContentData>(defaultContent);
+  const [contentLoaded, setContentLoaded] = useState(false);
+
+  const loadStudioContent = useCallback(async () => {
+    try {
+      const res = await fetch("/api/studio/content", { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      setStudioContent({
+        ...defaultContent,
+        name: data.branding.name,
+        location: data.branding.location,
+        phone: data.branding.phone,
+        email: data.branding.email,
+        heroImage: data.branding.images.hero,
+        reformerImage: data.branding.images.reformer,
+        sessionPriceFrom: data.branding.sessionPriceFrom,
+        contentEn: data.contentEn,
+        contentEl: data.contentEl,
+      });
+    } catch (error) {
+      console.error("Failed to load studio content:", error);
+    } finally {
+      setContentLoaded(true);
+    }
+  }, []);
 
   useEffect(() => {
     const stored = readStoredLocale();
     setLocaleState(stored);
     document.documentElement.lang = stored;
     setReady(true);
-  }, []);
+    loadStudioContent();
+  }, [loadStudioContent]);
 
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
     persistLocale(next);
   }, []);
 
+  const messages = useMemo(() => {
+    const base = getMessages(locale);
+    const overrides = localeContentFromStudio(studioContent, locale);
+    return mergeMessages(base, overrides);
+  }, [locale, studioContent]);
+
+  const studio = useMemo(() => studioBranding(studioContent), [studioContent]);
+
   const value = useMemo(
     () => ({
       locale,
-      messages: getMessages(locale),
+      messages,
       setLocale,
+      studio,
+      contentLoaded,
+      refreshStudioContent: loadStudioContent,
     }),
-    [locale, setLocale]
+    [locale, messages, setLocale, studio, contentLoaded, loadStudioContent]
   );
 
   if (!ready) {
@@ -92,6 +145,10 @@ export function useLocale() {
 
 export function useTranslations() {
   return useLocale().messages;
+}
+
+export function useStudioBranding() {
+  return useLocale().studio;
 }
 
 export function formatMessage(

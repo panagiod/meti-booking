@@ -465,6 +465,18 @@ model PlatformConfig {
 }
 
 // ============================================
+// STUDIO CONTENT (MeTi Pilates public site CMS)
+// ============================================
+
+model StudioContent {
+  id        String   @id @default("default")
+  data      Json
+  updatedAt DateTime @updatedAt
+
+  @@map("studio_content")
+}
+
+// ============================================
 // BLOG
 // ============================================
 

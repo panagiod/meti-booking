@@ -176,6 +176,7 @@ Tunnel URL is **ephemeral** (`*.trycloudflare.com`) — dies when VM stops. See 
 | `/checkout/result` | Post-payment status |
 | `/dashboard/*` | Client bookings (auth required) |
 | `/admin/schedule` | **Studio calendar** — weekly hours + blocked dates (admin) |
+| `/admin/content` | **Website content** — homepage text, images, contact (admin) |
 
 ### Legacy / instructor / admin (original Meti)
 

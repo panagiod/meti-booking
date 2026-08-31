@@ -12,9 +12,9 @@ import { useDialog } from "@/hooks/use-dialog";
 import { LoadingPage } from "@/components/ui/loading";
 import { authClient } from "@/lib/auth-client";
 import { getAvailableDates, type TimeSlot } from "@/lib/slots";
-import { siteConfig, isReformerService } from "@/lib/site-config";
+import { isReformerService } from "@/lib/site-config";
+import { useTranslations, useStudioBranding } from "@/components/providers/locale-provider";
 import { ArrowLeft } from "lucide-react";
-import { useTranslations } from "@/components/providers/locale-provider";
 
 interface Advisor {
   id: string;
@@ -42,6 +42,7 @@ export default function BookPage() {
   const router = useRouter();
   const dialog = useDialog();
   const t = useTranslations();
+  const studio = useStudioBranding();
   const [advisor, setAdvisor] = useState<Advisor | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -236,7 +237,7 @@ export default function BookPage() {
             className="inline-flex items-center gap-1.5 text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)]"
           >
             <ArrowLeft className="h-4 w-4" />
-            {siteConfig.name}
+            {studio.name}
           </Link>
         )}
       </div>

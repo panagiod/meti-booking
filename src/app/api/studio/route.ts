@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { siteConfig } from "@/lib/site-config";
 import { resolveStudioAdvisor } from "@/lib/studio-advisor";
+import { getStudioContent } from "@/lib/studio-content-server";
 
 /**
  * Returns the primary studio instructor used for customer booking at /book.
  */
 export async function GET() {
   try {
-    const advisor = await resolveStudioAdvisor();
+    const [advisor, content] = await Promise.all([resolveStudioAdvisor(), getStudioContent()]);
 
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
@@ -17,7 +17,7 @@ export async function GET() {
     return NextResponse.json({
       studio: {
         advisorId: advisor.id,
-        name: siteConfig.name,
+        name: content.name,
       },
     });
   } catch (error) {

@@ -18,6 +18,7 @@ import {
   CheckCircle,
   BookOpen,
   CalendarDays,
+  LayoutTemplate,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -49,6 +50,11 @@ const navigation = [
     name: "Calendar",
     href: "/admin/schedule",
     icon: CalendarDays,
+  },
+  {
+    name: "Website",
+    href: "/admin/content",
+    icon: LayoutTemplate,
   },
   {
     name: "Blog",
