@@ -12,8 +12,12 @@ Run the reformer booking app locally in ~5 minutes.
 |---------|------|
 | Homepage + `/book` | ✅ |
 | Reformer-only · 3 per slot | ✅ |
-| Tue/Thu/Sat afternoons | ✅ (default seed; admin can change) |
+| Mon/Wed/Sat afternoons (default seed) | ✅ (admin can change) |
+| 8-week booking horizon | ✅ |
+| EUR pricing | ✅ |
+| Europe/Athens timezone | ✅ |
 | EN + Greek (ΕΛ) + Greek fonts | ✅ |
+| Greek dates (nominative months) | ✅ e.g. Σεπτέμβριος |
 | Admin calendar (`/admin/schedule`) | ✅ |
 | Admin website CMS (`/admin/content`) | ✅ |
 | Email/password login | ✅ |
@@ -37,13 +41,33 @@ Open [http://localhost:3000](http://localhost:3000).
 
 `demo:setup` seeds on **first run**: users, reformer service, **Mon/Wed/Sat 14:00–17:00** schedule, and **website content** (EN/EL copy + images).
 
-**Re-running `pnpm demo:setup` preserves** admin calendar, blocked dates, and website CMS changes. Use `pnpm demo:setup -- --reset` only when you want to wipe schedule/services back to defaults.
+**Re-running `pnpm demo:setup` preserves** admin calendar, blocked dates, and website CMS changes.
+
+### Demo setup flags
+
+| Flag | Effect |
+|------|--------|
+| `--reset` | Re-seed schedule + services to defaults (keeps CMS + blocked dates) |
+| `--reset-content` | Reset website CMS to code defaults |
+
+```bash
+pnpm demo:setup -- --reset
+pnpm demo:setup -- --reset-content
+```
+
+### Production demo seed
+
+Blocked by default in production. To run intentionally:
+
+```bash
+ALLOW_DEMO_SEED=1 DEMO_PASSWORD="your-secure-password" pnpm demo:setup
+```
 
 ---
 
 ## Demo accounts
 
-Password: **`Demo1234!`**
+Password: **`Demo1234!`** (local default; override with `DEMO_PASSWORD` env)
 
 | Role | Email | Try |
 |------|-------|-----|
@@ -57,13 +81,13 @@ Password: **`Demo1234!`**
 
 ### Customer
 
-1. Homepage — switch to **ΕΛ**, note Greek fonts
+1. Homepage — switch to **ΕΛ**, note Greek fonts and month names on `/book`
 2. **Book** — open days from admin calendar; "X θέσεις" on slots
 3. Login as client → checkout (payment unavailable without MP)
 
 ### Admin
 
-1. Login as admin → **Calendar** — change open days/hours, block a date
+1. Login as admin → **Calendar** — change open days/hours, set lunch break, block a date
 2. **Website** — edit hero headline (EN + EL), upload a new hero image, save
 3. Open homepage in incognito — see your changes
 
@@ -85,6 +109,18 @@ pnpm demo:setup
 pnpm demo:setup -- --reset
 ```
 
+**Reset website CMS only:**
+
+```bash
+pnpm demo:setup -- --reset-content
+```
+
+**Reset schedule to Mon/Wed/Sat 2–5pm without full re-seed:**
+
+```bash
+pnpm exec tsx scripts/reset-studio-schedule.ts
+```
+
 ---
 
 ## Troubleshooting
@@ -93,6 +129,9 @@ pnpm demo:setup -- --reset
 |---------|-----|
 | DB connection refused | `docker compose ps` |
 | Auth errors | Check `BETTER_AUTH_SECRET` and URLs in `.env` |
+| `/book` shows "Something went wrong" | Ensure server is running; public APIs must not be blocked |
 | Images 404 after deploy | `images.unoptimized: true` in `next.config.ts` |
+| Image upload fails in prod | Set `BLOB_READ_WRITE_TOKEN` |
 | CMS not showing changes | Hard-refresh homepage; text needs **Save changes**, images save on upload |
-| Old schedule | `pnpm demo:setup -- --reset` (or edit in `/admin/schedule`) |
+| Old schedule | `pnpm demo:setup -- --reset` or edit `/admin/schedule` |
+| Greek months show genitive | Should be fixed — refresh; uses `date-locale.ts` |

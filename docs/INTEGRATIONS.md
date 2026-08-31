@@ -16,7 +16,7 @@ Admins replace images at **`/admin/content`** → Images & contact tab.
 | Environment | Storage |
 |-------------|---------|
 | Local dev | `public/uploads/studio/` |
-| Vercel (with `BLOB_READ_WRITE_TOKEN`) | Vercel Blob |
+| Production | **Vercel Blob** — `BLOB_READ_WRITE_TOKEN` required (503 without it) |
 
 API: `POST /api/admin/studio/upload` (fields: `file`, `imageKey` = `hero` \| `reformer`).
 
@@ -73,12 +73,15 @@ GOOGLE_CLIENT_SECRET="demo-google-client-secret"
 
 ### Current (Mercado Pago)
 
-Checkout uses **Mercado Pago Checkout Pro** per instructor (non-custodial). Not configured on demo.
+Checkout uses **Mercado Pago Checkout Pro** per instructor (non-custodial). Currency: **EUR**. Not configured on demo.
 
 1. Instructor logs in: `instructor@meti-pilates.studio` / `Demo1234!`
-2. **Advisor → Mercado Pago** — add test Public Key + Access Token
+2. **Advisor → Mercado Pago** — add Public Key + Access Token (encrypted at rest via `ENCRYPTION_KEY`)
 3. Set `APP_URL` to public domain
-4. Webhook: `https://your-domain.com/api/webhooks/mercadopago`
+4. Set `ENCRYPTION_KEY` in production (`openssl rand -base64 32`)
+5. Webhook: `https://your-domain.com/api/webhooks/mercadopago`
+
+Pricing is computed server-side via `GET /api/checkout/quote` — client cannot override discounts.
 
 Without MP: checkout shows **Payment unavailable**.
 
@@ -100,6 +103,19 @@ User requested **Stripe or Revolut** with Apple Pay / Google Pay:
 - Cookie: `flow-locale`
 - Provider: root layout (`LocaleProvider`)
 - Customer pages translated; admin/advisor dashboards mostly English
+- **Greek dates:** nominative month names (Σεπτέμβριος, Οκτώβριος) — see `src/lib/date-locale.ts`
+- Greek genitive forms from `Intl`/`date-fns` default locale are **not** used on customer pages
+
+---
+
+## Security integrations
+
+| Concern | Env / file |
+|---------|------------|
+| MP token encryption | `ENCRYPTION_KEY` → `src/lib/encryption.ts` |
+| Cron auth | `CRON_SECRET` → fail-closed in production |
+| Admin guard | `src/lib/admin-auth.ts`, `admin/layout.tsx` |
+| Public route allowlist | `src/proxy.ts` |
 
 ---
 
@@ -110,7 +126,11 @@ User requested **Stripe or Revolut** with Apple Pay / Google Pay:
 | Images | ✅ | Local `/public/images/` |
 | Email login | ✅ | Demo accounts |
 | Greek UI | ✅ | EN \| ΕΛ switcher |
+| Greek dates | ✅ | Nominative months on `/book` |
 | Reformer booking | ✅ | `/book` only |
 | 3-slot capacity | ✅ | `siteConfig.slotCapacity` |
+| EUR pricing | ✅ | `siteConfig.currency` |
+| Europe/Athens TZ | ✅ | `STUDIO_TIMEZONE` |
 | Google login | ❌ | Real OAuth needed |
 | Payments | ❌ | Instructor MP or future Stripe |
+| Blob uploads (prod) | ❌ | Needs `BLOB_READ_WRITE_TOKEN` |

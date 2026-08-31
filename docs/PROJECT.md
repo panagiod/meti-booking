@@ -13,14 +13,19 @@
 | **Brand** | **MeTi Pilates** |
 | **Customer site** | Homepage hero + `/book` + login + checkout |
 | **Languages** | English + Greek (`EN \| ΕΛ`); cookie `flow-locale` |
-| **Session** | **Reformer Session** — 50 min, €45 demo |
+| **Session** | **Reformer Session** — 50 min, **€45** demo |
+| **Currency** | **EUR** (`siteConfig.currency`) |
+| **Timezone** | **Europe/Athens** (`STUDIO_TIMEZONE`) |
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |
-| **Weekly schedule** | **Admin-configurable** — any days/hours (demo: Mon, Wed, Sat) |
-| **Admin calendar** | `/admin/schedule` — open days, hours, blocked dates (DB) |
+| **Booking window** | **8 weeks ahead** (`bookingWeeksAhead`) |
+| **Lead time** | **2 hours** minimum before first bookable slot |
+| **Weekly schedule** | **Admin-configurable** — any days/hours (demo seed: Mon, Wed, Sat) |
+| **Admin calendar** | `/admin/schedule` — days, hours, lunch break, gap, blocked dates |
 | **Admin CMS** | `/admin/content` — text, images, contact (DB-backed) |
 | **Greek typography** | Noto Sans (body) + GFS Didot (headlines) when `lang="el"` |
-| **OG / favicons** | Reformer hero image + MeTi branding |
-| **Payments** | Mercado Pago in code — **not on demo**; Stripe/Revolut planned (#2–#7) |
+| **Greek dates** | Nominative month names (Σεπτέμβριος) via `date-locale.ts` |
+| **Security** | Admin server guard, proxy middleware, MP token encryption |
+| **Payments** | Mercado Pago in code — **not on demo**; server-side checkout quotes |
 | **Legacy** | Meti advisory marketplace: `/services`, advisor/admin dashboards, LiveKit |
 
 ---
@@ -33,8 +38,10 @@
 
 - Reformer auto-selected (no session picker).
 - Slots show **remaining spots** or **Full** / **Γεμάτο** (Greek).
-- Capacity enforced in `POST /api/appointments` (409 if full).
-- Only **Tue/Thu/Sat afternoons** bookable (configurable in admin calendar).
+- Capacity enforced in `POST /api/appointments` (409 if full, serializable transaction).
+- Server validates slot against schedule, blocked times, lead hours, and capacity.
+- Demo seed: **Mon/Wed/Sat 14:00–17:00** (admin can change any days/hours).
+- Calendar shows dates up to **8 weeks** ahead.
 
 ---
 
@@ -42,12 +49,12 @@
 
 | Page | URL | What it manages |
 |------|-----|-----------------|
-| **Calendar** | `/admin/schedule` | Weekly open days/hours (max 3 days), block holidays |
+| **Calendar** | `/admin/schedule` | Weekly open days/hours, lunch break, gap, block holidays |
 | **Website** | `/admin/content` | Hero copy EN/EL, SEO, images, name, address, email, price |
 
 Full admin guide: **[docs/ADMIN.md](./ADMIN.md)**
 
-Demo admin: `admin@demo.meti-booking.local` / `Demo1234!`
+Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` env)
 
 ---
 
@@ -59,6 +66,8 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!`
 | **Live images & contact** | DB `studio_content` | `src/lib/site-config.ts` |
 | **Booking schedule** | DB `advisor_schedule` | `src/lib/studio-schedule.ts` |
 | **Slot capacity** | `siteConfig.slotCapacity` (3) | code only |
+| **Booking window** | `siteConfig.bookingWeeksAhead` (8) | code only |
+| **Timezone** | `STUDIO_TIMEZONE` env | `Europe/Athens` |
 | **Reformer service** | DB `advisor_services` | `scripts/demo-setup.ts` |
 | **Code defaults** | `site-config.ts`, locale files | used on first seed |
 
@@ -70,40 +79,42 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!`
 
 | File | Purpose |
 |------|---------|
-| `src/lib/site-config.ts` | Code defaults: capacity, reformer filter, fallback branding |
+| `src/lib/site-config.ts` | EUR, capacity, booking window, reformer filter |
 | `src/lib/studio-content.ts` | Content types, defaults, message merge |
 | `src/lib/studio-content-server.ts` | DB CRUD for `StudioContent` |
+| `src/lib/date-locale.ts` | Greek nominative months for date-fns |
+| `src/lib/timezone.ts` | Europe/Athens slot conversion |
 | `src/components/providers/locale-provider.tsx` | i18n + loads `/api/studio/content` |
-| `src/components/landing/hero.tsx` | Homepage — uses `useTranslations()` + `useStudioBranding()` |
-| `src/i18n/locales/en.ts`, `el.ts` | Static translation defaults |
-| `src/styles/studio.css` | Design tokens + Greek font rules |
-| `public/images/hero.jpg`, `reformer.jpg` | Default bundled photos |
+| `src/proxy.ts` | Auth middleware + public route allowlist |
 
 ### Booking & slots
 
 | File | Purpose |
 |------|---------|
 | `src/lib/slots.ts` | Slot generation + capacity counting |
-| `src/lib/studio-schedule.ts` | 3-day/week validation, afternoon defaults |
-| `src/lib/studio-advisor.ts` | Resolve studio instructor |
-| `src/app/api/slots/route.ts` | Public slots (+ blocked times) |
-| `src/app/api/appointments/route.ts` | Create booking (transactional capacity) |
+| `src/lib/slot-booking.ts` | Server-side slot validation |
+| `src/lib/studio-schedule.ts` | Afternoon defaults, demo seed days |
+| `src/app/api/slots/route.ts` | Public slots (read-only, no writes on GET) |
+| `src/app/api/appointments/route.ts` | Create booking (transactional) |
+| `src/app/api/checkout/quote/route.ts` | Server-side pricing (ignores client discount) |
 
-### Admin
+### Security & payments
 
 | File | Purpose |
 |------|---------|
-| `src/app/(platform)/admin/schedule/page.tsx` | Calendar UI |
+| `src/lib/admin-auth.ts` | `requireAdminSession()` |
+| `src/lib/encryption.ts` | AES-256-GCM for secrets at rest |
+| `src/lib/advisor-mp.ts` | Encrypt/decrypt MP access tokens |
+| `src/lib/payment-verify.ts` | Payment amount/reference checks |
+| `src/app/(platform)/admin/layout.tsx` | Server-side admin role guard |
+
+### Admin UI
+
+| File | Purpose |
+|------|---------|
+| `src/app/(platform)/admin/schedule/page.tsx` | Calendar UI (lunch/gap fields) |
 | `src/app/(platform)/admin/content/page.tsx` | Website CMS UI |
 | `src/app/api/admin/studio/*` | Schedule, content, upload APIs |
-
-### Assets & branding
-
-| File | Purpose |
-|------|---------|
-| `src/app/opengraph-image.tsx` | Dynamic OG image (hero photo + copy) |
-| `scripts/generate-brand-assets.ts` | Regenerate favicons + `og-image.png` |
-| `public/uploads/studio/` | Admin-uploaded images (local dev) |
 
 ---
 
@@ -111,12 +122,12 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!`
 
 | Model | Purpose |
 |-------|---------|
-| `StudioContent` | Singleton CMS: `id="default"`, `data` JSON (name, images, EN/EL copy) |
-| `AdvisorSchedule` | Weekly hours per `dayOfWeek` (0=Sun) |
+| `StudioContent` | Singleton CMS: `id="default"`, `data` JSON |
+| `AdvisorSchedule` | Weekly hours per `dayOfWeek` (0=Sun), lunch, gap |
 | `BlockedTime` | Date ranges excluded from booking |
-| `AdvisorService` | Reformer Session — duration, price |
+| `AdvisorService` | Reformer Session — duration, price (EUR cents) |
 | `Appointment` | Bookings; capacity by exact `scheduledAt` |
-| `AdvisorProfile` | Studio instructor |
+| `AdvisorProfile` | Studio instructor; encrypted `mpAccessToken` |
 
 Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
 
@@ -124,16 +135,25 @@ Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
 
 ## API reference
 
-### Public (customer)
+### Public (no login required)
 
 | Method | Route | Purpose |
 |--------|-------|---------|
 | `GET` | `/api/studio` | Instructor ID + studio name |
 | `GET` | `/api/studio/content` | CMS content for homepage |
-| `GET` | `/api/advisors/[id]` | Schedule + reformer services only |
+| `GET` | `/api/advisors/[id]` | Schedule + reformer services |
+| `GET` | `/api/advisors/[id]/mercadopago` | MP connection status |
 | `GET` | `/api/slots` | Slots with capacity + blocked times |
-| `POST` | `/api/appointments` | Create booking (409 if full) |
+| `GET` | `/api/checkout/quote` | Server-side price breakdown |
+| `GET` | `/api/services` | Service catalog (legacy) |
+| `GET` | `/api/promotions` | Active promotions |
 | `POST` | `/api/auth/*` | better-auth |
+
+### Authenticated
+
+| Method | Route | Purpose |
+|--------|-------|---------|
+| `POST` | `/api/appointments` | Create booking (session required) |
 
 ### Admin (require `role === ADMIN`)
 
@@ -141,9 +161,11 @@ Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
 |--------|-------|---------|
 | `GET/PUT` | `/api/admin/studio/schedule` | Weekly hours |
 | `GET/POST/DELETE` | `/api/admin/studio/blocked-times` | Block dates |
-| `GET/PUT` | `/api/admin/studio/content` | Website CMS |
-| `POST` | `/api/admin/studio/upload` | Image upload (hero/reformer) |
+| `GET/PUT` | `/api/admin/studio/content` | Website CMS (strict parse) |
+| `POST` | `/api/admin/studio/upload` | Image upload (blob required in prod) |
 | `GET` | `/api/admin/studio` | Calendar page data |
+
+> **Important:** `/api/advisors` and `/api/services` must stay on the proxy public allowlist or `/book` breaks for guests.
 
 ---
 
@@ -156,31 +178,30 @@ Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
 | Provider | `LocaleProvider` in root layout |
 | Hooks | `useTranslations()`, `useStudioBranding()`, `useLocale()` |
 | Greek fonts | `html[lang="el"]` → Noto Sans body, GFS Didot display |
-| English fonts | DM Sans body, Cormorant Garamond display |
+| Greek dates | Nominative months (Σεπτέμβριος) — `src/lib/date-locale.ts` |
 | Auto-detect | `navigator.language` starting with `el` → Greek |
 
 **Customer pages translated:** homepage, `/book`, auth, checkout, client dashboard nav.  
 **Admin/advisor dashboards:** English only.
-
-CMS overrides merge over locale files for: `meta`, `hero`, `common.hours`.
 
 ---
 
 ## Slot capacity & schedule
 
 1. `siteConfig.slotCapacity = 3`
-2. Default schedule: **Tue/Thu/Sat 14:00–17:00**, gap 10 min → **3 slots/day**
-3. `GET /api/slots` — counts appointments, applies blocked times
-4. `POST /api/appointments` — transaction, 409 when full
-5. Admin calendar enforces max **3 active days/week**
+2. Demo seed: **Mon/Wed/Sat 14:00–17:00**, gap 10 min → **3 slots/day**
+3. `GET /api/slots` — counts appointments, applies blocked times (read-only)
+4. `POST /api/appointments` — serializable transaction, 409 when full
+5. All slot times interpreted in **Europe/Athens**
+6. Booking horizon: **8 weeks** (`siteConfig.bookingWeeksAhead`)
 
-Tests: `tests/unit/slots.test.ts`, `tests/unit/studio-schedule.test.ts`
+Tests: `tests/unit/slots.test.ts`, `tests/unit/studio-schedule.test.ts`, `tests/unit/timezone.test.ts`, `tests/unit/date-locale.test.ts`
 
 ---
 
 ## Demo accounts
 
-Password: **`Demo1234!`**
+Password: **`Demo1234!`** locally (override with `DEMO_PASSWORD`; not printed in production)
 
 | Role | Email | Use |
 |------|-------|-----|
@@ -192,15 +213,24 @@ Password: **`Demo1234!`**
 
 - Users (admin, instructor, client)
 - One service: **Reformer Session** (50 min, €45)
-- Schedule: **Tue/Thu/Sat 14:00–17:00**
+- Schedule: **Mon/Wed/Sat 14:00–17:00**
 - **`studio_content`** row with default EN/EL copy and images
 - Pilates category + instructor link
+
+### Flags
+
+| Flag | Effect |
+|------|--------|
+| `--reset` | Re-seed schedule + services (keeps CMS) |
+| `--reset-content` | Reset website CMS to defaults |
+
+Production requires `ALLOW_DEMO_SEED=1` and `DEMO_PASSWORD`.
 
 ---
 
 ## Environment variables
 
-Copy `.env.demo.example` → `.env`.
+Copy `.env.demo.example` → `.env`. See `.env.example` for production.
 
 | Variable | Required | Notes |
 |----------|----------|-------|
@@ -208,9 +238,14 @@ Copy `.env.demo.example` → `.env`.
 | `BETTER_AUTH_SECRET` | ✅ | `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | ✅ | Public URL, no trailing slash |
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | ✅ | Same |
-| `BLOB_READ_WRITE_TOKEN` | ⚠️ | Vercel Blob for admin image uploads in prod |
+| `STUDIO_TIMEZONE` | ⚠️ | Default `Europe/Athens` |
+| `ENCRYPTION_KEY` | ✅ prod | MP token encryption; `openssl rand -base64 32` |
+| `BLOB_READ_WRITE_TOKEN` | ✅ prod uploads | Required for admin image uploads in production |
+| `CRON_SECRET` | ✅ prod | Cron endpoints fail-closed without it |
 | `GOOGLE_CLIENT_ID/SECRET` | ⚠️ | Placeholder on demo |
 | `APP_URL` | ⚠️ | MP webhooks |
+| `DEMO_PASSWORD` | prod seed | Required with `ALLOW_DEMO_SEED=1` |
+| `ALLOW_DEMO_SEED` | prod seed | Set to `1` to allow `demo:setup` in production |
 | `STUDIO_ADVISOR_ID` | ❌ | Optional instructor pin |
 
 ---
@@ -228,7 +263,8 @@ pnpm build && pnpm start
 pnpm test:unit
 pnpm test:e2e
 
-pnpm exec tsx scripts/generate-brand-assets.ts   # favicons + og-image.png
+pnpm exec tsx scripts/generate-brand-assets.ts
+pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 ```
 
 ---
@@ -256,40 +292,9 @@ pnpm exec tsx scripts/generate-brand-assets.ts   # favicons + og-image.png
 
 | Route | Description |
 |-------|-------------|
-| `/services`, `/advisor/*`, `/admin/advisors` | Original Meti marketplace |
+| `/services`, `/advisor/[id]` | Original Meti marketplace |
+| `/advisor/schedule`, etc. | Advisor dashboard (auth required) |
 | `/call/[id]` | LiveKit video |
-
----
-
-## App directory map
-
-```
-src/app/
-  (marketing)/          # Public MeTi site
-    page.tsx            # Hero only
-    book/page.tsx
-  (auth)/               # Login/register
-  (platform)/
-    checkout/
-    admin/
-      schedule/         # Calendar admin
-      content/          # Website CMS
-  api/
-    studio/content/     # Public CMS API
-    admin/studio/       # Admin calendar + CMS APIs
-src/components/
-  landing/              # hero, navbar, footer
-  booking/              # calendar, slots, summary
-  providers/            # locale-provider (i18n + CMS)
-src/lib/
-  site-config.ts
-  studio-content*.ts
-  studio-schedule.ts
-  slots.ts
-prisma/schema.prisma    # StudioContent model
-public/images/          # Default photos
-public/uploads/studio/  # Admin uploads
-```
 
 ---
 
@@ -298,34 +303,24 @@ public/uploads/studio/  # Admin uploads
 | Topic | Status |
 |-------|--------|
 | Google OAuth | Placeholder — email/password works |
-| Payments | MP not configured |
+| Payments | MP not configured on demo |
 | Stripe / Revolut | Issues #2–#7 |
-| Permanent hosting | #10 — `render.yaml` |
+| Permanent hosting | #10 |
 | Guest checkout | #8 |
 | Admin/advisor UI Greek | Not translated |
-| Timezone | Colombia UTC-5 legacy — consider Europe/Athens |
+| Timezone Europe/Athens | ✅ Done |
+| Server slot validation | ✅ Done |
+| MP token encryption | ✅ Done |
+| Admin route guard | ✅ Done |
+| EUR currency | ✅ Done |
+| Greek nominative months | ✅ Done |
 | OG image | ✅ Done |
-| Image loading on tunnel | ✅ `images.unoptimized: true` |
 | Admin CMS | ✅ `/admin/content` |
 | Admin calendar | ✅ `/admin/schedule` |
 
 ### GitHub issues
 
-[#1](https://github.com/panagiod/meti-booking/issues/1)–[#10](https://github.com/panagiod/meti-booking/issues/10) — see repo issues for payments, OAuth, hosting.
-
----
-
-## Project history
-
-1. **Meti** — advisory marketplace (video, multi-category).
-2. **Flow Pilates** — demo rebrand.
-3. **MeTi Pilates** — reformer-only, Greek i18n, mobile, 3-slot capacity.
-4. **Homepage** — single hero; "Book your session."
-5. **Admin calendar** — 3 days/week, afternoon hours.
-6. **Admin CMS** — editable text + images in DB.
-7. **Greek fonts** — Noto Sans + GFS Didot.
-8. **OG/favicons** — reformer hero branding.
-9. **Payments** — Stripe/Revolut planned, not done.
+[#1](https://github.com/panagiod/meti-booking/issues/1)–[#31](https://github.com/panagiod/meti-booking/issues/31) — payments, security audit, hosting. Many audit items (#11–#25) addressed in Aug 2026.
 
 ---
 
@@ -337,20 +332,21 @@ public/uploads/studio/  # Admin uploads
 4. **Scope:** reformer-only public site unless asked otherwise.
 5. **Copy:** admin CMS overrides DB; code defaults in `en.ts`/`el.ts`/`site-config.ts`.
 6. **Schedule:** admin calendar or `studio-schedule.ts` + `demo-setup.ts`.
-7. **Images:** admin upload or `public/images/`; run `generate-brand-assets.ts` after icon changes.
-8. **Schema changes:** `pnpm db:migrate` + update `demo-setup.ts`.
-9. **Payments:** MP legacy — Stripe planned (#4).
+7. **Timezone:** always use `src/lib/timezone.ts` — never raw `Date` for slot logic.
+8. **Public APIs:** keep `/api/advisors`, `/api/slots`, `/api/studio` on proxy allowlist.
+9. **Schema changes:** `pnpm db:migrate` + update `demo-setup.ts`.
 
 ### Recent commits (Aug 2026)
 
 | Commit | Change |
 |--------|--------|
-| `ec69328` | Admin website content editor |
-| `ff2c292` | Greek fonts + translations |
-| `b911129` | OG thumbnail + favicons |
-| `8c205a6` | 3-day calendar + admin schedule |
-| `42cc13e` | PROJECT.md handoff doc |
-| `6307115` | MeTi Pilates rebrand |
+| `a09d577` | Greek nominative month names |
+| `40ec61f` | Public `/api/advisors` + `/api/services` for booking |
+| `2025a7b` | EUR, MP encryption, admin guard, blob/CMS/demo hardening |
+| `84cd32c` | Bootstrap auth, payment verify, server checkout quotes |
+| `73aaf61` | Europe/Athens timezone, slot validation, 8-week horizon |
+| `8b520cb` | Reset schedule script (Mon/Wed/Sat 2–5pm) |
+| `40347bd` | Admin persistence across saves and demo re-runs |
 
 ---
 

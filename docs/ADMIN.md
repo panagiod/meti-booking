@@ -39,8 +39,10 @@ Controls when customers can book on the public `/book` page.
 
 1. **Enable any days** — toggle Mon–Sun; at least one day required to save
 2. **Set start/end times** per day — each day can have different hours
-3. **Save schedule** — updates public booking immediately
-4. **Block dates** — holidays/closures; blocked days hidden from `/book`
+3. **Set gap between slots** — minutes between session start times (default 10)
+4. **Set lunch break** — optional `lunch start` / `lunch end` to block mid-day slots
+5. **Save schedule** — updates public booking immediately
+6. **Block dates** — holidays/closures; blocked days hidden from `/book`
 
 ### APIs (admin auth required)
 
@@ -91,7 +93,7 @@ Editable per language:
 
 - Formats: JPEG, PNG, WebP (max 5MB)
 - **Local dev:** saved to `public/uploads/studio/`
-- **Production (Vercel):** uses Vercel Blob if `BLOB_READ_WRITE_TOKEN` is set
+- **Production:** requires `BLOB_READ_WRITE_TOKEN` (Vercel Blob); returns 503 without it
 - Click **Replace image** → file uploads immediately; click **Save changes** to persist URL in DB
 
 ### How it reaches the public site
@@ -134,7 +136,20 @@ All admin changes are stored in PostgreSQL:
 | Website text | `studio_content` | Click **Save changes** |
 | Image upload | `studio_content` | Saved immediately on upload |
 
-Re-running `pnpm demo:setup` **does not** overwrite existing calendar or CMS data. Use `pnpm demo:setup -- --reset` to re-seed schedule/services.
+Re-running `pnpm demo:setup` **does not** overwrite existing calendar or CMS data.
+
+| Command | Effect |
+|---------|--------|
+| `pnpm demo:setup -- --reset` | Re-seed schedule + services |
+| `pnpm demo:setup -- --reset-content` | Reset website CMS to defaults |
+
+---
+
+## Security
+
+- **Admin pages** (`/admin/*`) require `role === ADMIN` — enforced server-side in `admin/layout.tsx`
+- **Admin APIs** (`/api/admin/*`) require admin session via `requireAdminSession()`
+- **Proxy** (`src/proxy.ts`) redirects unauthenticated users; public booking APIs (`/api/studio`, `/api/advisors`, `/api/slots`) are allowlisted
 
 ---
 
@@ -149,6 +164,12 @@ Re-seed schedule defaults only:
 
 ```bash
 pnpm demo:setup -- --reset
+```
+
+Reset website CMS only:
+
+```bash
+pnpm demo:setup -- --reset-content
 ```
 
 ---

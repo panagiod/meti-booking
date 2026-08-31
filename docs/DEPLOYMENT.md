@@ -51,9 +51,12 @@ A phased plan to go from **$0/month demo** to the **cheapest sustainable product
    BETTER_AUTH_SECRET=<openssl rand -base64 32>
    BETTER_AUTH_URL=https://your-app.vercel.app
    NEXT_PUBLIC_BETTER_AUTH_URL=https://your-app.vercel.app
+   STUDIO_TIMEZONE=Europe/Athens
+   ENCRYPTION_KEY=<openssl rand -base64 32>
+   CRON_SECRET=<openssl rand -hex 24>
    GOOGLE_CLIENT_ID=...
    GOOGLE_CLIENT_SECRET=...
-   CRON_SECRET=<openssl rand -hex 24>
+   BLOB_READ_WRITE_TOKEN=...   # required for admin image uploads
    ```
 
 5. **Run migrations** (one-time, from your machine):
@@ -62,10 +65,14 @@ A phased plan to go from **$0/month demo** to the **cheapest sustainable product
    DATABASE_URL="your-neon-url" pnpm db:deploy
    ```
 
-6. **Seed demo data** (optional):
+6. **Seed demo data** (optional — local/staging only):
 
    ```bash
-   DATABASE_URL="your-neon-url" BETTER_AUTH_URL="https://your-app.vercel.app" pnpm demo:setup
+   DATABASE_URL="your-neon-url" \
+   BETTER_AUTH_URL="https://your-app.vercel.app" \
+   ALLOW_DEMO_SEED=1 \
+   DEMO_PASSWORD="your-secure-password" \
+   pnpm demo:setup
    ```
 
 7. **Configure Google OAuth**
@@ -214,12 +221,16 @@ Hitting free-tier limits or need full control?
 | `DATABASE_URL` | Neon | Neon | VPS Postgres |
 | `BETTER_AUTH_SECRET` | ✅ | ✅ | ✅ |
 | `BETTER_AUTH_URL` | vercel.app | custom domain | custom domain |
-| `GOOGLE_CLIENT_ID/SECRET` | ✅ | ✅ | ✅ |
+| `STUDIO_TIMEZONE` | ✅ | ✅ | ✅ |
+| `ENCRYPTION_KEY` | ✅ | ✅ | ✅ |
 | `CRON_SECRET` | ✅ | ✅ | ✅ |
+| `GOOGLE_CLIENT_ID/SECRET` | ✅ | ✅ | ✅ |
+| `BLOB_READ_WRITE_TOKEN` | ✅ uploads | ✅ | replace with R2/local |
 | `RESEND_API_KEY` | optional | recommended | optional |
 | `LIVEKIT_*` | optional | when needed | when needed |
-| `BLOB_READ_WRITE_TOKEN` | optional | when needed | replace with R2/local |
 | `MERCADOPAGO_ACCESS_TOKEN` | when needed | when needed | when needed |
+| `APP_URL` | when MP | when MP | when MP |
+| `DEMO_PASSWORD` | — | — | only with `ALLOW_DEMO_SEED=1` |
 
 ## Recommended path for this project
 

@@ -14,7 +14,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 | Doc | Contents |
 |-----|----------|
-| **[docs/PROJECT.md](docs/PROJECT.md)** | Architecture, APIs, DB, i18n, demo |
+| **[docs/PROJECT.md](docs/PROJECT.md)** | Architecture, APIs, DB, i18n, demo, security |
 | **[docs/ADMIN.md](docs/ADMIN.md)** | Admin calendar + website CMS |
 
 ## What this repo is
@@ -23,6 +23,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **Repo name:** `meti-booking` (legacy Meti advisory marketplace)
 - **Customer routes:** `/`, `/book`, `/login`, `/checkout`
 - **Admin (MeTi):** `/admin/schedule`, `/admin/content`
+- **Currency:** EUR · **Timezone:** Europe/Athens · **Booking window:** 8 weeks
 - **Legacy:** `/services`, `/advisor/*`, LiveKit video
 
 ## Development workflow
@@ -30,6 +31,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - PRs preferred; CI runs `pnpm test:unit` + `pnpm test:e2e`
 - Schema changes: `pnpm db:migrate` + update `demo-setup.ts`
 - After seed changes: `pnpm demo:setup`
+- Production: set `ENCRYPTION_KEY`, `STUDIO_TIMEZONE`, `BLOB_READ_WRITE_TOKEN`
 
 ## Common tasks
 
@@ -39,12 +41,15 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | **Code copy defaults** | `src/i18n/locales/en.ts`, `el.ts` |
 | **Live booking schedule** | Admin `/admin/schedule` → `advisor_schedule` |
 | **Schedule code defaults** | `src/lib/studio-schedule.ts`, `demo-setup.ts` |
-| Slot capacity | `src/lib/site-config.ts` (`slotCapacity: 3`) |
+| Slot capacity / booking window | `src/lib/site-config.ts` |
+| Timezone / slot times | `src/lib/timezone.ts` |
+| Greek date formatting | `src/lib/date-locale.ts` |
 | Booking UI | `src/app/(marketing)/book/page.tsx` |
-| Slot logic | `src/lib/slots.ts`, `src/app/api/slots/route.ts` |
-| CMS server logic | `src/lib/studio-content-server.ts` |
-| Greek fonts | `src/app/layout.tsx` + `src/styles/studio.css` |
-| OG / favicons | `src/app/opengraph-image.tsx`, `scripts/generate-brand-assets.ts` |
+| Slot logic + validation | `src/lib/slots.ts`, `src/lib/slot-booking.ts` |
+| Auth middleware | `src/proxy.ts` (keep public APIs allowlisted) |
+| Admin auth | `src/lib/admin-auth.ts`, `admin/layout.tsx` |
+| MP encryption | `src/lib/encryption.ts`, `src/lib/advisor-mp.ts` |
+| Checkout pricing | `src/app/api/checkout/quote/route.ts` |
 
 ## Demo
 
@@ -52,12 +57,18 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 pnpm demo:setup && pnpm dev
 ```
 
-Password: `Demo1234!` — admin: `admin@demo.meti-booking.local`
+Password: `Demo1234!` locally — admin: `admin@demo.meti-booking.local`
+
+Flags: `--reset` (schedule), `--reset-content` (CMS)
 
 ## Do not assume
 
 - Multiple session types on public site — **reformer only**
 - Copy only in locale files — **admin CMS overrides DB**
-- Mon–Fri full-day schedule — **3 afternoons/week default**
-- Payments work — MP not configured; Stripe planned
+- Tue/Thu/Sat schedule — demo seed is **Mon/Wed/Sat**
+- COP currency — everything is **EUR**
+- Colombia timezone — use **Europe/Athens** via `timezone.ts`
+- Greek genitive months — use **nominative** via `date-locale.ts`
+- `/api/advisors` needs auth — must be **public** for `/book`
+- Payments work — MP not configured on demo; Stripe planned
 - External image URLs — use `/public/images/` or admin upload
