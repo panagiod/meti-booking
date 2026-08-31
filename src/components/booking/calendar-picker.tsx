@@ -11,6 +11,7 @@ import {
   isSameMonth,
   isBefore,
   startOfDay,
+  isAfter,
 } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,12 +23,14 @@ interface CalendarPickerProps {
   availableDates: DaySlots[];
   selectedDate: DaySlots | null;
   onSelect: (date: DaySlots) => void;
+  isLoading?: boolean;
 }
 
 export function CalendarPicker({
   availableDates,
   selectedDate,
   onSelect,
+  isLoading = false,
 }: CalendarPickerProps) {
   const t = useTranslations();
   const { locale } = useLocale();
@@ -45,6 +48,9 @@ export function CalendarPicker({
 
   const availableDatesMap = new Map(availableDates.map((d) => [d.dateStr, d]));
 
+  const minDate = availableDates[0]?.date;
+  const maxDate = availableDates[availableDates.length - 1]?.date;
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <div>
@@ -54,6 +60,9 @@ export function CalendarPicker({
         <p className="mt-2 text-sm text-[var(--studio-muted)] sm:text-base">
           {t.booking.pickDateSub}
         </p>
+        {isLoading && (
+          <p className="mt-2 text-xs text-[var(--studio-muted)]">Loading availability…</p>
+        )}
       </div>
 
       <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-4 sm:p-6">
@@ -61,7 +70,10 @@ export function CalendarPicker({
           <button
             type="button"
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-            className="rounded-full p-2 text-[var(--studio-muted)] transition hover:bg-[var(--studio-warm)] hover:text-[var(--studio-ink)]"
+            disabled={
+              minDate ? !isAfter(startOfMonth(currentMonth), startOfMonth(minDate)) : false
+            }
+            className="rounded-full p-2 text-[var(--studio-muted)] transition hover:bg-[var(--studio-warm)] hover:text-[var(--studio-ink)] disabled:opacity-30"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -71,7 +83,10 @@ export function CalendarPicker({
           <button
             type="button"
             onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-            className="rounded-full p-2 text-[var(--studio-muted)] transition hover:bg-[var(--studio-warm)] hover:text-[var(--studio-ink)]"
+            disabled={
+              maxDate ? !isBefore(startOfMonth(currentMonth), startOfMonth(maxDate)) : false
+            }
+            className="rounded-full p-2 text-[var(--studio-muted)] transition hover:bg-[var(--studio-warm)] hover:text-[var(--studio-ink)] disabled:opacity-30"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -93,7 +108,7 @@ export function CalendarPicker({
           {monthDays.map((day) => {
             const dateStr = format(day, "yyyy-MM-dd");
             const dayData = availableDatesMap.get(dateStr);
-            const isAvailable = dayData?.hasAvailability ?? false;
+            const isAvailable = !isLoading && (dayData?.hasAvailability ?? false);
             const isSelected = selectedDate?.dateStr === dateStr;
             const isPast = isBefore(day, startOfDay(new Date()));
             const isCurrentMonth = isSameMonth(day, currentMonth);

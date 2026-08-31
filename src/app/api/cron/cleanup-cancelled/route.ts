@@ -1,13 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireCronAuth } from "@/lib/cron-auth";
 
-// Cron: Nightly cleanup of CANCELLED appointments
-// Runs once daily (Hobby plan). Removes cancelled appointments to keep the DB clean.
 export async function GET(request: Request) {
-  const authHeader = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authError = requireCronAuth(request);
+  if (authError) return authError;
 
   try {
     // Delete all CANCELLED appointments (no dependencies: Review and ChatMessage have onDelete: Cascade)

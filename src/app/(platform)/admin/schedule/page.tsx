@@ -173,8 +173,8 @@ export default function AdminSchedulePage() {
         credentials: "include",
         body: JSON.stringify({
           title: blockTitle,
-          startDate: new Date(blockStart).toISOString(),
-          endDate: new Date(blockEnd).toISOString(),
+          startDate: blockStart,
+          endDate: blockEnd,
           isAllDay: true,
         }),
       });

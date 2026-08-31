@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { validateStudioSchedule } from "@/lib/studio-schedule";
+import { isStudioInstructor } from "@/lib/studio-instructor";
 
 const scheduleSchema = z.object({
   schedules: z.array(
@@ -72,6 +73,16 @@ export async function PUT(request: NextRequest) {
 
     if (!advisorProfile) {
       return NextResponse.json({ error: "Advisor profile not found" }, { status: 404 });
+    }
+
+    if (await isStudioInstructor(advisorProfile.id)) {
+      return NextResponse.json(
+        {
+          error:
+            "Studio weekly hours are managed by admin at /admin/schedule. Instructors can still block dates on the calendar tab.",
+        },
+        { status: 403 }
+      );
     }
 
     const body = await request.json();

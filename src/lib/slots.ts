@@ -1,6 +1,6 @@
 import { addDays, format, startOfDay, isSameDay, getDay, isWithinInterval } from "date-fns";
 import { enUS } from "date-fns/locale";
-import { utcMinutesToLocal } from "@/lib/timezone";
+import { localToUTCDate, studioLocalMinutesFromUtc } from "@/lib/timezone";
 import { siteConfig } from "@/lib/site-config";
 
 export interface Schedule {
@@ -59,7 +59,7 @@ function minutesToTime(minutes: number): string {
 }
 
 function appointmentStartMinutesLocal(start: Date): number {
-  return utcMinutesToLocal(start.getUTCHours() * 60 + start.getUTCMinutes());
+  return studioLocalMinutesFromUtc(start);
 }
 
 export function countBookingsAtSlotTime(
@@ -100,10 +100,6 @@ function isSlotBlocked(
     }
   });
 }
-
-// App timezone offset (Colombia, UTC-5 = -5 hours from UTC)
-// Used to convert appointment times (UTC) to local time for slot comparison
-const APP_TIMEZONE_OFFSET_HOURS = -5;
 
 export function generateAvailableSlots(
   schedule: Schedule,
@@ -148,8 +144,10 @@ export function generateAvailableSlots(
     // Minimum lead time: hide slots that start before minStartTime
     const isTooSoon = (() => {
       if (!slotDate || !minStartTime) return false;
-      const slotStart = new Date(slotDate);
-      slotStart.setHours(Math.floor(current / 60), current % 60, 0, 0);
+      const y = slotDate.getFullYear();
+      const m = slotDate.getMonth() + 1;
+      const d = slotDate.getDate();
+      const slotStart = localToUTCDate(y, m, d, Math.floor(current / 60), current % 60);
       return slotStart.getTime() < minStartTime.getTime();
     })();
 

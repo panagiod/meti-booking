@@ -1,16 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireCronAuth } from "@/lib/cron-auth";
 
-// Cron: Daily cleanup of expired PENDING appointments
-// Runs once daily via Vercel cron (Hobby plan limitation).
-// Primary expiration happens on-demand in /api/slots when users query availability.
-// This cron is a safety net to catch any stale records.
+// Cron: Daily cleanup of expired PENDING appointments (safety net).
 export async function GET(request: Request) {
-  // Protect with cron secret (Vercel injects it in the header)
-  const authHeader = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authError = requireCronAuth(request);
+  if (authError) return authError;
 
   try {
     const now = new Date();

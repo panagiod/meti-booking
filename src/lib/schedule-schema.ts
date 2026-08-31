@@ -16,8 +16,14 @@ export const schedulePayloadSchema = z.object({
 
 export const blockedTimePayloadSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  startDate: z.string().datetime(),
-  endDate: z.string().datetime(),
+  startDate: z.union([
+    z.string().datetime(),
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  ]),
+  endDate: z.union([
+    z.string().datetime(),
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  ]),
   isAllDay: z.boolean().default(true),
   reason: z.string().optional(),
 });

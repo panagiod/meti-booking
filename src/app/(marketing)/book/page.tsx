@@ -12,7 +12,7 @@ import { useDialog } from "@/hooks/use-dialog";
 import { LoadingPage } from "@/components/ui/loading";
 import { authClient } from "@/lib/auth-client";
 import { getAvailableDates, type TimeSlot } from "@/lib/slots";
-import { isReformerService } from "@/lib/site-config";
+import { isReformerService, siteConfig } from "@/lib/site-config";
 import { useTranslations, useStudioBranding } from "@/components/providers/locale-provider";
 import { ArrowLeft } from "lucide-react";
 
@@ -92,13 +92,14 @@ export default function BookPage() {
     return getAvailableDates(
       advisor.schedule,
       selectedService.durationMin,
-      2,
+      siteConfig.bookingWeeksAhead,
       [],
-      advisor.bookingLeadHours || 2
+      advisor.bookingLeadHours ?? siteConfig.defaultBookingLeadHours
     );
   }, [selectedService, advisor?.schedule, advisor?.bookingLeadHours]);
 
   const [apiSlots, setApiSlots] = useState<Record<string, { slots: TimeSlot[]; hasAvailability: boolean }>>({});
+  const [slotsLoading, setSlotsLoading] = useState(false);
 
   useEffect(() => {
     if (!selectedService || !advisor || availableDates.length === 0) {
@@ -106,6 +107,7 @@ export default function BookPage() {
       return;
     }
     let cancelled = false;
+    setSlotsLoading(true);
     const fetchRealSlots = async () => {
       const results: Record<string, { slots: TimeSlot[]; hasAvailability: boolean }> = {};
       await Promise.all(
@@ -127,18 +129,24 @@ export default function BookPage() {
           }
         })
       );
-      if (!cancelled) setApiSlots(results);
+      if (!cancelled) {
+        setApiSlots(results);
+        setSlotsLoading(false);
+      }
     };
     fetchRealSlots();
     return () => {
       cancelled = true;
+      setSlotsLoading(false);
     };
   }, [selectedService, advisor, availableDates]);
 
   const mergedDates = useMemo(() => {
     return availableDates.map((day) => {
       const real = apiSlots[day.dateStr];
-      if (!real) return day;
+      if (!real) {
+        return { ...day, slots: [], hasAvailability: false };
+      }
       return { ...day, slots: real.slots, hasAvailability: real.hasAvailability };
     });
   }, [availableDates, apiSlots]);
@@ -247,9 +255,10 @@ export default function BookPage() {
       <div className="mt-8 sm:mt-10">
         {step === "date" && selectedService && (
           <CalendarPicker
-            availableDates={mergedDates.length ? mergedDates : availableDates}
+            availableDates={mergedDates}
             selectedDate={selectedDate}
             onSelect={handleDateSelect}
+            isLoading={slotsLoading}
           />
         )}
 

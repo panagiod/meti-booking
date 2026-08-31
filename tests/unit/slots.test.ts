@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { generateAvailableSlots } from "@/lib/slots";
 import type { Schedule } from "@/lib/slots";
+import { localToUTCDate } from "@/lib/timezone";
 
 const baseSchedule: Schedule = {
   dayOfWeek: 1,
@@ -52,8 +53,8 @@ describe("lib/slots — generateAvailableSlots", () => {
   });
 
   it("marks slots as unavailable when capacity is reached at the same start time", () => {
-    const aptStart = new Date("2026-08-17T14:00:00.000Z");
-    const aptEnd = new Date("2026-08-17T15:00:00.000Z");
+    const aptStart = localToUTCDate(2026, 8, 17, 9, 0);
+    const aptEnd = new Date(aptStart.getTime() + 60 * 60 * 1000);
     const appointments = [
       { start: aptStart, end: aptEnd },
       { start: aptStart, end: aptEnd },
@@ -68,8 +69,8 @@ describe("lib/slots — generateAvailableSlots", () => {
   });
 
   it("allows booking when under capacity at the same start time", () => {
-    const aptStart = new Date("2026-08-17T14:00:00.000Z");
-    const aptEnd = new Date("2026-08-17T15:00:00.000Z");
+    const aptStart = localToUTCDate(2026, 8, 17, 9, 0);
+    const aptEnd = new Date(aptStart.getTime() + 60 * 60 * 1000);
     const slots = generateAvailableSlots(
       baseSchedule,
       60,
@@ -86,8 +87,8 @@ describe("lib/slots — generateAvailableSlots", () => {
   });
 
   it("marks slots unavailable when capacity is 1 and slot is taken", () => {
-    const aptStart = new Date("2026-08-17T14:00:00.000Z");
-    const aptEnd = new Date("2026-08-17T15:00:00.000Z");
+    const aptStart = localToUTCDate(2026, 8, 17, 9, 0);
+    const aptEnd = new Date(aptStart.getTime() + 60 * 60 * 1000);
     const slots = generateAvailableSlots(baseSchedule, 60, [{ start: aptStart, end: aptEnd }], [], undefined, undefined, 1);
     expect(slots.find((s) => s.time === "09:00")?.available).toBe(false);
     expect(slots.find((s) => s.time === "10:00")?.available).toBe(true);
@@ -107,8 +108,8 @@ describe("lib/slots — generateAvailableSlots", () => {
   });
 
   it("marks slots before minStartTime as unavailable (advance notice)", () => {
-    const day = new Date(2026, 7, 17, 12, 0, 0); // server local noon
-    const minStart = new Date(2026, 7, 17, 10, 0, 0);
+    const day = new Date(2026, 7, 17, 12, 0, 0);
+    const minStart = localToUTCDate(2026, 8, 17, 9, 45);
     const slots = generateAvailableSlots(baseSchedule, 60, [], [], day, minStart);
     expect(slots.find((s) => s.time === "09:00")?.available).toBe(false);
     expect(slots.find((s) => s.time === "10:00")?.available).toBe(true);

@@ -11,6 +11,10 @@ export const siteConfig = {
   primarySessionSlug: "reformer",
   /** Max reformer machines / clients per session time */
   slotCapacity: 3,
+  /** How many weeks ahead customers can book */
+  bookingWeeksAhead: 8,
+  /** Default minimum hours before first bookable slot */
+  defaultBookingLeadHours: 2,
   deliveryMode: "in-person" as const,
   location: "123 Wellness Ave, Studio 2",
   phone: "(555) 012-3456",

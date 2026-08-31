@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { resolveStudioAdvisor } from "@/lib/studio-advisor";
 import { blockedTimePayloadSchema } from "@/lib/schedule-schema";
+import { parseStudioDateInput } from "@/lib/timezone";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -46,10 +47,25 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = blockedTimePayloadSchema.parse(body);
 
-    const startDate = new Date(validatedData.startDate);
-    const endDate = new Date(validatedData.endDate);
+    const startDateOnly =
+      typeof validatedData.startDate === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(validatedData.startDate);
+    const endDateOnly =
+      typeof validatedData.endDate === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(validatedData.endDate);
 
-    if (endDate <= startDate) {
+    const startDate = startDateOnly
+      ? parseStudioDateInput(validatedData.startDate, false)
+      : new Date(validatedData.startDate);
+    const endDate = endDateOnly
+      ? parseStudioDateInput(validatedData.endDate, true)
+      : new Date(validatedData.endDate);
+
+    if (!startDate || !endDate) {
+      return NextResponse.json({ error: "Invalid date range" }, { status: 400 });
+    }
+
+    if (endDate < startDate) {
       return NextResponse.json(
         { error: "End date must be after start date" },
         { status: 400 }
