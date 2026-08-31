@@ -32,11 +32,11 @@ export type ViewMode = "month" | "week" | "day" | "agenda";
 
 export const defaultSchedule: DaySchedule[] = [
   { dayOfWeek: 1, dayName: "Monday", isActive: false, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
-  { dayOfWeek: 2, dayName: "Tuesday", isActive: true, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
+  { dayOfWeek: 2, dayName: "Tuesday", isActive: false, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
   { dayOfWeek: 3, dayName: "Wednesday", isActive: false, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
-  { dayOfWeek: 4, dayName: "Thursday", isActive: true, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
+  { dayOfWeek: 4, dayName: "Thursday", isActive: false, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
   { dayOfWeek: 5, dayName: "Friday", isActive: false, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
-  { dayOfWeek: 6, dayName: "Saturday", isActive: true, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
+  { dayOfWeek: 6, dayName: "Saturday", isActive: false, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
   { dayOfWeek: 0, dayName: "Sunday", isActive: false, startTime: "14:00", endTime: "17:00", lunchStart: "", lunchEnd: "", gapMinutes: 10 },
 ];
 

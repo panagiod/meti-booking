@@ -10,7 +10,6 @@ import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { cn } from "@/lib/utils";
 import {
-  STUDIO_MAX_ACTIVE_DAYS,
   STUDIO_AFTERNOON_START,
   STUDIO_AFTERNOON_END,
   STUDIO_DEFAULT_GAP_MINUTES,
@@ -104,33 +103,21 @@ export default function AdminSchedulePage() {
   }, [schedule, activeCount, studio]);
 
   const toggleDay = (dayOfWeek: number) => {
-    setSchedule((prev) => {
-      const day = prev.find((d) => d.dayOfWeek === dayOfWeek);
-      if (!day) return prev;
-
-      if (!day.isActive && prev.filter((d) => d.isActive).length >= STUDIO_MAX_ACTIVE_DAYS) {
-        dialog.showAlert(
-          "Limit reached",
-          `Enable exactly ${STUDIO_MAX_ACTIVE_DAYS} days per week.`,
-          "warning"
-        );
-        return prev;
-      }
-
-      return prev.map((d) =>
+    setSchedule((prev) =>
+      prev.map((d) =>
         d.dayOfWeek === dayOfWeek
           ? {
               ...d,
               isActive: !d.isActive,
-              startTime: STUDIO_AFTERNOON_START,
-              endTime: STUDIO_AFTERNOON_END,
+              startTime: d.isActive ? d.startTime : STUDIO_AFTERNOON_START,
+              endTime: d.isActive ? d.endTime : STUDIO_AFTERNOON_END,
               lunchStart: "",
               lunchEnd: "",
               gapMinutes: STUDIO_DEFAULT_GAP_MINUTES,
             }
           : d
-      );
-    });
+      )
+    );
     setHasChanges(true);
   };
 
@@ -256,12 +243,7 @@ export default function AdminSchedulePage() {
                 <p className="text-sm text-[var(--text-muted)]">Open days</p>
                 <p className="font-semibold text-[var(--text-primary)]">{summary}</p>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                  {activeCount}/{STUDIO_MAX_ACTIVE_DAYS} days selected
-                  {activeCount !== STUDIO_MAX_ACTIVE_DAYS && (
-                    <span className="block text-[var(--warning)]">
-                      Select exactly {STUDIO_MAX_ACTIVE_DAYS} days to save
-                    </span>
-                  )}
+                  {activeCount} day{activeCount === 1 ? "" : "s"} open for booking
                 </p>
               </div>
             </CardContent>
@@ -300,10 +282,9 @@ export default function AdminSchedulePage() {
           <CardContent className="p-4 flex gap-3 text-sm text-[var(--text-primary)]">
             <Info className="w-5 h-5 shrink-0 text-[var(--primary)]" />
             <p>
-              Enable exactly <strong>{STUDIO_MAX_ACTIVE_DAYS} days per week</strong> with about{" "}
-              <strong>3 afternoon hours</strong> each (e.g. 2pm–5pm). With 50-minute sessions,
-              that gives <strong>3 bookable times per day</strong>. Changes apply immediately on
-              the public booking calendar.
+              Toggle the days you want open each week (e.g. Monday, Wednesday, Saturday).
+              Set start and end times per day. Changes apply immediately on the public
+              booking calendar after you save.
             </p>
           </CardContent>
         </Card>
@@ -314,10 +295,7 @@ export default function AdminSchedulePage() {
             <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
               Weekly hours
             </h2>
-            <Button
-              onClick={saveSchedule}
-              disabled={!hasChanges || isSaving || activeCount !== STUDIO_MAX_ACTIVE_DAYS}
-            >
+            <Button onClick={saveSchedule} disabled={!hasChanges || isSaving || activeCount === 0}>
               <Save className="w-4 h-4 mr-2" />
               {isSaving ? "Saving…" : "Save schedule"}
             </Button>
@@ -336,16 +314,9 @@ export default function AdminSchedulePage() {
                       <button
                         type="button"
                         onClick={() => toggleDay(day.dayOfWeek)}
-                        disabled={
-                          !day.isActive &&
-                          activeCount >= STUDIO_MAX_ACTIVE_DAYS
-                        }
                         className={cn(
                           "w-12 h-6 rounded-full transition-colors relative shrink-0",
-                          day.isActive ? "bg-[var(--success)]" : "bg-[var(--border)]",
-                          !day.isActive &&
-                            activeCount >= STUDIO_MAX_ACTIVE_DAYS &&
-                            "cursor-not-allowed opacity-50"
+                          day.isActive ? "bg-[var(--success)]" : "bg-[var(--border)]"
                         )}
                         aria-label={`Toggle ${day.dayName}`}
                       >

@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { generateAvailableSlots } from "@/lib/slots";
 import { APP_TIMEZONE_OFFSET_HOURS } from "@/lib/timezone";
 import { siteConfig } from "@/lib/site-config";
-import { capWeeklyScheduleRows } from "@/lib/studio-schedule";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -39,20 +38,16 @@ export async function GET(request: NextRequest) {
     const requestDate = new Date(date);
     const dayOfWeek = requestDate.getDay();
 
-    const allSchedules = await prisma.advisorSchedule.findMany({
-      where: { advisorId, isActive: true },
-      orderBy: { dayOfWeek: "asc" },
+    const daySchedule = await prisma.advisorSchedule.findUnique({
+      where: {
+        advisorId_dayOfWeek: {
+          advisorId,
+          dayOfWeek,
+        },
+      },
     });
 
-    const allowedDaySet = new Set(
-      capWeeklyScheduleRows(allSchedules).map((s) => s.dayOfWeek)
-    );
-    const daySchedule =
-      allowedDaySet.has(dayOfWeek)
-        ? allSchedules.find((s: (typeof allSchedules)[number]) => s.dayOfWeek === dayOfWeek)
-        : undefined;
-
-    if (!daySchedule) {
+    if (!daySchedule || !daySchedule.isActive) {
       return NextResponse.json({ slots: [] });
     }
 

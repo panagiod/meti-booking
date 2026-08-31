@@ -15,7 +15,7 @@ export const siteConfig = {
   location: "123 Wellness Ave, Studio 2",
   phone: "(555) 012-3456",
   email: "hello@meti-pilates.studio",
-  hours: "Tue, Thu, Sat 2pm–5pm",
+  hours: "Mon, Wed, Sat · 2pm–5pm",
   images: {
     /** Reformer pilates only — bundled studio photos (Pexels, free license) */
     hero: "/images/hero.jpg",

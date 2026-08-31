@@ -32,15 +32,13 @@ Controls when customers can book on the public `/book` page.
 
 | Setting | Value |
 |---------|--------|
-| Open days | **Tuesday, Thursday, Saturday** (max 3 per week) |
-| Hours | **14:00–17:00** (3 afternoon hours) |
-| Slots per day | **3** (50 min session + 10 min gap) |
-| Capacity per slot | **3 clients** (reformer machines) |
+| Open days | **Monday, Wednesday, Saturday** (admin can change to any days) |
+| Hours | **14:00–17:00** by default (configurable per day) |
 
 ### What you can do
 
-1. **Enable exactly 3 days** — toggle Mon–Sun; must have **3 active days** to save
-2. **Set start/end times** per day — preview shows slot count
+1. **Enable any days** — toggle Mon–Sun; at least one day required to save
+2. **Set start/end times** per day — each day can have different hours
 3. **Save schedule** — updates public booking immediately
 4. **Block dates** — holidays/closures; blocked days hidden from `/book`
 

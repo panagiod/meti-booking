@@ -158,7 +158,7 @@ const en: Messages = {
     ariaLabel: "Language",
   },
   common: {
-    hours: "Tue, Thu, Sat · 2pm–5pm",
+    hours: "Mon, Wed, Sat · 2pm–5pm",
     error: "Error",
     continue: "Continue",
     processing: "Processing…",

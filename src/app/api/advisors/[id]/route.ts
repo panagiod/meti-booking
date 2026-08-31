@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isReformerService } from "@/lib/site-config";
-import { capWeeklyScheduleRows } from "@/lib/studio-schedule";
 
 // GET: Get advisor details
 export async function GET(
@@ -83,7 +82,7 @@ export async function GET(
           rescheduleHoursMin: s.rescheduleHoursMin,
           promotion: s.promotions?.[0] || null,
         })),
-        schedule: capWeeklyScheduleRows(advisor.schedule).map((s: any) => ({
+        schedule: advisor.schedule.map((s: any) => ({
           dayOfWeek: s.dayOfWeek,
           startTime: s.startTime,
           endTime: s.endTime,

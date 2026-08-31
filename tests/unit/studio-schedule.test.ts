@@ -3,46 +3,54 @@ import {
   validateStudioSchedule,
   countSlotsPerDay,
   weeklyScheduleTemplate,
-  capWeeklyScheduleRows,
-  STUDIO_MAX_ACTIVE_DAYS,
+  mergeScheduleFromDb,
+  studioScheduleSeedRows,
+  STUDIO_DEMO_ACTIVE_DAYS,
 } from "@/lib/studio-schedule";
 
 describe("studio-schedule", () => {
-  it("default template has 3 active days", () => {
+  it("empty template has no active days", () => {
     const schedule = weeklyScheduleTemplate();
-    const active = schedule.filter((d) => d.isActive);
-    expect(active).toHaveLength(STUDIO_MAX_ACTIVE_DAYS);
-    expect(active.map((d) => d.dayOfWeek)).toEqual([2, 4, 6]);
+    expect(schedule.filter((d) => d.isActive)).toHaveLength(0);
   });
 
-  it("produces 3 slots per afternoon window (50 min + 10 min gap)", () => {
-    const tuesday = weeklyScheduleTemplate().find((d) => d.dayOfWeek === 2)!;
-    expect(countSlotsPerDay(tuesday, 50)).toBe(3);
+  it("demo seed uses Mon, Wed, Sat", () => {
+    expect(STUDIO_DEMO_ACTIVE_DAYS).toEqual([1, 3, 6]);
+    expect(studioScheduleSeedRows()).toHaveLength(3);
   });
 
-  it("rejects fewer or more than 3 active days", () => {
-    const twoDays = weeklyScheduleTemplate().map((d) => ({
-      ...d,
-      isActive: d.dayOfWeek === 2 || d.dayOfWeek === 4,
-    }));
-    expect(validateStudioSchedule(twoDays)).toMatch(/exactly 3 days/);
-
-    const fourDays = weeklyScheduleTemplate().map((d) => ({
-      ...d,
-      isActive: [1, 2, 4, 6].includes(d.dayOfWeek),
-    }));
-    expect(validateStudioSchedule(fourDays)).toMatch(/exactly 3 days/);
+  it("produces 3 slots per 3-hour afternoon window (50 min + 10 min gap)", () => {
+    const sample = {
+      startTime: "14:00",
+      endTime: "17:00",
+      lunchStart: "",
+      lunchEnd: "",
+      gapMinutes: 10,
+    };
+    expect(countSlotsPerDay(sample, 50)).toBe(3);
   });
 
-  it("accepts valid 3-day afternoon schedule", () => {
+  it("rejects schedule with no active days", () => {
     const schedule = weeklyScheduleTemplate();
+    expect(validateStudioSchedule(schedule)).toMatch(/at least one day/);
+  });
+
+  it("accepts any number of active days (e.g. Mon/Wed/Sat)", () => {
+    const schedule = weeklyScheduleTemplate().map((d) => ({
+      ...d,
+      isActive: [1, 3, 6].includes(d.dayOfWeek),
+    }));
     expect(validateStudioSchedule(schedule)).toBeNull();
   });
 
-  it("caps extra DB schedule rows to 3 days", () => {
-    const rows = [1, 2, 3, 4, 5].map((dayOfWeek) => ({ dayOfWeek }));
-    const capped = capWeeklyScheduleRows(rows);
-    expect(capped).toHaveLength(3);
-    expect(capped.map((r) => r.dayOfWeek)).toEqual([1, 2, 3]);
+  it("mergeScheduleFromDb reflects all saved active days", () => {
+    const merged = mergeScheduleFromDb([
+      { dayOfWeek: 1, isActive: true, startTime: "10:00", endTime: "12:00", lunchStart: null, lunchEnd: null, gapMinutes: 10 },
+      { dayOfWeek: 3, isActive: true, startTime: "14:00", endTime: "17:00", lunchStart: null, lunchEnd: null, gapMinutes: 10 },
+      { dayOfWeek: 6, isActive: true, startTime: "09:00", endTime: "11:00", lunchStart: null, lunchEnd: null, gapMinutes: 10 },
+    ]);
+    const active = merged.filter((d) => d.isActive);
+    expect(active).toHaveLength(3);
+    expect(active.map((d) => d.dayOfWeek)).toEqual([1, 3, 6]);
   });
 });

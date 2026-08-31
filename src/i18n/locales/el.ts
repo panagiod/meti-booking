@@ -162,7 +162,7 @@ const el: Messages = {
     ariaLabel: "Γλώσσα",
   },
   common: {
-    hours: "Τρί, Πέμ, Σάβ · 14:00–17:00",
+    hours: "Δευ, Τετ, Σάβ · 14:00–17:00",
     error: "Σφάλμα",
     continue: "Συνέχεια",
     processing: "Επεξεργασία…",
