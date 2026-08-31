@@ -1,68 +1,64 @@
-# Live Demo Deployment — Flow Pilates
+# Live demo status — MeTi Pilates
 
-## Current public demo (Cloudflare Tunnel)
+> Ephemeral Cloudflare tunnel — **only works while the Cursor cloud VM is running.**
 
-**Homepage:** https://sin-building-cardiovascular-lifetime.trycloudflare.com  
-**Book sessions:** https://sin-building-cardiovascular-lifetime.trycloudflare.com/book
+## Public URLs (when VM + server are up)
 
-> ⚠️ Temporary `*.trycloudflare.com` URL — stays up while this cloud agent VM is running.
+| Page | URL |
+|------|-----|
+| Homepage | https://sin-building-cardiovascular-lifetime.trycloudflare.com |
+| Book | https://sin-building-cardiovascular-lifetime.trycloudflare.com/book |
 
-### Customer booking flow
+If the link returns **502**, the Next.js server stopped — restart with:
 
-1. Open **/book**
-2. Choose a session type (Mat, Reformer, Private, Duo)
-3. Pick a date and available time slot
-4. Sign in and confirm booking
+```bash
+cd /workspace
+pnpm build
+export $(grep -v '^#' .env | xargs) && pnpm start
+```
 
-### Demo accounts
-
-Password for all: `Demo1234!`
-
-| Role | Email |
-|---|---|
-| Client | `client@demo.meti-booking.local` |
-| Instructor | `instructor@flowpilates.studio` |
-| Admin | `admin@demo.meti-booking.local` |
-
-### What works
-
-- Landing page, services listing, advisor profiles
-- Email/password login
-- Booking flow through checkout (Mercado Pago not configured)
-
-### What needs setup
-
-- Google OAuth (placeholder credentials — use email/password instead)
-- Mercado Pago, LiveKit, Resend, Vercel Blob for full features
+Tunnel process: `cloudflared tunnel --url http://localhost:3000`
 
 ---
 
-## Permanent free hosting options
+## What the demo shows
 
-### Option A — Render (recommended for $0)
+- **MeTi Pilates** homepage — single hero: "Book your session." / "Κλείστε το μάθημά σας."
+- **Reformer-only** booking at `/book` (date → time → confirm)
+- **3 spots per time slot** — full slots shown as disabled
+- **EN | ΕΛ** language switcher
+- Local reformer pilates images (`/public/images/`)
 
-1. Open: https://render.com/deploy?repo=https://github.com/panagiod/meti-booking
-2. After deploy, set in Render → Environment:
-   - `BETTER_AUTH_URL` = `https://<your-app>.onrender.com`
-   - `NEXT_PUBLIC_BETTER_AUTH_URL` = same
-   - `APP_URL` = same
-3. Run migrations via Render shell:
-   ```bash
-   pnpm db:deploy
-   BETTER_AUTH_URL=https://<your-app>.onrender.com pnpm demo:setup
-   ```
+---
 
-Hostname will be `https://meti-booking.onrender.com` (or similar).
+## Demo accounts
 
-### Option B — Vercel + Neon ($0)
+Password: **`Demo1234!`**
 
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+| Role | Email |
+|------|-------|
+| Client | `client@demo.meti-booking.local` |
+| Instructor | `instructor@meti-pilates.studio` |
+| Admin | `admin@demo.meti-booking.local` |
 
-### Generated secrets (for production deploy)
+---
 
-```
-BETTER_AUTH_SECRET=iEfJZXUD+mi8XREBoPnSJJbPkdAfUtmg97vXGen5b4s=
-CRON_SECRET=6f5b408828c6c61096affa81d63d4c2f9d6d4cbe4e2f6d84
-```
+## What works / what doesn't
 
-Generate new secrets for production — do not reuse demo values.
+| Feature | Demo |
+|---------|------|
+| Homepage + booking UI | ✅ |
+| Email/password login | ✅ |
+| Greek translations (customer pages) | ✅ |
+| Slot capacity (3 per time) | ✅ |
+| Google OAuth | ❌ placeholder credentials |
+| Mercado Pago checkout | ❌ instructor MP not connected |
+| Video calls (legacy) | ❌ needs LiveKit |
+
+---
+
+## Permanent hosting
+
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) and `render.yaml` (Render one-click deploy).
+
+After deploy, set `BETTER_AUTH_URL`, `APP_URL`, run `pnpm demo:setup` with production URL.

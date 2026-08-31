@@ -1,122 +1,103 @@
-# Integrations — Google login & payments
+# Integrations — MeTi Pilates
 
-## Why images looked broken
+## Images
 
-The site uses Next.js `Image` optimization (`/_next/image?...`). On the **standalone/tunnel demo**, that optimizer was returning **404**, so photos appeared missing or broken.
+Studio photos are **bundled locally** (reformer pilates only):
 
-**Fix applied:** `unoptimized: true` in `next.config.ts` so images load directly from Unsplash.
+- `/public/images/hero.jpg`
+- `/public/images/reformer.jpg`
 
-After deploy, rebuild and restart:
+Configured in `src/lib/site-config.ts`.
+
+`next.config.ts` sets `images.unoptimized: true` because the **standalone / Cloudflare tunnel** deploy returns 404 from `/_next/image`. After any image or config change:
 
 ```bash
 pnpm build && pnpm start
 ```
 
-For production on Vercel/Render, you can remove `unoptimized` if images work there.
+Do not rely on external Unsplash URLs — many old IDs are 404.
 
 ---
 
-## Why Google login does not work (demo)
+## Google login
 
-The demo `.env` uses **placeholder** credentials:
+Demo `.env` uses **placeholders**:
 
 ```
 GOOGLE_CLIENT_ID="demo-google-client-id"
 GOOGLE_CLIENT_SECRET="demo-google-client-secret"
 ```
 
-Google will reject sign-in until you use real OAuth credentials.
+### Enable Google OAuth
 
-### Enable Google login
-
-1. Open [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials)
-2. Create an **OAuth 2.0 Client ID** (Web application)
-3. **Authorized JavaScript origins:**
-   - `https://your-domain.com`
-   - `http://localhost:3000` (for local dev)
-4. **Authorized redirect URIs:**
-   - `https://your-domain.com/api/auth/callback/google`
-   - `http://localhost:3000/api/auth/callback/google`
-5. Set environment variables on your host:
+1. [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials)
+2. OAuth 2.0 Client ID (Web)
+3. **Authorized JavaScript origins:** your public URL + `http://localhost:3000`
+4. **Authorized redirect URIs:** `{URL}/api/auth/callback/google`
+5. Set env vars:
 
    ```
-   GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-   GOOGLE_CLIENT_SECRET=your-client-secret
+   GOOGLE_CLIENT_ID=...
+   GOOGLE_CLIENT_SECRET=...
    BETTER_AUTH_URL=https://your-domain.com
    NEXT_PUBLIC_BETTER_AUTH_URL=https://your-domain.com
    APP_URL=https://your-domain.com
    ```
 
-6. Redeploy / restart the app
+6. Rebuild and restart
 
-> **Important:** If your public URL changes (e.g. a new `*.trycloudflare.com` link), you must add that exact URL to Google OAuth origins + redirect URIs, and update `BETTER_AUTH_URL` / `APP_URL`.
+> Tunnel URLs (`*.trycloudflare.com`) change when the VM restarts — update OAuth + env each time.
 
 ### Demo without Google
 
-Use **email + password**:
-
 | Email | Password |
-|---|---|
+|-------|----------|
 | `client@demo.meti-booking.local` | `Demo1234!` |
 
 ---
 
-## Payments — Google Pay / Apple Pay
+## Payments
 
-This app does **not** integrate Google Pay or Apple Pay directly.
+### Current (Mercado Pago)
 
-**Payments use [Mercado Pago](https://www.mercadopago.com) Checkout Pro** (card, PSE, etc.). In some countries, Mercado Pago’s checkout may also show **Google Pay / Apple Pay** if:
+Checkout uses **Mercado Pago Checkout Pro** per instructor (non-custodial). Not configured on demo.
 
-- Your Mercado Pago seller account supports them
-- The buyer’s device/browser supports them
-- You are in a supported region
+1. Instructor logs in: `instructor@meti-pilates.studio` / `Demo1234!`
+2. **Advisor → Mercado Pago** — add test Public Key + Access Token
+3. Set `APP_URL` to public domain
+4. Webhook: `https://your-domain.com/api/webhooks/mercadopago`
 
-That is configured in **Mercado Pago**, not in this codebase.
+Without MP: checkout shows **Payment unavailable**.
 
-### Enable payments (required for checkout)
+### Planned (GitHub issues)
 
-1. **Create a Mercado Pago developer account**  
-   [mercadopago.com/developers](https://www.mercadopago.com/developers)
+User requested **Stripe or Revolut** with Apple Pay / Google Pay:
 
-2. **Create an application** and get:
-   - Public Key
-   - Access Token (use **test** credentials first)
-
-3. **Sign in as the studio instructor** (advisor account):
-   - Demo: `instructor@flowpilates.studio` / `Demo1234!`
-   - Go to **Advisor dashboard → Mercado Pago**
-   - Paste Public Key + Access Token
-   - Set mode to **TEST** for sandbox payments
-
-4. **Set your public URL** in environment variables:
-
-   ```
-   APP_URL=https://your-domain.com
-   BETTER_AUTH_URL=https://your-domain.com
-   ```
-
-   Mercado Pago redirects and webhooks use `APP_URL`.
-
-5. **Webhook** (production): In Mercado Pago, set notification URL to:
-
-   ```
-   https://your-domain.com/api/webhooks/mercadopago
-   ```
-
-6. **Test a booking:** Book a session → checkout → pay with Mercado Pago **test cards** (see MP docs for your country).
-
-### Without Mercado Pago
-
-Checkout fails with *“Advisor has no Mercado Pago account configured”* because each instructor must connect their own MP account (non-custodial model).
+- #2 Epic: Replace Mercado Pago
+- #4 Stripe + Apple/Google Pay
+- #5 Revolut Pay
+- #6 Remove Mercado Pago
+- #7 Checkout refactor
 
 ---
 
-## Quick checklist
+## Internationalization
 
-| Feature | Status on demo tunnel | What you need |
-|---|---|---|
-| Images | Fixed after rebuild | `unoptimized: true` + rebuild |
-| Email login | Works | Demo client account above |
-| Google login | Not configured | Real OAuth client + env vars |
-| Card payments | Not configured | Instructor MP test credentials |
-| Google / Apple Pay | Via Mercado Pago only | MP account + supported region |
+- Locales: `en`, `el` in `src/i18n/`
+- Cookie: `flow-locale`
+- Provider: root layout (`LocaleProvider`)
+- Customer pages translated; admin/advisor dashboards mostly English
+
+---
+
+## Quick checklist (demo tunnel)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Images | ✅ | Local `/public/images/` |
+| Email login | ✅ | Demo accounts |
+| Greek UI | ✅ | EN \| ΕΛ switcher |
+| Reformer booking | ✅ | `/book` only |
+| 3-slot capacity | ✅ | `siteConfig.slotCapacity` |
+| Google login | ❌ | Real OAuth needed |
+| Payments | ❌ | Instructor MP or future Stripe |
