@@ -3,27 +3,31 @@
 import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatDuration, type Service } from "@/lib/slots";
+import { useTranslations } from "@/components/providers/locale-provider";
 
 interface ServiceSelectorProps {
   services: Service[];
   selectedService: Service | null;
   onSelect: (service: Service) => void;
-  title?: string;
-  subtitle?: string;
 }
 
 export function ServiceSelector({
   services,
   selectedService,
   onSelect,
-  title = "Select a session",
-  subtitle = "Choose what you'd like to book",
 }: ServiceSelectorProps) {
+  const t = useTranslations();
+
+  const translateServiceName = (name: string) =>
+    t.booking.serviceNames[name] ?? name;
+
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="font-display text-3xl text-[var(--studio-ink)]">{title}</h2>
-        <p className="mt-2 text-[var(--studio-muted)]">{subtitle}</p>
+        <h2 className="font-display text-3xl text-[var(--studio-ink)]">
+          {t.booking.selectSession}
+        </h2>
+        <p className="mt-2 text-[var(--studio-muted)]">{t.booking.selectSessionSub}</p>
       </div>
 
       <div className="divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
@@ -43,7 +47,9 @@ export function ServiceSelector({
               )}
             >
               <div>
-                <p className="font-display text-xl text-[var(--studio-ink)]">{service.name}</p>
+                <p className="font-display text-xl text-[var(--studio-ink)]">
+                  {translateServiceName(service.name)}
+                </p>
                 <p className="mt-1 flex items-center gap-3 text-sm text-[var(--studio-muted)]">
                   <span className="inline-flex items-center gap-1">
                     <Clock className="h-3.5 w-3.5" />

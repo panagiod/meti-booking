@@ -12,10 +12,11 @@ import {
   isBefore,
   startOfDay,
 } from "date-fns";
-import { enUS } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DaySlots } from "@/lib/slots";
+import { useLocale, useTranslations } from "@/components/providers/locale-provider";
+import { getDateFnsLocale } from "@/lib/date-locale";
 
 interface CalendarPickerProps {
   availableDates: DaySlots[];
@@ -28,19 +29,27 @@ export function CalendarPicker({
   selectedDate,
   onSelect,
 }: CalendarPickerProps) {
+  const t = useTranslations();
+  const { locale } = useLocale();
+  const dateFnsLocale = getDateFnsLocale(locale);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
-  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  const dayNames =
+    locale === "el"
+      ? ["Δευ", "Τρί", "Τετ", "Πέμ", "Παρ", "Σάβ", "Κυρ"]
+      : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
   const availableDatesMap = new Map(availableDates.map((d) => [d.dateStr, d]));
 
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="font-display text-3xl text-[var(--studio-ink)]">Pick a date</h2>
-        <p className="mt-2 text-[var(--studio-muted)]">When would you like to come in?</p>
+        <h2 className="font-display text-3xl text-[var(--studio-ink)]">{t.booking.pickDate}</h2>
+        <p className="mt-2 text-[var(--studio-muted)]">{t.booking.pickDateSub}</p>
       </div>
 
       <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-5 sm:p-6">
@@ -53,7 +62,7 @@ export function CalendarPicker({
             <ChevronLeft className="h-5 w-5" />
           </button>
           <h3 className="font-display text-xl capitalize text-[var(--studio-ink)]">
-            {format(currentMonth, "MMMM yyyy", { locale: enUS })}
+            {format(currentMonth, "MMMM yyyy", { locale: dateFnsLocale })}
           </h3>
           <button
             type="button"

@@ -1,10 +1,11 @@
 "use client";
 
 import { format } from "date-fns";
-import { enUS } from "date-fns/locale";
 import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DaySlots } from "@/lib/slots";
+import { useLocale, useTranslations } from "@/components/providers/locale-provider";
+import { getDateFnsLocale } from "@/lib/date-locale";
 
 interface TimeSlotPickerProps {
   daySlots: DaySlots;
@@ -17,14 +18,17 @@ export function TimeSlotPicker({
   selectedTime,
   onSelect,
 }: TimeSlotPickerProps) {
+  const t = useTranslations();
+  const { locale } = useLocale();
+  const dateFnsLocale = getDateFnsLocale(locale);
   const availableSlots = daySlots.slots.filter((s) => s.available);
 
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="font-display text-3xl text-[var(--studio-ink)]">Pick a time</h2>
+        <h2 className="font-display text-3xl text-[var(--studio-ink)]">{t.booking.pickTime}</h2>
         <p className="mt-2 text-[var(--studio-muted)]">
-          {format(daySlots.date, "EEEE, MMMM d", { locale: enUS })}
+          {format(daySlots.date, "EEEE, d MMMM", { locale: dateFnsLocale })}
         </p>
       </div>
 
@@ -53,7 +57,7 @@ export function TimeSlotPicker({
         ) : (
           <div className="py-10 text-center">
             <Clock className="mx-auto mb-3 h-8 w-8 text-[var(--studio-muted)]" />
-            <p className="text-[var(--studio-muted)]">No slots available this day</p>
+            <p className="text-[var(--studio-muted)]">{t.booking.noSlots}</p>
           </div>
         )}
       </div>

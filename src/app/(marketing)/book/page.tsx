@@ -15,6 +15,7 @@ import { authClient } from "@/lib/auth-client";
 import { getAvailableDates, type TimeSlot } from "@/lib/slots";
 import { siteConfig } from "@/lib/site-config";
 import { ArrowLeft } from "lucide-react";
+import { useTranslations } from "@/components/providers/locale-provider";
 
 interface Advisor {
   id: string;
@@ -41,6 +42,7 @@ interface Advisor {
 export default function BookPage() {
   const router = useRouter();
   const dialog = useDialog();
+  const t = useTranslations();
   const [advisor, setAdvisor] = useState<Advisor | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -58,19 +60,19 @@ export default function BookPage() {
     try {
       const studioRes = await fetch("/api/studio");
       if (!studioRes.ok) {
-        setLoadError("Studio not available. Please try again later.");
+        setLoadError(t.book.studioUnavailable);
         return;
       }
       const { studio } = await studioRes.json();
       const advisorRes = await fetch(`/api/advisors/${studio.advisorId}`);
       if (!advisorRes.ok) {
-        setLoadError("Could not load schedule.");
+        setLoadError(t.book.scheduleError);
         return;
       }
       const data = await advisorRes.json();
       setAdvisor(data.advisor);
     } catch {
-      setLoadError("Something went wrong. Please refresh the page.");
+      setLoadError(t.book.loadError);
     } finally {
       setIsLoading(false);
     }
@@ -212,7 +214,7 @@ export default function BookPage() {
   if (loadError || !advisor) {
     return (
       <div className="studio-booking flex min-h-[60vh] items-center justify-center px-6">
-        <p className="text-center text-[var(--studio-muted)]">{loadError || "Studio not available"}</p>
+        <p className="text-center text-[var(--studio-muted)]">{loadError || t.book.studioUnavailable}</p>
       </div>
     );
   }
@@ -228,7 +230,7 @@ export default function BookPage() {
             className="inline-flex items-center gap-1.5 text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)]"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back
+            {t.book.back}
           </button>
         ) : (
           <Link
