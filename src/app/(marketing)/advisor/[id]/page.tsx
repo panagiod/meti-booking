@@ -19,6 +19,8 @@ import { savePendingBooking } from "@/lib/booking-utils";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { authClient } from "@/lib/auth-client";
 import { getAvailableDates, formatCurrency, formatDuration, type TimeSlot } from "@/lib/slots";
+import { resolveBookingLeadHours } from "@/lib/booking-config";
+import { siteConfig } from "@/lib/site-config";
 import {
   ArrowLeft,
   Video,
@@ -91,8 +93,14 @@ export default function AdvisorProfilePage({ params }: { params: Promise<{ id: s
 
   const availableDates = useMemo(() => {
     if (!selectedService || !advisor?.schedule?.length) return [];
-    return getAvailableDates(advisor.schedule, selectedService.durationMin, 2, [], advisor.bookingLeadHours || 24);
-  }, [selectedService, advisor?.schedule]);
+    return getAvailableDates(
+      advisor.schedule,
+      selectedService.durationMin,
+      siteConfig.bookingWeeksAhead,
+      [],
+      resolveBookingLeadHours(advisor.bookingLeadHours)
+    );
+  }, [selectedService, advisor?.schedule, advisor?.bookingLeadHours]);
 
   // Real availability: query existing appointments via API for each date.
   // getAvailableDates only generates schedule slots; the API marks already booked ones.

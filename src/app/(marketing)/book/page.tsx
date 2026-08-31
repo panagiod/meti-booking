@@ -13,6 +13,7 @@ import { LoadingPage } from "@/components/ui/loading";
 import { authClient } from "@/lib/auth-client";
 import { getAvailableDates, type TimeSlot } from "@/lib/slots";
 import { isReformerService, siteConfig } from "@/lib/site-config";
+import { resolveBookingLeadHours } from "@/lib/booking-config";
 import { useTranslations, useStudioBranding } from "@/components/providers/locale-provider";
 import { ArrowLeft } from "lucide-react";
 
@@ -94,7 +95,7 @@ export default function BookPage() {
       selectedService.durationMin,
       siteConfig.bookingWeeksAhead,
       [],
-      advisor.bookingLeadHours ?? siteConfig.defaultBookingLeadHours
+      resolveBookingLeadHours(advisor.bookingLeadHours)
     );
   }, [selectedService, advisor?.schedule, advisor?.bookingLeadHours]);
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isReformerService } from "@/lib/site-config";
+import { resolveBookingLeadHours } from "@/lib/booking-config";
 
 // GET: Get advisor details
 export async function GET(
@@ -67,7 +68,7 @@ export async function GET(
         videoUrl: advisor.videoUrl,
         isVerified: advisor.isVerified,
         mpMode: advisor.mpMode,
-        bookingLeadHours: advisor.bookingLeadHours,
+        bookingLeadHours: resolveBookingLeadHours(advisor.bookingLeadHours),
         rating: Math.round(avgRating * 10) / 10,
         reviewCount: reviews.length,
         categories: advisor.categories.map((ac: any) => ac.category.name),

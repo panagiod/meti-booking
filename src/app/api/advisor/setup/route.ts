@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireSelfOrBootstrap } from "@/lib/session-auth";
+import { DEFAULT_BOOKING_LEAD_HOURS } from "@/lib/booking-config";
 
 export async function POST(request: NextRequest) {
   const { userId, bio, categoryIds } = await request.json();
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest) {
         userId,
         bio: bio || null,
         isActive: false,
+        bookingLeadHours: DEFAULT_BOOKING_LEAD_HOURS,
       },
     });
 

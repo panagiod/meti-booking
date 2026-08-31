@@ -32,6 +32,8 @@
 | #29 | Admin lunch/gap | `/admin/schedule` fields |
 | #30 | demo reset CMS | `--reset-content` flag |
 
+| #31 | `bookingLeadHours` default | `resolveBookingLeadHours()` + schema default 2h |
+
 ## Still open (recommended next)
 
 | Issue | Title |
@@ -40,4 +42,3 @@
 | #8 | Guest checkout |
 | #2–#7 | Stripe / Revolut payments epic |
 | #19 | Single-day block UX (works via same From/To date — may close) |
-| #31 | Standardize `bookingLeadHours` default (2h vs 24h) |

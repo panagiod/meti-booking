@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { generateAvailableSlots } from "@/lib/slots";
 import { getDayOfWeekForStudioDate, studioDayBoundsUTC } from "@/lib/timezone";
 import { siteConfig } from "@/lib/site-config";
+import { resolveBookingLeadHours } from "@/lib/booking-config";
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
       select: { bookingLeadHours: true },
     });
 
-    const leadHours = advisorProfile?.bookingLeadHours ?? siteConfig.defaultBookingLeadHours;
+    const leadHours = resolveBookingLeadHours(advisorProfile?.bookingLeadHours);
     const minStartTime =
       leadHours > 0 ? new Date(Date.now() + leadHours * 60 * 60 * 1000) : undefined;
 

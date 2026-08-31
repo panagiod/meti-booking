@@ -3,6 +3,7 @@ import { resolve } from "path";
 import { execSync } from "child_process";
 import { randomBytes } from "crypto";
 import { studioScheduleSeedRows } from "../src/lib/studio-schedule";
+import { DEFAULT_BOOKING_LEAD_HOURS } from "../src/lib/booking-config";
 
 config({ path: resolve(__dirname, "../.env") });
 
@@ -121,7 +122,7 @@ async function main() {
             isActive: true,
             isVerified: true,
             verificationStatus: "APPROVED",
-            bookingLeadHours: 2,
+            bookingLeadHours: DEFAULT_BOOKING_LEAD_HOURS,
           },
         });
       } else if (RESET) {
@@ -133,7 +134,7 @@ async function main() {
             isActive: true,
             isVerified: true,
             verificationStatus: "APPROVED",
-            bookingLeadHours: 2,
+            bookingLeadHours: DEFAULT_BOOKING_LEAD_HOURS,
           },
         });
       }

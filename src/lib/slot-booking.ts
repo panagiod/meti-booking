@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { generateAvailableSlots } from "@/lib/slots";
+import { resolveBookingLeadHours } from "@/lib/booking-config";
 import { siteConfig } from "@/lib/site-config";
 import {
   getDayOfWeekForStudioDate,
@@ -104,9 +105,10 @@ export async function validateBookableSlot(params: {
     })
   );
 
+  const leadHours = resolveBookingLeadHours(advisorProfile.bookingLeadHours);
   const minStartTime =
-    advisorProfile.bookingLeadHours > 0
-      ? new Date(Date.now() + advisorProfile.bookingLeadHours * 60 * 60 * 1000)
+    leadHours > 0
+      ? new Date(Date.now() + leadHours * 60 * 60 * 1000)
       : undefined;
 
   const slots = generateAvailableSlots(

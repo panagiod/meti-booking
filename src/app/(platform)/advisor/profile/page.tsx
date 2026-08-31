@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import "lite-youtube-embed/src/lite-yt-embed.css";
 import { sileo } from "sileo";
+import { DEFAULT_BOOKING_LEAD_HOURS } from "@/lib/booking-config";
 
 export default function ProfilePage() {
   const dialog = useDialog();
@@ -47,7 +48,7 @@ export default function ProfilePage() {
   const [documentType, setDocumentType] = useState("CERTIFICATE");
   const [categories, setCategories] = useState<any[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
-  const [bookingLeadHours, setBookingLeadHours] = useState(24);
+  const [bookingLeadHours, setBookingLeadHours] = useState<number>(DEFAULT_BOOKING_LEAD_HOURS);
   const [isHidden, setIsHidden] = useState(false);
   const [whatsappPhone, setWhatsappPhone] = useState("");
 
@@ -57,7 +58,7 @@ export default function ProfilePage() {
       setImage(data.profile.user?.image || "");
       setBio(data.profile.bio || "");
       setVideoUrl(data.profile.videoUrl || "");
-      setBookingLeadHours(data.profile.bookingLeadHours || 24);
+      setBookingLeadHours(data.profile.bookingLeadHours ?? DEFAULT_BOOKING_LEAD_HOURS);
       setIsHidden(data.profile.isHidden || false);
       setWhatsappPhone(data.profile.whatsappPhone || "");
       setSelectedCategoryIds((data.profile.categories || []).map((c: any) => c.id));
@@ -391,7 +392,9 @@ export default function ProfilePage() {
                   Booking settings
                 </CardTitle>
                 <CardDescription>
-                  Set the minimum advance notice required for clients to book
+                  Minimum advance notice before clients can book (default{" "}
+                  {DEFAULT_BOOKING_LEAD_HOURS} hours for MeTi studio). Use 0 for no
+                  restriction.
                 </CardDescription>
               </CardHeader>
               <CardContent>

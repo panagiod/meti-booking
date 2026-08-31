@@ -122,7 +122,7 @@ model AdvisorProfile {
   verificationNotes String? @db.Text
 
   // Booking
-  bookingLeadHours Int      @default(24) // Minimum advance booking notice (hours)
+  bookingLeadHours Int      @default(2) // Minimum advance booking notice (hours)
 
   // Contact (admin only)
   whatsappPhone    String?  // WhatsApp phone for admin contact

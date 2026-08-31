@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { DEFAULT_BOOKING_LEAD_HOURS } from "@/lib/booking-config";
 
 // POST: Request to become an advisor
 export async function POST() {
@@ -53,6 +54,7 @@ export async function POST() {
       data: {
         userId: userId,
         isActive: false, // Pending approval
+        bookingLeadHours: DEFAULT_BOOKING_LEAD_HOURS,
       },
     });
 
