@@ -36,6 +36,8 @@ Connect professionals who want to offer advisory sessions with clients seeking s
 - [🗺️ Booking Flow](#️-booking-flow)
 - [📁 Project Structure](#-project-structure)
 - [🚀 Getting Started](#-getting-started)
+- [🎬 Demo](#-demo)
+- [🌐 Deployment & cost plan](#-deployment--cost-plan)
 - [🧭 Roles and Routes](#-roles-and-routes)
 - [🤝 Contributing](#-contributing)
 - [🛣️ Roadmap](#️-roadmap)
@@ -213,6 +215,38 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) 🎉
+
+### Quick demo (recommended)
+
+For a pre-seeded local demo with admin, advisor, and client accounts:
+
+```bash
+cp .env.demo.example .env
+docker compose up -d
+pnpm install
+pnpm demo:setup
+pnpm dev
+```
+
+See [docs/DEMO.md](docs/DEMO.md) for demo accounts and walkthrough.
+
+## 🎬 Demo
+
+Run a full local demo with Docker PostgreSQL and three pre-seeded accounts (`admin`, `advisor`, `client`). No paid services required for the core booking flow.
+
+**[→ Demo guide](docs/DEMO.md)**
+
+## 🌐 Deployment & cost plan
+
+Phased plan from **$0/month** (Vercel + Neon) to the **cheapest VPS** (~$5/month) with a custom domain.
+
+| Phase | Cost | Best for |
+|---|---|---|
+| Free demo | $0/mo | Public URL on `*.vercel.app` |
+| Budget production | $0/mo + domain | Custom domain, low traffic |
+| Cheapest VPS | ~$5/mo + domain | Full control, no free-tier limits |
+
+**[→ Deployment guide](docs/DEPLOYMENT.md)**
 
 ### Useful scripts
 
