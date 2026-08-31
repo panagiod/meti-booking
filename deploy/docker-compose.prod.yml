@@ -23,11 +23,14 @@ services:
       - ../.env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-meti}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-meti_booking}?schema=public
+      SELF_HOSTED: "1"
     depends_on:
       postgres:
         condition: service_healthy
     expose:
       - "3000"
+    volumes:
+      - studio_uploads:/app/public/uploads
 
   caddy:
     image: caddy:2-alpine
@@ -35,6 +38,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -42,7 +47,37 @@ services:
     depends_on:
       - app
 
+  migrate:
+    profiles: ["tools"]
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.migrate
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-meti}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-meti_booking}?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  seed:
+    profiles: ["tools"]
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.seed
+    env_file:
+      - ../.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-meti}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-meti_booking}?schema=public
+      ALLOW_DEMO_SEED: ${ALLOW_DEMO_SEED:-0}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:
+  studio_uploads:
   caddy_data:
   caddy_config:

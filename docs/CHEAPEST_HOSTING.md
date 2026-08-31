@@ -38,6 +38,94 @@ For a **studio demo or soft launch**, the free stack is enough.
 
 ---
 
+## Real studio website — honest limits
+
+If MeTi Pilates is a **real business** (advertising classes, taking bookings, eventually payments), here is what matters.
+
+### 1. Vercel Hobby ($0) is not for commercial use
+
+[Vercel’s terms](https://vercel.com/docs/limits/fair-use-guidelines) say Hobby is **personal, non-commercial only**. A Pilates studio site is commercial because it:
+
+- Advertises and sells a service (classes)
+- Processes or will process payments (Mercado Pago checkout)
+- Exists for the studio’s financial gain
+
+**You should use Vercel Pro (~$20/month)** or self-host on a **VPS (~$5/month)** — not Hobby — for a real production site.
+
+### 2. Recommended budgets for a real site
+
+| Setup | Monthly | Best for |
+|-------|--------:|----------|
+| **Vercel Pro + Neon Launch** | ~$20–25 | Easiest ops, auto-deploy from GitHub |
+| **Hetzner VPS + Docker** (see `deploy/`) | ~$5–7 | Cheapest long-term, more DIY |
+| **Vercel Hobby + Neon free** | $0 | Testing / portfolio only — **not** real business |
+
+Add **~$3–10/year** for a custom domain (strongly recommended — e.g. `metipilates.gr` instead of `*.vercel.app`).
+
+### 3. Infrastructure limits (free vs paid)
+
+| Area | Neon free | Neon paid (Launch) | Vercel Hobby | Vercel Pro |
+|------|-----------|-------------------|--------------|------------|
+| **Commercial use** | ✅ | ✅ | ❌ | ✅ |
+| **Storage** | 0.5 GB | pay per GB | — | — |
+| **DB sleeps when idle** | Yes (5 min) | Can disable | — | — |
+| **Compute cap** | 100 CU-hrs/mo | Pay as you go | — | — |
+| **Cold start on first visit** | 2–5 s possible | Minimal if always-on | Same on app | Same |
+| **Bandwidth** | 5 GB egress/mo | Higher | 100 GB/mo | 1 TB+ |
+| **Cron jobs** | — | — | Daily only | Daily (same app) |
+| **Support / SLA** | Community | Paid tiers | None | Email support |
+
+For a **single small studio**, 0.5 GB and low traffic are usually enough on the database side. The bigger issue is **Neon sleeping** (slow first booking after quiet hours) and **Vercel Hobby not allowing commercial use**.
+
+### 4. App-level limits (this codebase)
+
+These apply regardless of hosting plan:
+
+| Feature | Current behaviour | Impact on real studio |
+|---------|-------------------|------------------------|
+| **Booking window** | 8 weeks ahead | Fine for most studios |
+| **Lead time** | 2 hours minimum before class | Configurable per advisor |
+| **Capacity** | 3 spots per time slot | Hardcoded in `siteConfig` — change if you need more |
+| **Schedule** | Mon/Wed/Sat 2–5pm (demo seed) | Admin can change in `/admin/schedule` |
+| **Payments** | Mercado Pago per instructor | Must connect MP + set `APP_URL`, `ENCRYPTION_KEY` |
+| **Guest checkout** | Email only, no password | Works — good for casual clients |
+| **Reminder emails** | Daily cron + Resend | Needs `RESEND_API_KEY`; runs once per day, not hourly |
+| **Pending bookings** | Expire at midnight (cron) | Unpaid slots held until daily job runs |
+| **Admin images** | Vercel Blob in production | Needs `BLOB_READ_WRITE_TOKEN` to upload hero photos |
+| **Video calls** | LiveKit (optional) | Not set up — booking is in-person reformer |
+| **Greek + English** | ✅ | Production-ready |
+| **Backups** | Neon free: 6h restore window | Upgrade Neon for longer point-in-time recovery |
+
+### 5. What you need for launch (real studio checklist)
+
+| Must have | Why |
+|-----------|-----|
+| Custom domain | Trust, SEO, email links |
+| Vercel **Pro** or VPS | Legal/commercial hosting |
+| Neon **Launch** (or VPS Postgres) | Avoid DB sleep during business hours |
+| `ENCRYPTION_KEY` + Mercado Pago | Accept real payments |
+| `APP_URL` + MP webhook | Confirm payments server-side |
+| `RESEND_API_KEY` | Booking confirmations / reminders |
+| `BLOB_READ_WRITE_TOKEN` | Change hero/studio photos in admin |
+| Real admin password | Remove demo `Demo1234!` accounts |
+| Google OAuth (optional) | Easier login — see `deploy/GOOGLE_OAUTH.md` |
+
+### 6. Realistic monthly cost (small studio)
+
+| Item | Cost |
+|------|-----:|
+| Vercel Pro | ~$20 |
+| Neon Launch (low traffic) | ~$0–5 |
+| Domain | ~$1/mo (amortized) |
+| Resend free tier | $0 (100 emails/day) |
+| Vercel Blob free tier | $0 (1 GB) |
+| Mercado Pago | % per transaction only |
+| **Typical total** | **~$22–27/month** |
+
+**Cheapest real-business alternative:** [Hetzner VPS ~€5/month](./deploy/HETZNER.md) — see [deploy/README.md](../deploy/README.md).
+
+---
+
 ## Overview (5 steps)
 
 ```
@@ -292,4 +380,4 @@ pnpm db:deploy       # apply database migrations
 pnpm demo:setup      # seed studio data (needs ALLOW_DEMO_SEED=1 in prod)
 ```
 
-**Estimated total cost to go live today: $0.**
+**Estimated total cost to go live today: $0** (testing only) · **~$22–27/month** for a real studio on Vercel Pro + Neon.

@@ -65,6 +65,7 @@ See [docs/ADMIN.md](docs/ADMIN.md) for details.
 | `pnpm test:e2e` | Playwright |
 | `pnpm exec tsx scripts/generate-brand-assets.ts` | Regenerate favicons + OG image |
 | `pnpm exec tsx scripts/reset-studio-schedule.ts` | Reset schedule to Mon/Wed/Sat 14:00–17:00 |
+| `pnpm deploy:check` | Validate production env vars before deploy |
 | `./scripts/close-resolved-issues.sh` | Close fixed GitHub issues (#1, #8, #9, #11–#31) |
 
 ---
@@ -106,7 +107,8 @@ public/uploads/studio/   # Admin-uploaded images (local dev)
 
 | Doc | Purpose |
 |-----|---------|
-| [**docs/CHEAPEST_HOSTING.md**](docs/CHEAPEST_HOSTING.md) | **$0/month hosting** — Vercel + Neon step-by-step |
+| [**docs/CHEAPEST_HOSTING.md**](docs/CHEAPEST_HOSTING.md) | Cost comparison ($0 vs real business) |
+| [**deploy/HETZNER.md**](deploy/HETZNER.md) | **Hetzner VPS deploy** (~€5/mo) — recommended for production |
 | [**docs/PROJECT.md**](docs/PROJECT.md) | Complete architecture & API reference |
 | [**docs/ADMIN.md**](docs/ADMIN.md) | Calendar + website CMS |
 | [docs/DEMO.md](docs/DEMO.md) | Demo walkthrough |

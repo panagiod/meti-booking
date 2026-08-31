@@ -17,7 +17,7 @@
 /.next/
 /out/
 
-# production
+/deploy/backups/*.sql.gz
 /build
 
 # misc

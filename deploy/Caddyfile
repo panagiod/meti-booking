@@ -1,3 +1,5 @@
-{$DOMAIN:localhost} {
+# Production Caddy config — DOMAIN is injected by docker-compose (e.g. metipilates.gr)
+{$DOMAIN} {
+	encode gzip
 	reverse_proxy app:3000
 }

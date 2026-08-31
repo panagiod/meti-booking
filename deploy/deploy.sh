@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Build and start production stack on the VPS.
+# Run from repository root: ./deploy/deploy.sh
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+if [[ ! -f .env ]]; then
+  echo "Missing .env — copy deploy/env.production.example to .env and fill in values."
+  exit 1
+fi
+
+# shellcheck disable=SC1091
+set -a
+source .env
+set +a
+
+for var in DOMAIN POSTGRES_PASSWORD BETTER_AUTH_SECRET BETTER_AUTH_URL CRON_SECRET; do
+  if [[ -z "${!var:-}" ]]; then
+    echo "Missing required env var: $var"
+    exit 1
+  fi
+done
+
+echo "Starting database..."
+docker compose -f deploy/docker-compose.prod.yml up -d postgres
+
+echo "Waiting for Postgres..."
+sleep 5
+
+echo "Running database migrations..."
+docker compose -f deploy/docker-compose.prod.yml --profile tools run --rm migrate
+
+echo "Building and starting app + Caddy..."
+docker compose -f deploy/docker-compose.prod.yml up -d --build
+
+echo ""
+echo "Deploy complete."
+echo "  Site: https://${DOMAIN}"
+echo ""
+echo "Next steps:"
+echo "  1. Seed studio data (first time): ./deploy/seed.sh"
+echo "  2. Install cron jobs: ./deploy/setup-cron.sh"
+echo "  3. Smoke test: /book and /admin"
