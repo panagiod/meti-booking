@@ -16,6 +16,7 @@
     "db:clean": "tsx scripts/clean-db.ts",
     "demo:setup": "tsx scripts/demo-setup.ts",
     "demo:start": "docker compose up -d && pnpm demo:setup && pnpm dev",
+    "issues:close": "bash scripts/close-resolved-issues.sh",
     "test": "pnpm test:unit && pnpm test:e2e",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
