@@ -2,8 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { requireAdminSession } from "@/lib/admin-auth";
+import { getStudioContent, saveStudioContent } from "@/lib/studio-content-server";
 import { put, del } from "@vercel/blob";
 import { v4 as uuidv4 } from "uuid";
+
+export const dynamic = "force-dynamic";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -66,7 +69,20 @@ export async function POST(request: NextRequest) {
       url = `/uploads/studio/${fileName}`;
     }
 
-    return NextResponse.json({ url }, { status: 201 });
+    const content = await getStudioContent();
+    const imageField = imageKey === "hero" ? "heroImage" : "reformerImage";
+    const saved = await saveStudioContent({
+      ...content,
+      [imageField]: url,
+    });
+
+    return NextResponse.json(
+      {
+        url,
+        content: saved,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("[admin/studio/upload] POST error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

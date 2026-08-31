@@ -142,7 +142,7 @@ function ImageUploadCard({
   description: string;
   imageKey: "hero" | "reformer";
   currentUrl: string;
-  onUploaded: (url: string) => void;
+  onUploaded: (url: string, savedContent: StudioContentData) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -166,8 +166,8 @@ function ImageUploadCard({
         dialog.showAlert("Upload failed", data.error || "Could not upload image", "error");
         return;
       }
-      onUploaded(data.url);
-      dialog.showAlert("Uploaded", `${title} image updated`, "success");
+      onUploaded(data.url, data.content);
+      dialog.showAlert("Saved", `${title} image updated and saved`, "success");
     } catch {
       dialog.showAlert("Upload failed", "Connection error", "error");
     } finally {
@@ -221,7 +221,10 @@ export default function AdminContentPage() {
 
   const loadContent = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/studio/content", { credentials: "include" });
+      const res = await fetch("/api/admin/studio/content", {
+        credentials: "include",
+        cache: "no-store",
+      });
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
       setContent(data.content);
@@ -236,6 +239,21 @@ export default function AdminContentPage() {
   useEffect(() => {
     loadContent();
   }, [loadContent]);
+
+  useEffect(() => {
+    if (!hasChanges) return;
+    const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  }, [hasChanges]);
+
+  const applyPersistedContent = (savedContent: StudioContentData) => {
+    setContent(savedContent);
+    setHasChanges(false);
+  };
 
   const updateContent = (patch: Partial<StudioContentData>) => {
     setContent((prev) => (prev ? { ...prev, ...patch } : prev));
@@ -405,14 +423,14 @@ export default function AdminContentPage() {
                 description="Large image on the homepage (JPEG, PNG, or WebP, max 5MB)"
                 imageKey="hero"
                 currentUrl={content.heroImage}
-                onUploaded={(heroImage) => updateContent({ heroImage })}
+                onUploaded={(_url, savedContent) => applyPersistedContent(savedContent)}
               />
               <ImageUploadCard
                 title="Reformer image"
                 description="Secondary studio photo (used if session cards are shown)"
                 imageKey="reformer"
                 currentUrl={content.reformerImage}
-                onUploaded={(reformerImage) => updateContent({ reformerImage })}
+                onUploaded={(_url, savedContent) => applyPersistedContent(savedContent)}
               />
             </div>
           </div>

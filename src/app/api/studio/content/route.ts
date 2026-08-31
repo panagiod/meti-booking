@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getStudioContent, studioBranding, localeContentFromStudio } from "@/lib/studio-content-server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const content = await getStudioContent();

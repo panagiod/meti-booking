@@ -5,6 +5,8 @@ import { resolveStudioAdvisor } from "@/lib/studio-advisor";
 import { blockedTimePayloadSchema } from "@/lib/schedule-schema";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const authResult = await requireAdminSession();

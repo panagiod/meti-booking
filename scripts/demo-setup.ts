@@ -6,6 +6,7 @@ import { studioScheduleSeedRows } from "../src/lib/studio-schedule";
 config({ path: resolve(__dirname, "../.env") });
 
 const DEMO_PASSWORD = "Demo1234!";
+const RESET = process.argv.includes("--reset");
 const DEMO_USERS = {
   admin: {
     email: "admin@demo.meti-booking.local",
@@ -27,6 +28,12 @@ const DEMO_USERS = {
 async function main() {
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is required. Copy .env.demo.example to .env first.");
+  }
+
+  if (RESET) {
+    console.log("[demo-setup] --reset: will overwrite existing schedule, services, and advisor profile.");
+  } else {
+    console.log("[demo-setup] Preserving existing admin calendar and website content (use --reset to re-seed).");
   }
 
   console.log("[demo-setup] Applying database migrations...");
@@ -64,10 +71,13 @@ async function main() {
 
     if (role === "ADMIN") {
       await prisma.user.update({ where: { id: user.id }, data: { role: "ADMIN" } });
-      await prisma.adminProfile.deleteMany({ where: { userId: user.id } });
-      await prisma.adminProfile.create({
-        data: { userId: user.id, level: "SUPERADMIN" },
-      });
+      const existingProfile = await prisma.adminProfile.findUnique({ where: { userId: user.id } });
+      if (RESET || !existingProfile) {
+        await prisma.adminProfile.deleteMany({ where: { userId: user.id } });
+        await prisma.adminProfile.create({
+          data: { userId: user.id, level: "SUPERADMIN" },
+        });
+      }
       await prisma.clientProfile.deleteMany({ where: { userId: user.id } });
       return user.id;
     }
@@ -89,7 +99,7 @@ async function main() {
             bookingLeadHours: 2,
           },
         });
-      } else {
+      } else if (RESET) {
         await prisma.advisorProfile.update({
           where: { id: advisor.id },
           data: {
@@ -104,36 +114,48 @@ async function main() {
       }
 
       const category = await prisma.category.findUnique({ where: { slug: "pilates" } });
-      if (category) {
+      const existingCategories = await prisma.advisorCategory.count({
+        where: { advisorId: advisor.id },
+      });
+      if (category && (RESET || existingCategories === 0)) {
         await prisma.advisorCategory.deleteMany({ where: { advisorId: advisor.id } });
         await prisma.advisorCategory.create({
           data: { advisorId: advisor.id, categoryId: category.id },
         });
       }
 
-      await prisma.advisorSchedule.deleteMany({ where: { advisorId: advisor.id } });
-      // Tue, Thu, Sat afternoons — 3 hours → 3 reformer slots per day
-      for (const row of studioScheduleSeedRows()) {
-        await prisma.advisorSchedule.create({
+      const existingSchedule = await prisma.advisorSchedule.count({
+        where: { advisorId: advisor.id },
+      });
+      if (RESET || existingSchedule === 0) {
+        await prisma.advisorSchedule.deleteMany({ where: { advisorId: advisor.id } });
+        for (const row of studioScheduleSeedRows()) {
+          await prisma.advisorSchedule.create({
+            data: {
+              advisorId: advisor.id,
+              ...row,
+            },
+          });
+        }
+      }
+
+      const existingServices = await prisma.advisorService.count({
+        where: { advisorId: advisor.id },
+      });
+      if (RESET || existingServices === 0) {
+        await prisma.advisorService.deleteMany({ where: { advisorId: advisor.id } });
+        await prisma.advisorService.create({
           data: {
             advisorId: advisor.id,
-            ...row,
+            name: "Reformer Session",
+            description: "Equipment-based full-body workout on the reformer.",
+            durationMin: 50,
+            priceCents: 4500,
+            isActive: true,
+            categoryId: category?.id,
           },
         });
       }
-
-      await prisma.advisorService.deleteMany({ where: { advisorId: advisor.id } });
-      await prisma.advisorService.create({
-        data: {
-          advisorId: advisor.id,
-          name: "Reformer Session",
-          description: "Equipment-based full-body workout on the reformer.",
-          durationMin: 50,
-          priceCents: 4500,
-          isActive: true,
-          categoryId: category?.id,
-        },
-      });
 
       return user.id;
     }

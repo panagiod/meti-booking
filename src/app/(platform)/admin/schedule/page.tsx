@@ -66,7 +66,10 @@ export default function AdminSchedulePage() {
 
   const loadStudio = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/studio", { credentials: "include" });
+      const res = await fetch("/api/admin/studio", {
+        credentials: "include",
+        cache: "no-store",
+      });
       if (!res.ok) throw new Error("Failed to load studio");
       const data = await res.json();
       setStudio(data.studio);

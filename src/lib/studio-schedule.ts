@@ -166,6 +166,67 @@ function formatTime12(time: string): string {
   return m === 0 ? `${hour12}${suffix}` : `${hour12}:${m.toString().padStart(2, "0")}${suffix}`;
 }
 
+const DAY_ABBREV_EN: Record<number, string> = {
+  0: "Sun",
+  1: "Mon",
+  2: "Tue",
+  3: "Wed",
+  4: "Thu",
+  5: "Fri",
+  6: "Sat",
+};
+
+const DAY_ABBREV_EL: Record<number, string> = {
+  0: "Κυρ",
+  1: "Δευ",
+  2: "Τρί",
+  3: "Τετ",
+  4: "Πέμ",
+  5: "Παρ",
+  6: "Σάβ",
+};
+
+const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
+
+/** Hours line for homepage/footer — kept in sync when admin saves calendar */
+export function formatScheduleHoursForLocale(
+  schedules: StudioDaySchedule[],
+  locale: "en" | "el"
+): string {
+  const active = schedules
+    .filter((s) => s.isActive)
+    .sort((a, b) => WEEK_ORDER.indexOf(a.dayOfWeek) - WEEK_ORDER.indexOf(b.dayOfWeek));
+
+  if (active.length === 0) {
+    return locale === "el" ? "Κλειστά" : "Closed";
+  }
+
+  const dayAbbrev = locale === "el" ? DAY_ABBREV_EL : DAY_ABBREV_EN;
+  const days = active.map((d) => dayAbbrev[d.dayOfWeek]).join(", ");
+
+  const sameHours = active.every(
+    (d) => d.startTime === active[0].startTime && d.endTime === active[0].endTime
+  );
+
+  if (sameHours) {
+    const timeRange =
+      locale === "el"
+        ? `${active[0].startTime}–${active[0].endTime}`
+        : `${formatTime12(active[0].startTime)}–${formatTime12(active[0].endTime)}`;
+    return `${days} · ${timeRange}`;
+  }
+
+  return active
+    .map((d) => {
+      const timeRange =
+        locale === "el"
+          ? `${d.startTime}–${d.endTime}`
+          : `${formatTime12(d.startTime)}–${formatTime12(d.endTime)}`;
+      return `${dayAbbrev[d.dayOfWeek]} ${timeRange}`;
+    })
+    .join(locale === "el" ? " · " : " · ");
+}
+
 /** Seed rows for demo-setup (Mon, Wed, Sat afternoons) */
 export function studioScheduleSeedRows() {
   return STUDIO_DEMO_ACTIVE_DAYS.map((dayOfWeek) => ({

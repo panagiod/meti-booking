@@ -12,7 +12,7 @@ Run the reformer booking app locally in ~5 minutes.
 |---------|------|
 | Homepage + `/book` | ✅ |
 | Reformer-only · 3 per slot | ✅ |
-| Tue/Thu/Sat afternoons | ✅ |
+| Tue/Thu/Sat afternoons | ✅ (default seed; admin can change) |
 | EN + Greek (ΕΛ) + Greek fonts | ✅ |
 | Admin calendar (`/admin/schedule`) | ✅ |
 | Admin website CMS (`/admin/content`) | ✅ |
@@ -35,7 +35,9 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-`demo:setup` seeds: users, reformer service, **Tue/Thu/Sat 14:00–17:00** schedule, and **website content** (EN/EL copy + images).
+`demo:setup` seeds on **first run**: users, reformer service, **Mon/Wed/Sat 14:00–17:00** schedule, and **website content** (EN/EL copy + images).
+
+**Re-running `pnpm demo:setup` preserves** admin calendar, blocked dates, and website CMS changes. Use `pnpm demo:setup -- --reset` only when you want to wipe schedule/services back to defaults.
 
 ---
 
@@ -56,7 +58,7 @@ Password: **`Demo1234!`**
 ### Customer
 
 1. Homepage — switch to **ΕΛ**, note Greek fonts
-2. **Book** — only Tue/Thu/Sat afternoons; "X θέσεις" on slots
+2. **Book** — open days from admin calendar; "X θέσεις" on slots
 3. Login as client → checkout (payment unavailable without MP)
 
 ### Admin
@@ -69,10 +71,18 @@ Password: **`Demo1234!`**
 
 ## Reset demo
 
+**Full wipe** (database volume):
+
 ```bash
 docker compose down -v
 docker compose up -d
 pnpm demo:setup
+```
+
+**Reset schedule/services only** (keep CMS and blocked dates):
+
+```bash
+pnpm demo:setup -- --reset
 ```
 
 ---
@@ -84,5 +94,5 @@ pnpm demo:setup
 | DB connection refused | `docker compose ps` |
 | Auth errors | Check `BETTER_AUTH_SECRET` and URLs in `.env` |
 | Images 404 after deploy | `images.unoptimized: true` in `next.config.ts` |
-| CMS not showing changes | Click **Save changes** on `/admin/content` |
-| Old schedule | Re-run `pnpm demo:setup` |
+| CMS not showing changes | Hard-refresh homepage; text needs **Save changes**, images save on upload |
+| Old schedule | `pnpm demo:setup -- --reset` (or edit in `/admin/schedule`) |

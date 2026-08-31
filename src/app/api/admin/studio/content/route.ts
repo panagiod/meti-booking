@@ -4,6 +4,8 @@ import { getStudioContent, saveStudioContent } from "@/lib/studio-content-server
 import { studioContentSchema } from "@/lib/studio-content-types";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const authResult = await requireAdminSession();

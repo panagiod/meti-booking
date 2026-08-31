@@ -123,16 +123,32 @@ Editable per language:
 
 ---
 
+## Persistence
+
+All admin changes are stored in PostgreSQL:
+
+| Admin action | Stored in | Notes |
+|--------------|-----------|-------|
+| Calendar days/hours | `advisor_schedule` | Also updates EN/EL **hours line** in CMS |
+| Blocked dates | `blocked_time` | Saved immediately |
+| Website text | `studio_content` | Click **Save changes** |
+| Image upload | `studio_content` | Saved immediately on upload |
+
+Re-running `pnpm demo:setup` **does not** overwrite existing calendar or CMS data. Use `pnpm demo:setup -- --reset` to re-seed schedule/services.
+
+---
+
 ## After changing content
 
-- **Calendar:** effective immediately on save (no rebuild)
-- **Website text/images:** effective after save; customer may need refresh (no CDN cache on API)
+- **Calendar:** effective immediately on save (no rebuild); hours line in footer/hero updates automatically
+- **Website text:** effective after **Save changes**
+- **Images:** effective immediately after upload
 - **Code defaults** (`site-config.ts`, `en.ts`, `el.ts`): only affect new installs before first admin save or if DB row deleted
 
-Re-seed defaults:
+Re-seed schedule defaults only:
 
 ```bash
-pnpm demo:setup
+pnpm demo:setup -- --reset
 ```
 
 ---

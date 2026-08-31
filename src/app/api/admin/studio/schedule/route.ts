@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { resolveStudioAdvisor } from "@/lib/studio-advisor";
-import { mergeScheduleFromDb, validateStudioSchedule } from "@/lib/studio-schedule";
+import { mergeScheduleFromDb, validateStudioSchedule, formatScheduleHoursForLocale } from "@/lib/studio-schedule";
 import { schedulePayloadSchema } from "@/lib/schedule-schema";
+import { getStudioContent, saveStudioContent } from "@/lib/studio-content-server";
 import { z } from "zod";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
@@ -76,8 +79,29 @@ export async function PUT(request: NextRequest) {
         )
     );
 
+    const mergedSchedules = mergeScheduleFromDb(createdSchedules);
+
+    const content = await getStudioContent();
+    await saveStudioContent({
+      ...content,
+      contentEn: {
+        ...content.contentEn,
+        common: {
+          ...content.contentEn.common,
+          hours: formatScheduleHoursForLocale(mergedSchedules, "en"),
+        },
+      },
+      contentEl: {
+        ...content.contentEl,
+        common: {
+          ...content.contentEl.common,
+          hours: formatScheduleHoursForLocale(mergedSchedules, "el"),
+        },
+      },
+    });
+
     return NextResponse.json({
-      schedules: mergeScheduleFromDb(createdSchedules),
+      schedules: mergedSchedules,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

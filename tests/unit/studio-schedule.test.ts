@@ -5,6 +5,7 @@ import {
   weeklyScheduleTemplate,
   mergeScheduleFromDb,
   studioScheduleSeedRows,
+  formatScheduleHoursForLocale,
   STUDIO_DEMO_ACTIVE_DAYS,
 } from "@/lib/studio-schedule";
 
@@ -52,5 +53,15 @@ describe("studio-schedule", () => {
     const active = merged.filter((d) => d.isActive);
     expect(active).toHaveLength(3);
     expect(active.map((d) => d.dayOfWeek)).toEqual([1, 3, 6]);
+  });
+
+  it("formats hours line for English and Greek", () => {
+    const schedule = weeklyScheduleTemplate().map((d) => ({
+      ...d,
+      isActive: [1, 3, 6].includes(d.dayOfWeek),
+    }));
+
+    expect(formatScheduleHoursForLocale(schedule, "en")).toBe("Mon, Wed, Sat · 2pm–5pm");
+    expect(formatScheduleHoursForLocale(schedule, "el")).toBe("Δευ, Τετ, Σάβ · 14:00–17:00");
   });
 });

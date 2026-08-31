@@ -6,6 +6,8 @@ import { mergeScheduleFromDb } from "@/lib/studio-schedule";
 import { getStudioContent } from "@/lib/studio-content-server";
 import { siteConfig, REFORMER_SERVICE_NAME } from "@/lib/site-config";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const authResult = await requireAdminSession();
