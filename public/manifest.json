@@ -1,7 +1,7 @@
 {
   "name": "Flow Pilates",
   "short_name": "Flow Pilates",
-  "description": "Book mat, reformer, and private pilates sessions online.",
+  "description": "Book reformer pilates sessions online.",
   "start_url": "/book",
   "display": "standalone",
   "background_color": "#fafafa",

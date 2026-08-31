@@ -19,7 +19,7 @@ export function StudioInfo() {
               Visit {siteConfig.name}
             </h2>
             <p className="text-lg text-white/90 mb-8">
-              Small-group and private sessions in a calm, fully equipped studio.
+              Reformer sessions in a calm, fully equipped studio.
               Arrive 10 minutes early for your first visit so we can get you set up.
             </p>
 

@@ -15,9 +15,8 @@ export const siteConfig = {
   email: "hello@flowpilates.studio",
   hours: "Mon–Fri 6am–8pm · Sat 8am–2pm",
   images: {
-    hero: "https://images.unsplash.com/photo-1599901860901-781e6294b7ff?auto=format&fit=crop&w=1600&q=85",
-    reformer:
-      "https://images.unsplash.com/photo-1576678927484-cc9079570887?auto=format&fit=crop&w=900&q=85",
+    hero: "/images/hero.jpg",
+    reformer: "/images/reformer.jpg",
   },
   sessionTypes: [
     {
@@ -36,5 +35,14 @@ export const siteConfig = {
 export const REFORMER_SERVICE_NAME = "Reformer Session";
 
 export function isReformerService(serviceName: string): boolean {
-  return serviceName.toLowerCase().includes("reformer");
+  const name = serviceName.toLowerCase();
+  if (
+    name.includes("mat") ||
+    name.includes("duo") ||
+    name.includes("private") ||
+    name.includes("group")
+  ) {
+    return false;
+  }
+  return name.includes("reformer");
 }

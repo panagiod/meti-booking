@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isReformerService } from "@/lib/site-config";
 
 // GET: Get advisor details
 export async function GET(
@@ -70,7 +71,9 @@ export async function GET(
         rating: Math.round(avgRating * 10) / 10,
         reviewCount: reviews.length,
         categories: advisor.categories.map((ac: any) => ac.category.name),
-        services: advisor.services.map((s: any) => ({
+        services: advisor.services
+          .filter((s: { name: string }) => isReformerService(s.name))
+          .map((s: any) => ({
           id: s.id,
           name: s.name,
           description: s.description,

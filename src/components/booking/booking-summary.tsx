@@ -62,7 +62,7 @@ export function BookingSummary({
           </div>
           <div className="flex justify-between gap-4 pt-1">
             <dt className="font-display text-xl text-[var(--studio-ink)]">{t.booking.total}</dt>
-            <dd className="font-display text-xl text-[var(--studio-ink)]">{formatCurrency(total)}</dd>
+            <dd className="font-display text-xl text-[var(--studio-ink)]">{formatMoney(total, locale)}</dd>
           </div>
         </dl>
 
