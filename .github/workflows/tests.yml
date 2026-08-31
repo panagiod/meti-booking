@@ -56,7 +56,7 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Crear .env.test desde secrets
+      - name: Create .env.test from secrets
         run: |
           cat > .env.test << 'EOF'
           TEST_DATABASE_URL="${{ secrets.TEST_DATABASE_URL }}"
