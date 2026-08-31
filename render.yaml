@@ -1,0 +1,44 @@
+# Render Blueprint — free web service + PostgreSQL (demo/staging).
+# One-click deploy: https://render.com/deploy?repo=https://github.com/panagiod/meti-booking
+#
+# After deploy:
+# 1. Open the Render shell or run locally with the Render DATABASE_URL:
+#    pnpm db:deploy && BETTER_AUTH_URL=https://<your-app>.onrender.com pnpm demo:setup
+# 2. Set GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET in Render → Environment for OAuth.
+
+databases:
+  - name: meti-booking-db
+    plan: free
+    databaseName: meti_booking
+    user: meti
+
+services:
+  - type: web
+    name: meti-booking
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: meti-booking-db
+          property: connectionString
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      - key: CRON_SECRET
+        generateValue: true
+      - key: BETTER_AUTH_URL
+        sync: false
+      - key: NEXT_PUBLIC_BETTER_AUTH_URL
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
