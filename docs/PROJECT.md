@@ -303,7 +303,7 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 
 | Topic | Status |
 |-------|--------|
-| Google OAuth | Placeholder — email/password works |
+| Google OAuth | ✅ Implemented — set real credentials (see `deploy/GOOGLE_OAUTH.md`) |
 | Payments | MP not configured on demo |
 | Stripe / Revolut | Issues #2–#7 |
 | Permanent hosting | #10 |
@@ -324,9 +324,9 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 
 ### GitHub issues
 
-**Fixed (close with `./scripts/close-resolved-issues.sh`):** #1, #9, #11–#31 — see [RESOLVED_ISSUES.md](./RESOLVED_ISSUES.md).
+**Fixed (close with `./scripts/close-resolved-issues.sh`):** #1, #8, #9, #11–#31 — see [RESOLVED_ISSUES.md](./RESOLVED_ISSUES.md).
 
-**Still open:** #2–#8 (payments/OAuth), #10 (permanent deploy).
+**Still open:** #2–#7 (payments/OAuth), #10 (permanent deploy).
 
 ### Recent commits (Aug 2026)
 

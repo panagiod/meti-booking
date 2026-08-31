@@ -34,14 +34,13 @@ Do not use external Unsplash URLs — many return 404.
 
 ## Google login
 
-Demo `.env` uses **placeholders**:
-
-```
-GOOGLE_CLIENT_ID="demo-google-client-id"
-GOOGLE_CLIENT_SECRET="demo-google-client-secret"
-```
+Code is **fully implemented** (better-auth). The Google button appears only when real credentials are set (not demo placeholders).
 
 ### Enable Google OAuth
+
+See **[deploy/GOOGLE_OAUTH.md](../deploy/GOOGLE_OAUTH.md)** for the full checklist.
+
+Quick steps:
 
 1. [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials)
 2. OAuth 2.0 Client ID (Web)
@@ -57,7 +56,16 @@ GOOGLE_CLIENT_SECRET="demo-google-client-secret"
    APP_URL=https://your-domain.com
    ```
 
-6. Rebuild and restart
+6. Redeploy
+
+Validate production env before deploy:
+
+```bash
+BETTER_AUTH_URL=https://your-app.vercel.app \
+NEXT_PUBLIC_BETTER_AUTH_URL=https://your-app.vercel.app \
+DATABASE_URL=... BETTER_AUTH_SECRET=... CRON_SECRET=... \
+pnpm deploy:check
+```
 
 > Tunnel URLs (`*.trycloudflare.com`) change when the VM restarts — update OAuth + env each time.
 

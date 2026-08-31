@@ -29,7 +29,7 @@ export default function TermsOfServicePage() {
                 2. User accounts
               </h2>
               <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>To use Meti you must create an account through Google OAuth.</li>
+                <li>You may create an account with email and password or Google sign-in (when configured).</li>
                 <li>You are responsible for maintaining the confidentiality of your account.</li>
                 <li>You must provide accurate and up-to-date information.</li>
                 <li>You may only create one account per person.</li>

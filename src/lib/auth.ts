@@ -1,9 +1,14 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/prisma";
+import { getTrustedAuthOrigins } from "@/lib/auth-config";
+import { isGoogleOAuthConfigured } from "@/lib/google-oauth";
+
+const trustedOrigins = getTrustedAuthOrigins();
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  ...(trustedOrigins.length > 0 ? { trustedOrigins } : {}),
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -16,12 +21,16 @@ export const auth = betterAuth({
       trustedProviders: ["google"],
     },
   },
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-    },
-  },
+  ...(isGoogleOAuthConfigured()
+    ? {
+        socialProviders: {
+          google: {
+            clientId: process.env.GOOGLE_CLIENT_ID as string,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+          },
+        },
+      }
+    : {}),
   session: {
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,

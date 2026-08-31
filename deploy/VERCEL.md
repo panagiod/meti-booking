@@ -60,12 +60,22 @@ pnpm demo:setup
 
 ## 4. Google OAuth
 
-In [Google Cloud Console](https://console.cloud.google.com/apis/credentials):
+See **[GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md)** for the full checklist (origins, redirect URI, env vars, troubleshooting).
 
-- Authorized redirect URI: `https://your-app.vercel.app/api/auth/callback/google`
-- Add preview URL too if testing branch deploys
+Quick: redirect URI = `https://your-app.vercel.app/api/auth/callback/google`
 
-## 5. Mercado Pago webhooks
+## 5. Validate env (optional)
+
+Before or after setting Vercel env vars locally:
+
+```bash
+BETTER_AUTH_URL=https://your-app.vercel.app \
+NEXT_PUBLIC_BETTER_AUTH_URL=https://your-app.vercel.app \
+DATABASE_URL=... BETTER_AUTH_SECRET=... CRON_SECRET=... STUDIO_TIMEZONE=Europe/Athens \
+pnpm deploy:check
+```
+
+## 6. Mercado Pago webhooks
 
 Mercado Pago must reach your app for payment confirmation:
 
@@ -74,7 +84,7 @@ Mercado Pago must reach your app for payment confirmation:
 
 For local dev, use a tunnel (ngrok, Cloudflare).
 
-## 6. Cron jobs
+## 7. Cron jobs
 
 Vercel Hobby runs crons once per day (configured in `vercel.json`). Cron handlers require:
 
@@ -84,14 +94,15 @@ Authorization: Bearer <CRON_SECRET>
 
 On Hobby, sub-hourly schedules are not available. For more frequent jobs, use [cron-job.org](https://cron-job.org) to hit your endpoints with the same header.
 
-## 7. Post-deploy smoke test
+## 8. Post-deploy smoke test
 
 1. Open `/book` — calendar loads (batch slots API)
 2. Pick date/time → checkout without login (guest email)
 3. Admin login → `/admin`
-4. Advisor MP connect (needs `ENCRYPTION_KEY`)
+4. `/login` → Google sign-in (if OAuth configured)
+5. Advisor MP connect (needs `ENCRYPTION_KEY`)
 
-## 8. Custom domain
+## 9. Custom domain
 
 Vercel → Project → Domains → add domain → update DNS.
 

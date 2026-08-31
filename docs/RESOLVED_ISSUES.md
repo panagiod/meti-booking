@@ -8,7 +8,7 @@ Issues **#1, #8, #9, #11–#31** are fixed on `main`. Close them on GitHub with:
 
 Requires `gh auth login` with **issue write** access on `panagiod/meti-booking` (the Cursor cloud token cannot close issues).
 
-**Still open:** #2–#8 (payments/OAuth epic), #10 (permanent deploy).
+**Still open:** #2–#7 (payments/OAuth epic), #10 (permanent deploy).
 
 ---
 
@@ -39,6 +39,7 @@ Requires `gh auth login` with **issue write** access on `panagiod/meti-booking` 
 | #29 | Admin lunch/gap | `2025a7b` · `/admin/schedule` |
 | #30 | demo reset CMS | `2025a7b` · `--reset-content` |
 | #31 | bookingLeadHours default | `8ebf9d6` · `booking-config.ts` |
+| #8 | Guest checkout | `guest-user.ts`, checkout guest form, public `POST /api/appointments` |
 
 ---
 
@@ -47,6 +48,5 @@ Requires `gh auth login` with **issue write** access on `panagiod/meti-booking` 
 | Issue | Title |
 |-------|-------|
 | #10 | Deploy to Vercel + permanent domain |
-| #8 | Guest checkout |
 | #3 | Google OAuth for production |
 | #2–#7 | Stripe / Revolut payments epic |

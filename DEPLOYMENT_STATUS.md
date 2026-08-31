@@ -60,7 +60,7 @@ Password: **`Demo1234!`**
 | Greek i18n + fonts + dates | ✅ |
 | Email/password | ✅ |
 | Admin route protection | ✅ |
-| Google OAuth | ❌ |
+| Google OAuth | ⚠️ needs production credentials — see `deploy/GOOGLE_OAUTH.md` |
 | Mercado Pago | ❌ |
 | Video (legacy) | ❌ |
 
