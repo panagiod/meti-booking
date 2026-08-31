@@ -12,6 +12,8 @@
 
 Custom domain is optional (~**$3–10/year**). See [Custom domain (optional)](#custom-domain-optional).
 
+> ⚠️ **Real business website?** Read [Real studio website — honest limits](#real-studio-website--honest-limits) first. The $0 stack is for testing; a studio that sells classes needs a paid plan (~**$5–25/month**).
+
 > **Time needed:** ~20 minutes first time.  
 > **Prerequisites:** GitHub account, this repo on GitHub (`panagiod/meti-booking` or your fork).
 
