@@ -27,12 +27,6 @@ export function Navbar() {
 
         <nav className="flex shrink-0 items-center gap-2 sm:gap-4">
           <LanguageSwitcher />
-          <Link
-            href="#sessions"
-            className="hidden text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)] md:inline"
-          >
-            {t.nav.sessions}
-          </Link>
           {user ? (
             <Link
               href={dashboardHref}

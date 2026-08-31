@@ -7,6 +7,7 @@ import { useTranslations } from "@/components/providers/locale-provider";
 
 export function Hero() {
   const t = useTranslations();
+  const session = siteConfig.sessionTypes[0];
 
   return (
     <section className="border-b border-[var(--studio-line)]">
@@ -33,12 +34,14 @@ export function Hero() {
             <p className="mt-5 max-w-md text-base leading-relaxed text-[var(--studio-muted)]">
               {t.hero.description}
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center">
+            {session && (
+              <p className="mt-4 text-sm text-[var(--studio-ink)]">
+                {t.sessions.types.reformer.duration} · {t.sessions.fromPrice} €{session.priceFrom}
+              </p>
+            )}
+            <div className="mt-8 sm:mt-10">
               <Link href="/book" className="studio-btn studio-btn-primary w-full sm:w-auto">
                 {t.hero.bookSession}
-              </Link>
-              <Link href="#sessions" className="studio-btn studio-btn-ghost w-full sm:w-auto">
-                {t.hero.viewSessions}
               </Link>
             </div>
             <p className="mt-8 text-sm leading-relaxed text-[var(--studio-muted)] sm:mt-12">
