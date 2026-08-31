@@ -18,9 +18,28 @@ const publicRoutes = [
   "/api/categories",
   "/api/promotions",
   "/api/checkout/quote",
+  "/api/advisors",
+  "/api/services",
 ];
 
+/** Platform advisor dashboard paths (require login). Public profile pages use /advisor/{id}. */
+const ADVISOR_PLATFORM_SEGMENTS = new Set([
+  "schedule",
+  "services",
+  "profile",
+  "promotions",
+  "payments",
+  "mercadopago",
+]);
+
+function isPublicAdvisorProfile(pathname: string): boolean {
+  const match = pathname.match(/^\/advisor\/([^/]+)$/);
+  if (!match) return false;
+  return !ADVISOR_PLATFORM_SEGMENTS.has(match[1]);
+}
+
 function isPublicPath(pathname: string): boolean {
+  if (isPublicAdvisorProfile(pathname)) return true;
   return publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }
 
