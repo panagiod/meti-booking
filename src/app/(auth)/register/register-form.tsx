@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,17 @@ import type { Messages } from "@/i18n";
 function mapSignUpError(
   message: string | undefined,
   code: string | undefined,
-  auth: Messages["auth"]
+  auth: Messages["auth"],
+  registrationEnabled: boolean
 ) {
   if (code === "INVALID_ORIGIN") {
     return auth.signUpInvalidOrigin;
   }
-  if (message && /database|connect|ECONNREFUSED|ENOTFOUND|prisma/i.test(message)) {
+  if (
+    code === "AUTH_UNAVAILABLE" ||
+    !registrationEnabled ||
+    (message && /database|connect|ECONNREFUSED|ENOTFOUND|prisma|unavailable/i.test(message))
+  ) {
     return auth.signUpUnavailable;
   }
   return message || auth.signUpError;
@@ -35,12 +40,29 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
   const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [registrationEnabled, setRegistrationEnabled] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    fetch("/api/auth/config")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data.registrationEnabled === "boolean") {
+          setRegistrationEnabled(data.registrationEnabled);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const handleEmailRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!registrationEnabled) {
+      setError(t.auth.signUpUnavailable);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
@@ -51,13 +73,17 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
         callbackURL: "/redirect",
       });
       if (signUpError) {
-        setError(mapSignUpError(signUpError.message, signUpError.code, t.auth));
+        setError(
+          mapSignUpError(signUpError.message, signUpError.code, t.auth, registrationEnabled)
+        );
         setIsLoading(false);
       } else {
         router.push("/redirect");
       }
     } catch {
-      setError(t.auth.signUpError);
+      setError(
+        registrationEnabled ? t.auth.signUpError : t.auth.signUpUnavailable
+      );
       setIsLoading(false);
     }
   };
@@ -76,7 +102,16 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
           <CardDescription>{t.auth.createAccountSubtitle}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {googleOAuthEnabled && (
+          {!registrationEnabled && (
+            <div className="space-y-3 rounded-lg border border-[var(--border)] bg-[var(--background)] p-4 text-sm text-[var(--text-secondary)]">
+              <p>{t.auth.signUpUnavailable}</p>
+              <Button asChild className="w-full">
+                <Link href="/book">{t.auth.bookWithoutAccount}</Link>
+              </Button>
+            </div>
+          )}
+
+          {googleOAuthEnabled && registrationEnabled && (
             <>
               <GoogleSignInButton
                 isLoading={isLoading}
@@ -105,7 +140,8 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full h-11 px-3 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
+              disabled={!registrationEnabled}
+              className="w-full h-11 px-3 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] disabled:opacity-60"
             />
             <input
               type="email"
@@ -113,7 +149,8 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full h-11 px-3 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
+              disabled={!registrationEnabled}
+              className="w-full h-11 px-3 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] disabled:opacity-60"
             />
             <PasswordInput
               placeholder={t.auth.passwordMin}
@@ -121,16 +158,28 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
-              className="h-11"
+              disabled={!registrationEnabled}
+              className="h-11 disabled:opacity-60"
             />
-            <Button type="submit" className="w-full h-11" disabled={isLoading}>
+            <Button
+              type="submit"
+              className="w-full h-11"
+              disabled={isLoading || !registrationEnabled}
+            >
               {isLoading ? t.auth.creatingAccount : t.auth.createAccountBtn}
             </Button>
           </form>
 
           {error && (
-            <div className="p-3 rounded-lg bg-[var(--error-light)] text-[var(--error)] text-sm text-center">
-              {error}
+            <div className="space-y-3">
+              <div className="p-3 rounded-lg bg-[var(--error-light)] text-[var(--error)] text-sm text-center">
+                {error}
+              </div>
+              {!registrationEnabled && (
+                <Button asChild variant="secondary" className="w-full">
+                  <Link href="/book">{t.auth.bookWithoutAccount}</Link>
+                </Button>
+              )}
             </div>
           )}
 

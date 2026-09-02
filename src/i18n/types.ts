@@ -108,6 +108,7 @@ export type Messages = {
     signUpError: string;
     signUpUnavailable: string;
     signUpInvalidOrigin: string;
+    bookWithoutAccount: string;
     noAccount: string;
     signUpFree: string;
     hasAccount: string;

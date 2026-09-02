@@ -154,6 +154,7 @@ const en: Messages = {
       "Account registration is not available on this preview. Book as a guest with your email — no account needed.",
     signUpInvalidOrigin:
       "Sign-up could not verify this site address. Refresh the page and try again.",
+    bookWithoutAccount: "Book without an account",
     noAccount: "Don't have an account?",
     signUpFree: "Sign up for free",
     hasAccount: "Already have an account?",
