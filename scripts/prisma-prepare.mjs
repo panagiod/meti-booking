@@ -21,6 +21,11 @@ const provider = detectProvider();
 let schema = readFileSync(source, "utf8");
 schema = schema.replace(/provider\s*=\s*"(postgresql|sqlite)"/, `provider = "${provider}"`);
 
+if (provider === "sqlite") {
+  // @db.Text is PostgreSQL-only; SQLite uses TEXT for String by default.
+  schema = schema.replace(/\s+@db\.Text/g, "");
+}
+
 mkdirSync(outDir, { recursive: true });
 writeFileSync(outSchema, schema);
 
