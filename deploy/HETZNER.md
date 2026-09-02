@@ -288,6 +288,18 @@ cd meti-booking
 
 ### Create `.env`
 
+**Easiest — auto-generate secrets:**
+
+```bash
+chmod +x deploy/*.sh
+./deploy/init-env.sh
+```
+
+Uses `meti-pilates.com` by default. Another domain: `./deploy/init-env.sh yourdomain.com`  
+Overwrite existing `.env`: `FORCE=1 ./deploy/init-env.sh`
+
+**Or manual:**
+
 ```bash
 cp deploy/env.production.example .env
 nano .env
