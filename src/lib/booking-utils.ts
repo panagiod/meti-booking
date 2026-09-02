@@ -1,29 +1,56 @@
-// Save pending booking before login redirect
-export function savePendingBooking(params: URLSearchParams) {
+export const PENDING_BOOKING_KEY = "meti-pending-booking";
+
+export function savePendingBooking(
+  params: URLSearchParams | Record<string, string | null | undefined>
+) {
   const bookingData: Record<string, string> = {};
-  params.forEach((value, key) => {
-    bookingData[key] = value;
-  });
-  localStorage.setItem("meti-pending-booking", JSON.stringify(bookingData));
+  if (params instanceof URLSearchParams) {
+    params.forEach((value, key) => {
+      bookingData[key] = value;
+    });
+  } else {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value) bookingData[key] = value;
+    });
+  }
+  localStorage.setItem(PENDING_BOOKING_KEY, JSON.stringify(bookingData));
 }
 
-// Get and clear pending booking after login
-export function getPendingBooking(): URLSearchParams | null {
-  const stored = localStorage.getItem("meti-pending-booking");
-  if (!stored) return null;
-  
-  localStorage.removeItem("meti-pending-booking");
-  const data = JSON.parse(stored);
-  
-  const params = new URLSearchParams();
-  Object.entries(data).forEach(([key, value]) => {
-    if (value) params.set(key, value as string);
-  });
-  
-  // Only return if we have essential data
-  if (!params.get("advisorId") || !params.get("serviceId")) {
+export function clearPendingBooking() {
+  localStorage.removeItem(PENDING_BOOKING_KEY);
+}
+
+function parsePendingBooking(stored: string): URLSearchParams | null {
+  try {
+    const data = JSON.parse(stored) as Record<string, unknown>;
+    const params = new URLSearchParams();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value) params.set(key, String(value));
+    });
+    if (!params.get("advisorId") || !params.get("serviceId")) {
+      return null;
+    }
+    return params;
+  } catch {
     return null;
   }
-  
+}
+
+/** Read a valid pending booking without clearing it. */
+export function peekPendingBooking(): URLSearchParams | null {
+  const stored = localStorage.getItem(PENDING_BOOKING_KEY);
+  if (!stored) return null;
+  const params = parsePendingBooking(stored);
+  if (!params) {
+    clearPendingBooking();
+    return null;
+  }
+  return params;
+}
+
+/** Get and clear pending booking after login. */
+export function getPendingBooking(): URLSearchParams | null {
+  const params = peekPendingBooking();
+  clearPendingBooking();
   return params;
 }

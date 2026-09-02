@@ -10,6 +10,7 @@ import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { Briefcase, Search, Calendar, Star, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { loginUrl } from "@/lib/auth-redirect";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -24,12 +25,12 @@ export default function DashboardPage() {
       try {
         const { data } = await authClient.getSession();
         if (!data) {
-          router.push("/login");
+          router.replace(loginUrl("/dashboard"));
           return;
         }
         setUser(data.user);
       } catch (error) {
-        router.push("/login");
+        router.replace(loginUrl("/dashboard"));
       } finally {
         setIsLoading(false);
       }

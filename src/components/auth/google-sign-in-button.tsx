@@ -10,6 +10,7 @@ interface GoogleSignInButtonProps {
   onLoadingChange?: (loading: boolean) => void;
   onError: (message: string) => void;
   errorMessage: string;
+  callbackURL?: string;
 }
 
 export function GoogleSignInButton({
@@ -18,6 +19,7 @@ export function GoogleSignInButton({
   onLoadingChange,
   onError,
   errorMessage,
+  callbackURL = "/redirect",
 }: GoogleSignInButtonProps) {
   const t = useTranslations();
 
@@ -25,7 +27,7 @@ export function GoogleSignInButton({
     onLoadingChange?.(true);
     onError("");
     try {
-      await authClient.signIn.social({ provider: "google", callbackURL: "/redirect" });
+      await authClient.signIn.social({ provider: "google", callbackURL });
     } catch {
       onError(errorMessage);
       onLoadingChange?.(false);

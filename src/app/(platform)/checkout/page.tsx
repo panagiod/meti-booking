@@ -29,6 +29,7 @@ import {
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { Input } from "@/components/ui/input";
 import { formatLongDate, formatMoney } from "@/lib/format";
+import { clearPendingBooking, savePendingBooking } from "@/lib/booking-utils";
 
 function CheckoutContent() {
   const router = useRouter();
@@ -71,7 +72,7 @@ function CheckoutContent() {
   const totalOriginal = servicePrice + serviceFee;
 
   useEffect(() => {
-    localStorage.removeItem("meti-pending-booking");
+    clearPendingBooking();
     checkLoginStatus();
     if (serviceId) {
       fetchPromotion(serviceId);
@@ -159,7 +160,7 @@ function CheckoutContent() {
       date,
       time,
     };
-    localStorage.setItem("meti-pending-booking", JSON.stringify(bookingData));
+    savePendingBooking(bookingData);
     router.push("/login");
   };
 
@@ -224,7 +225,7 @@ function CheckoutContent() {
       }
 
       const data = await res.json();
-      localStorage.removeItem("meti-pending-booking");
+      clearPendingBooking();
 
       if (!paymentsEnabled || data.paymentsEnabled === false) {
         router.push(

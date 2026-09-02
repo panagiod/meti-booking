@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingPage } from "@/components/ui/loading";
 import { User, Mail, Save, Camera, X } from "lucide-react";
+import { loginUrl } from "@/lib/auth-redirect";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -24,14 +25,14 @@ export default function ProfilePage() {
       try {
         const { data } = await authClient.getSession();
         if (!data) {
-          router.push("/login");
+          router.replace(loginUrl("/dashboard/profile"));
           return;
         }
         setUser(data.user);
         setName(data.user.name || "");
         setImage(data.user.image || "");
       } catch (error) {
-        router.push("/login");
+        router.replace(loginUrl("/dashboard/profile"));
       } finally {
         setIsLoading(false);
       }

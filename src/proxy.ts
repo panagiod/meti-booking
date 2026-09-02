@@ -64,9 +64,9 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const sessionCookie =
-    request.cookies.get("better-auth.session_token") ??
-    request.cookies.get("__Secure-better-auth.session_token");
+  const sessionCookie = request.cookies.getAll().find((cookie) =>
+    cookie.name.includes("better-auth.session_token")
+  );
 
   if (pathname.startsWith("/api/admin")) {
     if (!sessionCookie) {

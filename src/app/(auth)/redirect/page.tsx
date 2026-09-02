@@ -1,88 +1,89 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { authClient } from "@/lib/auth-client";
 import { RedirectLoading } from "@/components/ui/redirect-loading";
 import { useCheckoutStore } from "@/lib/checkout-store";
+import { clearPendingBooking, peekPendingBooking } from "@/lib/booking-utils";
+import { homePathForRole, isSafeAuthNext, loginUrl } from "@/lib/auth-redirect";
 
-export default function RedirectPage() {
+function RedirectContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setCheckingOut } = useCheckoutStore();
 
   useEffect(() => {
     const handleRedirect = async () => {
       try {
-        // Read pending booking synchronously before any await.
-        // In dev, StrictMode runs this effect twice; if reading happened
-        // after getSession, the second run could find the booking already
-        // consumed by /checkout and fall through to role-based redirect
-        // (dashboard). Deciding synchronously keeps both runs on the same path.
-        const pendingBooking = localStorage.getItem("meti-pending-booking");
-        if (pendingBooking) {
-          let valid = false;
-          try {
-            const bookingData = JSON.parse(pendingBooking);
-            valid = !!(bookingData.advisorId && bookingData.serviceId);
-          } catch (e) {}
+        const next = searchParams.get("next");
+        const explicitNext = isSafeAuthNext(next) ? next : null;
 
-          if (valid) {
-            // Not removed here: checkout consumes it on mount.
-            setCheckingOut(true);
-            const params = new URLSearchParams(JSON.parse(pendingBooking));
-            router.push(`/checkout?${params.toString()}`);
-            return;
-          }
+        // Resume checkout only when the user did not ask for another page
+        // (e.g. "Go to my bookings"). Always consume the pending payload
+        // so a leftover booking cannot loop login ↔ checkout.
+        const pendingBooking = peekPendingBooking();
+        if (pendingBooking && !explicitNext) {
+          clearPendingBooking();
+          setCheckingOut(true);
+          router.replace(`/checkout?${pendingBooking.toString()}`);
+          return;
+        }
 
-          // Invalid booking: clear and continue with normal redirect
-          localStorage.removeItem("meti-pending-booking");
+        if (pendingBooking && explicitNext) {
+          clearPendingBooking();
         }
 
         const { data } = await authClient.getSession();
 
         if (!data) {
-          router.push("/login");
+          router.replace(loginUrl(explicitNext));
           return;
         }
 
-        const user = data.user as any;
+        if (explicitNext) {
+          router.replace(explicitNext);
+          return;
+        }
 
-        // First user in the system → automatically admin
+        const user = data.user as { id?: string; role?: string };
+
         if (user.role === "CLIENT") {
           try {
             const res = await fetch("/api/admin/setup", { credentials: "include" });
             const { hasAdmins } = await res.json();
-            if (!hasAdmins) {
+            if (!hasAdmins && user.id) {
               await fetch("/api/admin/setup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({ userId: user.id }),
               });
-              router.push("/admin");
+              router.replace("/admin");
               return;
             }
-          } catch {}
+          } catch {
+            // Keep going to the client dashboard
+          }
         }
 
-        // Redirect based on role
-        switch (user.role) {
-          case "ADMIN":
-            router.push("/admin");
-            break;
-          case "ADVISOR":
-            router.push("/advisor");
-            break;
-          default:
-            router.push("/dashboard");
-        }
-      } catch (error) {
-        router.push("/login");
+        router.replace(homePathForRole(user.role));
+      } catch {
+        router.replace("/login");
       }
     };
 
-    handleRedirect();
-  }, [router, setCheckingOut]);
+    void handleRedirect();
+  }, [router, searchParams, setCheckingOut]);
 
   return <RedirectLoading />;
+}
+
+export default function RedirectPage() {
+  return (
+    <Suspense fallback={<RedirectLoading />}>
+      <RedirectContent />
+    </Suspense>
+  );
 }

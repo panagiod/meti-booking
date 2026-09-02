@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Logo } from "@/components/ui/logo";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { useTranslations } from "@/components/providers/locale-provider";
+import { googleCallbackUrl, postAuthPath } from "@/lib/auth-redirect";
+import { peekPendingBooking } from "@/lib/booking-utils";
 
 interface LoginFormProps {
   googleOAuthEnabled: boolean;
@@ -17,23 +19,32 @@ interface LoginFormProps {
 
 export function LoginForm({ googleOAuthEnabled }: LoginFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
   const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const callbackURL = googleCallbackUrl(next);
 
   useEffect(() => {
     const checkSession = async () => {
       try {
         const { data } = await authClient.getSession();
-        if (data) router.push("/redirect");
+        if (!data) return;
+        const role = (data.user as { role?: string }).role;
+        if (peekPendingBooking() && !next) {
+          router.replace("/redirect");
+          return;
+        }
+        router.replace(postAuthPath(role, next));
       } catch {
         // ignore
       }
     };
-    checkSession();
-  }, [router]);
+    void checkSession();
+  }, [router, next]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,13 +54,13 @@ export function LoginForm({ googleOAuthEnabled }: LoginFormProps) {
       const { error: signInError } = await authClient.signIn.email({
         email,
         password,
-        callbackURL: "/redirect",
+        callbackURL,
       });
       if (signInError) {
         setError(signInError.message || t.auth.emailError);
         setIsLoading(false);
       } else {
-        router.push("/redirect");
+        router.replace(callbackURL);
       }
     } catch {
       setError(t.auth.signInError);
@@ -78,6 +89,7 @@ export function LoginForm({ googleOAuthEnabled }: LoginFormProps) {
                 onLoadingChange={setIsLoading}
                 onError={setError}
                 errorMessage={t.auth.googleError}
+                callbackURL={callbackURL}
               />
 
               <div className="relative">

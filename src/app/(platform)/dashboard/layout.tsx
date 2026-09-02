@@ -21,6 +21,7 @@ import { Logo } from "@/components/ui/logo";
 import { LoadingPage } from "@/components/ui/loading";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useTranslations } from "@/components/providers/locale-provider";
+import { loginUrl } from "@/lib/auth-redirect";
 
 const navigation = [
   {
@@ -63,33 +64,43 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     const checkSession = async () => {
-      try {
-        const { data } = await authClient.getSession();
-        if (!data) {
-          router.push("/login");
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const { data } = await authClient.getSession();
+          if (cancelled) return;
+          if (!data) {
+            await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+            continue;
+          }
+          setUser(data.user);
+          const role = (data.user as { role?: string }).role;
+          const viewingBookings = pathname.startsWith("/dashboard/appointments");
+          if (role === "ADMIN" && !viewingBookings) {
+            router.replace("/admin");
+            return;
+          }
+          if (role === "ADVISOR" && !viewingBookings) {
+            router.replace("/advisor");
+            return;
+          }
+          setIsLoading(false);
           return;
+        } catch {
+          await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
         }
-        setUser(data.user);
-        // Verify role: clients can access the dashboard
-        const role = (data.user as any).role;
-        if (role === "ADMIN") {
-          router.push("/admin");
-          return;
-        }
-        if (role === "ADVISOR") {
-          router.push("/advisor");
-          return;
-        }
-      } catch (error) {
-        router.push("/login");
-      } finally {
-        setIsLoading(false);
+      }
+      if (!cancelled) {
+        router.replace(loginUrl(pathname));
       }
     };
 
-    checkSession();
-  }, [router]);
+    void checkSession();
+    return () => {
+      cancelled = true;
+    };
+  }, [router, pathname]);
 
   const handleSignOut = async () => {
     await authClient.signOut();

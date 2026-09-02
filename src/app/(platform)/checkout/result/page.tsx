@@ -11,6 +11,8 @@ import { CheckCircle, XCircle, Clock, Calendar, ArrowLeft } from "lucide-react";
 import { useLocale, useTranslations } from "@/components/providers/locale-provider";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { formatDateTime } from "@/lib/format";
+import { clearPendingBooking } from "@/lib/booking-utils";
+import { loginUrl } from "@/lib/auth-redirect";
 
 type ResultStatus = "approved" | "pending" | "failure" | "unknown";
 
@@ -36,8 +38,8 @@ function ResultContent() {
   const [isUnauthorized, setIsUnauthorized] = useState(false);
   const [pollAttempts, setPollAttempts] = useState(0);
 
-  const fetchAppointment = useCallback(async () => {
-    if (!appointmentId) return;
+  const fetchAppointment = useCallback(async (): Promise<"ok" | "unauthorized" | "error"> => {
+    if (!appointmentId) return "error";
     try {
       const res = await fetch(`/api/appointments/${appointmentId}`, {
         credentials: "include",
@@ -45,14 +47,19 @@ function ResultContent() {
       if (res.status === 401) {
         setIsUnauthorized(true);
         setIsLoading(false);
-        return;
+        return "unauthorized";
       }
       if (res.ok) {
         const data = await res.json();
         setAppointment(data.appointment);
+        setIsUnauthorized(false);
+        clearPendingBooking();
+        return "ok";
       }
+      return "error";
     } catch (error) {
       console.error("Error fetching appointment:", error);
+      return "error";
     } finally {
       setIsLoading(false);
     }
@@ -82,10 +89,23 @@ function ResultContent() {
   }, [appointmentId, paymentId, fetchAppointment]);
 
   useEffect(() => {
+    clearPendingBooking();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
     const load = async () => {
-      await fetchAppointment();
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const result = await fetchAppointment();
+        if (cancelled || result === "ok") return;
+        if (result !== "unauthorized") return;
+        await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1)));
+      }
     };
     void load();
+    return () => {
+      cancelled = true;
+    };
   }, [fetchAppointment]);
 
   useEffect(() => {
@@ -142,7 +162,17 @@ function ResultContent() {
               {isUnauthorized ? t.checkoutResult.signInToView : t.checkoutResult.noBookingInfo}
             </p>
             <Button asChild className="w-full">
-              <Link href={isUnauthorized ? "/login" : "/book"}>
+              <Link
+                href={
+                  isUnauthorized
+                    ? loginUrl(
+                        appointmentId
+                          ? `/checkout/result?appointmentId=${appointmentId}&status=${statusParam}`
+                          : "/dashboard/appointments"
+                      )
+                    : "/book"
+                }
+              >
                 {isUnauthorized ? t.auth.signIn : t.checkoutResult.bookAgain}
               </Link>
             </Button>
@@ -196,7 +226,7 @@ function ResultContent() {
                 </div>
               </div>
               <Button className="w-full" asChild>
-                <Link href="/dashboard">{t.checkoutResult.goToDashboard}</Link>
+                <Link href="/dashboard/appointments">{t.checkoutResult.goToDashboard}</Link>
               </Button>
             </>
           ) : failed ? (
@@ -213,7 +243,7 @@ function ResultContent() {
                   <Link href="/book">{t.checkoutResult.bookAgain}</Link>
                 </Button>
                 <Button variant="ghost" className="w-full" asChild>
-                  <Link href="/dashboard">
+                  <Link href="/dashboard/appointments">
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     {t.checkoutResult.goToDashboard}
                   </Link>
