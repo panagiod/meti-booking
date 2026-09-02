@@ -34,7 +34,8 @@ Copy from `.env.example`. **Required for production:**
 | Variable | Feature |
 |---|---|
 | `MERCADOPAGO_ACCESS_TOKEN` | Platform-level MP (advisor OAuth still per-advisor) |
-| `RESEND_API_KEY` / `EMAIL_FROM` | Booking reminder emails |
+| `RESEND_API_KEY` / `EMAIL_FROM` | Booking confirmation & reminder emails |
+| `STUDIO_NOTIFICATION_EMAIL` | Inbox for new-booking alerts (default: studio contact email) |
 | `LIVEKIT_*` | Video calls |
 | `GROQ_API_KEY` | AI features |
 

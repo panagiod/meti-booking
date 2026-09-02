@@ -84,21 +84,21 @@ export async function sendBookingConfirmedEmail(
   if (!client) return false;
 
   const body = `
-    <p style="margin:0 0 16px;color:#374151;line-height:1.6;">Hi <strong>${data.clientName}</strong>, your payment was approved and your consultation is confirmed:</p>
+    <p style="margin:0 0 16px;color:#374151;line-height:1.6;">Hi <strong>${data.clientName}</strong>, your reformer session is confirmed:</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
-      <tr><td style="padding:8px 0;color:#6b7280;">Advisor</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.advisorName}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280;">Studio</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.advisorName}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Service</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.serviceName}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Date and time</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${formatDate(data.scheduledAt)}</td></tr>
-      <tr><td style="padding:8px 0;color:#6b7280;">Total paid</td><td style="padding:8px 0;font-weight:600;color:#ff6b35;text-align:right;">${formatCurrency(data.totalCents)}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280;">Session price</td><td style="padding:8px 0;font-weight:600;color:#ff6b35;text-align:right;">${formatCurrency(data.totalCents)}</td></tr>
     </table>
-    <a href="${data.appointmentUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">View my appointment</a>
+    <a href="${data.appointmentUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">View my booking</a>
   `;
 
   const { error } = await client.emails.send({
     from: FROM_EMAIL,
     to,
-    subject: `✓ Consultation confirmed: ${data.serviceName} with ${data.advisorName}`,
-    html: layout("Your consultation is confirmed!", body),
+    subject: `✓ Booking confirmed: ${data.serviceName}`,
+    html: layout("Your session is confirmed!", body),
   });
 
   return !error;
@@ -113,7 +113,7 @@ export async function sendNewBookingEmail(
   if (!client) return false;
 
   const body = `
-    <p style="margin:0 0 16px;color:#374151;line-height:1.6;">Hi <strong>${data.advisorName}</strong>, you have a new consultation booked:</p>
+    <p style="margin:0 0 16px;color:#374151;line-height:1.6;">You have a new reformer session booking:</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
       <tr><td style="padding:8px 0;color:#6b7280;">Client</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.clientName}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Service</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.serviceName}</td></tr>
@@ -126,8 +126,8 @@ export async function sendNewBookingEmail(
   const { error } = await client.emails.send({
     from: FROM_EMAIL,
     to,
-    subject: `🔔 New booking: ${data.serviceName} on ${formatDate(data.scheduledAt)}`,
-    html: layout("You have a new booking!", body),
+    subject: `🔔 New booking: ${data.serviceName} — ${data.clientName}`,
+    html: layout("New session booked", body),
   });
 
   return !error;

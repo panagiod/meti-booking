@@ -20,7 +20,7 @@ export const siteConfig = {
   deliveryMode: "in-person" as const,
   location: "Χριστόφορου Γιατρού 60Α, Άγιος Ιωάννης Πιτσιλιάς, 4071 Λεμεσός",
   phone: "(555) 012-3456",
-  email: "hello@meti-pilates.studio",
+  email: "tyrri_meropi@hotmail.com",
   hours: "Tue, Thu, Sat · see booking calendar",
   images: {
     /** Reformer pilates only — bundled studio photos (Pexels, free license) */
@@ -54,4 +54,11 @@ export function isReformerService(serviceName: string): boolean {
     return false;
   }
   return name.includes("reformer");
+}
+
+/** Email that receives new-booking and reminder notifications for the studio. */
+export function getStudioNotificationEmail(): string {
+  const fromEnv = process.env.STUDIO_NOTIFICATION_EMAIL?.trim();
+  if (fromEnv) return fromEnv;
+  return siteConfig.email;
 }

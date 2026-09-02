@@ -5,6 +5,7 @@ import {
   sendReminderEmail,
   type AppointmentEmailData,
 } from "@/lib/email";
+import { getStudioNotificationEmail } from "@/lib/site-config";
 import { getAppUrl } from "@/lib/mercadopago";
 
 // Load the appointment with the relations needed for notifications
@@ -26,7 +27,8 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
   if (!apt) return false;
 
   const clientEmail = apt.client.email;
-  const advisorEmail = apt.advisor.user.email;
+  const advisorEmail = apt.advisor.user.email?.trim().toLowerCase();
+  const studioEmail = getStudioNotificationEmail().trim().toLowerCase();
 
   const base: AppointmentEmailData = {
     advisorName: apt.advisor.user.name,
@@ -40,10 +42,14 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
   let sent = false;
   if (apt.client.email) sent = (await sendBookingConfirmedEmail(clientEmail, base)) || sent;
 
-  // Advisor uses /advisor/schedule
-  if (apt.advisor.user.email) {
-    const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
-    sent = (await sendNewBookingEmail(advisorEmail, advisorBase)) || sent;
+  const studioBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
+
+  if (studioEmail) {
+    sent = (await sendNewBookingEmail(studioEmail, studioBase)) || sent;
+  }
+
+  if (advisorEmail && advisorEmail !== studioEmail) {
+    sent = (await sendNewBookingEmail(advisorEmail, studioBase)) || sent;
   }
   return sent;
 }
@@ -65,9 +71,16 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
   let sent = false;
   if (apt.client.email) sent = (await sendReminderEmail(apt.client.email, base, "client")) || sent;
 
-  if (apt.advisor.user.email) {
-    const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
-    sent = (await sendReminderEmail(apt.advisor.user.email, advisorBase, "advisor")) || sent;
+  const studioEmail = getStudioNotificationEmail().trim().toLowerCase();
+  const advisorEmail = apt.advisor.user.email?.trim().toLowerCase();
+  const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
+
+  if (studioEmail) {
+    sent = (await sendReminderEmail(studioEmail, advisorBase, "advisor")) || sent;
+  }
+
+  if (advisorEmail && advisorEmail !== studioEmail) {
+    sent = (await sendReminderEmail(advisorEmail, advisorBase, "advisor")) || sent;
   }
   return sent;
 }

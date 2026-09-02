@@ -35,8 +35,8 @@ const DEMO_USERS = {
     role: "ADMIN" as const,
   },
   advisor: {
-    email: "instructor@meti-pilates.studio",
-    name: "Emma Rivera",
+    email: "tyrri_meropi@hotmail.com",
+    name: "Meropi Tirri",
     role: "ADVISOR" as const,
   },
   client: {
