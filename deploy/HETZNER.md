@@ -249,7 +249,7 @@ Creates admin, instructor, schedule, and CMS content.
 | Role | Email | Password |
 |------|-------|----------|
 | Admin | `admin@demo.meti-booking.local` | your `DEMO_PASSWORD` |
-| Instructor | `instructor@meti-pilates.studio` | your `DEMO_PASSWORD` |
+| Instructor | `tyrri_meropi@hotmail.com` | your `DEMO_PASSWORD` |
 
 **Before going live:** create real accounts, change passwords, remove `ALLOW_DEMO_SEED` from `.env`.
 
