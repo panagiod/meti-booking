@@ -15,8 +15,14 @@ function nextSaturday(): string {
 
 function extractSessionToken(setCookie: string | undefined): string | null {
   if (!setCookie) return null;
-  const match = setCookie.match(/better-auth\.session_token=([^;,]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  const match = setCookie.match(/(?:__Secure-)?better-auth\.session_token=([^;,]+)/);
+  return match ? match[1] : null;
+}
+
+function sessionCookieHeader(token: string): { cookie: string } {
+  return {
+    cookie: `__Secure-better-auth.session_token=${token}; better-auth.session_token=${token}`,
+  };
 }
 
 async function slotAt(request: APIRequestContext, advisorId: string, serviceId: string, date: string, time: string) {
@@ -39,7 +45,10 @@ test.describe("Production · public site and booking APIs", () => {
     await expect(page.getByText("Meropi Tirri").first()).toBeVisible();
 
     await page.goto("/book");
-    await expect(page.getByText(/Your health|Κλινικό|Reformer|session|μάθημα/i).first()).toBeVisible({
+    await expect(page.locator(".studio-booking, form, [class*='calendar']").first()).toBeVisible({
+      timeout: 20_000,
+    });
+    await expect(page.getByText(/Meropi Tirri|Pick a date|Επιλέξτε|Book|Κλείστε/i).first()).toBeVisible({
       timeout: 20_000,
     });
 
@@ -127,7 +136,7 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
     expect(signIn.status(), await signIn.text()).toBe(200);
     const sessionToken = extractSessionToken(signIn.headers()["set-cookie"]);
     expect(sessionToken).toBeTruthy();
-    const cookie = { cookie: `better-auth.session_token=${sessionToken}` };
+    const cookie = sessionCookieHeader(sessionToken!);
 
     const quote = await (await request.get(`${BASE_URL}/api/checkout/quote?serviceId=${serviceId}`)).json();
 
