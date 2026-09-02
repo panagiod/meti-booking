@@ -6,13 +6,14 @@ import { z } from "zod";
 import { Prisma } from "@/generated/prisma/client";
 import { createCheckoutPreference } from "@/lib/mercadopago";
 import { parseLocalISO } from "@/lib/timezone";
-import { calculatePrices } from "@/lib/pricing";
+import { buildBookingQuote } from "@/lib/booking-quote";
 import { siteConfig } from "@/lib/site-config";
 import { validateBookableSlot, SlotBookingError } from "@/lib/slot-booking";
 import { decryptMpAccessToken } from "@/lib/advisor-mp";
 import { findOrCreateGuestUser, GuestUserError } from "@/lib/guest-user";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 import { notifyAppointmentConfirmed } from "@/lib/notify";
+import { isSqliteDatabase } from "@/lib/database-provider";
 import {
   createDemoAppointment,
   isDemoAdvisorId,
@@ -165,12 +166,15 @@ export async function POST(request: NextRequest) {
       discountCents = Math.min(discountCents, service.priceCents);
     }
 
-    const { advisorEarning, platformFee, totalCents } = calculatePrices({
+    const quote = buildBookingQuote({
+      serviceId: service.id,
+      serviceName: service.name,
       servicePriceCents: service.priceCents,
       feePercentage,
       maxFeeCents,
       discountCents,
     });
+    const { advisorEarningCents: advisorEarning, platformFeeCents: platformFee, totalCents } = quote;
 
     const parsedDate = parseLocalISO(scheduledAt);
     if (!parsedDate) {
@@ -225,7 +229,9 @@ export async function POST(request: NextRequest) {
           },
         });
       },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      isSqliteDatabase()
+        ? undefined
+        : { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
     );
 
     if (!paymentsEnabled) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { containsInsensitive } from "@/lib/prisma-filters";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 
@@ -32,8 +33,8 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { email: { contains: search, mode: "insensitive" } },
+        { name: containsInsensitive(search) },
+        { email: containsInsensitive(search) },
       ];
     }
 

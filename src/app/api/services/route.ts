@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isPaymentsEnabled } from "@/lib/payments-config";
 import { prisma } from "@/lib/prisma";
+import { containsInsensitive } from "@/lib/prisma-filters";
 
 // GET: List public advisors
 export async function GET(request: NextRequest) {
@@ -16,9 +18,9 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       where.OR = [
-        { user: { name: { contains: search, mode: "insensitive" } } },
-        { speciality: { contains: search, mode: "insensitive" } },
-        { categories: { some: { category: { name: { contains: search, mode: "insensitive" } } } } },
+        { user: { name: containsInsensitive(search) } },
+        { speciality: containsInsensitive(search) },
+        { categories: { some: { category: { name: containsInsensitive(search) } } } },
       ];
     }
 
@@ -95,7 +97,9 @@ export async function GET(request: NextRequest) {
         rating: Math.round(avgRating * 10) / 10,
         reviewCount: reviewData.count,
         minPrice: advisor.services[0]?.priceCents || 0,
-        minPriceWithFee: Math.round((advisor.services[0]?.priceCents || 0) * 1.15),
+        minPriceWithFee: isPaymentsEnabled()
+          ? Math.round((advisor.services[0]?.priceCents || 0) * 1.15)
+          : advisor.services[0]?.priceCents || 0,
         categories: advisor.categories.map((ac: any) => ac.category.name),
         appointmentCount: advisor._count.appointments,
       };
