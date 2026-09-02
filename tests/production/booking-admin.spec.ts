@@ -109,6 +109,13 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
     expect((await request.get(`${BASE_URL}/api/admin/studio/appointments`)).status()).toBe(401);
     expect(
       (
+        await request.get(
+          `${BASE_URL}/api/admin/studio/appointments?startDate=2026-08-31T00:00:00.000Z&endDate=2026-09-06T23:59:59.000Z`
+        )
+      ).status()
+    ).toBe(401);
+    expect(
+      (
         await request.post(`${BASE_URL}/api/admin/studio/appointments`, {
           data: { scope: "upcoming" },
         })

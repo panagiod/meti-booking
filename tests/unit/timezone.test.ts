@@ -1,9 +1,12 @@
 import { describe, it, expect } from "vitest";
 import {
+  addStudioDays,
   localToUTCDate,
   parseLocalISO,
   getDayOfWeekForStudioDate,
   studioDayBoundsUTC,
+  studioWeekStartDateStr,
+  weekBoundsIso,
   STUDIO_TIMEZONE,
 } from "@/lib/timezone";
 
@@ -47,5 +50,22 @@ describe("lib/timezone", () => {
     const { start, end } = studioDayBoundsUTC("2026-09-02");
     expect(start.toISOString()).toBe("2026-09-01T21:00:00.000Z");
     expect(end.getTime()).toBeGreaterThan(start.getTime());
+  });
+
+  it("addStudioDays shifts studio calendar dates", () => {
+    expect(addStudioDays("2026-08-31", 6)).toBe("2026-09-06");
+    expect(addStudioDays("2026-09-01", -1)).toBe("2026-08-31");
+  });
+
+  it("studioWeekStartDateStr returns Monday in Europe/Athens", () => {
+    expect(studioWeekStartDateStr(new Date("2026-09-02T10:00:00Z"))).toBe("2026-08-31");
+    // 21:30 UTC on Sunday 6 Sep is already Monday 7 Sep in Athens
+    expect(studioWeekStartDateStr(new Date("2026-09-06T21:30:00Z"))).toBe("2026-09-07");
+  });
+
+  it("weekBoundsIso covers Mon–Sun in studio time", () => {
+    const { start, end } = weekBoundsIso("2026-08-31");
+    expect(start).toBe(studioDayBoundsUTC("2026-08-31").start.toISOString());
+    expect(end).toBe(studioDayBoundsUTC("2026-09-06").end.toISOString());
   });
 });

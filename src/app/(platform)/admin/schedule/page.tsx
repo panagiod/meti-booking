@@ -18,6 +18,7 @@ import {
   weeklyScheduleTemplate,
   type StudioDaySchedule,
 } from "@/lib/studio-schedule";
+import { AdminWeekBoard } from "@/components/admin/admin-week-board";
 import { siteConfig } from "@/lib/site-config";
 import {
   Calendar,
@@ -75,11 +76,14 @@ export default function AdminSchedulePage() {
   const [blockEnd, setBlockEnd] = useState("");
   const [blockedTimes, setBlockedTimes] = useState<BlockedTime[]>([]);
   const [isBlocking, setIsBlocking] = useState(false);
-  const [bookings, setBookings] = useState<StudioBooking[]>([]);
+  const [weekBookings, setWeekBookings] = useState<StudioBooking[]>([]);
+  const [upcomingBookings, setUpcomingBookings] = useState<StudioBooking[]>([]);
+  const [weekBounds, setWeekBounds] = useState<{ start: string; end: string } | null>(null);
   const [isFreeingSlots, setIsFreeingSlots] = useState(false);
   const [cancellingBookingId, setCancellingBookingId] = useState<string | null>(null);
+  const [isLoadingBookings, setIsLoadingBookings] = useState(false);
 
-  const loadBookings = useCallback(async () => {
+  const loadUpcomingBookings = useCallback(async () => {
     try {
       const res = await fetch("/api/admin/studio/appointments", {
         credentials: "include",
@@ -87,11 +91,39 @@ export default function AdminSchedulePage() {
       });
       if (!res.ok) return;
       const data = await res.json();
-      setBookings(data.appointments || []);
+      setUpcomingBookings(data.appointments || []);
     } catch {
-      // Calendar hours can still load if booking list fails
+      // Week board can still render hours
     }
   }, []);
+
+  const loadWeekBookings = useCallback(async (start: string, end: string) => {
+    setWeekBounds({ start, end });
+    setIsLoadingBookings(true);
+    try {
+      const res = await fetch(
+        `/api/admin/studio/appointments?startDate=${encodeURIComponent(start)}&endDate=${encodeURIComponent(end)}`,
+        {
+          credentials: "include",
+          cache: "no-store",
+        }
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+      setWeekBookings(data.appointments || []);
+    } catch {
+      // Calendar hours can still load if booking list fails
+    } finally {
+      setIsLoadingBookings(false);
+    }
+  }, []);
+
+  const refreshBookings = useCallback(async () => {
+    await loadUpcomingBookings();
+    if (weekBounds) {
+      await loadWeekBookings(weekBounds.start, weekBounds.end);
+    }
+  }, [loadUpcomingBookings, loadWeekBookings, weekBounds]);
 
   const loadStudio = useCallback(async () => {
     try {
@@ -114,8 +146,8 @@ export default function AdminSchedulePage() {
 
   useEffect(() => {
     loadStudio();
-    loadBookings();
-  }, [loadStudio, loadBookings]);
+    loadUpcomingBookings();
+  }, [loadStudio, loadUpcomingBookings]);
 
   const activeCount = useMemo(
     () => schedule.filter((d) => d.isActive).length,
@@ -154,7 +186,7 @@ export default function AdminSchedulePage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Could not cancel booking");
       }
-      await loadBookings();
+      await refreshBookings();
     } catch (error) {
       dialog.showAlert("Error", error instanceof Error ? error.message : "Could not cancel booking", "error");
     } finally {
@@ -165,9 +197,9 @@ export default function AdminSchedulePage() {
   const freeAllSlots = async () => {
     const confirmed = await dialog.showConfirm(
       "Free all upcoming slots",
-      bookings.length === 1
+      upcomingBookings.length === 1
         ? "Cancel the 1 upcoming booking and make that slot available again?"
-        : `Cancel ${bookings.length} upcoming bookings and make those slots available again?`,
+        : `Cancel ${upcomingBookings.length} upcoming bookings and make those slots available again?`,
       "warning"
     );
     if (!confirmed) return;
@@ -184,7 +216,7 @@ export default function AdminSchedulePage() {
         throw new Error(data.error || "Could not free slots");
       }
       const data = await res.json();
-      await loadBookings();
+      await refreshBookings();
       dialog.showAlert("Slots freed", `${data.cancelled} booking${data.cancelled === 1 ? "" : "s"} cancelled.`, "success");
     } catch (error) {
       dialog.showAlert("Error", error instanceof Error ? error.message : "Could not free slots", "error");
@@ -322,13 +354,13 @@ export default function AdminSchedulePage() {
 
   return (
     <>
-      <div className="space-y-8 max-w-4xl">
+      <div className="space-y-8 max-w-6xl">
         <div>
           <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-            Studio calendar
+            Studio schedule
           </h1>
           <p className="text-[var(--text-muted)] mt-1">
-            Manage when clients can book reformer sessions at {studio.name}
+            See this week’s sessions and manage when clients can book at {studio.name}
           </p>
         </div>
 
@@ -376,12 +408,28 @@ export default function AdminSchedulePage() {
           </Card>
         </div>
 
+        <AdminWeekBoard
+          schedules={schedule}
+          bookings={weekBookings}
+          durationMin={studio.serviceDurationMin}
+          slotCapacity={studio.slotCapacity}
+          blockedTimes={blockedTimes}
+          isLoadingBookings={isLoadingBookings}
+          onWeekChange={loadWeekBookings}
+          onCancel={(id) => {
+            const booking =
+              weekBookings.find((item) => item.id === id) ||
+              upcomingBookings.find((item) => item.id === id);
+            if (booking) void cancelBooking(booking);
+          }}
+        />
+
         <Card>
           <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between space-y-0">
             <CardTitle className="text-lg">Upcoming bookings</CardTitle>
             <Button
               variant="destructive"
-              disabled={bookings.length === 0 || isFreeingSlots}
+              disabled={upcomingBookings.length === 0 || isFreeingSlots}
               onClick={freeAllSlots}
             >
               <XCircle className="w-4 h-4 mr-2" />
@@ -392,11 +440,11 @@ export default function AdminSchedulePage() {
             <p className="text-sm text-[var(--text-muted)]">
               Cancel a session to release that reformer slot on the public calendar.
             </p>
-            {bookings.length === 0 ? (
+            {upcomingBookings.length === 0 ? (
               <p className="text-sm italic text-[var(--text-muted)]">No upcoming bookings holding slots.</p>
             ) : (
               <ul className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)]">
-                {bookings.map((booking) => (
+                {upcomingBookings.map((booking) => (
                   <li key={booking.id} className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="font-medium text-[var(--text-primary)]">

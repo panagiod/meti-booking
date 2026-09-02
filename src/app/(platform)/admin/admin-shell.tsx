@@ -46,7 +46,7 @@ const navigation = [
     icon: Users,
   },
   {
-    name: "Calendar",
+    name: "Schedule",
     href: "/admin/schedule",
     icon: CalendarDays,
   },

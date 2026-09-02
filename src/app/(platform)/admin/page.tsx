@@ -15,6 +15,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { AdminDashboardSchedule } from "@/components/admin/admin-dashboard-schedule";
 
 export default function AdminDashboard() {
   const { data, isLoading } = useAdminDashboard();
@@ -39,9 +40,11 @@ export default function AdminDashboard() {
           Dashboard Admin
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Platform overview
+          Platform overview and this week’s studio schedule
         </p>
       </div>
+
+      <AdminDashboardSchedule />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

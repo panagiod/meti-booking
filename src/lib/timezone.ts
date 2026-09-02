@@ -157,6 +157,53 @@ export function studioLocalMinutesFromUtc(utc: Date): number {
   return local.hour * 60 + local.minute;
 }
 
+export function formatStudioDate(utc: Date, options?: Intl.DateTimeFormatOptions): string {
+  return utc.toLocaleDateString("en-GB", {
+    timeZone: STUDIO_TIMEZONE,
+    ...options,
+  });
+}
+
+export function formatStudioTime(utc: Date): string {
+  return utc.toLocaleTimeString("en-GB", {
+    timeZone: STUDIO_TIMEZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+export function studioDateStrFromUtc(utc: Date): string {
+  const local = utcToStudioLocal(utc);
+  return `${String(local.year).padStart(4, "0")}-${String(local.month).padStart(2, "0")}-${String(local.day).padStart(2, "0")}`;
+}
+
+/** Shift a YYYY-MM-DD studio calendar date by whole days. */
+export function addStudioDays(dateStr: string, days: number): string {
+  const parts = parseStudioDateOnly(dateStr);
+  if (!parts) {
+    throw new Error(`Invalid date: ${dateStr}`);
+  }
+  const noon = localToUTCDate(parts.year, parts.month, parts.day, 12, 0);
+  return studioDateStrFromUtc(new Date(noon.getTime() + days * 86_400_000));
+}
+
+/** Monday (YYYY-MM-DD) of the studio week that contains `reference`. */
+export function studioWeekStartDateStr(reference = new Date()): string {
+  const today = studioDateStrFromUtc(reference);
+  const dow = getDayOfWeekForStudioDate(today);
+  const daysFromMonday = dow === 0 ? 6 : dow - 1;
+  return addStudioDays(today, -daysFromMonday);
+}
+
+/** Inclusive UTC bounds for a Mon–Sun studio week starting on `weekStartDateStr`. */
+export function weekBoundsIso(weekStartDateStr = studioWeekStartDateStr()) {
+  const start = studioDayBoundsUTC(weekStartDateStr).start;
+  const end = studioDayBoundsUTC(addStudioDays(weekStartDateStr, 6)).end;
+  return { start: start.toISOString(), end: end.toISOString() };
+}
+
+/** Parse YYYY-MM-DDTHH:mm (optional seconds) as studio-local wall time. */
 export function parseLocalISO(iso: string): Date | null {
   const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
   if (!match) return null;
