@@ -3,6 +3,8 @@
  */
 export const siteConfig = {
   name: "Meropi Tirri",
+  /** Public production URL (override with NEXT_PUBLIC_SITE_URL / APP_URL). */
+  siteUrl: "https://metipilates.gr",
   tagline: "Clinical Pilates & Reformer studio",
   description:
     "Physiotherapy-based reformer pilates in small groups — personalized care, safe movement, and lasting results.",
@@ -54,6 +56,25 @@ export function isReformerService(serviceName: string): boolean {
     return false;
   }
   return name.includes("reformer");
+}
+
+/** Public site URL for metadata, emails, and absolute links. */
+export function getSiteUrl(): string {
+  const candidates = [
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.APP_URL,
+    process.env.BETTER_AUTH_URL,
+    siteConfig.siteUrl,
+  ];
+
+  for (const value of candidates) {
+    const trimmed = value?.trim().replace(/\/$/, "");
+    if (!trimmed) continue;
+    if (trimmed.includes("localhost") || trimmed.includes("127.0.0.1")) continue;
+    return trimmed.startsWith("http") ? trimmed : `https://${trimmed}`;
+  }
+
+  return siteConfig.siteUrl;
 }
 
 /** Email that receives new-booking and reminder notifications for the studio. */

@@ -11,8 +11,8 @@ describe("auth-config", () => {
   });
 
   it("uses BETTER_AUTH_URL when it is a public URL", () => {
-    vi.stubEnv("BETTER_AUTH_URL", "https://meti.cognilab.dev");
-    expect(getAuthBaseURL()).toBe("https://meti.cognilab.dev");
+    vi.stubEnv("BETTER_AUTH_URL", "https://metipilates.gr");
+    expect(getAuthBaseURL()).toBe("https://metipilates.gr");
   });
 
   it("prefers VERCEL_URL over localhost BETTER_AUTH_URL", () => {

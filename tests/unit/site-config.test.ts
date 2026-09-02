@@ -1,5 +1,20 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getStudioNotificationEmail } from "@/lib/site-config";
+import { getSiteUrl, getStudioNotificationEmail } from "@/lib/site-config";
+
+describe("getSiteUrl", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("defaults to the production studio domain", () => {
+    expect(getSiteUrl()).toBe("https://metipilates.gr");
+  });
+
+  it("uses NEXT_PUBLIC_SITE_URL when set", () => {
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://custom.example.com");
+    expect(getSiteUrl()).toBe("https://custom.example.com");
+  });
+});
 
 describe("getStudioNotificationEmail", () => {
   afterEach(() => {

@@ -14,6 +14,7 @@ Book **reformer sessions** online: pick a date, time, sign in, pay.
 | | |
 |---|---|
 | **Brand** | MeTi Pilates |
+| **Production site** | https://metipilates.gr |
 | **Public site** | Homepage + `/book` |
 | **Schedule** | Tue, Thu, Sat (see `studio-schedule.ts`; admin-editable) |
 | **Booking window** | 8 weeks ahead |

@@ -3,7 +3,7 @@ import { getAppUrl } from "@/lib/mercadopago";
 import { siteConfig } from "@/lib/site-config";
 import { STUDIO_TIMEZONE } from "@/lib/timezone";
 
-const FROM_EMAIL = process.env.EMAIL_FROM || "Meti <notificaciones@cognilab.dev>";
+const FROM_EMAIL = process.env.EMAIL_FROM || "MeTi Pilates <bookings@metipilates.gr>";
 
 // Lazy Resend client: only initialized if API key is configured
 let resendClient: Resend | null = null;

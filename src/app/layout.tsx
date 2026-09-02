@@ -6,6 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { LocaleProvider } from "@/components/providers/locale-provider";
+import { getSiteUrl } from "@/lib/site-config";
 import "./globals.css";
 import "@/styles/studio.css";
 
@@ -37,6 +38,8 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = getSiteUrl();
+
 export const metadata: Metadata = {
   title: "Meropi Tirri — Clinical Pilates & Reformer",
   description:
@@ -56,7 +59,7 @@ export const metadata: Metadata = {
       "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results.",
     siteName: "Meropi Tirri",
     type: "website",
-    url: "https://meti.cognilab.dev",
+    url: siteUrl,
   },
   twitter: {
     card: "summary_large_image",
@@ -64,7 +67,7 @@ export const metadata: Metadata = {
     description:
       "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results.",
   },
-  metadataBase: new URL("https://meti.cognilab.dev"),
+  metadataBase: new URL(siteUrl),
 };
 
 export default function RootLayout({
@@ -88,7 +91,7 @@ export default function RootLayout({
               name: "Meropi Tirri",
               description:
                 "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups.",
-              url: "https://meti.cognilab.dev",
+              url: siteUrl,
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",
             }),
