@@ -13,7 +13,7 @@
 | **Brand** | **MeTi Pilates** |
 | **Customer site** | Homepage hero + `/book` + login + checkout |
 | **Languages** | English + Greek (`EN \| ΕΛ`); cookie `flow-locale` |
-| **Session** | **Reformer Session** — 50 min, **€45** demo |
+| **Session** | **Reformer Session** — 45 min, **€45** demo |
 | **Currency** | **EUR** (`siteConfig.currency`) |
 | **Timezone** | **Europe/Athens** (`STUDIO_TIMEZONE`) |
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |

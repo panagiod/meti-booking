@@ -38,9 +38,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MeTi Pilates — Book Reformer Sessions Online",
+  title: "Meropi Tirri — Clinical Pilates & Reformer",
   description:
-    "Book reformer pilates sessions online. Pick a time, show up, move well.",
+    "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results. Book online.",
   icons: {
     icon: [
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
@@ -51,18 +51,18 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   openGraph: {
-    title: "MeTi Pilates — Book Reformer Sessions Online",
+    title: "Meropi Tirri — Clinical Pilates & Reformer",
     description:
-      "Book reformer pilates sessions online. Pick a time, show up, move well.",
-    siteName: "MeTi Pilates",
+      "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results.",
+    siteName: "Meropi Tirri",
     type: "website",
     url: "https://meti.cognilab.dev",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MeTi Pilates — Book Reformer Sessions Online",
+    title: "Meropi Tirri — Clinical Pilates & Reformer",
     description:
-      "Book reformer pilates sessions online. Pick a time, show up, move well.",
+      "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results.",
   },
   metadataBase: new URL("https://meti.cognilab.dev"),
 };
@@ -85,8 +85,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "MeTi Pilates",
-              description: "Book reformer pilates sessions online.",
+              name: "Meropi Tirri",
+              description:
+                "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups.",
               url: "https://meti.cognilab.dev",
               applicationCategory: "BusinessApplication",
               operatingSystem: "Web",

@@ -23,6 +23,20 @@ export type Messages = {
     viewSessions: string;
     imageAlt: string;
   };
+  about: {
+    title: string;
+    intro: string;
+    certificationsIntro: string;
+    certifications: Array<{ name: string; detail: string }>;
+    specialization: string;
+    philosophyTitle: string;
+    philosophyParagraph1: string;
+    philosophyParagraph2: string;
+    programIntro: string;
+    programBenefits: string[];
+    closingTitle: string;
+    closingText: string;
+  };
   sessions: {
     label: string;
     title: string;

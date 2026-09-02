@@ -119,6 +119,74 @@ function LocaleFields({
       </div>
 
       <div>
+        <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
+          About section ({localeLabel})
+        </h3>
+        <div className="space-y-3">
+          <TextArea
+            label="Section title"
+            value={content.about.title}
+            onChange={(v) => update("about", "title", v)}
+            rows={2}
+          />
+          <TextArea
+            label="Introduction"
+            value={content.about.intro}
+            onChange={(v) => update("about", "intro", v)}
+            rows={5}
+          />
+          <TextArea
+            label="Certifications intro"
+            value={content.about.certificationsIntro}
+            onChange={(v) => update("about", "certificationsIntro", v)}
+            rows={3}
+          />
+          <TextArea
+            label="Specialization paragraph"
+            value={content.about.specialization}
+            onChange={(v) => update("about", "specialization", v)}
+            rows={3}
+          />
+          <TextArea
+            label="Philosophy title"
+            value={content.about.philosophyTitle}
+            onChange={(v) => update("about", "philosophyTitle", v)}
+            rows={2}
+          />
+          <TextArea
+            label="Philosophy paragraph 1"
+            value={content.about.philosophyParagraph1}
+            onChange={(v) => update("about", "philosophyParagraph1", v)}
+            rows={4}
+          />
+          <TextArea
+            label="Philosophy paragraph 2"
+            value={content.about.philosophyParagraph2}
+            onChange={(v) => update("about", "philosophyParagraph2", v)}
+            rows={4}
+          />
+          <TextArea
+            label="Program intro"
+            value={content.about.programIntro}
+            onChange={(v) => update("about", "programIntro", v)}
+            rows={2}
+          />
+          <TextArea
+            label="Closing title"
+            value={content.about.closingTitle}
+            onChange={(v) => update("about", "closingTitle", v)}
+            rows={2}
+          />
+          <TextArea
+            label="Closing text"
+            value={content.about.closingText}
+            onChange={(v) => update("about", "closingText", v)}
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div>
         <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">Hours line</h3>
         <TextArea
           label="Displayed under hero & footer"

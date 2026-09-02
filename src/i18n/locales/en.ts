@@ -2,8 +2,9 @@ import type { Messages } from "../types";
 
 const en: Messages = {
   meta: {
-    title: "MeTi Pilates — Book Reformer Sessions Online",
-    description: "Book reformer pilates sessions online. Pick a time, show up, move well.",
+    title: "Meropi Tirri — Clinical Pilates & Reformer",
+    description:
+      "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results. Book online.",
   },
   nav: {
     sessions: "Sessions",
@@ -12,12 +13,63 @@ const en: Messages = {
     bookNow: "Book now",
   },
   hero: {
-    eyebrow: "Reformer pilates",
-    title: "Book your session.",
-    description: "Book reformer sessions online. Pick a time, show up, move well.",
+    eyebrow: "Clinical Pilates & Reformer",
+    title: "Your health, your movement.",
+    description:
+      "Physiotherapy-based reformer pilates in small groups — personalized care, safe movement, and lasting results.",
     bookSession: "Book reformer",
     viewSessions: "View details",
     imageAlt: "Woman on a reformer pilates machine in a bright studio",
+  },
+  about: {
+    title: "About us | Meropi Tirri",
+    intro:
+      "Meropi Tirri is a specialized physiotherapist, graduate of the Physiotherapy Department of the International Hellenic University (formerly TEI Thessaloniki). Since 2015 she has practiced physiotherapy with absolute dedication, continually investing in broadening her knowledge through specialized seminars and high-level postgraduate programs.",
+    certificationsIntro:
+      "With the primary goal of holistic treatment and optimal recovery for every patient, she has earned certifications across a wide range of modern therapeutic methods:",
+    certifications: [
+      {
+        name: "OMT Manual Therapist",
+        detail: "Specialized musculoskeletal physiotherapy",
+      },
+      {
+        name: "Biomedical Acupuncture",
+        detail: "Specialized since 2020",
+      },
+      {
+        name: "Reflexology & Aromatherapy",
+        detail: "",
+      },
+      {
+        name: "Therapeutic Cupping",
+        detail: "",
+      },
+      {
+        name: "Hippotherapy",
+        detail: "",
+      },
+      {
+        name: "Neuromuscular Massage",
+        detail: "",
+      },
+    ],
+    specialization:
+      "In recent years, focusing on therapeutic exercise and prevention, she specializes as a Clinical Pilates & Reformer Pilates Instructor.",
+    philosophyTitle: "Our center's philosophy",
+    philosophyParagraph1:
+      "In our modern, privately owned space, we design together with you a personalized treatment and training plan that responds precisely to your own needs.",
+    philosophyParagraph2:
+      "By adopting the philosophy of small groups, we ensure that every participant enjoys the personal attention and strict supervision they deserve. The flow of each class is adapted to guarantee the correct and safe execution of every movement.",
+    programIntro:
+      "Based entirely on the principles of physiotherapy, our program is ideal for:",
+    programBenefits: [
+      "Improving body posture",
+      "Effectively strengthening the core",
+      "Immediate relief from chronic musculoskeletal pain",
+    ],
+    closingTitle: "Invest in your health and well-being.",
+    closingText:
+      "As places in our groups are limited, book your appointment early through our site and feel the difference from the very first sessions.",
   },
   sessions: {
     label: "Reformer",

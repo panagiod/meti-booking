@@ -2,10 +2,10 @@
  * MeTi Pilates — studio branding, imagery, and content.
  */
 export const siteConfig = {
-  name: "MeTi Pilates",
-  tagline: "Reformer pilates studio in the heart of the city",
+  name: "Meropi Tirri",
+  tagline: "Clinical Pilates & Reformer studio",
   description:
-    "Book reformer sessions online. Pick a time, show up, move well.",
+    "Physiotherapy-based reformer pilates in small groups — personalized care, safe movement, and lasting results.",
   studioCategorySlug: "pilates",
   /** Only this session type is offered on the public site */
   primarySessionSlug: "reformer",

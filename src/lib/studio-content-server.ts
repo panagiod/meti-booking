@@ -3,13 +3,14 @@ import {
   STUDIO_CONTENT_ID,
   buildDefaultStudioContent,
   localeContentFromStudio,
+  normalizeStudioContent,
   studioBranding,
 } from "@/lib/studio-content";
-import { studioContentSchema, type StudioContentData } from "@/lib/studio-content-types";
+import { type StudioContentData } from "@/lib/studio-content-types";
 import { StudioContentParseError } from "@/lib/studio-content-errors";
 
 function parseStudioContent(data: unknown): StudioContentData {
-  return studioContentSchema.parse(data);
+  return normalizeStudioContent(data);
 }
 
 export async function getStudioContent(options?: {

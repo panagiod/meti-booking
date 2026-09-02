@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { getStudioContent, saveStudioContent } from "@/lib/studio-content-server";
+import { normalizeStudioContent } from "@/lib/studio-content";
 import { StudioContentParseError } from "@/lib/studio-content-errors";
-import { studioContentSchema } from "@/lib/studio-content-types";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +39,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const content = studioContentSchema.parse(body.content);
+    const content = normalizeStudioContent(body.content);
     const saved = await saveStudioContent(content);
 
     return NextResponse.json({ content: saved });
