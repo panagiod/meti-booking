@@ -107,21 +107,125 @@ In the server → **Firewalls** (or create one):
 
 ---
 
-## Step 2 — Domain DNS
+## Step 2 — Domain DNS (point meti-pilates.com → your server)
 
-Point your domain to the server IP.
+**Goal:** When someone opens `https://meti-pilates.com`, their browser must reach your Hetzner server IP.
 
-**Cloudflare (recommended, free):**
+You need:
+- Your **Hetzner IPv4** (from the server page in Hetzner Cloud, e.g. `95.123.45.67`)
+- Access to where you bought **meti-pilates.com** (registrar) — or Cloudflare if you use it
 
-1. Add site → use Cloudflare nameservers at your registrar.
-2. **DNS** → **A record**:
-   - Name: `@` (or `www`)
-   - IPv4: your Hetzner IP
-   - Proxy: **DNS only** (grey cloud) until HTTPS works, then orange cloud is OK
+### Which path are you on?
 
-**Example:** `meti-pilates.com` → `95.xxx.xxx.xxx`
+| Situation | What to do |
+|-----------|------------|
+| Domain only at registrar (GoDaddy, Namecheap, Papaki, etc.) | **Path A** — add an A record there |
+| You use **Cloudflare** for DNS | **Path B** — add an A record in Cloudflare |
+| Not sure | Log in where you bought the domain → look for **DNS** or **Manage DNS** |
 
-Wait 5–30 minutes for DNS to propagate.
+---
+
+### Path A — DNS at your registrar (simplest)
+
+1. Log in to the site where you bought **meti-pilates.com**.
+2. Open **DNS settings** / **DNS management** / **Zone editor** (name varies).
+3. **Delete or edit** any old A record for `@` that points to a wrong IP (e.g. old Vercel, parking page).
+4. **Add** these records:
+
+| Type | Name / Host | Value / Points to | TTL |
+|------|-------------|-------------------|-----|
+| **A** | `@` (or blank, or `meti-pilates.com`) | `YOUR_HETZNER_IP` | 300 or Auto |
+| **A** | `www` | `YOUR_HETZNER_IP` | 300 or Auto |
+
+**Examples by registrar:**
+
+- **Name / Host = `@`** → `meti-pilates.com` and `https://meti-pilates.com`
+- **Name / Host = `www`** → `www.meti-pilates.com`
+
+5. **Save** changes.
+6. Do **not** add CNAME for `@` to Vercel/Netlify if you are moving to Hetzner — the A record must be your Hetzner IP.
+
+---
+
+### Path B — Cloudflare
+
+Use this if nameservers look like `*.ns.cloudflare.com`.
+
+1. [dash.cloudflare.com](https://dash.cloudflare.com) → your site **meti-pilates.com**.
+2. **DNS** → **Records**.
+3. Remove wrong A records (old hosting).
+4. **Add record:**
+
+| Type | Name | IPv4 address | Proxy status |
+|------|------|--------------|--------------|
+| A | `@` | `YOUR_HETZNER_IP` | **DNS only** (grey cloud ☁️) |
+| A | `www` | `YOUR_HETZNER_IP` | **DNS only** (grey cloud) |
+
+**Why grey cloud first?** Orange cloud (proxied) can interfere until Caddy has a certificate. After `https://meti-pilates.com` works, you may switch to orange cloud if you want Cloudflare CDN.
+
+If the domain is **not** on Cloudflare yet:
+1. Cloudflare → **Add site** → enter `meti-pilates.com`.
+2. Cloudflare shows **two nameservers** (e.g. `ada.ns.cloudflare.com`).
+3. At your **registrar**, replace nameservers with Cloudflare’s.
+4. Wait until Cloudflare shows the site as **Active**, then add the A records above.
+
+---
+
+### Check that DNS is working
+
+From your **laptop** (replace IP):
+
+```bash
+# macOS / Linux
+dig +short meti-pilates.com A
+dig +short www.meti-pilates.com A
+
+# or
+nslookup meti-pilates.com
+```
+
+Both should return **your Hetzner IPv4**.
+
+Online checker: [https://dnschecker.org](https://dnschecker.org) → type `meti-pilates.com` → should show your IP worldwide (can take up to 24–48 h in rare cases; usually **5–30 minutes**).
+
+**Quick browser test (before HTTPS):**  
+`http://YOUR_HETZNER_IP` — after deploy, you should see the site (certificate step needs DNS first).
+
+---
+
+### When to do this vs `./deploy/deploy.sh`
+
+| Order | Step |
+|-------|------|
+| 1 | Create Hetzner server → note **IPv4** |
+| 2 | **Set DNS A records** (this step) |
+| 3 | SSH in, clone repo, create `.env` with `DOMAIN=meti-pilates.com` |
+| 4 | Run `./deploy/deploy.sh` — Caddy requests Let's Encrypt cert **using your domain** |
+
+HTTPS will only work after:
+- DNS points to the server **and**
+- Ports **80** and **443** are open **and**
+- `DOMAIN=meti-pilates.com` in `.env`
+
+You can run deploy before DNS propagates; the site may not get HTTPS until DNS is correct. Then re-run:
+
+```bash
+docker compose -f deploy/docker-compose.prod.yml restart caddy
+```
+
+---
+
+### Common mistakes
+
+| Problem | Fix |
+|---------|-----|
+| Site still shows old host / parking page | Old A record still there; wait for TTL or lower TTL to 300 |
+| `dig` shows wrong IP | Edit A record at registrar/Cloudflare; clear local DNS cache |
+| Certificate / HTTPS fails | DNS not pointing to server yet; use grey cloud on Cloudflare |
+| Only `www` works, not bare domain | Add A record for `@` as well as `www` |
+| Used AAAA (IPv6) only | Add **A** record with IPv4 — most visitors need it |
+
+**Example (correct):** `meti-pilates.com` → A → `95.123.45.67`
 
 ---
 
