@@ -100,6 +100,13 @@ test.describe("Production · public site and booking APIs", () => {
 });
 
 test.describe("Production · logged-in booking, cancel, and admin guards", () => {
+  test("admin APIs reject anonymous callers", async ({ request }) => {
+    expect((await request.get(`${BASE_URL}/api/admin/dashboard`)).status()).toBe(401);
+    expect((await request.get(`${BASE_URL}/api/admin/studio/content`)).status()).toBe(401);
+    expect((await request.get(`${BASE_URL}/api/admin/studio/schedule`)).status()).toBe(401);
+    expect((await request.get(`${BASE_URL}/api/admin/users`)).status()).toBe(401);
+    expect((await request.get(`${BASE_URL}/api/admin/advisors`)).status()).toBe(401);
+  });
   test("client can book, slot is taken, cancel frees the slot, admin APIs stay protected", async ({
     request,
   }) => {
@@ -176,13 +183,6 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
     expect(remaining.appointments.some((item: { id: string }) => item.id === booked.appointment.id)).toBe(
       false
     );
-
-    const adminDashboard = await request.get(`${BASE_URL}/api/admin/dashboard`);
-    expect(adminDashboard.status()).toBe(401);
-    const adminContent = await request.get(`${BASE_URL}/api/admin/studio/content`);
-    expect(adminContent.status()).toBe(401);
-    const adminSchedule = await request.get(`${BASE_URL}/api/admin/studio/schedule`);
-    expect(adminSchedule.status()).toBe(401);
 
     const clientAdmin = await request.get(`${BASE_URL}/api/admin/dashboard`, { headers: cookie });
     expect(clientAdmin.status()).toBe(403);
