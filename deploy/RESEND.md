@@ -33,6 +33,7 @@ Turn on **booking confirmation emails** for clients and **new-booking alerts** f
 |------|-------------|-----------------|
 | Booking confirmed | Client (guest or account email) | ✓ Booking confirmed: Reformer Session |
 | Booking confirmed | Studio inbox | 🔔 New booking: Reformer Session — … |
+| Password reset requested | User | Reset your MeTi Pilates password |
 | ~24h before class | Client + studio | ⏰ Reminder: … tomorrow |
 
 **Studio inbox (default):** `tyrri_meropi@hotmail.com`  
@@ -43,6 +44,8 @@ STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com, second@example.com, second@e
 ```
 
 Both addresses receive new-booking alerts and reminder emails.
+
+**Password reset** also uses Resend (`/forgot-password` on the site). Without `RESEND_API_KEY`, users cannot self-reset — use the server script below.
 
 Reminders run from the daily cron job (`/api/cron/reminders`). On your Hetzner VPS this is already set up by `./deploy/setup-cron.sh` (runs at **12:00 UTC** ≈ **14:00 Athens** in summer).
 
@@ -272,6 +275,16 @@ journalctl -u meti-booking -n 100 --no-pager
 ```
 
 Look for Resend or email-related errors after a test booking.
+
+### Emergency password reset (no email)
+
+If Resend is not set up yet, reset a user password on the server:
+
+```bash
+cd ~/meti-booking
+pnpm exec tsx scripts/reset-user-password.ts user@example.com NewPassword123
+sudo systemctl restart meti-booking
+```
 
 ---
 

@@ -170,6 +170,27 @@ export async function sendReminderEmail(
   return !error;
 }
 
+export async function sendPasswordResetEmail(to: string, resetUrl: string): Promise<boolean> {
+  const client = getResend();
+  if (!client) return false;
+
+  const body = `
+    <p style="margin:0 0 16px;color:#374151;line-height:1.6;">We received a request to reset your MeTi Pilates account password.</p>
+    <p style="margin:0 0 20px;color:#374151;line-height:1.6;">Click the button below to choose a new password. This link expires in 1 hour.</p>
+    <a href="${resetUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">Reset password</a>
+    <p style="margin:20px 0 0;color:#6b7280;font-size:13px;line-height:1.6;">If you did not request this, you can ignore this email.</p>
+  `;
+
+  const { error } = await client.emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: "Reset your MeTi Pilates password",
+    html: layout("Reset your password", body),
+  });
+
+  return !error;
+}
+
 // Consultation summary email
 export async function sendSummaryEmail(
   to: string,

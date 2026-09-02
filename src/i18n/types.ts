@@ -113,6 +113,27 @@ export type Messages = {
     signUpFree: string;
     hasAccount: string;
     backHome: string;
+    forgotPassword: string;
+    forgotPasswordTitle: string;
+    forgotPasswordSubtitle: string;
+    forgotPasswordSent: string;
+    forgotPasswordSentDetail: string;
+    forgotPasswordError: string;
+    sendResetLink: string;
+    sendingResetLink: string;
+    backToSignIn: string;
+    resetPasswordTitle: string;
+    resetPasswordSubtitle: string;
+    resetPasswordBtn: string;
+    resettingPassword: string;
+    resetPasswordSuccess: string;
+    resetPasswordSuccessDetail: string;
+    resetPasswordError: string;
+    resetPasswordInvalidLink: string;
+    resetPasswordMismatch: string;
+    requestNewResetLink: string;
+    newPassword: string;
+    confirmPassword: string;
   };
   checkout: {
     title: string;

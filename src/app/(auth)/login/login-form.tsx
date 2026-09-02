@@ -109,6 +109,14 @@ export function LoginForm({ googleOAuthEnabled }: LoginFormProps) {
               required
               className="h-11"
             />
+            <div className="text-right">
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-[var(--primary)] hover:underline"
+              >
+                {t.auth.forgotPassword}
+              </Link>
+            </div>
             <Button type="submit" className="w-full h-11" disabled={isLoading}>
               {isLoading ? t.auth.signingIn : t.auth.signIn}
             </Button>

@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/prisma";
 import { getAuthBaseURL, getTrustedAuthOrigins } from "@/lib/auth-config";
 import { getBetterAuthDatabaseProvider } from "@/lib/database-provider";
+import { sendPasswordResetEmail } from "@/lib/email";
 import { isGoogleOAuthConfigured } from "@/lib/google-oauth";
 
 const trustedOrigins = getTrustedAuthOrigins();
@@ -15,6 +16,10 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      void sendPasswordResetEmail(user.email, url);
+    },
+    revokeSessionsOnPasswordReset: true,
   },
   account: {
     accountLinking: {
