@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getSiteUrl, getStudioNotificationEmail } from "@/lib/site-config";
+import { getSiteUrl, getStudioNotificationEmail, getStudioNotificationEmails } from "@/lib/site-config";
 
 describe("getSiteUrl", () => {
   afterEach(() => {
@@ -28,5 +28,34 @@ describe("getStudioNotificationEmail", () => {
 
   it("falls back to the studio contact email from site config", () => {
     expect(getStudioNotificationEmail()).toBe("tyrri_meropi@hotmail.com");
+  });
+});
+
+describe("getStudioNotificationEmails", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("supports multiple comma-separated addresses", () => {
+    vi.stubEnv(
+      "STUDIO_NOTIFICATION_EMAIL",
+      "tyrri_meropi@hotmail.com, partner@example.com"
+    );
+    expect(getStudioNotificationEmails()).toEqual([
+      "tyrri_meropi@hotmail.com",
+      "partner@example.com",
+    ]);
+    expect(getStudioNotificationEmail()).toBe("tyrri_meropi@hotmail.com");
+  });
+
+  it("deduplicates addresses case-insensitively", () => {
+    vi.stubEnv(
+      "STUDIO_NOTIFICATION_EMAIL",
+      "Studio@Example.com; studio@example.com, Other@Example.com"
+    );
+    expect(getStudioNotificationEmails()).toEqual([
+      "studio@example.com",
+      "other@example.com",
+    ]);
   });
 });

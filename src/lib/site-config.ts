@@ -77,9 +77,24 @@ export function getSiteUrl(): string {
   return siteConfig.siteUrl;
 }
 
-/** Email that receives new-booking and reminder notifications for the studio. */
-export function getStudioNotificationEmail(): string {
+/** Parse studio notification inboxes from env (comma- or semicolon-separated). */
+export function getStudioNotificationEmails(): string[] {
   const fromEnv = process.env.STUDIO_NOTIFICATION_EMAIL?.trim();
-  if (fromEnv) return fromEnv;
-  return siteConfig.email;
+  const raw = fromEnv || siteConfig.email;
+  const seen = new Set<string>();
+  const emails: string[] = [];
+
+  for (const part of raw.split(/[,;]+/)) {
+    const email = part.trim().toLowerCase();
+    if (!email || seen.has(email)) continue;
+    seen.add(email);
+    emails.push(email);
+  }
+
+  return emails;
+}
+
+/** Primary studio notification inbox (first address in STUDIO_NOTIFICATION_EMAIL). */
+export function getStudioNotificationEmail(): string {
+  return getStudioNotificationEmails()[0] ?? siteConfig.email;
 }

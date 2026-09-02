@@ -5,7 +5,7 @@ import {
   sendReminderEmail,
   type AppointmentEmailData,
 } from "@/lib/email";
-import { getStudioNotificationEmail } from "@/lib/site-config";
+import { getStudioNotificationEmails } from "@/lib/site-config";
 import { getAppUrl } from "@/lib/mercadopago";
 
 // Load the appointment with the relations needed for notifications
@@ -28,7 +28,7 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
 
   const clientEmail = apt.client.email;
   const advisorEmail = apt.advisor.user.email?.trim().toLowerCase();
-  const studioEmail = getStudioNotificationEmail().trim().toLowerCase();
+  const studioEmails = getStudioNotificationEmails();
 
   const base: AppointmentEmailData = {
     advisorName: apt.advisor.user.name,
@@ -44,11 +44,11 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
 
   const studioBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
 
-  if (studioEmail) {
+  for (const studioEmail of studioEmails) {
     sent = (await sendNewBookingEmail(studioEmail, studioBase)) || sent;
   }
 
-  if (advisorEmail && advisorEmail !== studioEmail) {
+  if (advisorEmail && !studioEmails.includes(advisorEmail)) {
     sent = (await sendNewBookingEmail(advisorEmail, studioBase)) || sent;
   }
   return sent;
@@ -71,15 +71,15 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
   let sent = false;
   if (apt.client.email) sent = (await sendReminderEmail(apt.client.email, base, "client")) || sent;
 
-  const studioEmail = getStudioNotificationEmail().trim().toLowerCase();
+  const studioEmails = getStudioNotificationEmails();
   const advisorEmail = apt.advisor.user.email?.trim().toLowerCase();
   const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
 
-  if (studioEmail) {
+  for (const studioEmail of studioEmails) {
     sent = (await sendReminderEmail(studioEmail, advisorBase, "advisor")) || sent;
   }
 
-  if (advisorEmail && advisorEmail !== studioEmail) {
+  if (advisorEmail && !studioEmails.includes(advisorEmail)) {
     sent = (await sendReminderEmail(advisorEmail, advisorBase, "advisor")) || sent;
   }
   return sent;

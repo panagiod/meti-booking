@@ -36,7 +36,13 @@ Turn on **booking confirmation emails** for clients and **new-booking alerts** f
 | ~24h before class | Client + studio | ⏰ Reminder: … tomorrow |
 
 **Studio inbox (default):** `tyrri_meropi@hotmail.com`  
-Override with `STUDIO_NOTIFICATION_EMAIL` in `.env` if needed.
+Override with `STUDIO_NOTIFICATION_EMAIL` in `.env`. **Multiple inboxes:** separate with commas:
+
+```bash
+STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com, second@example.com, second@example.com
+```
+
+Both addresses receive new-booking alerts and reminder emails.
 
 Reminders run from the daily cron job (`/api/cron/reminders`). On your Hetzner VPS this is already set up by `./deploy/setup-cron.sh` (runs at **12:00 UTC** ≈ **14:00 Athens** in summer).
 
@@ -147,7 +153,7 @@ Find the **Email (Resend)** section and set:
 # --- Email (Resend) ---
 RESEND_API_KEY=re_paste_your_key_here
 EMAIL_FROM="MeTi Pilates <bookings@meti-pilates.com>"
-STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com
+STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com, second@example.com
 ```
 
 **Rules:**
@@ -157,7 +163,7 @@ STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com
 | `RESEND_API_KEY` | Paste the full `re_…` key, no quotes |
 | `EMAIL_FROM` | **Must use double quotes** because of `<` and `>` |
 | `EMAIL_FROM` address | Must be on your **verified** domain (e.g. `bookings@meti-pilates.com`) |
-| `STUDIO_NOTIFICATION_EMAIL` | Where new-booking alerts go |
+| `STUDIO_NOTIFICATION_EMAIL` | One or more inboxes (comma-separated) for new-booking + reminder alerts |
 
 Also confirm these are already set (they should be from initial deploy):
 
