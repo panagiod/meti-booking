@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculatePrices } from "@/lib/pricing";
+import { isPaymentsEnabled } from "@/lib/payments-config";
 
 export const dynamic = "force-dynamic";
 
@@ -77,6 +78,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({
+      paymentsEnabled: isPaymentsEnabled(),
       quote: {
         serviceId: service.id,
         serviceName: service.name,

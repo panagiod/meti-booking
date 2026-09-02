@@ -51,6 +51,7 @@ function CheckoutContent() {
     feePercentage: number;
   } | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(true);
+  const [paymentsEnabled, setPaymentsEnabled] = useState<boolean | null>(null);
 
   const advisorId = searchParams.get("advisorId");
   const advisorName = searchParams.get("advisorName") || "MeTi Pilates";
@@ -71,13 +72,18 @@ function CheckoutContent() {
   useEffect(() => {
     localStorage.removeItem("meti-pending-booking");
     checkLoginStatus();
-    if (advisorId) {
-      checkAdvisorMP(advisorId);
-    }
     if (serviceId) {
       fetchPromotion(serviceId);
     }
-  }, [advisorId, serviceId]);
+  }, [serviceId]);
+
+  useEffect(() => {
+    if (paymentsEnabled !== true || !advisorId) {
+      if (paymentsEnabled === false) setAdvisorHasMP(null);
+      return;
+    }
+    checkAdvisorMP(advisorId);
+  }, [advisorId, paymentsEnabled]);
 
   useEffect(() => {
     if (!serviceId) return;
@@ -90,6 +96,9 @@ function CheckoutContent() {
         if (res.ok) {
           const data = await res.json();
           setQuote(data.quote);
+          if (typeof data.paymentsEnabled === "boolean") {
+            setPaymentsEnabled(data.paymentsEnabled);
+          }
         }
       } catch {
         // fallback to URL price
@@ -181,7 +190,7 @@ function CheckoutContent() {
       return;
     }
 
-    if (!advisorHasMP) {
+    if (paymentsEnabled === true && !advisorHasMP) {
       dialog.showAlert(
         t.checkout.paymentUnavailable,
         t.checkout.paymentUnavailableSub,
@@ -216,9 +225,17 @@ function CheckoutContent() {
         throw new Error(data.error || t.checkout.errorCreateAppointment);
       }
 
-      const { initPoint } = await res.json();
+      const data = await res.json();
       localStorage.removeItem("meti-pending-booking");
-      window.location.href = initPoint;
+
+      if (data.paymentsEnabled === false) {
+        router.push(
+          `/checkout/result?appointmentId=${data.appointment.id}&status=approved`
+        );
+        return;
+      }
+
+      window.location.href = data.initPoint;
     } catch (error) {
       console.error("Error:", error);
       dialog.showAlert(t.common.error, t.checkout.errorCreateAppointment, "error");
@@ -313,7 +330,7 @@ function CheckoutContent() {
                 </Card>
               )}
 
-              {advisorMpMode === "TEST" && (
+              {paymentsEnabled === true && advisorMpMode === "TEST" && (
                 <Card className="border-[var(--warning)] bg-[var(--warning-light)]">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
@@ -331,51 +348,70 @@ function CheckoutContent() {
                 </Card>
               )}
 
+              {paymentsEnabled !== null && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="w-5 h-5" />
-                    {t.checkout.paymentMethod}
+                    {paymentsEnabled ? (
+                      <CreditCard className="w-5 h-5" />
+                    ) : (
+                      <Shield className="w-5 h-5" />
+                    )}
+                    {paymentsEnabled ? t.checkout.paymentMethod : t.checkout.confirmBooking}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {advisorHasMP === false ? (
-                    <div className="p-4 rounded-lg border-2 border-[var(--warning)] bg-[var(--warning-light)]">
-                      <div className="flex items-center gap-3">
-                        <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
-                        <div>
-                          <p className="font-medium text-[var(--text-primary)]">
-                            {t.checkout.paymentUnavailable}
-                          </p>
-                          <p className="text-sm text-[var(--text-muted)]">
-                            {t.checkout.paymentUnavailableSub}
-                          </p>
+                  {paymentsEnabled ? (
+                    advisorHasMP === false ? (
+                      <div className="p-4 rounded-lg border-2 border-[var(--warning)] bg-[var(--warning-light)]">
+                        <div className="flex items-center gap-3">
+                          <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
+                          <div>
+                            <p className="font-medium text-[var(--text-primary)]">
+                              {t.checkout.paymentUnavailable}
+                            </p>
+                            <p className="text-sm text-[var(--text-muted)]">
+                              {t.checkout.paymentUnavailableSub}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div className="p-4 rounded-lg border-2 border-[var(--primary)] bg-[var(--primary-light)]">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-[var(--primary)] flex items-center justify-center">
+                            <CreditCard className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-[var(--text-primary)]">
+                              {t.checkout.mercadoPago}
+                            </p>
+                            <p className="text-sm text-[var(--text-muted)]">
+                              {t.checkout.mercadoPagoSub}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )
                   ) : (
-                    <div className="p-4 rounded-lg border-2 border-[var(--primary)] bg-[var(--primary-light)]">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-[var(--primary)] flex items-center justify-center">
-                          <CreditCard className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-[var(--text-primary)]">
-                            {t.checkout.mercadoPago}
-                          </p>
-                          <p className="text-sm text-[var(--text-muted)]">
-                            {t.checkout.mercadoPagoSub}
-                          </p>
-                        </div>
-                      </div>
+                    <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--background)]">
+                      <p className="font-medium text-[var(--text-primary)]">
+                        {t.checkout.bookingOnlyTitle}
+                      </p>
+                      <p className="mt-1 text-sm text-[var(--text-muted)]">
+                        {t.checkout.bookingOnlySub}
+                      </p>
                     </div>
                   )}
-                  <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
-                    <Shield className="w-4 h-4" />
-                    {t.checkout.securePayment}
-                  </div>
+                  {paymentsEnabled && (
+                    <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+                      <Shield className="w-4 h-4" />
+                      {t.checkout.securePayment}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
+              )}
 
               <Card>
                 <CardContent className="p-4">
@@ -464,8 +500,9 @@ function CheckoutContent() {
                     onClick={handlePayment}
                     disabled={
                       isProcessing ||
-                      advisorHasMP === false ||
+                      (paymentsEnabled === true && advisorHasMP === false) ||
                       quoteLoading ||
+                      paymentsEnabled === null ||
                       isLoggedIn === null ||
                       !canPay
                     }
@@ -475,13 +512,15 @@ function CheckoutContent() {
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         {t.common.processing}
                       </div>
-                    ) : (
+                    ) : paymentsEnabled === true ? (
                       <>
                         <CreditCard className="w-5 h-5 mr-2" />
                         {formatMessage(t.checkout.pay, {
                           amount: formatMoney(serviceTotal, locale),
                         })}
                       </>
+                    ) : (
+                      t.checkout.confirmBooking
                     )}
                   </Button>
                 </CardContent>

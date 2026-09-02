@@ -136,6 +136,9 @@ export type Messages = {
     includesCosts: string;
     signInToPay: string;
     pay: string;
+    confirmBooking: string;
+    bookingOnlyTitle: string;
+    bookingOnlySub: string;
     noBookingData: string;
     bookSession: string;
     errorCreateAppointment: string;

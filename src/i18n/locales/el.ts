@@ -181,6 +181,10 @@ const el: Messages = {
     includesCosts: "Περιλαμβάνει όλα τα τέλη",
     signInToPay: "Είσοδος για πληρωμή",
     pay: "Πληρωμή {amount}",
+    confirmBooking: "Επιβεβαίωση κράτησης",
+    bookingOnlyTitle: "Χωρίς online πληρωμή",
+    bookingOnlySub:
+      "Η κράτησή σας θα επιβεβαιωθεί αμέσως. Η πληρωμή γίνεται στο στούντιο.",
     noBookingData: "Δεν υπάρχουν στοιχεία κράτησης",
     bookSession: "Κράτηση μαθήματος",
     errorCreateAppointment: "Η κράτηση απέτυχε. Δοκιμάστε ξανά.",

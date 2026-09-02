@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { createCheckoutPreference } from "@/lib/mercadopago";
 import { decryptMpAccessToken } from "@/lib/advisor-mp";
+import { isPaymentsEnabled } from "@/lib/payments-config";
 
 // POST: Regenerate MercadoPago checkout link for a pending appointment
 export async function POST(
@@ -18,6 +19,13 @@ export async function POST(
 
     if (!session) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!isPaymentsEnabled()) {
+      return NextResponse.json(
+        { error: "Online payments are currently disabled" },
+        { status: 503 }
+      );
     }
 
     const { appointmentId } = await params;

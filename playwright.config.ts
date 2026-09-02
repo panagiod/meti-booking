@@ -43,6 +43,8 @@ export default defineConfig({
       NEXT_DIST_DIR: "test-results/.next-test",
       DISABLE_RATE_LIMIT: "1",
       BETTER_AUTH_SECRET: TEST_AUTH_SECRET,
+      PAYMENTS_ENABLED: "1",
+      NEXT_PUBLIC_PAYMENTS_ENABLED: "1",
     },
   },
 });

@@ -11,6 +11,8 @@ import { siteConfig } from "@/lib/site-config";
 import { validateBookableSlot, SlotBookingError } from "@/lib/slot-booking";
 import { decryptMpAccessToken } from "@/lib/advisor-mp";
 import { findOrCreateGuestUser, GuestUserError } from "@/lib/guest-user";
+import { isPaymentsEnabled } from "@/lib/payments-config";
+import { notifyAppointmentConfirmed } from "@/lib/notify";
 
 const appointmentSchema = z.object({
   advisorId: z.string(),
@@ -59,7 +61,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Advisor not found" }, { status: 404 });
     }
 
-    if (!advisorProfile.mpAccessToken) {
+    const paymentsEnabled = isPaymentsEnabled();
+
+    if (paymentsEnabled && !advisorProfile.mpAccessToken) {
       return NextResponse.json(
         { error: "Advisor has no Mercado Pago account configured" },
         { status: 400 }
@@ -131,15 +135,17 @@ export async function POST(request: NextRequest) {
       scheduledAt: parsedDate,
     });
 
-    const mpToken = decryptMpAccessToken(advisorProfile.mpAccessToken);
-    if (!mpToken) {
+    const mpToken = paymentsEnabled
+      ? decryptMpAccessToken(advisorProfile.mpAccessToken)
+      : null;
+    if (paymentsEnabled && !mpToken) {
       return NextResponse.json(
         { error: "Advisor payment credentials are not configured" },
         { status: 400 }
       );
     }
 
-    const isTest = advisorProfile.mpMode === "TEST";
+    const isTest = paymentsEnabled && advisorProfile.mpMode === "TEST";
 
     const appointment = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
@@ -162,7 +168,7 @@ export async function POST(request: NextRequest) {
             serviceId: serviceId,
             scheduledAt: parsedDate,
             durationMin: service.durationMin,
-            status: "PENDING",
+            status: paymentsEnabled ? "PENDING" : "CONFIRMED",
             totalCents,
             advisorEarning,
             platformFee,
@@ -174,10 +180,23 @@ export async function POST(request: NextRequest) {
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
     );
 
+    if (!paymentsEnabled) {
+      try {
+        await notifyAppointmentConfirmed(appointment.id);
+      } catch (notifyError) {
+        console.error("Error sending confirmation emails:", notifyError);
+      }
+
+      return NextResponse.json(
+        { appointment, paymentsEnabled: false },
+        { status: 201 }
+      );
+    }
+
     try {
       const { preferenceId, initPoint, sandboxInitPoint } =
         await createCheckoutPreference({
-          accessToken: mpToken,
+          accessToken: mpToken!,
           items: [
             {
               id: service.id,
@@ -197,7 +216,7 @@ export async function POST(request: NextRequest) {
       const checkoutUrl = isTest && sandboxInitPoint ? sandboxInitPoint : initPoint;
 
       return NextResponse.json(
-        { appointment, initPoint: checkoutUrl, preferenceId },
+        { appointment, initPoint: checkoutUrl, preferenceId, paymentsEnabled: true },
         { status: 201 }
       );
     } catch (prefError) {

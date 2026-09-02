@@ -180,6 +180,10 @@ const en: Messages = {
     includesCosts: "Includes all fees",
     signInToPay: "Sign in to pay",
     pay: "Pay {amount}",
+    confirmBooking: "Confirm booking",
+    bookingOnlyTitle: "No online payment",
+    bookingOnlySub:
+      "Your booking will be confirmed immediately. Payment is handled at the studio.",
     noBookingData: "No booking data",
     bookSession: "Book a session",
     errorCreateAppointment: "Failed to create booking. Please try again.",
