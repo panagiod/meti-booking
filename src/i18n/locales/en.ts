@@ -150,6 +150,10 @@ const en: Messages = {
     emailError: "Incorrect email or password.",
     signInError: "Failed to sign in. Please try again.",
     signUpError: "Failed to create account. Please try again.",
+    signUpUnavailable:
+      "Account registration is not available on this preview. Book as a guest with your email — no account needed.",
+    signUpInvalidOrigin:
+      "Sign-up could not verify this site address. Refresh the page and try again.",
     noAccount: "Don't have an account?",
     signUpFree: "Sign up for free",
     hasAccount: "Already have an account?",

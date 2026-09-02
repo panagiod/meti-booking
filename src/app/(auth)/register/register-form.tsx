@@ -10,6 +10,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Logo } from "@/components/ui/logo";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { useTranslations } from "@/components/providers/locale-provider";
+import type { Messages } from "@/i18n";
+
+function mapSignUpError(
+  message: string | undefined,
+  code: string | undefined,
+  auth: Messages["auth"]
+) {
+  if (code === "INVALID_ORIGIN") {
+    return auth.signUpInvalidOrigin;
+  }
+  if (message && /database|connect|ECONNREFUSED|ENOTFOUND|prisma/i.test(message)) {
+    return auth.signUpUnavailable;
+  }
+  return message || auth.signUpError;
+}
 
 interface RegisterFormProps {
   googleOAuthEnabled: boolean;
@@ -36,7 +51,7 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
         callbackURL: "/redirect",
       });
       if (signUpError) {
-        setError(signUpError.message || t.auth.signUpError);
+        setError(mapSignUpError(signUpError.message, signUpError.code, t.auth));
         setIsLoading(false);
       } else {
         router.push("/redirect");

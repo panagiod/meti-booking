@@ -1,13 +1,13 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/prisma";
-import { getTrustedAuthOrigins } from "@/lib/auth-config";
+import { getAuthBaseURL, getTrustedAuthOrigins } from "@/lib/auth-config";
 import { isGoogleOAuthConfigured } from "@/lib/google-oauth";
 
 const trustedOrigins = getTrustedAuthOrigins();
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL: getAuthBaseURL(),
   ...(trustedOrigins.length > 0 ? { trustedOrigins } : {}),
   database: prismaAdapter(prisma, {
     provider: "postgresql",
