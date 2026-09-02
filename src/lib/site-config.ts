@@ -18,7 +18,7 @@ export const siteConfig = {
   /** Checkout / Mercado Pago currency */
   currency: "EUR",
   deliveryMode: "in-person" as const,
-  location: "123 Wellness Ave, Studio 2",
+  location: "Χριστόφορου Γιατρού 60Α, Άγιος Ιωάννης Πιτσιλιάς, 4071 Λεμεσός",
   phone: "(555) 012-3456",
   email: "hello@meti-pilates.studio",
   hours: "Tue, Thu, Sat · see booking calendar",
@@ -33,7 +33,7 @@ export const siteConfig = {
       slug: "reformer",
       description: "Spring-loaded carriage work for strength, length, and control.",
       duration: "45 min",
-      priceFrom: 45,
+      priceFrom: 10,
       imageKey: "reformer" as const,
       featured: true,
     },

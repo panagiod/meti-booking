@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatDuration, type Service } from "@/lib/slots";
@@ -17,6 +18,18 @@ export function ServiceSelector({
   onSelect,
 }: ServiceSelectorProps) {
   const t = useTranslations();
+  const [paymentsEnabled, setPaymentsEnabled] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/studio")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data.paymentsEnabled === "boolean") {
+          setPaymentsEnabled(data.paymentsEnabled);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const translateServiceName = (name: string) =>
     t.booking.serviceNames[name] ?? name;
@@ -33,8 +46,9 @@ export function ServiceSelector({
       <div className="divide-y divide-[var(--studio-line)] border-y border-[var(--studio-line)]">
         {services.map((service) => {
           const isSelected = selectedService?.id === service.id;
-          const fee = Math.round(service.priceCents * 0.15);
-          const total = service.priceCents + fee;
+          const displayPriceCents = paymentsEnabled
+            ? service.priceCents + Math.round(service.priceCents * 0.15)
+            : service.priceCents;
 
           return (
             <button
@@ -55,7 +69,7 @@ export function ServiceSelector({
                     <Clock className="h-3.5 w-3.5" />
                     {formatDuration(service.durationMin)}
                   </span>
-                  <span>{formatCurrency(total)}</span>
+                  <span>{formatCurrency(displayPriceCents)}</span>
                 </p>
               </div>
               <span

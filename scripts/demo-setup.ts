@@ -189,7 +189,7 @@ async function main() {
             name: "Reformer Session",
             description: "Equipment-based full-body workout on the reformer.",
             durationMin: STUDIO_SESSION_DURATION_MIN,
-            priceCents: 4500,
+            priceCents: 1000,
             isActive: true,
             categoryId: category?.id,
           },

@@ -21,7 +21,7 @@ import { resolveBookingLeadHours } from "@/lib/booking-config";
 export const DEMO_STUDIO_ADVISOR_ID = "demo-studio-advisor";
 export const DEMO_REFORMER_SERVICE_ID = "demo-reformer-service";
 
-const DEMO_SERVICE_PRICE_CENTS = 4500;
+const DEMO_SERVICE_PRICE_CENTS = 1000;
 const DEMO_FEE_PERCENTAGE = 15;
 
 export function isDemoBookingMode(): boolean {
