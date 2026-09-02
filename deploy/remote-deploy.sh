@@ -50,31 +50,8 @@ if [[ ! -f /etc/cron.d/meti-booking ]]; then
   ./deploy/setup-cron.sh
 fi
 
-# Auto-seed empty database (first deploy only)
-DATA_DIR="${METI_DATA_DIR:-/var/lib/meti-booking}"
-DB_FILE="${DATABASE_URL#file:}"
-DB_FILE="${DB_FILE:-${DATA_DIR}/data.db}"
-if [[ -f "$DB_FILE" ]] && command -v sqlite3 >/dev/null 2>&1; then
-  USER_COUNT="$(sqlite3 "$DB_FILE" "SELECT COUNT(*) FROM users;" 2>/dev/null || echo 0)"
-  if [[ "${USER_COUNT}" == "0" ]]; then
-    echo "==> Empty database — seeding studio data..."
-    if ! grep -q '^DEMO_PASSWORD=' .env 2>/dev/null; then
-      DEMO_PW="$(openssl rand -base64 12)"
-      echo "DEMO_PASSWORD=${DEMO_PW}" >> .env
-      echo "Generated DEMO_PASSWORD saved to .env (for admin/instructor login)"
-    fi
-    if ! grep -q '^ALLOW_DEMO_SEED=1' .env 2>/dev/null; then
-      echo "ALLOW_DEMO_SEED=1" >> .env
-    fi
-    # shellcheck disable=SC1091
-    source .env
-    ./deploy/seed-lite.sh
-    sed -i 's/^ALLOW_DEMO_SEED=.*/ALLOW_DEMO_SEED=0/' .env
-  fi
-fi
-
-# Health checks (wait for app after systemd restart)
-echo "==> Health check (local)..."
+# Wait for app after deploy-lite restart
+echo "==> Waiting for app..."
 LOCAL_CODE="000"
 for i in $(seq 1 30); do
   LOCAL_CODE="$(curl -fsS -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ 2>/dev/null || echo 000)"
@@ -85,18 +62,22 @@ for i in $(seq 1 30); do
 done
 echo "  http://127.0.0.1:3000 → HTTP ${LOCAL_CODE}"
 
-if [[ "$LOCAL_CODE" =~ ^(200|307|308)$ ]] && [[ -n "${DOMAIN:-}" ]]; then
-  echo "==> Health check (public)..."
-  if ./deploy/smoke-test.sh "https://${DOMAIN}"; then
-    echo "Public smoke test passed."
-  else
-    echo "WARN: Public HTTPS check failed (often Cloudflare DNS/proxy). App is up locally."
-    echo "  Fix: Cloudflare → DNS → grey cloud on A record, or wait for DNS."
-  fi
-elif [[ ! "$LOCAL_CODE" =~ ^(200|307|308)$ ]]; then
+if [[ ! "$LOCAL_CODE" =~ ^(200|307|308)$ ]]; then
   echo "ERROR: App not responding on port 3000"
   journalctl -u meti-booking -n 30 --no-pager || true
   exit 1
+fi
+
+# Seed studio if /api/studio not ready (idempotent)
+./deploy/ensure-studio-seed.sh
+
+if [[ -n "${DOMAIN:-}" ]]; then
+  echo "==> Health check (public)..."
+  if ! ./deploy/smoke-test.sh "https://${DOMAIN}"; then
+    echo "ERROR: Public smoke test failed"
+    exit 1
+  fi
+  echo "Public smoke test passed."
 fi
 
 echo "Deploy finished: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
