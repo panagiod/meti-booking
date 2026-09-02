@@ -247,6 +247,7 @@ Copy `.env.demo.example` → `.env`. See `.env.example` for production.
 | `SELF_HOSTED` | VPS prod | Set `1` on Hetzner — local disk uploads instead of Blob |
 | `CRON_SECRET` | ✅ prod | Cron endpoints fail-closed without it |
 | `GOOGLE_CLIENT_ID/SECRET` | Optional | See `deploy/GOOGLE_OAUTH.md` |
+| `RESEND_API_KEY` / `EMAIL_FROM` | Optional | Booking emails — `deploy/RESEND.md` |
 | `APP_URL` | ⚠️ | MP webhooks |
 | `DEMO_PASSWORD` | prod seed | Required with `ALLOW_DEMO_SEED=1` |
 | `ALLOW_DEMO_SEED` | prod seed | Set to `1` to allow `demo:setup` in production |
@@ -258,6 +259,7 @@ Copy `.env.demo.example` → `.env`. See `.env.example` for production.
 |----------|-------|
 | **Hetzner VPS (recommended)** | [deploy/HETZNER.md](../deploy/HETZNER.md) · [docs/HOSTING.md](./HOSTING.md) |
 | Vercel Pro | [deploy/VERCEL.md](../deploy/VERCEL.md) |
+| Resend (email) | [deploy/RESEND.md](../deploy/RESEND.md) |
 | Cost comparison | [docs/CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md) |
 
 ---

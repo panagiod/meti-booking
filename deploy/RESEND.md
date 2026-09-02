@@ -38,26 +38,26 @@ No monthly fee on the free tier.
 
 ---
 
-## Step 2 — Verify your domain (`metipilates.com`)
+## Step 2 — Verify your domain (`meti-pilates.com`)
 
-To send **from** `@metipilates.com` (recommended), you must verify the domain.
+To send **from** `@meti-pilates.com` (recommended), you must verify the domain.
 
-1. **Domains → Add domain** → enter `metipilates.com`.
+1. **Domains → Add domain** → enter `meti-pilates.com`.
 2. Resend shows DNS records to add at your domain registrar (or Cloudflare):
    - **DKIM** — usually 3 `CNAME` records
    - **SPF** — `TXT` on the root or `send` subdomain (follow Resend’s exact values)
    - **Return-path** — optional `CNAME` (Resend may show this)
-3. Add the records where **metipilates.com** DNS is managed.
+3. Add the records where **meti-pilates.com** DNS is managed.
 4. In Resend, click **Verify**. Propagation can take a few minutes up to 48 hours.
 
-> **Without domain verification** you can only send from Resend’s test address (`onboarding@resend.dev`) and only **to the email you signed up with**. That is not enough for real clients — verify `metipilates.com` before launch.
+> **Without domain verification** you can only send from Resend’s test address (`onboarding@resend.dev`) and only **to the email you signed up with**. That is not enough for real clients — verify `meti-pilates.com` before launch.
 
 ### Using a subdomain (optional)
 
-Some studios use `mail.metipilates.com` or `bookings.metipilates.com` as the sending domain. Add that subdomain in Resend instead and set:
+Some studios use `mail.meti-pilates.com` or `bookings.meti-pilates.com` as the sending domain. Add that subdomain in Resend instead and set:
 
 ```bash
-EMAIL_FROM="MeTi Pilates <bookings@bookings.metipilates.com>"
+EMAIL_FROM="MeTi Pilates <bookings@bookings.meti-pilates.com>"
 ```
 
 ---
@@ -80,7 +80,7 @@ Add to your host (Vercel → Settings → Environment Variables, or `.env` on He
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
 
 # Must use an address on your verified domain
-EMAIL_FROM="MeTi Pilates <bookings@metipilates.com>"
+EMAIL_FROM="MeTi Pilates <bookings@meti-pilates.com>"
 
 # Who receives new-booking + reminder alerts (defaults to studio contact email)
 STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com
@@ -89,9 +89,9 @@ STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com
 Also ensure the public URL is set (used in email links):
 
 ```bash
-APP_URL=https://metipilates.com
-BETTER_AUTH_URL=https://metipilates.com
-NEXT_PUBLIC_BETTER_AUTH_URL=https://metipilates.com
+APP_URL=https://meti-pilates.com
+BETTER_AUTH_URL=https://meti-pilates.com
+NEXT_PUBLIC_BETTER_AUTH_URL=https://meti-pilates.com
 ```
 
 ### Hetzner VPS
@@ -110,7 +110,7 @@ Set variables for **Production** (and Preview if you want emails on preview depl
 
 ## Step 5 — Smoke test
 
-1. Open `https://metipilates.com/book` (or your live URL).
+1. Open `https://meti-pilates.com/book` (or your live URL).
 2. Book a session as a **guest** with an email you can check.
 3. Complete checkout (booking-only flow — no payment).
 4. Check:
@@ -131,7 +131,7 @@ Reminders are sent by cron for appointments ~24h ahead. On VPS, cron is installe
 Manual test (replace values):
 
 ```bash
-curl -X POST "https://metipilates.com/api/cron/reminders" \
+curl -X POST "https://meti-pilates.com/api/cron/reminders" \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
@@ -142,10 +142,10 @@ curl -X POST "https://metipilates.com/api/cron/reminders" \
 | Problem | Fix |
 |---------|-----|
 | No emails at all | `RESEND_API_KEY` missing or app not redeployed |
-| “Domain not verified” in Resend logs | Finish DNS verification for `metipilates.com` |
+| “Domain not verified” in Resend logs | Finish DNS verification for `meti-pilates.com` |
 | Client gets mail, studio does not | Check `STUDIO_NOTIFICATION_EMAIL` and Hotmail spam |
 | Emails go to spam | Complete DKIM + SPF; use a proper `From` name; avoid all-caps subjects |
-| Links in email point to wrong host | Set `APP_URL=https://metipilates.com` and redeploy |
+| Links in email point to wrong host | Set `APP_URL=https://meti-pilates.com` and redeploy |
 | Reminders never send | Cron not configured; `CRON_SECRET` wrong; appointment not within 24h window |
 
 ---

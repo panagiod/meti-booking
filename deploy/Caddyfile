@@ -1,4 +1,4 @@
-# Production Caddy config — DOMAIN is injected by docker-compose (e.g. metipilates.com)
+# Production Caddy config — DOMAIN is injected by docker-compose (e.g. meti-pilates.com)
 {$DOMAIN} {
 	encode gzip
 	reverse_proxy app:3000

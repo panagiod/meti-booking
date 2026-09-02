@@ -90,7 +90,7 @@ Quick env vars:
 
 ```bash
 RESEND_API_KEY=re_...
-EMAIL_FROM="MeTi Pilates <bookings@metipilates.com>"
+EMAIL_FROM="MeTi Pilates <bookings@meti-pilates.com>"
 STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com
 ```
 
