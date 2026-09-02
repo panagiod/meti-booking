@@ -82,6 +82,17 @@ git pull
 ./deploy/deploy-lite.sh
 ```
 
+## Booking emails (Resend)
+
+Bookings work without email. To send **client confirmations** and **studio alerts** to `tyrri_meropi@hotmail.com`:
+
+1. Verify `meti-pilates.com` in [Resend](https://resend.com/domains) (DNS records)
+2. Create an API key (`re_…`)
+3. Add to server `.env`: `RESEND_API_KEY`, `EMAIL_FROM`, `STUDIO_NOTIFICATION_EMAIL`
+4. Restart: `sudo systemctl restart meti-booking`
+
+Full walkthrough: **[RESEND.md](./RESEND.md)**
+
 ## Troubleshooting
 
 | Issue | Fix |
@@ -90,5 +101,6 @@ git pull
 | `better-sqlite3` compile error | `apt install build-essential` (install-lite.sh does this) |
 | HTTPS fails | DNS → server IP; ports 80/443 open; `systemctl status caddy` |
 | Auth errors | `BETTER_AUTH_URL` must match `https://yourdomain.com` |
+| No booking emails | [RESEND.md](./RESEND.md) — API key + domain verify + `systemctl restart meti-booking` |
 
 Docker + Postgres path still available: set `DEPLOY_MODE=docker` and use `./deploy/deploy.sh` — see [HETZNER.md](./HETZNER.md).
