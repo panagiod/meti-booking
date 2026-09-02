@@ -14,13 +14,13 @@ export function Hero() {
     <section className="border-b border-[var(--studio-line)]">
       <div className="studio-container">
         <div className="grid items-center gap-0 lg:grid-cols-2 lg:min-h-[calc(100vh-4.25rem)]">
-          <div className="relative order-1 aspect-[4/3] w-full overflow-hidden sm:aspect-[16/10] lg:order-2 lg:aspect-auto lg:min-h-full">
+          <div className="relative order-1 aspect-[3/2] w-full overflow-hidden sm:aspect-[16/10] lg:order-2 lg:aspect-auto lg:min-h-full">
             <Image
               src={studio.images.hero}
               alt={t.hero.imageAlt}
               fill
               priority
-              className="object-cover object-[center_25%]"
+              className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 50vw"
             />
           </div>
