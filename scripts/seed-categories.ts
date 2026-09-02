@@ -77,40 +77,34 @@ const categories = [
 ];
 
 async function seedCategories() {
-  // Use direct SQL connection
-  const { Pool } = require("pg");
-  
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
+  const { prisma } = await import("../src/lib/prisma");
 
-  try {
-    console.log("🌱 Seeding categories...\n");
+  console.log("🌱 Seeding categories...\n");
 
-    for (const category of categories) {
-      // Check if exists
-      const existing = await pool.query(
-        "SELECT id FROM categories WHERE slug = $1",
-        [category.slug]
-      );
-
-      if (existing.rows.length === 0) {
-        await pool.query(
-          "INSERT INTO categories (id, name, slug, description, icon, color, \"isActive\", \"createdAt\", \"updatedAt\") VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, true, NOW(), NOW())",
-          [category.name, category.slug, category.description, category.icon, category.color]
-        );
-        console.log(`✅ Created: ${category.name}`);
-      } else {
-        console.log(`⏭️  Already exists: ${category.name}`);
-      }
+  for (const category of categories) {
+    const existing = await prisma.category.findUnique({ where: { slug: category.slug } });
+    if (!existing) {
+      await prisma.category.create({
+        data: {
+          name: category.name,
+          slug: category.slug,
+          description: category.description,
+          icon: category.icon,
+          color: category.color,
+          isActive: true,
+        },
+      });
+      console.log(`✅ Created: ${category.name}`);
+    } else {
+      console.log(`⏭️  Already exists: ${category.name}`);
     }
-
-    console.log("\n✅ Categories seeded successfully");
-  } catch (error) {
-    console.error("❌ Error:", error);
-  } finally {
-    await pool.end();
   }
+
+  await prisma.$disconnect();
+  console.log("\n✅ Categories seeded successfully");
 }
 
-seedCategories();
+seedCategories().catch((error) => {
+  console.error("❌ Error:", error);
+  process.exit(1);
+});

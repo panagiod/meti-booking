@@ -9,6 +9,7 @@ import {
   STUDIO_SESSION_DURATION_MIN,
 } from "../src/lib/studio-schedule";
 import { DEFAULT_BOOKING_LEAD_HOURS } from "../src/lib/booking-config";
+import { applyDatabaseSchema } from "./prisma-apply-schema";
 
 config({ path: resolve(__dirname, "../.env") });
 
@@ -67,18 +68,14 @@ async function main() {
     console.log("[demo-setup] --reset-content: will reset website CMS to defaults.");
   }
 
-  console.log("[demo-setup] Applying database migrations...");
-  execSync("pnpm exec prisma migrate deploy", { stdio: "inherit" });
+  console.log("[demo-setup] Applying database schema...");
+  applyDatabaseSchema();
 
   console.log("[demo-setup] Seeding categories...");
   execSync("tsx scripts/seed-categories.ts", { stdio: "inherit" });
 
-  const { PrismaPg } = await import("@prisma/adapter-pg");
-  const { PrismaClient } = await import("../src/generated/prisma/client");
+  const { prisma } = await import("../src/lib/prisma");
   const { auth } = await import("../src/lib/auth");
-
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-  const prisma = new PrismaClient({ adapter });
 
   const headers = new Headers({
     host: new URL(process.env.BETTER_AUTH_URL || "http://localhost:3000").host,
