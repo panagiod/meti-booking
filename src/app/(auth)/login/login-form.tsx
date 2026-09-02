@@ -102,17 +102,17 @@ export function LoginForm({ googleOAuthEnabled }: LoginFormProps) {
               required
               className="w-full h-11 px-3 border border-[var(--border)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)]"
             />
-            <PasswordInput
-              placeholder={t.auth.password}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="h-11"
-            />
-            <div className="text-right">
+            <div className="space-y-2">
+              <PasswordInput
+                placeholder={t.auth.password}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="h-11"
+              />
               <Link
                 href="/forgot-password"
-                className="text-sm font-medium text-[var(--primary)] hover:underline"
+                className="inline-block text-sm font-medium text-[var(--primary)] underline underline-offset-2 hover:opacity-80"
               >
                 {t.auth.forgotPassword}
               </Link>
@@ -123,8 +123,18 @@ export function LoginForm({ googleOAuthEnabled }: LoginFormProps) {
           </form>
 
           {error && (
-            <div className="p-3 rounded-lg bg-[var(--error-light)] text-[var(--error)] text-sm text-center">
-              {error}
+            <div className="space-y-3">
+              <div className="p-3 rounded-lg bg-[var(--error-light)] text-[var(--error)] text-sm text-center">
+                {error}
+              </div>
+              <p className="text-center text-sm text-[var(--text-muted)]">
+                <Link
+                  href="/forgot-password"
+                  className="font-medium text-[var(--primary)] underline underline-offset-2 hover:opacity-80"
+                >
+                  {t.auth.forgotPassword}
+                </Link>
+              </p>
             </div>
           )}
 

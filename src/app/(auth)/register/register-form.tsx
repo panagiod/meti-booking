@@ -189,6 +189,14 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
               {t.auth.signIn}
             </Link>
           </p>
+          <p className="text-center text-sm text-[var(--text-muted)]">
+            <Link
+              href="/forgot-password"
+              className="font-medium text-[var(--primary)] underline underline-offset-2 hover:opacity-80"
+            >
+              {t.auth.forgotPassword}
+            </Link>
+          </p>
         </CardContent>
       </Card>
 
