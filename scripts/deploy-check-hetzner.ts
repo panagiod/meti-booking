@@ -48,7 +48,7 @@ function urlOk(name: string): boolean {
 }
 
 const checks: Check[] = [
-  { name: "DOMAIN", required: true, ok: has("DOMAIN"), hint: "metipilates.gr (no https://)" },
+  { name: "DOMAIN", required: true, ok: has("DOMAIN"), hint: "metipilates.com (no https://)" },
   {
     name: "POSTGRES_PASSWORD",
     required: true,

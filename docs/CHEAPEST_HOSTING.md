@@ -61,7 +61,7 @@ If MeTi Pilates is a **real business** (advertising classes, taking bookings, ev
 | **Hetzner VPS + Docker** (see `deploy/`) | ~$5–7 | Cheapest long-term, more DIY |
 | **Vercel Hobby + Neon free** | $0 | Testing / portfolio only — **not** real business |
 
-Add **~$3–10/year** for a custom domain (strongly recommended — e.g. `metipilates.gr` instead of `*.vercel.app`).
+Add **~$3–10/year** for a custom domain (strongly recommended — e.g. `metipilates.com` instead of `*.vercel.app`).
 
 ### 3. Infrastructure limits (free vs paid)
 

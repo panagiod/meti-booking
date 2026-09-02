@@ -4,7 +4,7 @@
 export const siteConfig = {
   name: "Meropi Tirri",
   /** Public production URL (override with NEXT_PUBLIC_SITE_URL / APP_URL). */
-  siteUrl: "https://metipilates.gr",
+  siteUrl: "https://metipilates.com",
   tagline: "Clinical Pilates & Reformer studio",
   description:
     "Physiotherapy-based reformer pilates in small groups — personalized care, safe movement, and lasting results.",

@@ -90,7 +90,7 @@ Meti differentiates itself through:
 ## Brand Commitments
 
 - **Name:** Meti (inspired by the Greek goddess Metis, goddess of wisdom and prudence)
-- **Domain:** metipilates.gr
+- **Domain:** metipilates.com
 - **Visual tone:** Energetic / Bold (vibrant orange + dark blue)
 - **Voice:** Professional but approachable, direct, trustworthy
 
@@ -104,7 +104,7 @@ Test accounts for QA and automation (TestSprite). All use the same password.
 | **Advisor** | amayadiazedwarorlando@gmail.com | Control2486 |
 | **Client** | edwarorlandoamayadiaztest@gmail.com | Control2486 |
 
-- **Main URL:** https://metipilates.gr
+- **Main URL:** https://metipilates.com
 - **Test advisor data:** 2 active services (Strategic consulting $100,000 / Financial planning $80,000), schedule Mon–Fri 09:00–17:00 (lunch 12:00–13:00), verified profile
 - **Note:** the advisor does not yet have Mercado Pago credentials connected; checkout will show "Payment unavailable" until configured
 

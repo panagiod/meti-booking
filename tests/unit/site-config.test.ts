@@ -7,7 +7,7 @@ describe("getSiteUrl", () => {
   });
 
   it("defaults to the production studio domain", () => {
-    expect(getSiteUrl()).toBe("https://metipilates.gr");
+    expect(getSiteUrl()).toBe("https://metipilates.com");
   });
 
   it("uses NEXT_PUBLIC_SITE_URL when set", () => {

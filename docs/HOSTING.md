@@ -31,7 +31,7 @@ How to put the booking site online. **For a real studio, use Hetzner VPS** (~€
 ### What you get
 
 - ✅ Commercial booking site (legal for a business)
-- ✅ Custom domain + HTTPS (`https://metipilates.gr`)
+- ✅ Custom domain + HTTPS (`https://metipilates.com`)
 - ✅ Guest checkout + email/password login
 - ✅ Admin calendar + website CMS
 - ✅ Image uploads on server disk (no Vercel Blob)
@@ -88,7 +88,7 @@ Copy **`deploy/env.production.example`** → **`.env`** in the project root.
 
 | Variable | Required | Notes |
 |----------|----------|-------|
-| `DOMAIN` | ✅ | e.g. `metipilates.gr` — used by Caddy for HTTPS |
+| `DOMAIN` | ✅ | e.g. `metipilates.com` — used by Caddy for HTTPS |
 | `POSTGRES_PASSWORD` | ✅ | Strong password for local Postgres |
 | `DATABASE_URL` | ✅ | Auto-set in Docker; match password in compose |
 | `BETTER_AUTH_SECRET` | ✅ | `openssl rand -base64 32` |

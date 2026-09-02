@@ -102,7 +102,7 @@ Point your domain to the server IP.
    - IPv4: your Hetzner IP
    - Proxy: **DNS only** (grey cloud) until HTTPS works, then orange cloud is OK
 
-**Example:** `metipilates.gr` → `95.xxx.xxx.xxx`
+**Example:** `metipilates.com` → `95.xxx.xxx.xxx`
 
 Wait 5–30 minutes for DNS to propagate.
 
@@ -175,13 +175,13 @@ nano .env
 **Fill in these values:**
 
 ```bash
-DOMAIN=metipilates.gr                    # your real domain
+DOMAIN=metipilates.com                    # your real domain
 POSTGRES_PASSWORD=<strong-random-password>
 
 BETTER_AUTH_SECRET=<openssl rand -base64 32>
-BETTER_AUTH_URL=https://metipilates.gr
-NEXT_PUBLIC_BETTER_AUTH_URL=https://metipilates.gr
-APP_URL=https://metipilates.gr
+BETTER_AUTH_URL=https://metipilates.com
+NEXT_PUBLIC_BETTER_AUTH_URL=https://metipilates.com
+APP_URL=https://metipilates.com
 
 STUDIO_TIMEZONE=Europe/Athens
 CRON_SECRET=<openssl rand -hex 24>
@@ -193,7 +193,7 @@ SELF_HOSTED=1                            # enables local image uploads
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 RESEND_API_KEY=...
-EMAIL_FROM=MeTi Pilates <bookings@metipilates.gr>
+EMAIL_FROM=MeTi Pilates <bookings@metipilates.com>
 ```
 
 Update `DATABASE_URL` password to match `POSTGRES_PASSWORD`.
@@ -281,7 +281,7 @@ Backups saved to `deploy/backups/` (last 14 kept).
 Automated:
 
 ```bash
-./deploy/smoke-test.sh https://metipilates.gr
+./deploy/smoke-test.sh https://metipilates.com
 ```
 
 Manual:
@@ -302,17 +302,17 @@ Same as Vercel — see [GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md).
 
 Add to Google Console:
 
-- **Origin:** `https://metipilates.gr`
-- **Redirect:** `https://metipilates.gr/api/auth/callback/google`
+- **Origin:** `https://metipilates.com`
+- **Redirect:** `https://metipilates.com/api/auth/callback/google`
 
 ---
 
 ## Mercado Pago (real payments)
 
-1. Set `APP_URL=https://metipilates.gr` and `ENCRYPTION_KEY` in `.env`.
+1. Set `APP_URL=https://metipilates.com` and `ENCRYPTION_KEY` in `.env`.
 2. Instructor logs in → **Advisor → Mercado Pago** → connect account.
 3. Configure webhook in MP dashboard:
-   `https://metipilates.gr/api/webhooks/mercadopago`
+   `https://metipilates.com/api/webhooks/mercadopago`
 
 ---
 
