@@ -1,7 +1,9 @@
 #!/usr/bin/env tsx
 /**
- * Cancel leftover automated test bookings so public slots stay free.
- * Used after production smoke tests / deploys.
+ * Cancel leftover bookings so public slots stay free.
+ *
+ * FREE_ALL_UPCOMING_SLOTS=1  — cancel every upcoming held slot (admin "Free all")
+ * default                     — cancel automated test emails only
  */
 import { config } from "dotenv";
 import { resolve } from "path";
@@ -11,6 +13,7 @@ config({ path: resolve(__dirname, "../.env") });
 
 async function main() {
   const { prisma } = await import("../src/lib/prisma");
+  const freeAll = process.env.FREE_ALL_UPCOMING_SLOTS === "1";
 
   const holding = await prisma.appointment.findMany({
     where: {
@@ -20,26 +23,29 @@ async function main() {
     include: { client: { select: { email: true } } },
   });
 
-  const testBookings = holding.filter((apt: (typeof holding)[number]) =>
-    isAutomatedTestEmail(apt.client.email)
-  );
-  if (testBookings.length === 0) {
-    console.log("No leftover test bookings holding slots.");
+  const targets = freeAll
+    ? holding
+    : holding.filter((apt: (typeof holding)[number]) => isAutomatedTestEmail(apt.client.email));
+
+  if (targets.length === 0) {
+    console.log(freeAll ? "No upcoming bookings holding slots." : "No leftover test bookings holding slots.");
     await prisma.$disconnect();
     return;
   }
 
-  const ids = testBookings.map((apt: (typeof testBookings)[number]) => apt.id);
+  const ids = targets.map((apt: (typeof targets)[number]) => apt.id);
   await prisma.appointment.updateMany({
     where: { id: { in: ids } },
     data: {
       status: "CANCELLED",
-      cancelReason: "Cancelled leftover automated test bookings",
+      cancelReason: freeAll
+        ? "Cancelled by admin — slots freed after tests"
+        : "Cancelled leftover automated test bookings",
       cancelledAt: new Date(),
     },
   });
 
-  console.log(`Freed ${ids.length} test booking slot(s).`);
+  console.log(`Freed ${ids.length} slot(s).`);
   await prisma.$disconnect();
 }
 
