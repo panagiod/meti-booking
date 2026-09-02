@@ -20,7 +20,28 @@ jobs:
     timeout-minutes: 45
     environment: production
     steps:
-      - name: Trigger production deploy
+      - name: Verify GitHub secrets
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+        run: |
+          missing=0
+          if [ -z "$PRODUCTION_HOST" ]; then echo "::error::Missing secret PRODUCTION_HOST"; missing=1; fi
+          if [ -z "$PRODUCTION_USER" ]; then echo "::error::Missing secret PRODUCTION_USER"; missing=1; fi
+          if [ -z "$PRODUCTION_SSH_KEY" ]; then echo "::error::Missing secret PRODUCTION_SSH_KEY"; missing=1; fi
+          if [ "$missing" -eq 1 ]; then
+            echo ""
+            echo "One-time setup on the server:"
+            echo "  ssh root@YOUR_SERVER_IP"
+            echo "  cd ~/meti-booking && ./deploy/setup-cicd.sh"
+            echo ""
+            echo "Then add the 3 printed values here:"
+            echo "  https://github.com/panagiod/meti-booking/settings/secrets/actions"
+            exit 1
+          fi
+
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.PRODUCTION_HOST }}
@@ -29,8 +50,7 @@ jobs:
           port: 22
           command_timeout: 40m
           script: |
-            echo "CI deploy triggered for commit ${{ github.sha }}"
-            # With restricted deploy key, ci-deploy-wrapper.sh runs automatically.
+            echo "CI deploy commit ${{ github.sha }}"
 
       - name: Deployment summary
         if: success()

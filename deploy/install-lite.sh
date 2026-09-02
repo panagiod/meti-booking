@@ -9,7 +9,7 @@ fi
 
 echo "==> System packages..."
 apt-get update && apt-get upgrade -y
-apt-get install -y curl git build-essential ufw ca-certificates gnupg
+apt-get install -y curl git build-essential ufw ca-certificates gnupg sqlite3
 
 echo "==> Node.js 22..."
 if ! command -v node >/dev/null 2>&1 || [[ "$(node -p "process.versions.node.split('.')[0]")" -lt 22 ]]; then
