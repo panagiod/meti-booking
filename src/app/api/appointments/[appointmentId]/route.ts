@@ -102,12 +102,13 @@ export async function PATCH(
     const userId = session.user.id;
     const isAdvisor = appointment.advisor.userId === userId;
     const isClient = appointment.clientId === userId;
+    const isAdmin = (session.user as { role?: string }).role === "ADMIN";
 
-    if (!isAdvisor && !isClient) {
+    if (!isAdvisor && !isClient && !isAdmin) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const cancelCheck = isClient
+    const cancelCheck = isClient && !isAdmin
       ? canClientCancelAppointment({
           status: appointment.status,
           scheduledAt: appointment.scheduledAt,
@@ -126,7 +127,7 @@ export async function PATCH(
       where: { id: appointment.id },
       data: {
         status: "CANCELLED",
-        cancelReason: reason || (isClient ? "Cancelled by client" : "Cancelled by advisor"),
+        cancelReason: reason || (isAdmin ? "Cancelled by admin" : isClient ? "Cancelled by client" : "Cancelled by advisor"),
         cancelledAt: new Date(),
       },
     });

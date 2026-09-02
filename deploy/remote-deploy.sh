@@ -86,4 +86,7 @@ if [[ -n "${DOMAIN:-}" ]]; then
   echo "Public smoke test passed."
 fi
 
+echo "==> Free leftover automated test bookings..."
+pnpm exec tsx scripts/cancel-test-bookings.ts || true
+
 echo "Deploy finished: $(date -u +%Y-%m-%dT%H:%M:%SZ)"

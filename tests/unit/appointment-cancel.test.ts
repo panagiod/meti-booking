@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canClientCancelAppointment } from "@/lib/appointment-cancel";
+import { canClientCancelAppointment, isAutomatedTestEmail } from "@/lib/appointment-cancel";
 
 describe("canClientCancelAppointment", () => {
   const scheduledAt = new Date("2026-09-10T14:00:00Z");
@@ -45,5 +45,13 @@ describe("canClientCancelAppointment", () => {
         rescheduleHoursMin: 24,
       }).allowed
     ).toBe(false);
+  });
+});
+
+describe("isAutomatedTestEmail", () => {
+  it("matches leftover production smoke emails", () => {
+    expect(isAutomatedTestEmail("prod-e2e-1@example.com")).toBe(true);
+    expect(isAutomatedTestEmail("cookie-check-1@example.com")).toBe(true);
+    expect(isAutomatedTestEmail("client@studio.com")).toBe(false);
   });
 });

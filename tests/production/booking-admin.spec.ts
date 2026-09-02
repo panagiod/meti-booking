@@ -106,6 +106,14 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
     expect((await request.get(`${BASE_URL}/api/admin/studio/schedule`)).status()).toBe(401);
     expect((await request.get(`${BASE_URL}/api/admin/users`)).status()).toBe(401);
     expect((await request.get(`${BASE_URL}/api/admin/advisors`)).status()).toBe(401);
+    expect((await request.get(`${BASE_URL}/api/admin/studio/appointments`)).status()).toBe(401);
+    expect(
+      (
+        await request.post(`${BASE_URL}/api/admin/studio/appointments`, {
+          data: { scope: "upcoming" },
+        })
+      ).status()
+    ).toBe(401);
   });
   test("client can book, slot is taken, cancel frees the slot, admin APIs stay protected", async ({
     request,

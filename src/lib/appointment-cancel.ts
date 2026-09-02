@@ -36,3 +36,15 @@ export function canClientCancelAppointment(input: {
 export function canAdvisorCancelAppointment(status: AppointmentStatus): boolean {
   return status === "PENDING" || status === "CONFIRMED" || status === "IN_PROGRESS";
 }
+
+export function isAutomatedTestEmail(email: string): boolean {
+  const value = email.trim().toLowerCase();
+  return (
+    value.endsWith("@example.com") ||
+    value.endsWith("@meti.test") ||
+    value.includes("prod-e2e-") ||
+    value.includes("prod-smoke-") ||
+    value.includes("cookie-check-") ||
+    value.includes("cookie-book-")
+  );
+}
