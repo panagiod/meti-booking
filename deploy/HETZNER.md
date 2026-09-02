@@ -430,6 +430,30 @@ Manual:
 
 ---
 
+## Step 9 — Auto-deploy (CI/CD)
+
+After the site works manually, enable **automatic deploys** so you never run `git pull` / `./deploy/deploy.sh` again.
+
+**On the server (once):**
+
+```bash
+cd ~/meti-booking
+git pull
+./deploy/setup-cicd.sh
+```
+
+Copy the three values into GitHub → **Settings → Secrets and variables → Actions**:
+
+- `PRODUCTION_HOST`
+- `PRODUCTION_USER`
+- `PRODUCTION_SSH_KEY`
+
+Full guide: **[CICD.md](./CICD.md)**
+
+Every push to `main` will rebuild and restart the site (~10–15 min). Deploy logs: `/var/log/meti-booking/deploy.log`.
+
+---
+
 ## Google OAuth
 
 Same as Vercel — see [GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md).

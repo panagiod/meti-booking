@@ -7,6 +7,7 @@
 | Doc | Contents |
 |-----|----------|
 | **[HETZNER.md](./HETZNER.md)** | Full step-by-step (server, DNS, Docker, HTTPS, cron) |
+| **[CICD.md](./CICD.md)** | **Auto-deploy** — GitHub Actions → VPS (no manual `git pull`) |
 | **[RESEND.md](./RESEND.md)** | Booking emails (Resend) |
 | **[GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md)** | Google sign-in |
 | **[../docs/HOSTING.md](../docs/HOSTING.md)** | Hosting overview, env vars, scripts, checklist |
@@ -22,6 +23,14 @@ chmod +x deploy/*.sh
 ./deploy/seed.sh                        # first time only (ALLOW_DEMO_SEED=1)
 ./deploy/setup-cron.sh
 ```
+
+## Auto-deploy (after first deploy works)
+
+```bash
+./deploy/setup-cicd.sh   # once — prints GitHub secrets to add
+```
+
+Then every push to `main` deploys automatically. See **[CICD.md](./CICD.md)**.
 
 ## Stack
 
