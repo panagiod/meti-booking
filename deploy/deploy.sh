@@ -12,6 +12,8 @@ if [[ ! -f .env ]]; then
 fi
 
 # shellcheck disable=SC1091
+./deploy/fix-env-syntax.sh .env
+./deploy/validate-env.sh .env
 if grep -qE '^EMAIL_FROM=[^"'\''].*<' .env 2>/dev/null; then
   echo "ERROR: .env line EMAIL_FROM must be in double quotes (the < > breaks bash)."
   echo '  EMAIL_FROM="MeTi Pilates <bookings@meti-pilates.com>"'

@@ -12,6 +12,8 @@ if [[ ! -f .env ]]; then
 fi
 
 # shellcheck disable=SC1091
+./deploy/fix-env-syntax.sh .env
+./deploy/validate-env.sh .env
 set -a
 source .env
 set +a

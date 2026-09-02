@@ -40,10 +40,14 @@ Turn on **booking confirmation emails** for clients and **new-booking alerts** f
 Override with `STUDIO_NOTIFICATION_EMAIL` in `.env`. **Multiple inboxes:** separate with commas:
 
 ```bash
-STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com, second@example.com, second@example.com
+STUDIO_NOTIFICATION_EMAIL="tyrri_meropi@hotmail.com, second@example.com"
+```
 ```
 
 Both addresses receive new-booking alerts and reminder emails.
+
+> **Important:** If you use multiple emails, wrap the value in **double quotes** or deploy will fail:
+> `STUDIO_NOTIFICATION_EMAIL="email1@example.com, email2@example.com"`
 
 **Password reset** also uses Resend (`/forgot-password` on the site). Without `RESEND_API_KEY`, users cannot self-reset — use the server script below.
 
@@ -156,7 +160,7 @@ Find the **Email (Resend)** section and set:
 # --- Email (Resend) ---
 RESEND_API_KEY=re_paste_your_key_here
 EMAIL_FROM="MeTi Pilates <bookings@meti-pilates.com>"
-STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com, second@example.com
+STUDIO_NOTIFICATION_EMAIL="tyrri_meropi@hotmail.com, second@example.com"
 ```
 
 **Rules:**
