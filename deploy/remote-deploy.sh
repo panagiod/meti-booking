@@ -73,9 +73,16 @@ if [[ -f "$DB_FILE" ]] && command -v sqlite3 >/dev/null 2>&1; then
   fi
 fi
 
-# Health checks
+# Health checks (wait for app after systemd restart)
 echo "==> Health check (local)..."
-LOCAL_CODE="$(curl -fsS -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ 2>/dev/null || echo 000)"
+LOCAL_CODE="000"
+for i in $(seq 1 30); do
+  LOCAL_CODE="$(curl -fsS -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ 2>/dev/null || echo 000)"
+  if [[ "$LOCAL_CODE" =~ ^(200|307|308)$ ]]; then
+    break
+  fi
+  sleep 2
+done
 echo "  http://127.0.0.1:3000 → HTTP ${LOCAL_CODE}"
 
 if [[ "$LOCAL_CODE" =~ ^(200|307|308)$ ]] && [[ -n "${DOMAIN:-}" ]]; then
