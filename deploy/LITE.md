@@ -93,6 +93,16 @@ Bookings work without email. To send **client confirmations** and **studio alert
 
 Full walkthrough: **[RESEND.md](./RESEND.md)**
 
+## Google sign-in (optional)
+
+Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to `.env`, then restart:
+
+```bash
+sudo systemctl restart meti-booking
+```
+
+Full walkthrough: **[GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md)**
+
 ## Troubleshooting
 
 | Issue | Fix |
