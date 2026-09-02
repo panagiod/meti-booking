@@ -19,7 +19,7 @@ const en: Messages = {
       "Physiotherapy-based reformer pilates in small groups — personalized care, safe movement, and lasting results.",
     bookSession: "Book reformer",
     viewSessions: "View details",
-    imageAlt: "Woman on a reformer pilates machine in a bright studio",
+    imageAlt: "Pilates reformer session in a bright minimalist studio",
   },
   about: {
     title: "About us | Meropi Tirri",

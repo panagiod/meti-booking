@@ -71,6 +71,9 @@ fi
 # Seed studio if /api/studio not ready (idempotent)
 ./deploy/ensure-studio-seed.sh
 
+# Sync CMS to bundled hero/reformer files (picks up image updates from git)
+pnpm exec tsx scripts/sync-bundled-images.ts || true
+
 if [[ -n "${DOMAIN:-}" ]]; then
   echo "==> Health check (public)..."
   if ! ./deploy/smoke-test.sh "https://${DOMAIN}"; then
