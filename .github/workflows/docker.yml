@@ -1,0 +1,32 @@
+name: Docker
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "deploy/**"
+      - "Dockerfile"
+      - ".dockerignore"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "src/**"
+      - "prisma/**"
+      - "next.config.ts"
+  workflow_dispatch:
+
+jobs:
+  build-production-image:
+    name: Build production Docker image
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build app image
+        run: docker build -f deploy/Dockerfile -t meti-booking:ci .
+
+      - name: Build migrate image
+        run: docker build -f deploy/Dockerfile.migrate -t meti-booking-migrate:ci .
+
+      - name: Build seed image
+        run: docker build -f deploy/Dockerfile.seed -t meti-booking-seed:ci .

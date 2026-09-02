@@ -112,6 +112,9 @@ Copy **`deploy/env.production.example`** → **`.env`** in the project root.
 | [`deploy/seed.sh`](../deploy/seed.sh) | Seed studio data (`ALLOW_DEMO_SEED=1`) |
 | [`deploy/setup-cron.sh`](../deploy/setup-cron.sh) | Install daily cron jobs on the server |
 | [`deploy/backup-db.sh`](../deploy/backup-db.sh) | Backup Postgres to `deploy/backups/` |
+| [`deploy/smoke-test.sh`](../deploy/smoke-test.sh) | Post-deploy HTTP checks |
+| [`deploy/install-server.sh`](../deploy/install-server.sh) | First-time Ubuntu Docker + UFW setup |
+| `pnpm deploy:check:hetzner` | Validate `.env` before VPS deploy |
 
 ### Updating the live site
 

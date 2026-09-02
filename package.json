@@ -18,6 +18,7 @@
     "demo:start": "docker compose up -d && pnpm demo:setup && pnpm dev",
     "issues:close": "bash scripts/close-resolved-issues.sh",
     "deploy:check": "tsx scripts/deploy-check.ts",
+    "deploy:check:hetzner": "tsx scripts/deploy-check-hetzner.ts",
     "test": "pnpm test:unit && pnpm test:e2e",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",

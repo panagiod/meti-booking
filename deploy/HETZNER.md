@@ -128,7 +128,17 @@ Log in as deploy:
 ssh deploy@YOUR_SERVER_IP
 ```
 
-### Install Docker
+### Install Docker + firewall
+
+**Option A — automated** (Ubuntu 24.04, as root):
+
+```bash
+sudo ./deploy/install-server.sh
+```
+
+Or download from GitHub after cloning.
+
+**Option B — manual:**
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -136,9 +146,7 @@ curl -fsSL https://get.docker.com | sudo sh
 sudo usermod -aG docker $USER
 ```
 
-Log out and back in so Docker group applies.
-
-### Optional: UFW firewall
+Log out and back in so the Docker group applies.
 
 ```bash
 sudo ufw allow OpenSSH
@@ -195,6 +203,12 @@ Generate secrets on your laptop or the server:
 ```bash
 openssl rand -base64 32
 openssl rand -hex 24
+```
+
+Validate before deploy (requires Node/pnpm on server, or run locally with the same `.env`):
+
+```bash
+pnpm deploy:check:hetzner
 ```
 
 ---
@@ -263,6 +277,14 @@ Backups saved to `deploy/backups/` (last 14 kept).
 ---
 
 ## Step 8 — Smoke test
+
+Automated:
+
+```bash
+./deploy/smoke-test.sh https://metipilates.gr
+```
+
+Manual:
 
 | URL | Check |
 |-----|-------|

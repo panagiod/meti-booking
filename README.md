@@ -65,7 +65,8 @@ See [docs/ADMIN.md](docs/ADMIN.md) for details.
 | `pnpm test:e2e` | Playwright |
 | `pnpm exec tsx scripts/generate-brand-assets.ts` | Regenerate favicons + OG image |
 | `pnpm exec tsx scripts/reset-studio-schedule.ts` | Reset schedule to Mon/Wed/Sat 14:00–17:00 |
-| `pnpm deploy:check` | Validate production env vars before deploy |
+| `pnpm deploy:check` | Validate production env vars (Vercel) |
+| `pnpm deploy:check:hetzner` | Validate `.env` for Hetzner VPS |
 | `./scripts/close-resolved-issues.sh` | Close fixed GitHub issues (#1, #8, #9, #11–#31) |
 
 ---
