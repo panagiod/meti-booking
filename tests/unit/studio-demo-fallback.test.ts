@@ -13,8 +13,8 @@ describe("studio-demo-fallback", () => {
     vi.unstubAllEnvs();
   });
 
-  it("enables demo mode without DATABASE_URL", () => {
-    vi.stubEnv("DATABASE_URL", "");
+  it("enables demo mode for localhost DATABASE_URL", () => {
+    vi.stubEnv("DATABASE_URL", "postgresql://meti:meti@localhost:5432/meti_booking");
     expect(isDemoBookingMode()).toBe(true);
   });
 

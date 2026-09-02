@@ -28,7 +28,11 @@ export function isDemoBookingMode(): boolean {
   if (process.env.BOOKING_DEMO_FALLBACK === "1" || process.env.BOOKING_DEMO_FALLBACK === "true") {
     return true;
   }
-  return !process.env.DATABASE_URL?.trim();
+  const dbUrl = process.env.DATABASE_URL?.trim();
+  if (!dbUrl) return true;
+  // Local/dev URLs are never reachable on Vercel or other hosted previews.
+  if (/localhost|127\.0\.0\.1/.test(dbUrl)) return true;
+  return false;
 }
 
 export function isDemoAdvisorId(advisorId: string): boolean {

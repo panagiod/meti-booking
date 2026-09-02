@@ -26,6 +26,9 @@ export async function GET() {
     });
   } catch (error) {
     console.error("[studio] GET error:", error);
+    if (isDemoBookingMode()) {
+      return NextResponse.json(getDemoStudioResponse());
+    }
     return NextResponse.json({ error: "Failed to load studio" }, { status: 500 });
   }
 }
