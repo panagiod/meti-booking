@@ -12,6 +12,11 @@ if [[ ! -f .env ]]; then
 fi
 
 # shellcheck disable=SC1091
+if grep -qE '^EMAIL_FROM=[^"'\''].*<' .env 2>/dev/null; then
+  echo "ERROR: .env line EMAIL_FROM must be in double quotes (the < > breaks bash)."
+  echo '  EMAIL_FROM="MeTi Pilates <bookings@meti-pilates.com>"'
+  exit 1
+fi
 set -a
 source .env
 set +a
