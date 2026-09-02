@@ -45,7 +45,7 @@ Files:
 
 | Item | Cost |
 |---|---:|
-| Hetzner CX22 | ~€4.5 (~$5) |
+| Hetzner CX23 (Cost-Optimized) | ~€5.49 (~$6) |
 | Domain | ~$0.25–1/mo (amortized) |
 | Cloudflare DNS | $0 |
 | **Total** | **~$5–6/month** |

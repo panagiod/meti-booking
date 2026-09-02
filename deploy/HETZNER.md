@@ -1,6 +1,20 @@
-# Hetzner VPS deployment — ~€5/month
+# Hetzner VPS deployment — from ~€5.50/month
 
 **Best for:** a real MeTi Pilates studio website — commercial use, custom domain, no cold starts, full control.
+
+> **Pick the right server type.** Use **CX23** or **CAX11** in **Germany/Finland** (~€5.50–6/mo).  
+> **Do not** pick **CPX** or **CCX** — those start around **€17–20+/month** after Hetzner’s 2026 price changes.
+
+### “Why is it so expensive?” (common mistake)
+
+| You might see… | What it is | Monthly (approx.) |
+|----------------|------------|------------------:|
+| **CX23** | Cost-Optimized — **this is the one you want** | **~€5.49** |
+| **CAX11** | ARM Cost-Optimized — OK alternative | ~€5.99 |
+| **CPX22** | Dedicated AMD vCPU — **wrong for a small studio site** | **~€19** |
+| **CCX13+** | Dedicated performance — way overkill | **€40+** |
+
+Hetzner renamed **CX22 → CX23** in 2026 and raised prices (~€3.99 → €5.49). If the console shows **€17–20+**, you almost certainly selected **CPX** or **CCX** — go back and choose **Cost-Optimized → CX23**.
 
 📖 **Also see:** [docs/HOSTING.md](../docs/HOSTING.md) — hosting overview, env vars, scripts, go-live checklist.
 
@@ -24,11 +38,12 @@
 
 | Item | Cost |
 |------|-----:|
-| Hetzner CX22 (2 vCPU, 4 GB RAM) | ~**€4.5/mo** |
-| Domain (e.g. `.gr`, `.com`) | ~**€10–15/yr** |
+| Hetzner **CX23** (2 vCPU, 4 GB RAM, Germany/Finland) | ~**€5.49/mo** |
+| Hetzner **CAX11** (ARM, 2 GB RAM — tighter, see below) | ~**€5.99/mo** |
+| Domain (meti-pilates.com — you already have this) | ~**€10–15/yr** |
 | SSL (Caddy + Let's Encrypt) | **€0** |
 | Postgres (on same server) | **€0** |
-| **Total** | **~€6/month** |
+| **Total** | **~€6–7/month** |
 
 Stack: **Docker** → Postgres + Next.js app + **Caddy** (HTTPS).
 
@@ -53,8 +68,8 @@ Stack: **Docker** → Postgres + Next.js app + **Caddy** (HTTPS).
 ## Overview
 
 ```
-1. Create Hetzner CX22 server (Ubuntu 24.04)
-2. Point domain DNS → server IP
+1. Create Hetzner CX23 server in Germany or Finland (Ubuntu 24.04)
+2. Point meti-pilates.com DNS → server IP
 3. Install Docker on the server
 4. Clone repo, create .env
 5. Run ./deploy/deploy.sh
@@ -66,14 +81,16 @@ Stack: **Docker** → Postgres + Next.js app + **Caddy** (HTTPS).
 
 ---
 
-## Step 1 — Hetzner server
+## Step 1 — Hetzner server (cheapest option)
 
 1. Sign up at [hetzner.com/cloud](https://www.hetzner.com/cloud).
 2. **Add project** → **Add server**.
 3. Settings:
-   - **Location:** Falkenstein or Helsinki (EU — good for Greece)
+   - **Location:** **Germany (Falkenstein/Nuremberg) or Finland** — cheapest; avoid USA/Singapore if price matters
    - **Image:** Ubuntu 24.04
-   - **Type:** **CX22** (2 vCPU, 4 GB RAM, 40 GB SSD) — enough for this app
+   - **Type:** **CX23** (Cost-Optimized / shared, ~€5.49/mo, 4 GB RAM) — **recommended**
+     - Alternative: **CAX11** (ARM, ~€5.99/mo, 2 GB RAM) — only if CX23 unavailable; first deploy may be slow
+   - **Do NOT choose:** CPX11, CPX22, CCX… (€17–20+/month)
    - **Networking:** Public IPv4 + IPv6
    - **SSH key:** add yours (recommended) or use root password once
 4. Create server → note the **IP address**.
@@ -371,7 +388,7 @@ docker compose -f deploy/docker-compose.prod.yml down
 
 | Setup | Monthly | Best for |
 |-------|--------:|----------|
-| **Hetzner VPS** | ~€6 | Real studio — **recommended** |
+| **Hetzner CX23** | ~€5.50 | Real studio — **recommended cheapest** |
 | Vercel Pro + Neon | ~€25 | Zero server maintenance |
 | Vercel Hobby free | €0 | Testing only — not commercial |
 

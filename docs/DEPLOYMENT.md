@@ -151,7 +151,7 @@ The app uses daily crons (expire pending appointments, reminders, cleanup). This
 
 | Item | Detail |
 |------|--------|
-| Server | Hetzner **CX22** (~€4.5/mo) — Ubuntu 24.04 |
+| Server | Hetzner **CX23** (~€5.49/mo) — Ubuntu 24.04 — **not** CPX/CCX |
 | Stack | Docker: Postgres + Next.js + Caddy (HTTPS) |
 | Deploy | `./deploy/deploy.sh` on the server |
 | Uploads | `SELF_HOSTED=1` — local disk, no Vercel Blob |
@@ -162,8 +162,10 @@ The app uses daily crons (expire pending appointments, reminders, cleanup). This
 
 | Provider | Plan | Price | Specs |
 |---|---|---:|---|
-| [Hetzner Cloud](https://www.hetzner.com/cloud) | CX22 | ~€4.5/mo (~$5) | 2 vCPU, 4 GB RAM, 40 GB SSD |
-| [Hetzner Cloud](https://www.hetzner.com/cloud) | CX32 | ~€7/mo | 4 vCPU, 8 GB RAM — if traffic grows |
+| [Hetzner Cloud](https://www.hetzner.com/cloud) | **CX23** | ~€5.49/mo | 2 vCPU, 4 GB RAM, 40 GB SSD — **pick this** |
+| [Hetzner Cloud](https://www.hetzner.com/cloud) | CAX11 | ~€5.99/mo | ARM, 2 GB RAM — OK if CX23 unavailable |
+| [Hetzner Cloud](https://www.hetzner.com/cloud) | CX33 | ~€8.49/mo | 4 vCPU, 8 GB RAM — if traffic grows |
+| [Hetzner Cloud](https://www.hetzner.com/cloud) | CPX22 / CCX | €17–40+/mo | **Do not use** — dedicated vCPU, overkill |
 | Oracle Cloud | Always Free ARM | $0 | Harder to set up, 4 ARM cores free forever |
 
 ### VPS stack (included in `deploy/`)
@@ -249,6 +251,6 @@ Hitting free-tier limits or want full control?
 
 ## Recommended path for this project
 
-1. **Real studio (MeTi Pilates):** Deploy on **Hetzner CX22** using [deploy/HETZNER.md](../deploy/HETZNER.md) (~€6/mo + domain)
+1. **Real studio (MeTi Pilates):** Deploy on **Hetzner CX23** using [deploy/HETZNER.md](../deploy/HETZNER.md) (~€6/mo + domain)
 2. **Testing / portfolio:** Vercel Hobby + Neon free ($0) — see [CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md)
 3. **Managed alternative:** Vercel Pro + Neon Launch (~€25/mo) — see [deploy/VERCEL.md](../deploy/VERCEL.md)

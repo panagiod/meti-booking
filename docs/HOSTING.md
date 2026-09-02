@@ -12,7 +12,8 @@ How to put the booking site online. **For a real studio, use Hetzner VPS** (~€
 | [Vercel Pro + Neon](#vercel-alternative) | ~€25 | No server maintenance; pay for convenience |
 | [Vercel Hobby + Neon free](#testing-only) | €0 | **Testing only** — not allowed for commercial use |
 
-**Recommendation:** Hetzner CX22 + your domain + Docker stack in `deploy/`.
+**Recommendation:** Hetzner **CX23** (Cost-Optimized) + your domain + Docker stack in `deploy/`.  
+**Avoid CPX/CCX** — those are €17–20+/month (easy to pick by mistake).
 
 ---
 
@@ -22,7 +23,8 @@ How to put the booking site online. **For a real studio, use Hetzner VPS** (~€
 
 | Item | Price |
 |------|------:|
-| [Hetzner CX22](https://www.hetzner.com/cloud) (2 vCPU, 4 GB RAM, 40 GB SSD) | ~€4.5/mo |
+| [Hetzner CX23](https://www.hetzner.com/cloud) (2 vCPU, 4 GB RAM, 40 GB SSD, Germany/Finland) | ~€5.49/mo |
+| IPv4 address (optional — IPv6-only saves ~€0.50) | ~€0.50/mo |
 | Domain (`.gr`, `.com`, etc.) | ~€10–15/yr |
 | SSL (Caddy + Let's Encrypt) | €0 |
 | PostgreSQL (same server) | €0 |
@@ -202,7 +204,7 @@ See [docs/CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md).
 ## Go-live checklist (real studio)
 
 ```
-[ ] Hetzner CX22 server created (Ubuntu 24.04)
+[ ] Hetzner CX23 server created (Ubuntu 24.04) — **not** CPX/CCX
 [ ] Domain DNS → server IP
 [ ] .env filled (DOMAIN, secrets, SELF_HOSTED=1)
 [ ] ./deploy/deploy.sh succeeded
