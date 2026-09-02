@@ -29,6 +29,7 @@ function ResultContent() {
   const appointmentId = searchParams.get("appointmentId");
   const statusParam = (searchParams.get("status") || "unknown") as ResultStatus;
   const paymentId = searchParams.get("payment_id");
+  const isBookingOnly = !paymentId;
 
   const [appointment, setAppointment] = useState<ResultAppointment | null>(null);
   const [isLoading, setIsLoading] = useState(!!appointmentId);
@@ -103,12 +104,23 @@ function ResultContent() {
   useEffect(() => {
     if (appointment?.status === "CONFIRMED") {
       sileo.success({
-        title: t.checkoutResult.toastConfirmedTitle,
-        description: t.checkoutResult.toastConfirmedSub,
+        title: isBookingOnly
+          ? t.checkoutResult.bookingConfirmed
+          : t.checkoutResult.toastConfirmedTitle,
+        description: isBookingOnly
+          ? t.checkoutResult.bookingConfirmedSub
+          : t.checkoutResult.toastConfirmedSub,
         duration: 6000,
       });
     }
-  }, [appointment?.status, t.checkoutResult.toastConfirmedTitle, t.checkoutResult.toastConfirmedSub]);
+  }, [
+    appointment?.status,
+    isBookingOnly,
+    t.checkoutResult.bookingConfirmed,
+    t.checkoutResult.bookingConfirmedSub,
+    t.checkoutResult.toastConfirmedTitle,
+    t.checkoutResult.toastConfirmedSub,
+  ]);
 
   if (isLoading) {
     return (
@@ -160,10 +172,14 @@ function ResultContent() {
                 <CheckCircle className="w-8 h-8 text-[var(--success)]" />
               </div>
               <h1 className="font-heading text-2xl font-bold text-[var(--text-primary)] mb-2">
-                {t.checkoutResult.paymentConfirmed}
+                {isBookingOnly
+                  ? t.checkoutResult.bookingConfirmed
+                  : t.checkoutResult.paymentConfirmed}
               </h1>
               <p className="text-[var(--text-muted)] mb-4">
-                {t.checkoutResult.paymentConfirmedSub}
+                {isBookingOnly
+                  ? t.checkoutResult.bookingConfirmedSub
+                  : t.checkoutResult.paymentConfirmedSub}
               </p>
               <div className="bg-[var(--background)] rounded-lg p-4 mb-6 space-y-2 text-left">
                 <div className="flex items-center gap-2 text-sm">

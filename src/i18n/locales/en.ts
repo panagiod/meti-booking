@@ -115,13 +115,15 @@ const en: Messages = {
     spotsLeft: "{remaining} left",
     slotFull: "Full",
     confirm: "Confirm",
-    confirmSub: "Review before payment",
+    confirmSub: "Review your booking details",
     session: "Session",
+    sessionPrice: "Session price",
     date: "Date",
     time: "Time",
     total: "Total",
     reschedulePolicy: "Free reschedule up to {hours} hours before your session.",
     continuePayment: "Continue to payment",
+    confirmBooking: "Confirm booking",
     processing: "Processing…",
     serviceNames: {
       "Reformer Session": "Reformer Session",
@@ -154,7 +156,8 @@ const en: Messages = {
     backHome: "← Back to home",
   },
   checkout: {
-    title: "Checkout",
+    title: "Confirm booking",
+    titlePayment: "Checkout",
     signInToContinue: "Sign in to continue",
     signInToContinueSub: "Already have an account? Sign in to pre-fill your details.",
     guestContactTitle: "Your details",
@@ -181,9 +184,13 @@ const en: Messages = {
     signInToPay: "Sign in to pay",
     pay: "Pay {amount}",
     confirmBooking: "Confirm booking",
-    bookingOnlyTitle: "No online payment",
+    bookingOnlyTitle: "Booking only",
     bookingOnlySub:
-      "Your booking will be confirmed immediately. Payment is handled at the studio.",
+      "No online payment. Your session is reserved immediately — payment is handled at the studio.",
+    bookingPolicy: "Booking policy",
+    bookingPolicyReschedule: "Free reschedule with 24 hours notice",
+    bookingPolicyContact: "Contact the studio to change or cancel your booking",
+    payAtStudio: "Payment at the studio",
     noBookingData: "No booking data",
     bookSession: "Book a session",
     errorCreateAppointment: "Failed to create booking. Please try again.",
@@ -192,6 +199,9 @@ const en: Messages = {
   checkoutResult: {
     signInToView: "Sign in to view your booking status.",
     noBookingInfo: "No booking information available.",
+    bookingConfirmed: "Booking confirmed!",
+    bookingConfirmedSub:
+      "Your reformer session is booked. See you at the studio — arrive 10 minutes early.",
     paymentConfirmed: "Booking confirmed!",
     paymentConfirmedSub:
       "Your reformer session is booked. See you at the studio — arrive 10 minutes early.",
@@ -203,7 +213,7 @@ const en: Messages = {
     confirmingPaymentSub: "This usually takes a few seconds.",
     stillPending: "Still pending. Check your booking in a few minutes.",
     refreshStatus: "Refresh status",
-    toastConfirmedTitle: "Payment confirmed!",
+    toastConfirmedTitle: "Booking confirmed!",
     toastConfirmedSub: "Your reformer session is booked.",
   },
   dashboard: {

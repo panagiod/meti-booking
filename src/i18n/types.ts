@@ -78,8 +78,10 @@ export type Messages = {
     date: string;
     time: string;
     total: string;
+    sessionPrice: string;
     reschedulePolicy: string;
     continuePayment: string;
+    confirmBooking: string;
     processing: string;
     serviceNames: Record<string, string>;
   };
@@ -111,6 +113,7 @@ export type Messages = {
   };
   checkout: {
     title: string;
+    titlePayment: string;
     signInToContinue: string;
     signInToContinueSub: string;
     guestContactTitle: string;
@@ -139,6 +142,10 @@ export type Messages = {
     confirmBooking: string;
     bookingOnlyTitle: string;
     bookingOnlySub: string;
+    bookingPolicy: string;
+    bookingPolicyReschedule: string;
+    bookingPolicyContact: string;
+    payAtStudio: string;
     noBookingData: string;
     bookSession: string;
     errorCreateAppointment: string;
@@ -147,6 +154,8 @@ export type Messages = {
   checkoutResult: {
     signInToView: string;
     noBookingInfo: string;
+    bookingConfirmed: string;
+    bookingConfirmedSub: string;
     paymentConfirmed: string;
     paymentConfirmedSub: string;
     goToDashboard: string;

@@ -115,13 +115,15 @@ const el: Messages = {
     spotsLeft: "{remaining} θέσεις",
     slotFull: "Γεμάτο",
     confirm: "Επιβεβαίωση",
-    confirmSub: "Ελέγξτε τα στοιχεία πριν την πληρωμή",
+    confirmSub: "Ελέγξτε τα στοιχεία της κράτησής σας",
     session: "Μάθημα",
+    sessionPrice: "Τιμή μαθήματος",
     date: "Ημερομηνία",
     time: "Ώρα",
     total: "Σύνολο",
     reschedulePolicy: "Δωρεάν αλλαγή έως {hours} ώρες πριν το μάθημα.",
     continuePayment: "Συνέχεια στην πληρωμή",
+    confirmBooking: "Επιβεβαίωση κράτησης",
     processing: "Επεξεργασία…",
     serviceNames: {
       "Reformer Session": "Μάθημα Reformer",
@@ -154,7 +156,8 @@ const el: Messages = {
     backHome: "← Αρχική",
   },
   checkout: {
-    title: "Ολοκλήρωση κράτησης",
+    title: "Επιβεβαίωση κράτησης",
+    titlePayment: "Ολοκλήρωση πληρωμής",
     signInToContinue: "Συνδεθείτε για να συνεχίσετε",
     signInToContinueSub: "Έχετε ήδη λογαριασμό; Συνδεθείτε για να συμπληρωθούν τα στοιχεία σας.",
     guestContactTitle: "Τα στοιχεία σας",
@@ -185,6 +188,10 @@ const el: Messages = {
     bookingOnlyTitle: "Χωρίς online πληρωμή",
     bookingOnlySub:
       "Η κράτησή σας θα επιβεβαιωθεί αμέσως. Η πληρωμή γίνεται στο στούντιο.",
+    bookingPolicy: "Πολιτική κράτησης",
+    bookingPolicyReschedule: "Δωρεάν αλλαγή με ειδοποίηση 24 ώρες νωρίτερα",
+    bookingPolicyContact: "Επικοινωνήστε με το στούντιο για αλλαγή ή ακύρωση",
+    payAtStudio: "Πληρωμή στο στούντιο",
     noBookingData: "Δεν υπάρχουν στοιχεία κράτησης",
     bookSession: "Κράτηση μαθήματος",
     errorCreateAppointment: "Η κράτηση απέτυχε. Δοκιμάστε ξανά.",
@@ -193,6 +200,9 @@ const el: Messages = {
   checkoutResult: {
     signInToView: "Συνδεθείτε για να δείτε την κατάσταση της κράτησής σας.",
     noBookingInfo: "Δεν υπάρχουν στοιχεία κράτησης.",
+    bookingConfirmed: "Η κράτηση επιβεβαιώθηκε!",
+    bookingConfirmedSub:
+      "Το μάθημα reformer κλείστηκε. Σας περιμένουμε στο στούντιο — ελάτε 10 λεπτά νωρίτερα.",
     paymentConfirmed: "Η κράτησή σας επιβεβαιώθηκε!",
     paymentConfirmedSub:
       "Το μάθημα reformer κλείστηκε. Σας περιμένουμε στο στούντιο — ελάτε 10 λεπτά νωρίτερα.",
@@ -204,7 +214,7 @@ const el: Messages = {
     confirmingPaymentSub: "Συνήθως διαρκεί λίγα δευτερόλεπτα.",
     stillPending: "Ακόμα σε εκκρεμότητα. Ελέγξτε ξανά σε λίγα λεπτά.",
     refreshStatus: "Ανανέωση κατάστασης",
-    toastConfirmedTitle: "Η πληρωμή επιβεβαιώθηκε!",
+    toastConfirmedTitle: "Η κράτηση επιβεβαιώθηκε!",
     toastConfirmedSub: "Το μάθημα reformer κλείστηκε.",
   },
   dashboard: {

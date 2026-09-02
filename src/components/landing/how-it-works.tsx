@@ -1,6 +1,6 @@
 "use client";
 
-import { Calendar, Clock, CreditCard, Sparkles } from "lucide-react";
+import { Calendar, Clock, CheckCircle, Sparkles } from "lucide-react";
 
 const steps = [
   {
@@ -31,11 +31,11 @@ const steps = [
     bgColor: "#ede9fe",
   },
   {
-    icon: CreditCard,
+    icon: CheckCircle,
     number: "04",
-    title: "Confirm & pay",
+    title: "Confirm booking",
     description:
-      "Sign in, review your booking, and pay securely. You'll get a confirmation right away.",
+      "Enter your details and confirm. Your session is reserved right away — payment is at the studio.",
     color: "var(--warning)",
     bgColor: "var(--warning-light)",
   },

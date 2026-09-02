@@ -43,6 +43,7 @@ export function BookingSummary({
 
   const [quote, setQuote] = useState<Quote | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(true);
+  const [paymentsEnabled, setPaymentsEnabled] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,6 +65,9 @@ export function BookingSummary({
         if (!cancelled && res.ok) {
           const data = await res.json();
           setQuote(data.quote);
+          if (typeof data.paymentsEnabled === "boolean") {
+            setPaymentsEnabled(data.paymentsEnabled);
+          }
         }
       } catch {
         if (!cancelled) setQuote(null);
@@ -134,7 +138,9 @@ export function BookingSummary({
           )}
 
           <div className="flex justify-between gap-4 pt-1">
-            <dt className="font-display text-xl text-[var(--studio-ink)]">{t.booking.total}</dt>
+            <dt className="font-display text-xl text-[var(--studio-ink)]">
+              {paymentsEnabled ? t.booking.total : t.booking.sessionPrice}
+            </dt>
             <dd className="font-display text-xl text-[var(--studio-ink)]">
               {quoteLoading ? (
                 <span className="inline-block h-6 w-20 animate-pulse rounded bg-[var(--studio-line)]" />
@@ -147,7 +153,7 @@ export function BookingSummary({
           </div>
         </dl>
 
-        {!quoteLoading && quote && (
+        {!quoteLoading && quote && paymentsEnabled && (
           <p className="mt-2 text-xs text-[var(--studio-muted)]">{t.checkout.includesCosts}</p>
         )}
 
@@ -163,7 +169,11 @@ export function BookingSummary({
           disabled={isProcessing || quoteLoading}
           className="studio-btn studio-btn-primary mt-8 w-full disabled:opacity-60"
         >
-          {isProcessing ? t.booking.processing : t.booking.continuePayment}
+          {isProcessing
+            ? t.booking.processing
+            : paymentsEnabled
+              ? t.booking.continuePayment
+              : t.booking.confirmBooking}
         </button>
       </div>
     </div>

@@ -19,6 +19,7 @@ import {
   AlertTriangle,
   LogIn,
   TestTube,
+  CheckCircle2,
 } from "lucide-react";
 import {
   formatMessage,
@@ -51,10 +52,10 @@ function CheckoutContent() {
     feePercentage: number;
   } | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(true);
-  const [paymentsEnabled, setPaymentsEnabled] = useState<boolean | null>(null);
+  const [paymentsEnabled, setPaymentsEnabled] = useState(false);
 
   const advisorId = searchParams.get("advisorId");
-  const advisorName = searchParams.get("advisorName") || "MeTi Pilates";
+  const advisorName = searchParams.get("advisorName") || "Meropi Tirri";
   const serviceId = searchParams.get("serviceId");
   const rawServiceName = searchParams.get("serviceName") || "Service";
   const serviceName =
@@ -78,10 +79,7 @@ function CheckoutContent() {
   }, [serviceId]);
 
   useEffect(() => {
-    if (paymentsEnabled !== true || !advisorId) {
-      if (paymentsEnabled === false) setAdvisorHasMP(null);
-      return;
-    }
+    if (!paymentsEnabled || !advisorId) return;
     checkAdvisorMP(advisorId);
   }, [advisorId, paymentsEnabled]);
 
@@ -145,7 +143,7 @@ function CheckoutContent() {
       } else {
         setAdvisorHasMP(false);
       }
-    } catch (error) {
+    } catch {
       setAdvisorHasMP(false);
     }
   };
@@ -179,18 +177,18 @@ function CheckoutContent() {
     return true;
   };
 
-  const canPay =
+  const canConfirm =
     isLoggedIn === true ||
     (isLoggedIn === false && guestEmail.trim().length > 0 && !guestEmailError);
 
-  const handlePayment = async () => {
+  const handleConfirmBooking = async () => {
     if (isLoggedIn === null) return;
 
     if (!isLoggedIn && !validateGuestEmail()) {
       return;
     }
 
-    if (paymentsEnabled === true && !advisorHasMP) {
+    if (paymentsEnabled && !advisorHasMP) {
       dialog.showAlert(
         t.checkout.paymentUnavailable,
         t.checkout.paymentUnavailableSub,
@@ -228,7 +226,7 @@ function CheckoutContent() {
       const data = await res.json();
       localStorage.removeItem("meti-pending-booking");
 
-      if (data.paymentsEnabled === false) {
+      if (!paymentsEnabled || data.paymentsEnabled === false) {
         router.push(
           `/checkout/result?appointmentId=${data.appointment.id}&status=approved`
         );
@@ -256,6 +254,8 @@ function CheckoutContent() {
     );
   }
 
+  const pageTitle = paymentsEnabled ? t.checkout.titlePayment : t.checkout.title;
+
   return (
     <>
       <div className="min-h-screen bg-[var(--background)]">
@@ -266,7 +266,7 @@ function CheckoutContent() {
                 <ArrowLeft className="w-5 h-5" />
               </Button>
               <h1 className="ml-4 font-heading font-semibold text-[var(--text-primary)]">
-                {t.checkout.title}
+                {pageTitle}
               </h1>
             </div>
             <LanguageSwitcher className="border-[var(--border)]" />
@@ -330,7 +330,7 @@ function CheckoutContent() {
                 </Card>
               )}
 
-              {paymentsEnabled === true && advisorMpMode === "TEST" && (
+              {paymentsEnabled && advisorMpMode === "TEST" && (
                 <Card className="border-[var(--warning)] bg-[var(--warning-light)]">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
@@ -348,21 +348,16 @@ function CheckoutContent() {
                 </Card>
               )}
 
-              {paymentsEnabled !== null && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    {paymentsEnabled ? (
+              {paymentsEnabled ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
                       <CreditCard className="w-5 h-5" />
-                    ) : (
-                      <Shield className="w-5 h-5" />
-                    )}
-                    {paymentsEnabled ? t.checkout.paymentMethod : t.checkout.confirmBooking}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {paymentsEnabled ? (
-                    advisorHasMP === false ? (
+                      {t.checkout.paymentMethod}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {advisorHasMP === false ? (
                       <div className="p-4 rounded-lg border-2 border-[var(--warning)] bg-[var(--warning-light)]">
                         <div className="flex items-center gap-3">
                           <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
@@ -392,25 +387,29 @@ function CheckoutContent() {
                           </div>
                         </div>
                       </div>
-                    )
-                  ) : (
-                    <div className="p-4 rounded-lg border border-[var(--border)] bg-[var(--background)]">
-                      <p className="font-medium text-[var(--text-primary)]">
-                        {t.checkout.bookingOnlyTitle}
-                      </p>
-                      <p className="mt-1 text-sm text-[var(--text-muted)]">
-                        {t.checkout.bookingOnlySub}
-                      </p>
-                    </div>
-                  )}
-                  {paymentsEnabled && (
+                    )}
                     <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
                       <Shield className="w-4 h-4" />
                       {t.checkout.securePayment}
                     </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              ) : (
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-[var(--primary)] flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-[var(--text-primary)]">
+                          {t.checkout.bookingOnlyTitle}
+                        </p>
+                        <p className="mt-1 text-sm text-[var(--text-muted)]">
+                          {t.checkout.bookingOnlySub}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               )}
 
               <Card>
@@ -421,12 +420,23 @@ function CheckoutContent() {
                     </div>
                     <div className="text-sm">
                       <p className="font-medium text-[var(--text-primary)] mb-1">
-                        {t.checkout.cancellationPolicy}
+                        {paymentsEnabled
+                          ? t.checkout.cancellationPolicy
+                          : t.checkout.bookingPolicy}
                       </p>
                       <ul className="text-[var(--text-muted)] space-y-1">
-                        <li>• {t.checkout.cancelReschedule}</li>
-                        <li>• {t.checkout.cancelNoRefund}</li>
-                        <li>• {t.checkout.cancelNoShow}</li>
+                        {paymentsEnabled ? (
+                          <>
+                            <li>• {t.checkout.cancelReschedule}</li>
+                            <li>• {t.checkout.cancelNoRefund}</li>
+                            <li>• {t.checkout.cancelNoShow}</li>
+                          </>
+                        ) : (
+                          <>
+                            <li>• {t.checkout.bookingPolicyReschedule}</li>
+                            <li>• {t.checkout.bookingPolicyContact}</li>
+                          </>
+                        )}
                       </ul>
                     </div>
                   </div>
@@ -471,7 +481,10 @@ function CheckoutContent() {
                         </span>
                       ) : (
                         <span className="text-[var(--text-primary)]">
-                          {formatMoney(totalOriginal, locale)}
+                          {formatMoney(
+                            paymentsEnabled ? totalOriginal : servicePrice,
+                            locale
+                          )}
                         </span>
                       )}
                     </div>
@@ -487,24 +500,29 @@ function CheckoutContent() {
                       </div>
                     )}
                     <div className="border-t border-[var(--border)] pt-3 flex justify-between font-heading font-bold text-lg">
-                      <span className="text-[var(--text-primary)]">{t.checkout.total}</span>
+                      <span className="text-[var(--text-primary)]">
+                        {paymentsEnabled ? t.checkout.total : t.booking.sessionPrice}
+                      </span>
                       <span className="text-[var(--primary)]">
                         {formatMoney(serviceTotal, locale)}
                       </span>
                     </div>
-                    <p className="text-xs text-[var(--text-muted)]">{t.checkout.includesCosts}</p>
+                    <p className="text-xs text-[var(--text-muted)]">
+                      {paymentsEnabled
+                        ? t.checkout.includesCosts
+                        : t.checkout.payAtStudio}
+                    </p>
                   </div>
 
                   <Button
                     className="w-full h-12 text-base mt-4"
-                    onClick={handlePayment}
+                    onClick={handleConfirmBooking}
                     disabled={
                       isProcessing ||
-                      (paymentsEnabled === true && advisorHasMP === false) ||
+                      (paymentsEnabled && advisorHasMP === false) ||
                       quoteLoading ||
-                      paymentsEnabled === null ||
                       isLoggedIn === null ||
-                      !canPay
+                      !canConfirm
                     }
                   >
                     {isProcessing ? (
@@ -512,7 +530,7 @@ function CheckoutContent() {
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         {t.common.processing}
                       </div>
-                    ) : paymentsEnabled === true ? (
+                    ) : paymentsEnabled ? (
                       <>
                         <CreditCard className="w-5 h-5 mr-2" />
                         {formatMessage(t.checkout.pay, {

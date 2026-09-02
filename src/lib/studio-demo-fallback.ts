@@ -15,7 +15,7 @@ import {
   STUDIO_SESSION_DURATION_MIN,
   studioScheduleSeedRows,
 } from "@/lib/studio-schedule";
-import { calculatePrices } from "@/lib/pricing";
+import { buildBookingQuote } from "@/lib/booking-quote";
 import { resolveBookingLeadHours } from "@/lib/booking-config";
 
 export const DEMO_STUDIO_ADVISOR_ID = "demo-studio-advisor";
@@ -182,36 +182,29 @@ export function validateDemoBookableSlot(scheduledAt: Date): void {
 }
 
 export function getDemoQuote() {
-  const { advisorEarning, platformFee, totalCents } = calculatePrices({
+  return buildBookingQuote({
+    serviceId: DEMO_REFORMER_SERVICE_ID,
+    serviceName: REFORMER_SERVICE_NAME,
     servicePriceCents: DEMO_SERVICE_PRICE_CENTS,
     feePercentage: DEMO_FEE_PERCENTAGE,
     maxFeeCents: null,
     discountCents: 0,
-  });
-
-  return {
-    serviceId: DEMO_REFORMER_SERVICE_ID,
-    serviceName: REFORMER_SERVICE_NAME,
-    servicePriceCents: DEMO_SERVICE_PRICE_CENTS,
-    discountCents: 0,
-    platformFeeCents: platformFee,
-    advisorEarningCents: advisorEarning,
-    totalCents,
-    feePercentage: DEMO_FEE_PERCENTAGE,
     promotion: null,
-  };
+  });
 }
 
 export function createDemoAppointment(params: {
   clientId: string;
   scheduledAt: Date;
-  paymentsEnabled: boolean;
 }) {
-  const { advisorEarning, platformFee, totalCents } = calculatePrices({
+  const quote = buildBookingQuote({
+    serviceId: DEMO_REFORMER_SERVICE_ID,
+    serviceName: REFORMER_SERVICE_NAME,
     servicePriceCents: DEMO_SERVICE_PRICE_CENTS,
     feePercentage: DEMO_FEE_PERCENTAGE,
     maxFeeCents: null,
     discountCents: 0,
+    promotion: null,
   });
 
   return {
@@ -221,10 +214,10 @@ export function createDemoAppointment(params: {
     serviceId: DEMO_REFORMER_SERVICE_ID,
     scheduledAt: params.scheduledAt.toISOString(),
     durationMin: STUDIO_SESSION_DURATION_MIN,
-    status: params.paymentsEnabled ? "PENDING" : "CONFIRMED",
-    totalCents,
-    advisorEarning,
-    platformFee,
+    status: "CONFIRMED",
+    totalCents: quote.totalCents,
+    advisorEarning: quote.advisorEarningCents,
+    platformFee: quote.platformFeeCents,
     discountCents: 0,
     isTest: true,
   };

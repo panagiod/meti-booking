@@ -37,9 +37,18 @@ export default function AppointmentsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [retryingId, setRetryingId] = useState<string | null>(null);
+  const [paymentsEnabled, setPaymentsEnabled] = useState(false);
 
   useEffect(() => {
     fetchAppointments();
+    fetch("/api/studio")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && typeof data.paymentsEnabled === "boolean") {
+          setPaymentsEnabled(data.paymentsEnabled);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const fetchAppointments = async () => {
@@ -261,38 +270,38 @@ export default function AppointmentsPage() {
 
                   <div className="flex items-center gap-2">
                     {getStatusBadge(apt.status)}
+                    {apt.status === "PENDING" && paymentsEnabled && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleRetryPayment(apt.id)}
+                        disabled={retryingId === apt.id}
+                      >
+                        {retryingId === apt.id ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <>
+                            <CreditCard className="w-4 h-4 mr-1" />
+                            Pay
+                          </>
+                        )}
+                      </Button>
+                    )}
                     {apt.status === "PENDING" && (
-                      <>
-                        <Button
-                          size="sm"
-                          onClick={() => handleRetryPayment(apt.id)}
-                          disabled={retryingId === apt.id}
-                        >
-                          {retryingId === apt.id ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <>
-                              <CreditCard className="w-4 h-4 mr-1" />
-                              Pay
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleCancelAppointment(apt)}
-                          disabled={cancellingId === apt.id}
-                        >
-                          {cancellingId === apt.id ? (
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <>
-                              <XCircle className="w-4 h-4 mr-1" />
-                              Cancel
-                            </>
-                          )}
-                        </Button>
-                      </>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => handleCancelAppointment(apt)}
+                        disabled={cancellingId === apt.id}
+                      >
+                        {cancellingId === apt.id ? (
+                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <>
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Cancel
+                          </>
+                        )}
+                      </Button>
                     )}
                     {(apt.status === "CONFIRMED" || apt.status === "IN_PROGRESS") && (
                       <Button size="sm" asChild>

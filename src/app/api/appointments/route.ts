@@ -80,7 +80,6 @@ export async function POST(request: NextRequest) {
       const appointment = createDemoAppointment({
         clientId: session?.user.id ?? randomUUID(),
         scheduledAt: parsedDate,
-        paymentsEnabled: false,
       });
 
       return NextResponse.json({ appointment, paymentsEnabled: false }, { status: 201 });

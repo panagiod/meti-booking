@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { calculatePrices } from "@/lib/pricing";
+import { buildBookingQuote } from "@/lib/booking-quote";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 import {
   getDemoQuote,
@@ -82,26 +82,17 @@ export async function GET(request: NextRequest) {
       discountCents = Math.min(discountCents, service.priceCents);
     }
 
-    const { advisorEarning, platformFee, totalCents } = calculatePrices({
-      servicePriceCents: service.priceCents,
-      feePercentage,
-      maxFeeCents,
-      discountCents,
-    });
-
     return NextResponse.json({
       paymentsEnabled: isPaymentsEnabled(),
-      quote: {
+      quote: buildBookingQuote({
         serviceId: service.id,
         serviceName: service.name,
         servicePriceCents: service.priceCents,
-        discountCents,
-        platformFeeCents: platformFee,
-        advisorEarningCents: advisorEarning,
-        totalCents,
         feePercentage,
+        maxFeeCents,
+        discountCents,
         promotion,
-      },
+      }),
     });
   } catch (error) {
     console.error("[checkout/quote] GET error:", error);
