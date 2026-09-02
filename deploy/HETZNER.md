@@ -189,11 +189,12 @@ ENCRYPTION_KEY=<openssl rand -base64 32>
 
 SELF_HOSTED=1                            # enables local image uploads
 
-# Optional
+# Optional — see deploy/RESEND.md for email setup
 GOOGLE_CLIENT_ID=...
 GOOGLE_CLIENT_SECRET=...
 RESEND_API_KEY=...
 EMAIL_FROM=MeTi Pilates <bookings@metipilates.com>
+STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com
 ```
 
 Update `DATABASE_URL` password to match `POSTGRES_PASSWORD`.

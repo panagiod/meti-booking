@@ -100,7 +100,7 @@ Copy **`deploy/env.production.example`** → **`.env`** in the project root.
 | `SELF_HOSTED` | ✅ | `1` — enables local disk image uploads |
 | `APP_URL` | ✅ | Same as public URL — Mercado Pago webhooks |
 | `GOOGLE_CLIENT_ID/SECRET` | Optional | Google sign-in — [deploy/GOOGLE_OAUTH.md](../deploy/GOOGLE_OAUTH.md) |
-| `RESEND_API_KEY` | Optional | Booking reminder emails |
+| `RESEND_API_KEY` | Optional | Booking emails — [deploy/RESEND.md](../deploy/RESEND.md) |
 | `BLOB_READ_WRITE_TOKEN` | ❌ on VPS | Not needed — use `SELF_HOSTED=1` instead |
 
 ### Deploy scripts
@@ -168,6 +168,7 @@ Easier operations, higher cost (~€25/month). Requires **Vercel Pro** for comme
 |-----|---------|
 | [deploy/VERCEL.md](../deploy/VERCEL.md) | Vercel + Neon checklist |
 | [deploy/GOOGLE_OAUTH.md](../deploy/GOOGLE_OAUTH.md) | Google sign-in |
+| [deploy/RESEND.md](../deploy/RESEND.md) | Booking & reminder emails (Resend) |
 | [docs/CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md) | $0 testing stack + real-business limits |
 
 Validate env before deploy: `pnpm deploy:check`

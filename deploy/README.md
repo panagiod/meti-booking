@@ -7,6 +7,8 @@
 | Doc | Contents |
 |-----|----------|
 | **[HETZNER.md](./HETZNER.md)** | Full step-by-step (server, DNS, Docker, HTTPS, cron) |
+| **[RESEND.md](./RESEND.md)** | Booking emails (Resend) |
+| **[GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md)** | Google sign-in |
 | **[../docs/HOSTING.md](../docs/HOSTING.md)** | Hosting overview, env vars, scripts, checklist |
 
 ## Quick deploy (on the VPS)

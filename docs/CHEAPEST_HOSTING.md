@@ -106,7 +106,7 @@ These apply regardless of hosting plan:
 | Neon **Launch** (or VPS Postgres) | Avoid DB sleep during business hours |
 | `ENCRYPTION_KEY` + Mercado Pago | Accept real payments |
 | `APP_URL` + MP webhook | Confirm payments server-side |
-| `RESEND_API_KEY` | Booking confirmations / reminders |
+| `RESEND_API_KEY` | Booking confirmations / reminders — [deploy/RESEND.md](../deploy/RESEND.md) |
 | `BLOB_READ_WRITE_TOKEN` | Change hero/studio photos in admin |
 | Real admin password | Remove demo `Demo1234!` accounts |
 | Google OAuth (optional) | Easier login — see `deploy/GOOGLE_OAUTH.md` |
@@ -203,7 +203,7 @@ In Vercel → your project → **Settings → Environment Variables**, add these
 |------|---------|
 | `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` | Google sign-in — see [deploy/GOOGLE_OAUTH.md](../deploy/GOOGLE_OAUTH.md) |
 | `BLOB_READ_WRITE_TOKEN` | Admin CMS image uploads — [Vercel Blob](https://vercel.com/storage) free tier |
-| `RESEND_API_KEY` + `EMAIL_FROM` | Booking reminder emails |
+| `RESEND_API_KEY` + `EMAIL_FROM` | Booking confirmation & reminder emails — [deploy/RESEND.md](../deploy/RESEND.md) |
 | `MERCADOPAGO_ACCESS_TOKEN` | Platform-level MP (instructors also connect their own) |
 
 **Tip:** If you don’t know your Vercel URL yet, deploy once with placeholder URLs, then update `BETTER_AUTH_URL` / `NEXT_PUBLIC_BETTER_AUTH_URL` / `APP_URL` to the real `https://….vercel.app` and **redeploy**.
@@ -370,6 +370,7 @@ VPS instructions: [deploy/README.md](../deploy/README.md) and [docs/DEPLOYMENT.m
 | [deploy/HETZNER.md](../deploy/HETZNER.md) | Hetzner step-by-step guide |
 | [deploy/VERCEL.md](../deploy/VERCEL.md) | Vercel checklist |
 | [deploy/GOOGLE_OAUTH.md](../deploy/GOOGLE_OAUTH.md) | Google sign-in setup |
+| [deploy/RESEND.md](../deploy/RESEND.md) | Resend email setup |
 | [docs/DEPLOYMENT.md](./DEPLOYMENT.md) | All phases + migration paths |
 | [.env.example](../.env.example) | Full environment variable list |
 

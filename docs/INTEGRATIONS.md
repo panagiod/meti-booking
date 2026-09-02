@@ -80,6 +80,24 @@ pnpm deploy:check
 
 ---
 
+## Email (Resend)
+
+Transactional email (booking confirmations, studio alerts, 24h reminders) uses **Resend**.
+
+See **[deploy/RESEND.md](../deploy/RESEND.md)** for domain verification, API key, env vars, and testing.
+
+Quick env vars:
+
+```bash
+RESEND_API_KEY=re_...
+EMAIL_FROM="MeTi Pilates <bookings@metipilates.com>"
+STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com
+```
+
+Without `RESEND_API_KEY`, bookings work but no emails are sent.
+
+---
+
 ## Payments
 
 ### Current (Mercado Pago)

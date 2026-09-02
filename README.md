@@ -5,7 +5,7 @@
 Book **reformer sessions** online: pick a date, time, sign in, pay.  
 **English + Greek** (`EN | ΕΛ`).
 
-> 📖 **Full reference:** [docs/PROJECT.md](docs/PROJECT.md) · **Admin:** [docs/ADMIN.md](docs/ADMIN.md) · **Hosting:** [docs/HOSTING.md](docs/HOSTING.md)
+> 📖 **Full reference:** [docs/PROJECT.md](docs/PROJECT.md) · **Admin:** [docs/ADMIN.md](docs/ADMIN.md) · **Hosting:** [docs/HOSTING.md](docs/HOSTING.md) · **Email:** [deploy/RESEND.md](deploy/RESEND.md)
 
 ---
 

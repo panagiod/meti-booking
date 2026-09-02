@@ -34,7 +34,7 @@ Copy from `.env.example`. **Required for production:**
 | Variable | Feature |
 |---|---|
 | `MERCADOPAGO_ACCESS_TOKEN` | Platform-level MP (advisor OAuth still per-advisor) |
-| `RESEND_API_KEY` / `EMAIL_FROM` | Booking confirmation & reminder emails |
+| `RESEND_API_KEY` / `EMAIL_FROM` | Booking emails — [RESEND.md](./RESEND.md) |
 | `STUDIO_NOTIFICATION_EMAIL` | Inbox for new-booking alerts (default: studio contact email) |
 | `LIVEKIT_*` | Video calls |
 | `GROQ_API_KEY` | AI features |
@@ -61,7 +61,7 @@ pnpm demo:setup
 
 ## 4. Google OAuth
 
-See **[GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md)** for the full checklist (origins, redirect URI, env vars, troubleshooting).
+See **[GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md)** for Google sign-in and **[RESEND.md](./RESEND.md)** for booking emails.
 
 Quick: redirect URI = `https://your-app.vercel.app/api/auth/callback/google`
 
