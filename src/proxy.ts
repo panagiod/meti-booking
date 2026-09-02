@@ -5,6 +5,8 @@ const publicRoutes = [
   "/",
   "/login",
   "/register",
+  "/forgot-password",
+  "/reset-password",
   "/redirect",
   "/api/auth",
   "/services",
