@@ -8,21 +8,9 @@ import {
   studioLocalMinutesFromUtc,
   utcToStudioLocal,
 } from "@/lib/timezone";
+import { SlotBookingError } from "@/lib/slot-booking-errors";
 
-export class SlotBookingError extends Error {
-  constructor(
-    message: string,
-    readonly code:
-      | "INVALID_TIME"
-      | "INACTIVE_DAY"
-      | "SLOT_UNAVAILABLE"
-      | "ADVISOR_INACTIVE"
-      | "SERVICE_MISMATCH"
-  ) {
-    super(message);
-    this.name = "SlotBookingError";
-  }
-}
+export { SlotBookingError };
 
 function dateStrFromUtc(utc: Date): string {
   const local = utcToStudioLocal(utc);

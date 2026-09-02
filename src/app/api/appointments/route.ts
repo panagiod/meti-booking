@@ -13,6 +13,14 @@ import { decryptMpAccessToken } from "@/lib/advisor-mp";
 import { findOrCreateGuestUser, GuestUserError } from "@/lib/guest-user";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 import { notifyAppointmentConfirmed } from "@/lib/notify";
+import {
+  createDemoAppointment,
+  isDemoAdvisorId,
+  isDemoBookingMode,
+  isDemoServiceId,
+  validateDemoBookableSlot,
+} from "@/lib/studio-demo-fallback";
+import { randomUUID } from "crypto";
 
 const appointmentSchema = z.object({
   advisorId: z.string(),
@@ -34,6 +42,49 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = appointmentSchema.parse(body);
     const { advisorId, serviceId, scheduledAt, promotionId, guestEmail, guestName } = parsed;
+    const paymentsEnabled = isPaymentsEnabled();
+
+    if (isDemoBookingMode() && isDemoAdvisorId(advisorId) && isDemoServiceId(serviceId)) {
+      const parsedDate = parseLocalISO(scheduledAt);
+      if (!parsedDate) {
+        return NextResponse.json({ error: "Invalid date/time" }, { status: 400 });
+      }
+
+      try {
+        validateDemoBookableSlot(parsedDate);
+      } catch (error) {
+        if (error instanceof SlotBookingError) {
+          const status = error.code === "SLOT_UNAVAILABLE" ? 409 : 400;
+          return NextResponse.json({ error: error.message }, { status });
+        }
+        throw error;
+      }
+
+      if (!session && !guestEmail) {
+        return NextResponse.json(
+          { error: "Email is required to complete your booking" },
+          { status: 401 }
+        );
+      }
+
+      if (paymentsEnabled) {
+        return NextResponse.json(
+          {
+            error:
+              "Online payment requires a database connection. Set DATABASE_URL or disable PAYMENTS_ENABLED.",
+          },
+          { status: 503 }
+        );
+      }
+
+      const appointment = createDemoAppointment({
+        clientId: session?.user.id ?? randomUUID(),
+        scheduledAt: parsedDate,
+        paymentsEnabled: false,
+      });
+
+      return NextResponse.json({ appointment, paymentsEnabled: false }, { status: 201 });
+    }
 
     let clientId: string;
     let payerEmail: string;
@@ -60,8 +111,6 @@ export async function POST(request: NextRequest) {
     if (!advisorProfile) {
       return NextResponse.json({ error: "Advisor not found" }, { status: 404 });
     }
-
-    const paymentsEnabled = isPaymentsEnabled();
 
     if (paymentsEnabled && !advisorProfile.mpAccessToken) {
       return NextResponse.json(

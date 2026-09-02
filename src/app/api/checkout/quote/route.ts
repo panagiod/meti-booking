@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculatePrices } from "@/lib/pricing";
 import { isPaymentsEnabled } from "@/lib/payments-config";
+import {
+  getDemoQuote,
+  isDemoBookingMode,
+  isDemoServiceId,
+} from "@/lib/studio-demo-fallback";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +17,13 @@ export async function GET(request: NextRequest) {
 
     if (!serviceId) {
       return NextResponse.json({ error: "serviceId is required" }, { status: 400 });
+    }
+
+    if (isDemoBookingMode() && isDemoServiceId(serviceId)) {
+      return NextResponse.json({
+        paymentsEnabled: isPaymentsEnabled(),
+        quote: getDemoQuote(),
+      });
     }
 
     const service = await prisma.advisorService.findUnique({

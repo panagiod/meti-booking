@@ -1,12 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 import { resolveStudioAdvisor } from "@/lib/studio-advisor";
 import { getStudioContent } from "@/lib/studio-content-server";
+import { getDemoStudioResponse, isDemoBookingMode } from "@/lib/studio-demo-fallback";
 
 /**
  * Returns the primary studio instructor used for customer booking at /book.
  */
 export async function GET() {
+  if (isDemoBookingMode()) {
+    return NextResponse.json(getDemoStudioResponse());
+  }
+
   try {
     const [advisor, content] = await Promise.all([resolveStudioAdvisor(), getStudioContent()]);
 

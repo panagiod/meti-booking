@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isReformerService } from "@/lib/site-config";
 import { resolveBookingLeadHours } from "@/lib/booking-config";
+import {
+  getDemoAdvisorResponse,
+  isDemoAdvisorId,
+  isDemoBookingMode,
+} from "@/lib/studio-demo-fallback";
 
 // GET: Get advisor details
 export async function GET(
@@ -10,6 +15,10 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+
+    if (isDemoBookingMode() && isDemoAdvisorId(id)) {
+      return NextResponse.json(getDemoAdvisorResponse());
+    }
 
     const advisor = await prisma.advisorProfile.findUnique({
       where: { id },
