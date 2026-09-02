@@ -1,7 +1,9 @@
 # CI/CD — automatic production deploy
 
-Every push to **`main`** deploys to your Hetzner VPS automatically.  
-You stop running `git pull` and `./deploy/deploy.sh` by hand.
+Every push to **`main`** deploys to your Hetzner VPS automatically.
+
+**Default on small VPS:** `DEPLOY_MODE=lite` in `.env` → no Docker, SQLite ([LITE.md](./LITE.md)).  
+Docker + Postgres only if `DEPLOY_MODE=docker`.
 
 ## How it works
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Production deploy on the VPS (used by CI/CD and manual runs).
-# Assumes repo is already at the desired git ref (ci-deploy-wrapper pulls first).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -20,16 +19,22 @@ echo "=========================================="
 chmod +x deploy/*.sh
 
 if [[ ! -f .env ]]; then
-  echo "ERROR: Missing .env — run ./deploy/init-env.sh once on the server."
+  echo "ERROR: Missing .env — run ./deploy/init-env-lite.sh (recommended) or ./deploy/init-env.sh"
   exit 1
 fi
-
-./deploy/deploy.sh
 
 # shellcheck disable=SC1091
 set -a
 source .env
 set +a
+
+if [[ "${DEPLOY_MODE:-lite}" == "lite" ]]; then
+  echo "Deploy mode: lite (no Docker, SQLite)"
+  ./deploy/deploy-lite.sh
+else
+  echo "Deploy mode: docker (PostgreSQL)"
+  ./deploy/deploy.sh
+fi
 
 if [[ -n "${DOMAIN:-}" ]]; then
   ./deploy/smoke-test.sh "https://${DOMAIN}"

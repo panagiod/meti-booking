@@ -6,22 +6,34 @@
 
 | Doc | Contents |
 |-----|----------|
-| **[HETZNER.md](./HETZNER.md)** | Full step-by-step (server, DNS, Docker, HTTPS, cron) |
+| **[LITE.md](./LITE.md)** | **Recommended** — no Docker, SQLite, low RAM |
+| **[HETZNER.md](./HETZNER.md)** | Docker + PostgreSQL (heavier) |
 | **[CICD.md](./CICD.md)** | **Auto-deploy** — GitHub Actions → VPS (no manual `git pull`) |
 | **[RESEND.md](./RESEND.md)** | Booking emails (Resend) |
 | **[GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md)** | Google sign-in |
 | **[../docs/HOSTING.md](../docs/HOSTING.md)** | Hosting overview, env vars, scripts, checklist |
 
-## Quick deploy (on the VPS)
+## Quick deploy — lite (recommended, ~4GB VPS)
 
 ```bash
 git clone https://github.com/panagiod/meti-booking.git
 cd meti-booking
-cp deploy/env.production.example .env   # edit DOMAIN, secrets, passwords
 chmod +x deploy/*.sh
-./deploy/deploy.sh
-./deploy/seed.sh                        # first time only (ALLOW_DEMO_SEED=1)
+./deploy/install-lite.sh
+./deploy/init-env-lite.sh
+./deploy/deploy-lite.sh
+./deploy/seed-lite.sh          # first time (ALLOW_DEMO_SEED=1 in .env)
 ./deploy/setup-cron.sh
+```
+
+## Quick deploy — Docker + Postgres (heavier)
+
+```bash
+git clone https://github.com/panagiod/meti-booking.git
+cd meti-booking
+./deploy/install-server.sh
+FORCE=1 ./deploy/init-env.sh
+./deploy/deploy.sh
 ```
 
 ## Auto-deploy (after first deploy works)

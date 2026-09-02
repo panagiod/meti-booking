@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Seed studio data on lite (SQLite) deploy.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+# shellcheck disable=SC1091
+set -a
+source .env
+set +a
+
+if [[ "${ALLOW_DEMO_SEED:-0}" != "1" ]]; then
+  echo "Set ALLOW_DEMO_SEED=1 in .env first"
+  exit 1
+fi
+
+node scripts/prisma-prepare.mjs
+pnpm exec prisma generate --schema .prisma/schema.build.prisma
+ALLOW_DEMO_SEED=1 pnpm demo:setup
