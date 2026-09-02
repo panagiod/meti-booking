@@ -72,7 +72,7 @@ Close fixed audit issues: `./scripts/close-resolved-issues.sh`
 
 - Multiple session types on public site — **reformer only**
 - Copy only in locale files — **admin CMS overrides DB**
-- Tue/Thu/Sat schedule — demo seed is **Mon/Wed/Sat**
+- Tue/Thu/Sat schedule — demo seed is **Tue/Thu 15:45–18:00, Sat 08:00–12:45**
 - COP currency — everything is **EUR**
 - Colombia timezone — use **Europe/Athens** via `timezone.ts`
 - Greek genitive months — use **nominative** via `date-locale.ts`

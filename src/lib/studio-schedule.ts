@@ -1,13 +1,16 @@
 import { generateAvailableSlots } from "@/lib/slots";
 import { siteConfig } from "@/lib/site-config";
 
-/** Default afternoon window for new / demo schedule rows */
-export const STUDIO_AFTERNOON_START = "14:00";
-export const STUDIO_AFTERNOON_END = "17:00";
-export const STUDIO_DEFAULT_GAP_MINUTES = 10;
+/** Reformer class length — matches bookable slot spacing */
+export const STUDIO_SESSION_DURATION_MIN = 45;
 
-/** Demo seed only — Mon, Wed, Sat (admin can change via /admin/schedule) */
-export const STUDIO_DEMO_ACTIVE_DAYS = [1, 3, 6] as const;
+/** Default afternoon window for new / inactive schedule rows in admin UI */
+export const STUDIO_AFTERNOON_START = "15:45";
+export const STUDIO_AFTERNOON_END = "18:45";
+export const STUDIO_DEFAULT_GAP_MINUTES = 0;
+
+/** Demo seed — Tue, Thu, Sat (admin can change via /admin/schedule) */
+export const STUDIO_DEMO_ACTIVE_DAYS = [2, 4, 6] as const;
 
 export interface StudioDaySchedule {
   dayOfWeek: number;
@@ -113,7 +116,7 @@ export function validateStudioSchedule(schedules: ScheduleInput[]): string | nul
 
 export function countSlotsPerDay(
   schedule: Pick<StudioDaySchedule, "startTime" | "endTime" | "lunchStart" | "lunchEnd" | "gapMinutes">,
-  serviceDurationMin = 50
+  serviceDurationMin = STUDIO_SESSION_DURATION_MIN
 ): number {
   const slots = generateAvailableSlots(
     {
@@ -227,14 +230,60 @@ export function formatScheduleHoursForLocale(
     .join(locale === "el" ? " · " : " · ");
 }
 
-/** Seed rows for demo-setup (Mon, Wed, Sat afternoons) */
+/** Demo seed rows: Tue/Thu 15:45–18:00 slots, Sat morning with 10:15–10:30 break */
 export function studioScheduleSeedRows() {
-  return STUDIO_DEMO_ACTIVE_DAYS.map((dayOfWeek) => ({
-    dayOfWeek,
-    startTime: STUDIO_AFTERNOON_START,
-    endTime: STUDIO_AFTERNOON_END,
-    lunchStart: null,
-    lunchEnd: null,
-    gapMinutes: STUDIO_DEFAULT_GAP_MINUTES,
+  return [
+    {
+      dayOfWeek: 2,
+      startTime: "15:45",
+      endTime: "18:45",
+      lunchStart: null,
+      lunchEnd: null,
+      gapMinutes: 0,
+    },
+    {
+      dayOfWeek: 4,
+      startTime: "15:45",
+      endTime: "18:45",
+      lunchStart: null,
+      lunchEnd: null,
+      gapMinutes: 0,
+    },
+    {
+      dayOfWeek: 6,
+      startTime: "08:00",
+      endTime: "13:30",
+      lunchStart: "10:15",
+      lunchEnd: "10:30",
+      gapMinutes: 0,
+    },
+  ] as const;
+}
+
+/** Fallback hours string from demo seed (EN) */
+export function demoScheduleHoursEn(): string {
+  const template = weeklyScheduleTemplate().map((d) => ({
+    ...d,
+    isActive: (STUDIO_DEMO_ACTIVE_DAYS as readonly number[]).includes(d.dayOfWeek),
+    ...(d.dayOfWeek === 2 || d.dayOfWeek === 4
+      ? { startTime: "15:45", endTime: "18:45" }
+      : d.dayOfWeek === 6
+        ? { startTime: "08:00", endTime: "13:30" }
+        : {}),
   }));
+  return formatScheduleHoursForLocale(template, "en");
+}
+
+/** Fallback hours string from demo seed (EL) */
+export function demoScheduleHoursEl(): string {
+  const template = weeklyScheduleTemplate().map((d) => ({
+    ...d,
+    isActive: (STUDIO_DEMO_ACTIVE_DAYS as readonly number[]).includes(d.dayOfWeek),
+    ...(d.dayOfWeek === 2 || d.dayOfWeek === 4
+      ? { startTime: "15:45", endTime: "18:45" }
+      : d.dayOfWeek === 6
+        ? { startTime: "08:00", endTime: "13:30" }
+        : {}),
+  }));
+  return formatScheduleHoursForLocale(template, "el");
 }

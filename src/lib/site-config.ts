@@ -21,7 +21,7 @@ export const siteConfig = {
   location: "123 Wellness Ave, Studio 2",
   phone: "(555) 012-3456",
   email: "hello@meti-pilates.studio",
-  hours: "Mon, Wed, Sat · 2pm–5pm",
+  hours: "Tue, Thu, Sat · see booking calendar",
   images: {
     /** Reformer pilates only — bundled studio photos (Pexels, free license) */
     hero: "/images/hero.jpg",
@@ -32,7 +32,7 @@ export const siteConfig = {
       name: "Reformer",
       slug: "reformer",
       description: "Spring-loaded carriage work for strength, length, and control.",
-      duration: "50 min",
+      duration: "45 min",
       priceFrom: 45,
       imageKey: "reformer" as const,
       featured: true,

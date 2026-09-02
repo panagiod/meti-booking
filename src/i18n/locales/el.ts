@@ -24,7 +24,7 @@ const el: Messages = {
   sessions: {
     label: "Reformer",
     title: "Κλείστε μάθημα reformer",
-    subtitle: "50 λεπτά στο όργανο reformer. Διαθεσιμότητα σε πραγματικό χρόνο.",
+    subtitle: "45 λεπτά στο όργανο reformer. Διαθεσιμότητα σε πραγματικό χρόνο.",
     mostPopular: "Reformer",
     book: "Κράτηση",
     fromPrice: "από",
@@ -35,7 +35,7 @@ const el: Messages = {
       reformer: {
         name: "Reformer",
         description: "Ενδυνάμωση, ευλυγισία και έλεγχος με το όργανο reformer.",
-        duration: "50 λεπτά",
+        duration: "45 λεπτά",
       },
     },
   },
@@ -168,7 +168,7 @@ const el: Messages = {
     ariaLabel: "Γλώσσα",
   },
   common: {
-    hours: "Δευ, Τετ, Σάβ · 14:00–17:00",
+    hours: "Τρί, Πέμ, Σάβ · δείτε το ημερολόγιο",
     error: "Σφάλμα",
     continue: "Συνέχεια",
     processing: "Επεξεργασία…",

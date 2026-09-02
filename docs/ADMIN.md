@@ -32,8 +32,8 @@ Controls when customers can book on the public `/book` page.
 
 | Setting | Value |
 |---------|--------|
-| Open days | **Monday, Wednesday, Saturday** (admin can change to any days) |
-| Hours | **14:00–17:00** by default (configurable per day) |
+| Open days | **Tuesday, Thursday, Saturday** (admin can change to any days) |
+| Hours | **Tue/Thu 15:45–18:00**, **Sat 08:00–12:45** (45 min classes) |
 
 ### What you can do
 

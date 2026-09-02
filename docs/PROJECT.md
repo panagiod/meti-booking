@@ -19,7 +19,7 @@
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |
 | **Booking window** | **8 weeks ahead** (`bookingWeeksAhead`) |
 | **Lead time** | **2 hours** minimum before first bookable slot |
-| **Weekly schedule** | **Admin-configurable** — any days/hours (demo seed: Mon, Wed, Sat) |
+| **Weekly schedule** | **Admin-configurable** — demo seed: Tue, Thu, Sat |
 | **Admin calendar** | `/admin/schedule` — days, hours, lunch break, gap, blocked dates |
 | **Admin CMS** | `/admin/content` — text, images, contact (DB-backed) |
 | **Greek typography** | Noto Sans (body) + GFS Didot (headlines) when `lang="el"` |
@@ -43,7 +43,7 @@
 - Slots show **remaining spots** or **Full** / **Γεμάτο** (Greek).
 - Capacity enforced in `POST /api/appointments` (409 if full, serializable transaction).
 - Server validates slot against schedule, blocked times, lead hours, and capacity.
-- Demo seed: **Mon/Wed/Sat 14:00–17:00** (admin can change any days/hours).
+- Demo seed: **Tue/Thu 15:45–18:00** (4 slots), **Sat 08:00–12:45** (7 slots), 45 min classes.
 - Calendar shows dates up to **8 weeks** ahead.
 
 ---

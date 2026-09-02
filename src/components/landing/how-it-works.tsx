@@ -8,7 +8,7 @@ const steps = [
     number: "01",
     title: "Pick a session",
     description:
-      "Choose your reformer session — 50 minutes with clear pricing.",
+      "Choose your reformer session — 45 minutes with clear pricing.",
     color: "var(--primary)",
     bgColor: "var(--primary-light)",
   },

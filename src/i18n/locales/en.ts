@@ -22,7 +22,7 @@ const en: Messages = {
   sessions: {
     label: "Reformer",
     title: "Book a reformer session",
-    subtitle: "50 minutes on the carriage. Live availability.",
+    subtitle: "45 minutes on the carriage. Live availability.",
     mostPopular: "Reformer",
     book: "Book",
     fromPrice: "from",
@@ -32,7 +32,7 @@ const en: Messages = {
       reformer: {
         name: "Reformer",
         description: "Spring-loaded carriage work for strength, length, and control.",
-        duration: "50 min",
+        duration: "45 min",
       },
     },
   },
@@ -164,7 +164,7 @@ const en: Messages = {
     ariaLabel: "Language",
   },
   common: {
-    hours: "Mon, Wed, Sat · 2pm–5pm",
+    hours: "Tue, Thu, Sat · see booking calendar",
     error: "Error",
     continue: "Continue",
     processing: "Processing…",

@@ -2,7 +2,12 @@ import { config } from "dotenv";
 import { resolve } from "path";
 import { execSync } from "child_process";
 import { randomBytes } from "crypto";
-import { studioScheduleSeedRows } from "../src/lib/studio-schedule";
+import {
+  studioScheduleSeedRows,
+  formatScheduleHoursForLocale,
+  mergeScheduleFromDb,
+  STUDIO_SESSION_DURATION_MIN,
+} from "../src/lib/studio-schedule";
 import { DEFAULT_BOOKING_LEAD_HOURS } from "../src/lib/booking-config";
 
 config({ path: resolve(__dirname, "../.env") });
@@ -160,9 +165,17 @@ async function main() {
             data: {
               advisorId: advisor.id,
               ...row,
+              isActive: true,
             },
           });
         }
+      }
+
+      if (RESET) {
+        await prisma.advisorService.updateMany({
+          where: { advisorId: advisor.id, name: "Reformer Session" },
+          data: { durationMin: STUDIO_SESSION_DURATION_MIN },
+        });
       }
 
       const existingServices = await prisma.advisorService.count({
@@ -175,7 +188,7 @@ async function main() {
             advisorId: advisor.id,
             name: "Reformer Session",
             description: "Equipment-based full-body workout on the reformer.",
-            durationMin: 50,
+            durationMin: STUDIO_SESSION_DURATION_MIN,
             priceCents: 4500,
             isActive: true,
             categoryId: category?.id,

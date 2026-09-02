@@ -15,7 +15,7 @@ Book **reformer sessions** online: pick a date, time, sign in, pay.
 |---|---|
 | **Brand** | MeTi Pilates |
 | **Public site** | Homepage + `/book` |
-| **Schedule** | Mon, Wed, Sat · 2pm–5pm (demo seed; admin-editable) |
+| **Schedule** | Tue, Thu, Sat (see `studio-schedule.ts`; admin-editable) |
 | **Booking window** | 8 weeks ahead |
 | **Capacity** | 3 clients per time slot |
 | **Currency** | EUR (€) |
@@ -64,7 +64,7 @@ See [docs/ADMIN.md](docs/ADMIN.md) for details.
 | `pnpm test:unit` | Vitest |
 | `pnpm test:e2e` | Playwright |
 | `pnpm exec tsx scripts/generate-brand-assets.ts` | Regenerate favicons + OG image |
-| `pnpm exec tsx scripts/reset-studio-schedule.ts` | Reset schedule to Mon/Wed/Sat 14:00–17:00 |
+| `pnpm exec tsx scripts/reset-studio-schedule.ts` | Reset schedule to Tue/Thu/Sat seed times |
 | `pnpm deploy:check` | Validate production env vars (Vercel) |
 | `pnpm deploy:check:hetzner` | Validate `.env` for Hetzner VPS |
 | `./scripts/close-resolved-issues.sh` | Close fixed GitHub issues (#1, #8, #9, #11–#31) |

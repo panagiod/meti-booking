@@ -3,16 +3,11 @@ import { resolve } from "path";
 
 config({ path: resolve(__dirname, "../.env") });
 
-const ACTIVE_DAYS = [1, 3, 6] as const; // Mon, Wed, Sat
-const START = "14:00";
-const END = "17:00";
-
 async function main() {
   const { PrismaPg } = await import("@prisma/adapter-pg");
   const { PrismaClient } = await import("../src/generated/prisma/client");
-  const { formatScheduleHoursForLocale, mergeScheduleFromDb } = await import(
-    "../src/lib/studio-schedule"
-  );
+  const { formatScheduleHoursForLocale, mergeScheduleFromDb, studioScheduleSeedRows, STUDIO_SESSION_DURATION_MIN } =
+    await import("../src/lib/studio-schedule");
   const { getStudioContent, saveStudioContent } = await import(
     "../src/lib/studio-content-server"
   );
@@ -32,20 +27,20 @@ async function main() {
 
   await prisma.advisorSchedule.deleteMany({ where: { advisorId: advisor.id } });
 
-  for (const dayOfWeek of ACTIVE_DAYS) {
+  for (const row of studioScheduleSeedRows()) {
     await prisma.advisorSchedule.create({
       data: {
         advisorId: advisor.id,
-        dayOfWeek,
-        startTime: START,
-        endTime: END,
-        lunchStart: null,
-        lunchEnd: null,
-        gapMinutes: 10,
+        ...row,
         isActive: true,
       },
     });
   }
+
+  await prisma.advisorService.updateMany({
+    where: { advisorId: advisor.id, name: "Reformer Session" },
+    data: { durationMin: STUDIO_SESSION_DURATION_MIN },
+  });
 
   const schedules = await prisma.advisorSchedule.findMany({
     where: { advisorId: advisor.id },
