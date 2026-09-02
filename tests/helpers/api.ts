@@ -24,6 +24,11 @@ export function withSession(api: APIRequestContext, sessionToken: string) {
         headers: { cookie: `better-auth.session_token=${sessionToken}` },
         data: body,
       }),
+    patch: (url: string, body?: unknown) =>
+      api.patch(`${BASE_URL}${url}`, {
+        headers: { cookie: `better-auth.session_token=${sessionToken}` },
+        data: body,
+      }),
     del: (url: string) =>
       api.delete(`${BASE_URL}${url}`, {
         headers: { cookie: `better-auth.session_token=${sessionToken}` },

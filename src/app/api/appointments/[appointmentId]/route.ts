@@ -3,6 +3,10 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
+import {
+  canAdvisorCancelAppointment,
+  canClientCancelAppointment,
+} from "@/lib/appointment-cancel";
 
 // GET: Get appointment details
 export async function GET(
@@ -62,7 +66,7 @@ const cancelSchema = z.object({
   reason: z.string().max(500).optional(),
 });
 
-// PATCH: Cancel a pending appointment (client or advisor)
+// PATCH: Cancel a booking (client or advisor) and free the slot
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ appointmentId: string }> }
@@ -86,6 +90,7 @@ export async function PATCH(
       include: {
         advisor: { include: { user: true } },
         client: true,
+        service: true,
       },
     });
 
@@ -102,12 +107,18 @@ export async function PATCH(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Only PENDING appointments can be cancelled via this endpoint
-    if (appointment.status !== "PENDING") {
-      return NextResponse.json(
-        { error: "Only appointments with pending payment can be cancelled" },
-        { status: 400 }
-      );
+    const cancelCheck = isClient
+      ? canClientCancelAppointment({
+          status: appointment.status,
+          scheduledAt: appointment.scheduledAt,
+          rescheduleHoursMin: appointment.service.rescheduleHoursMin,
+        })
+      : canAdvisorCancelAppointment(appointment.status)
+        ? { allowed: true as const }
+        : { allowed: false as const, reason: "This appointment cannot be cancelled." };
+
+    if (!cancelCheck.allowed) {
+      return NextResponse.json({ error: cancelCheck.reason }, { status: 400 });
     }
 
     // Cancel the appointment and free the slot

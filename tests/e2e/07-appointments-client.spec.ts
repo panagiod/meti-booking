@@ -182,4 +182,62 @@ test.describe("07 · Client appointments", () => {
     );
     expect(intruderHistory.status()).toBe(403);
   });
+
+  test("client can cancel a confirmed upcoming booking and free the slot", async ({ request }) => {
+    const api = newApi(request);
+    const fixture = await createActiveAdvisor(request);
+    const client = await createClient(request);
+
+    const apt = await prisma.appointment.create({
+      data: {
+        clientId: client.userId,
+        advisorId: fixture.advisorId,
+        serviceId: fixture.serviceId,
+        scheduledAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        durationMin: 60,
+        status: "CONFIRMED",
+        totalCents: 11500,
+        advisorEarning: 10000,
+        platformFee: 1500,
+      },
+    });
+
+    const cancel = await withSession(api, client.sessionToken).patch(`/api/appointments/${apt.id}`, {
+      reason: "Cancelled by client",
+    });
+    expect(cancel.status(), await cancel.text()).toBe(200);
+
+    const updated = await prisma.appointment.findUnique({ where: { id: apt.id } });
+    expect(updated?.status).toBe("CANCELLED");
+    expect(updated?.cancelledAt).toBeTruthy();
+
+    const list = await withSession(api, client.sessionToken).get("/api/client/appointments");
+    const { appointments } = await list.json();
+    expect(appointments.some((item: { id: string }) => item.id === apt.id)).toBe(false);
+  });
+
+  test("client cannot cancel a confirmed booking inside the lead window", async ({ request }) => {
+    const api = newApi(request);
+    const fixture = await createActiveAdvisor(request);
+    const client = await createClient(request);
+
+    const apt = await prisma.appointment.create({
+      data: {
+        clientId: client.userId,
+        advisorId: fixture.advisorId,
+        serviceId: fixture.serviceId,
+        scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000),
+        durationMin: 60,
+        status: "CONFIRMED",
+        totalCents: 11500,
+        advisorEarning: 10000,
+        platformFee: 1500,
+      },
+    });
+
+    const cancel = await withSession(api, client.sessionToken).patch(`/api/appointments/${apt.id}`, {
+      reason: "Too late",
+    });
+    expect(cancel.status()).toBe(400);
+  });
 });

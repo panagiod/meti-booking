@@ -14,6 +14,8 @@ import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { sileo } from "sileo";
 import { cn, formatCurrency } from "@/lib/utils";
+import { canClientCancelAppointment } from "@/lib/appointment-cancel";
+import type { AppointmentStatus } from "@/generated/prisma/client";
 
 interface Appointment {
   id: string;
@@ -21,9 +23,17 @@ interface Appointment {
   durationMin: number;
   status: string;
   totalCents: number;
-  service: { name: string };
+  service: { name: string; rescheduleHoursMin: number };
   advisor: { user: { name: string; image: string | null } };
   review?: { id: string; rating: number; comment: string | null } | null;
+}
+
+function clientCanCancel(appointment: Appointment): boolean {
+  return canClientCancelAppointment({
+    status: appointment.status as AppointmentStatus,
+    scheduledAt: new Date(appointment.scheduledAt),
+    rescheduleHoursMin: appointment.service.rescheduleHoursMin ?? 24,
+  }).allowed;
 }
 
 export default function AppointmentsPage() {
@@ -124,8 +134,10 @@ export default function AppointmentsPage() {
 
   const handleCancelAppointment = async (appointment: Appointment) => {
     const confirmed = await dialog.showConfirm(
-      "Cancel appointment",
-      `Are you sure you want to cancel the appointment for ${appointment.service.name} con ${appointment.advisor.user.name}? This action cannot be undone.`,
+      "Cancel booking",
+      appointment.status === "CONFIRMED"
+        ? `Cancel your ${appointment.service.name} on ${format(new Date(appointment.scheduledAt), "d MMM yyyy 'at' HH:mm", { locale: enUS })}? The slot will be released for other clients.`
+        : `Cancel your unpaid booking for ${appointment.service.name}? The time slot will be released.`,
       "warning"
     );
     if (!confirmed) return;
@@ -142,7 +154,7 @@ export default function AppointmentsPage() {
         const data = await res.json();
         throw new Error(data.error || "Failed to cancel appointment");
       }
-      sileo.success({ title: "Appointment cancelled", description: "The time slot has been released." });
+      sileo.success({ title: "Booking cancelled", description: "Your session was cancelled and the slot is available again." });
       await fetchAppointments();
     } catch (err: any) {
       sileo.error({ title: "Error", description: err.message || "Could not cancel appointment." });
@@ -177,10 +189,10 @@ export default function AppointmentsPage() {
       {/* Header */}
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          My Appointments
+          My bookings
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Manage your scheduled consultations
+          View upcoming reformer sessions and cancel if your plans change
         </p>
       </div>
 
@@ -215,11 +227,11 @@ export default function AppointmentsPage() {
           <CardContent className="p-12">
             <EmptyState
               icon={Calendar}
-              title="No appointments yet"
-              description="Browse our advisors and book your first consultation."
+              title="No bookings yet"
+              description="Book your first reformer session online."
               action={{
-                label: "Browse advisors",
-                onClick: () => (window.location.href = "/services"),
+                label: "Book a session",
+                onClick: () => (window.location.href = "/book"),
               }}
             />
           </CardContent>
@@ -286,7 +298,7 @@ export default function AppointmentsPage() {
                         )}
                       </Button>
                     )}
-                    {apt.status === "PENDING" && (
+                    {(apt.status === "PENDING" || apt.status === "CONFIRMED") && clientCanCancel(apt) && (
                       <Button
                         size="sm"
                         variant="destructive"
@@ -303,7 +315,12 @@ export default function AppointmentsPage() {
                         )}
                       </Button>
                     )}
-                    {(apt.status === "CONFIRMED" || apt.status === "IN_PROGRESS") && (
+                    {apt.status === "CONFIRMED" && !clientCanCancel(apt) && new Date(apt.scheduledAt) > new Date() && (
+                      <span className="text-xs text-[var(--text-muted)] max-w-[10rem] text-right">
+                        Cancel at least {apt.service.rescheduleHoursMin ?? 24}h before
+                      </span>
+                    )}
+                    {apt.status === "IN_PROGRESS" && (
                       <Button size="sm" asChild>
                         <Link href={`/call/${apt.id}`}>
                           <Video className="w-4 h-4 mr-1" />
