@@ -91,7 +91,7 @@ export default function CallPage({
     return null;
   }
 
-  const userRole = (user as any).role === "ADVISOR" ? "advisor" : "client";
+  const userRole = (user as any).role === "INSTRUCTOR" ? "advisor" : "client";
 
   // If the appointment has already ended, show a message
   if (timeStatus === "after" && !inCall) {

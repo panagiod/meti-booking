@@ -35,10 +35,10 @@ const DEMO_USERS = {
     name: "Demo Admin",
     role: "ADMIN" as const,
   },
-  advisor: {
+  instructor: {
     email: "tyrri_meropi@hotmail.com",
     name: "Meropi Tirri",
-    role: "ADVISOR" as const,
+    role: "INSTRUCTOR" as const,
   },
   client: {
     email: "client@demo.meti-booking.local",
@@ -59,7 +59,7 @@ async function main() {
   }
 
   if (RESET) {
-    console.log("[demo-setup] --reset: will overwrite existing schedule, services, and advisor profile.");
+    console.log("[demo-setup] --reset: will overwrite existing schedule, services, and instructor profile.");
   } else {
     console.log("[demo-setup] Preserving existing admin calendar and website content (use --reset to re-seed).");
   }
@@ -84,7 +84,7 @@ async function main() {
   async function ensureUser(
     email: string,
     name: string,
-    role: "ADMIN" | "ADVISOR" | "CLIENT"
+    role: "ADMIN" | "INSTRUCTOR" | "CLIENT"
   ) {
     const existing = await prisma.user.findUnique({ where: { email } });
 
@@ -110,8 +110,8 @@ async function main() {
       return user.id;
     }
 
-    if (role === "ADVISOR") {
-      await prisma.user.update({ where: { id: user.id }, data: { role: "ADVISOR" } });
+    if (role === "INSTRUCTOR") {
+      await prisma.user.update({ where: { id: user.id }, data: { role: "INSTRUCTOR" } });
       await prisma.clientProfile.deleteMany({ where: { userId: user.id } });
 
       let advisor = await prisma.instructorProfile.findUnique({ where: { userId: user.id } });
@@ -232,7 +232,7 @@ async function main() {
     console.log("Demo accounts created. Password was set via DEMO_PASSWORD env (not printed).");
   }
   console.log(`  Admin:   ${DEMO_USERS.admin.email}`);
-  console.log(`  Advisor: ${DEMO_USERS.advisor.email}`);
+  console.log(`  Instructor: ${DEMO_USERS.instructor.email}`);
   console.log(`  Client:  ${DEMO_USERS.client.email}`);
   console.log("\nNext: pnpm dev → http://localhost:3000");
 }

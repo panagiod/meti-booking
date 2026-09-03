@@ -34,6 +34,8 @@ describe("auth-redirect", () => {
     expect(postAuthPath("ADMIN")).toBe("/admin");
     expect(postAuthPath("CLIENT")).toBe("/dashboard");
     expect(homePathForRole("ADVISOR")).toBe("/dashboard");
+    expect(homePathForRole("INSTRUCTOR")).toBe("/dashboard");
+    expect(homePathForRole("CLIENT")).toBe("/dashboard");
     expect(homePathForRole("ADMIN")).toBe("/admin");
   });
 });

@@ -47,7 +47,8 @@ pnpm install --frozen-lockfile
 
 echo "==> SQLite schema..."
 node scripts/prisma-prepare.mjs
-pnpm exec prisma db push --schema .prisma/schema.build.prisma
+node scripts/rename-advisor-to-instructor.mjs
+pnpm exec prisma db push --schema .prisma/schema.build.prisma --accept-data-loss
 
 echo "==> Building Next.js (standalone)..."
 pnpm build

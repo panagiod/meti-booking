@@ -11,7 +11,7 @@
     "postinstall": "node scripts/prisma-prepare.mjs && prisma generate --schema .prisma/schema.build.prisma",
     "db:generate": "node scripts/prisma-prepare.mjs && prisma generate --schema .prisma/schema.build.prisma",
     "db:migrate": "node scripts/prisma-prepare.mjs && prisma migrate dev --schema .prisma/schema.build.prisma",
-    "db:push": "node scripts/prisma-prepare.mjs && prisma db push --schema .prisma/schema.build.prisma",
+    "db:push": "node scripts/prisma-prepare.mjs && node scripts/rename-advisor-to-instructor.mjs && prisma db push --schema .prisma/schema.build.prisma",
     "db:deploy": "node scripts/prisma-prepare.mjs && prisma migrate deploy --schema .prisma/schema.build.prisma",
     "db:clean": "tsx scripts/clean-db.ts",
     "demo:setup": "tsx scripts/demo-setup.ts",

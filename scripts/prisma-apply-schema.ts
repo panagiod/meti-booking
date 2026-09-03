@@ -10,7 +10,11 @@ export function isSqliteDatabase(): boolean {
 export function applyDatabaseSchema(): void {
   execSync("node scripts/prisma-prepare.mjs", { stdio: "inherit" });
   if (isSqliteDatabase()) {
-    execSync(`pnpm exec prisma db push --schema ${BUILD_SCHEMA}`, { stdio: "inherit" });
+    execSync("node scripts/rename-advisor-to-instructor.mjs", { stdio: "inherit" });
+    execSync(
+      `pnpm exec prisma db push --schema ${BUILD_SCHEMA} --accept-data-loss`,
+      { stdio: "inherit" },
+    );
   } else {
     execSync(`pnpm exec prisma migrate deploy --schema ${BUILD_SCHEMA}`, { stdio: "inherit" });
   }

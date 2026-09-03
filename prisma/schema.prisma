@@ -1,5 +1,4 @@
 // Prisma schema for MeTi Pilates
-// TypeScript uses instructor names; @@map/@map keep the live SQLite/Postgres columns.
 
 generator client {
   provider = "prisma-client"
@@ -37,7 +36,7 @@ model User {
 
 enum UserRole {
   ADMIN
-  ADVISOR
+  INSTRUCTOR
   CLIENT
 }
 
@@ -104,7 +103,7 @@ model AdminProfile {
 }
 
 // ============================================
-// INSTRUCTOR (studio teacher; table: advisor_profiles)
+// INSTRUCTOR
 // ============================================
 
 model InstructorProfile {
@@ -140,7 +139,7 @@ model InstructorProfile {
   categories      InstructorCategory[]
   blockedTimes    BlockedTime[]
 
-  @@map("advisor_profiles")
+  @@map("instructor_profiles")
 }
 
 // ============================================
@@ -171,15 +170,15 @@ model Category {
 
 model InstructorCategory {
   id            String   @id @default(cuid())
-  instructorId  String   @map("advisorId")
+  instructorId  String
   categoryId    String
   createdAt     DateTime @default(now())
 
   instructor    InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
   category      Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  @@unique([instructorId, categoryId], map: "advisor_categories_advisorId_categoryId_key")
-  @@map("advisor_categories")
+  @@unique([instructorId, categoryId])
+  @@map("instructor_categories")
 }
 
 // ============================================
@@ -188,7 +187,7 @@ model InstructorCategory {
 
 model BlockedTime {
   id            String   @id @default(cuid())
-  instructorId  String   @map("advisorId")
+  instructorId  String
   title         String
   startDate     DateTime
   endDate       DateTime
@@ -199,7 +198,7 @@ model BlockedTime {
 
   instructor    InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
 
-  @@index([instructorId, startDate, endDate], map: "blocked_times_advisorId_startDate_endDate_idx")
+  @@index([instructorId, startDate, endDate])
   @@map("blocked_times")
 }
 
@@ -209,7 +208,7 @@ model BlockedTime {
 
 model InstructorService {
   id                  String   @id @default(cuid())
-  instructorId        String   @map("advisorId")
+  instructorId        String
   categoryId          String?
   name                String
   description         String?  @db.Text
@@ -225,7 +224,7 @@ model InstructorService {
   appointments        Appointment[]
   promotions          Promotion[]
 
-  @@map("advisor_services")
+  @@map("instructor_services")
 }
 
 // ============================================
@@ -234,7 +233,7 @@ model InstructorService {
 
 model InstructorSchedule {
   id            String   @id @default(cuid())
-  instructorId  String   @map("advisorId")
+  instructorId  String
   dayOfWeek     Int
   startTime     String
   endTime       String
@@ -247,8 +246,8 @@ model InstructorSchedule {
 
   instructor    InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
 
-  @@unique([instructorId, dayOfWeek], map: "advisor_schedules_advisorId_dayOfWeek_key")
-  @@map("advisor_schedules")
+  @@unique([instructorId, dayOfWeek])
+  @@map("instructor_schedules")
 }
 
 // ============================================
@@ -257,7 +256,7 @@ model InstructorSchedule {
 
 model InstructorDocument {
   id              String    @id @default(cuid())
-  instructorId    String    @map("advisorId")
+  instructorId    String
   documentType    String
   fileName        String
   fileUrl         String
@@ -278,7 +277,7 @@ model InstructorDocument {
 
   instructor      InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
 
-  @@map("advisor_documents")
+  @@map("instructor_documents")
 }
 
 // ============================================
@@ -287,7 +286,7 @@ model InstructorDocument {
 
 model Promotion {
   id            String   @id @default(cuid())
-  instructorId  String   @map("advisorId")
+  instructorId  String
   serviceId     String
   name          String
   discountType  String
@@ -315,7 +314,7 @@ enum InvoiceStatus {
 
 model Invoice {
   id                 String        @id @default(cuid())
-  instructorId       String        @map("advisorId")
+  instructorId       String
   periodStart        DateTime
   periodEnd          DateTime
   totalFeeCents      Int
@@ -328,7 +327,7 @@ model Invoice {
 
   instructor         InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
 
-  @@unique([instructorId, periodStart, periodEnd], map: "invoices_advisorId_periodStart_periodEnd_key")
+  @@unique([instructorId, periodStart, periodEnd])
   @@map("invoices")
 }
 
@@ -355,14 +354,14 @@ model ClientProfile {
 model Appointment {
   id              String            @id @default(cuid())
   clientId        String
-  instructorId    String            @map("advisorId")
+  instructorId    String
   serviceId       String
   scheduledAt     DateTime
   durationMin     Int
   status          AppointmentStatus @default(PENDING)
 
   totalCents         Int
-  instructorEarning  Int            @map("advisorEarning")
+  instructorEarning  Int
   platformFee        Int
   discountCents      Int            @default(0)
   isTest             Boolean        @default(false)

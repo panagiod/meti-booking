@@ -29,12 +29,12 @@ export function testEmail(role: string): string {
 export interface TestUser {
   id: string;
   email: string;
-  role: "ADMIN" | "ADVISOR" | "CLIENT";
+  role: "ADMIN" | "INSTRUCTOR" | "CLIENT";
 }
 
 // Creates a user directly in the DB (without going through the sign-up API)
 export async function createUserDirect(
-  role: "ADMIN" | "ADVISOR" | "CLIENT",
+  role: "ADMIN" | "INSTRUCTOR" | "CLIENT",
   email?: string
 ): Promise<TestUser> {
   const user = await prisma.user.create({
@@ -47,7 +47,7 @@ export async function createUserDirect(
 
   if (role === "ADMIN") {
     await prisma.adminProfile.create({ data: { userId: user.id, level: "GESTOR" } });
-  } else if (role === "ADVISOR") {
+  } else if (role === "INSTRUCTOR") {
     await prisma.instructorProfile.create({
       data: { userId: user.id, isActive: true },
     });

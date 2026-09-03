@@ -70,7 +70,7 @@ export async function createStudioInstructor(
   const { userId, sessionToken } = await signupUser(api, "E2E Advisor");
 
   // Convert to advisor and mark as approved (equivalent to the real flow)
-  await prisma.user.update({ where: { id: userId }, data: { role: "ADVISOR" } });
+  await prisma.user.update({ where: { id: userId }, data: { role: "INSTRUCTOR" } });
   await prisma.clientProfile.deleteMany({ where: { userId } });
   const advisor = await prisma.instructorProfile.create({
     data: {
