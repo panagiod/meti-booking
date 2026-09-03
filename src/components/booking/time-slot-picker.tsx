@@ -85,6 +85,7 @@ export function TimeSlotPicker({
           <div className="py-10 text-center">
             <Clock className="mx-auto mb-3 h-8 w-8 text-[var(--studio-muted)]" />
             <p className="text-[var(--studio-muted)]">{t.booking.noSlots}</p>
+            <p className="mt-2 text-sm text-[var(--studio-muted)]">{t.booking.tryAnotherDay}</p>
           </div>
         )}
       </div>

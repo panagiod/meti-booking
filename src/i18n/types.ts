@@ -75,8 +75,10 @@ export type Messages = {
     selectSessionSub: string;
     pickDate: string;
     pickDateSub: string;
+    nextOpenDay: string;
     pickTime: string;
     noSlots: string;
+    tryAnotherDay: string;
     spotsLeft: string;
     slotFull: string;
     confirm: string;

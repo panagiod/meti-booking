@@ -78,7 +78,7 @@ export default function DashboardPage() {
                     Book a session
                   </h3>
                   <p className="text-sm text-[var(--text-muted)]">
-                    Choose a date and time for reformer pilates
+                    Tue, Thu &amp; Sat · next open times are highlighted
                   </p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all" />

@@ -16,7 +16,11 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DaySlots } from "@/lib/slots";
-import { useLocale, useTranslations } from "@/components/providers/locale-provider";
+import {
+  formatMessage,
+  useLocale,
+  useTranslations,
+} from "@/components/providers/locale-provider";
 import { getDateFnsLocale } from "@/lib/date-locale";
 
 interface CalendarPickerProps {
@@ -59,6 +63,7 @@ export function CalendarPicker({
 
   const minDate = availableDates[0]?.date;
   const maxDate = availableDates[availableDates.length - 1]?.date;
+  const nextOpen = availableDates.find((day) => day.hasAvailability);
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -69,6 +74,13 @@ export function CalendarPicker({
         <p className="mt-2 text-sm text-[var(--studio-muted)] sm:text-base">
           {t.booking.pickDateSub}
         </p>
+        {nextOpen && (
+          <p className="mt-3 rounded-xl bg-[var(--studio-warm)] px-3 py-2 text-sm text-[var(--studio-ink)]">
+            {formatMessage(t.booking.nextOpenDay, {
+              date: format(nextOpen.date, "EEEE d MMMM", { locale: dateFnsLocale }),
+            })}
+          </p>
+        )}
         {isLoading && (
           <p className="mt-2 text-xs text-[var(--studio-muted)]">Loading availability…</p>
         )}

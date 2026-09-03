@@ -46,6 +46,16 @@ describe("booking rate limit", () => {
     expect(prisma.appointment.count).not.toHaveBeenCalled();
   });
 
+  it("skips limits for studio admin emails", async () => {
+    const result = await assertBookingRateLimit({
+      ip: "1.2.3.4",
+      email: "meropityrri@gmail.com",
+      clientId: "client-1",
+    });
+    expect(result.ok).toBe(true);
+    expect(prisma.appointment.count).not.toHaveBeenCalled();
+  });
+
   it("skips limits for automated test emails", async () => {
     const result = await assertBookingRateLimit({
       ip: "1.2.3.4",
@@ -67,6 +77,20 @@ describe("booking rate limit", () => {
       hasSession: true,
     });
     expect(result.ok).toBe(true);
+  });
+
+  it("ignores cancelled bookings in the daily cap query", async () => {
+    await assertBookingRateLimit({
+      ip: "8.8.8.8",
+      email: "person@studio.com",
+      clientId: "client-1",
+    });
+    expect(prisma.appointment.count).toHaveBeenCalledWith({
+      where: expect.objectContaining({
+        clientId: "client-1",
+        status: { notIn: ["CANCELLED", "NO_SHOW"] },
+      }),
+    });
   });
 
   it("blocks when the client already has too many recent bookings", async () => {

@@ -96,6 +96,7 @@ export default function BookPage() {
 
   const [apiSlots, setApiSlots] = useState<Record<string, { slots: TimeSlot[]; hasAvailability: boolean }>>({});
   const [slotsLoading, setSlotsLoading] = useState(false);
+  const [didAutoOpen, setDidAutoOpen] = useState(false);
 
   useEffect(() => {
     if (!selectedService || !booking || availableDates.length === 0) {
@@ -134,6 +135,19 @@ export default function BookPage() {
     if (!selectedDate || !selectedService) return null;
     return mergedDates.find((d) => d.dateStr === selectedDate.dateStr) || null;
   }, [selectedDate, selectedService, mergedDates]);
+
+  const nextOpenDay = useMemo(
+    () => mergedDates.find((day) => day.hasAvailability) ?? null,
+    [mergedDates]
+  );
+
+  useEffect(() => {
+    if (didAutoOpen || step !== "date" || !nextOpenDay) return;
+    setDidAutoOpen(true);
+    setSelectedDate(nextOpenDay);
+    setSelectedTime(null);
+    setStep("time");
+  }, [didAutoOpen, step, nextOpenDay]);
 
   const handleDateSelect = (date: DaySlots) => {
     setSelectedDate(date);

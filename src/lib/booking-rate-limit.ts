@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { isAutomatedTestEmail } from "@/lib/appointment-cancel";
+import { isStudioAdminEmail } from "@/lib/studio-admins";
 
 export const BOOKING_IP_LIMIT = 5;
 export const BOOKING_IP_WINDOW_MS = 60 * 60 * 1000;
@@ -49,7 +50,11 @@ export async function checkClientBookingLimits(clientId: string): Promise<{
 
   const [recentCount, upcomingCount] = await Promise.all([
     prisma.appointment.count({
-      where: { clientId, createdAt: { gte: dayAgo } },
+      where: {
+        clientId,
+        createdAt: { gte: dayAgo },
+        status: { notIn: ["CANCELLED", "NO_SHOW"] },
+      },
     }),
     prisma.appointment.count({
       where: {
@@ -83,7 +88,11 @@ export async function assertBookingRateLimit(input: {
   clientId: string;
   hasSession?: boolean;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
-  if (isBookingRateLimitDisabled() || isAutomatedTestEmail(input.email)) {
+  if (
+    isBookingRateLimitDisabled() ||
+    isAutomatedTestEmail(input.email) ||
+    isStudioAdminEmail(input.email)
+  ) {
     return { ok: true };
   }
 

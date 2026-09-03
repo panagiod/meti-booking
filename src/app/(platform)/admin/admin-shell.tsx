@@ -13,6 +13,7 @@ import {
   X,
   Shield,
   CalendarDays,
+  CalendarPlus,
   LayoutTemplate,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,11 @@ const navigation = [
     name: "Users",
     href: "/admin/users",
     icon: Users,
+  },
+  {
+    name: "Book a session",
+    href: "/book",
+    icon: CalendarPlus,
   },
   {
     name: "Schedule",
