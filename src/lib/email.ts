@@ -74,6 +74,8 @@ export interface AppointmentEmailData {
   totalCents: number;
   appointmentUrl: string;
   manageUrl?: string;
+  clientEmail?: string;
+  cancelReason?: string;
 }
 
 // Client email: booking confirmation (payment approved)
@@ -167,6 +169,70 @@ export async function sendReminderEmail(
     to,
     subject: `⏰ Reminder: ${data.serviceName} tomorrow ${formatDate(data.scheduledAt)}`,
     html: layout("Session reminder", body),
+  });
+
+  return !error;
+}
+
+export async function sendBookingCancelledStudioEmail(
+  to: string,
+  data: AppointmentEmailData
+): Promise<boolean> {
+  const client = getResend();
+  if (!client) return false;
+
+  const reasonRow = data.cancelReason
+    ? `<tr><td style="padding:8px 0;color:#6b7280;">Reason</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.cancelReason}</td></tr>`
+    : "";
+
+  const body = `
+    <p style="margin:0 0 16px;color:#374151;line-height:1.6;">A client cancelled a reformer session. That time is free again:</p>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
+      <tr><td style="padding:8px 0;color:#6b7280;">Client</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.clientName}${data.clientEmail ? ` · ${data.clientEmail}` : ""}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280;">Service</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.serviceName}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280;">Date and time</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${formatDate(data.scheduledAt)}</td></tr>
+      ${reasonRow}
+    </table>
+    <a href="${data.appointmentUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">View my schedule</a>
+  `;
+
+  const { error } = await client.emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: `Cancelled booking: ${data.serviceName} — ${data.clientName}`,
+    html: layout("Session cancelled", body),
+  });
+
+  return !error;
+}
+
+export async function sendBookingCancelledClientEmail(
+  to: string,
+  data: AppointmentEmailData & { cancelledByStudio?: boolean }
+): Promise<boolean> {
+  const client = getResend();
+  if (!client) return false;
+
+  const intro = data.cancelledByStudio
+    ? `Hi <strong>${data.clientName}</strong>, the studio cancelled your reformer session:`
+    : `Hi <strong>${data.clientName}</strong>, your reformer session has been cancelled:`;
+
+  const body = `
+    <p style="margin:0 0 16px;color:#374151;line-height:1.6;">${intro}</p>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
+      <tr><td style="padding:8px 0;color:#6b7280;">Instructor</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.instructorName}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280;">Service</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.serviceName}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280;">Date and time</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${formatDate(data.scheduledAt)}</td></tr>
+    </table>
+    <p style="margin:0 0 16px;color:#6b7280;font-size:13px;line-height:1.6;">That slot is free again. You can book another time on the site.</p>
+    <a href="${getAppUrl()}/book" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">Book another session</a>
+  `;
+
+  const { error } = await client.emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: `Booking cancelled: ${data.serviceName}`,
+    html: layout("Your session was cancelled", body),
   });
 
   return !error;

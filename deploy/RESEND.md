@@ -170,7 +170,7 @@ STUDIO_NOTIFICATION_EMAIL="tyrri_meropi@hotmail.com, second@example.com"
 | `RESEND_API_KEY` | Paste the full `re_…` key, no quotes |
 | `EMAIL_FROM` | **Must use double quotes** because of `<` and `>` |
 | `EMAIL_FROM` address | Must be on your **verified** domain (e.g. `bookings@meti-pilates.com`) |
-| `STUDIO_NOTIFICATION_EMAIL` | One or more inboxes (comma-separated) for new-booking + reminder alerts |
+| `STUDIO_NOTIFICATION_EMAIL` | One or more inboxes (comma-separated) for new-booking, cancellation, and reminder alerts |
 
 Also confirm these are already set (they should be from initial deploy):
 

@@ -7,6 +7,7 @@ import {
   canInstructorCancelAppointment,
   canClientCancelAppointment,
 } from "@/lib/appointment-cancel";
+import { notifyAppointmentCancelled } from "@/lib/notify";
 
 // GET: Get appointment details
 export async function GET(
@@ -123,14 +124,25 @@ export async function PATCH(
     }
 
     // Cancel the appointment and free the slot
+    const cancelReason =
+      reason || (isAdmin ? "Cancelled by admin" : isClient ? "Cancelled by client" : "Cancelled by advisor");
+
     await prisma.appointment.update({
       where: { id: appointment.id },
       data: {
         status: "CANCELLED",
-        cancelReason: reason || (isAdmin ? "Cancelled by admin" : isClient ? "Cancelled by client" : "Cancelled by advisor"),
+        cancelReason,
         cancelledAt: new Date(),
       },
     });
+
+    try {
+      await notifyAppointmentCancelled(appointment.id, {
+        cancelledBy: isClient && !isAdmin ? "client" : "studio",
+      });
+    } catch (notifyError) {
+      console.error("Error sending cancellation emails:", notifyError);
+    }
 
     return NextResponse.json({ ok: true, cancelled: true });
   } catch (error) {

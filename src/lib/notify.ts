@@ -1,12 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import {
   sendBookingConfirmedEmail,
+  sendBookingCancelledClientEmail,
+  sendBookingCancelledStudioEmail,
   sendNewBookingEmail,
   sendReminderEmail,
   type AppointmentEmailData,
 } from "@/lib/email";
 import { getStudioNotificationEmails, getSiteUrl } from "@/lib/site-config";
 import { createManageToken } from "@/lib/booking-manage-token";
+import { isAutomatedTestEmail } from "@/lib/appointment-cancel";
 
 function clientManageUrl(appointmentId: string, email: string): string | undefined {
   try {
@@ -97,6 +100,52 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
 
   if (instructorEmail && !studioEmails.includes(instructorEmail)) {
     sent = (await sendReminderEmail(instructorEmail, studioBase, "instructor")) || sent;
+  }
+  return sent;
+}
+
+export async function notifyAppointmentCancelled(
+  appointmentId: string,
+  options: { cancelledBy: "client" | "studio" } = { cancelledBy: "client" }
+): Promise<boolean> {
+  const apt = await loadAppointmentForNotify(appointmentId);
+  if (!apt) return false;
+
+  const clientEmail = apt.client.email;
+  if (clientEmail && isAutomatedTestEmail(clientEmail)) return false;
+
+  const instructorEmail = apt.instructor.user.email?.trim().toLowerCase();
+  const studioEmails = getStudioNotificationEmails();
+
+  const base: AppointmentEmailData = {
+    instructorName: apt.instructor.user.name,
+    clientName: apt.client.name,
+    clientEmail: clientEmail || undefined,
+    serviceName: apt.service.name,
+    scheduledAt: apt.scheduledAt.toISOString(),
+    totalCents: apt.totalCents,
+    appointmentUrl: `${getSiteUrl()}/dashboard/appointments`,
+    cancelReason: apt.cancelReason ?? undefined,
+  };
+
+  let sent = false;
+  if (clientEmail) {
+    sent =
+      (await sendBookingCancelledClientEmail(clientEmail, {
+        ...base,
+        cancelledByStudio: options.cancelledBy === "studio",
+      })) || sent;
+  }
+
+  if (options.cancelledBy !== "client") return sent;
+
+  const studioBase = { ...base, appointmentUrl: `${getSiteUrl()}/admin/schedule` };
+  for (const studioEmail of studioEmails) {
+    sent = (await sendBookingCancelledStudioEmail(studioEmail, studioBase)) || sent;
+  }
+
+  if (instructorEmail && !studioEmails.includes(instructorEmail)) {
+    sent = (await sendBookingCancelledStudioEmail(instructorEmail, studioBase)) || sent;
   }
   return sent;
 }

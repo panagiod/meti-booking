@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseManageToken, verifyManageToken } from "@/lib/booking-manage-token";
 import { canClientCancelAppointment } from "@/lib/appointment-cancel";
+import { notifyAppointmentCancelled } from "@/lib/notify";
 import { siteConfig } from "@/lib/site-config";
 
 function jsonError(message: string, status: number) {
@@ -91,6 +92,12 @@ export async function POST(req: Request) {
         cancelledAt: new Date(),
       },
     });
+
+    try {
+      await notifyAppointmentCancelled(appointment.id, { cancelledBy: "client" });
+    } catch (notifyError) {
+      console.error("Error sending cancellation emails:", notifyError);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
