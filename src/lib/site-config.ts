@@ -20,7 +20,7 @@ export const siteConfig = {
   /** Checkout / Mercado Pago currency */
   currency: "EUR",
   deliveryMode: "in-person" as const,
-  location: "Χριστόφορου Γιατρού 60Α, Άγιος Ιωάννης Πιτσιλιάς, 4071 Λεμεσός",
+  location: "60A Christoforou Giatrou, Agios Ioannis Pitsilias, 4071 Limassol",
   phone: "(555) 012-3456",
   email: "tyrri_meropi@hotmail.com",
   hours: "Tue, Thu, Sat · see booking calendar",

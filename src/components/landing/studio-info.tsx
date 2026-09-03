@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { ArrowRight, MapPin, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { siteConfig } from "@/lib/site-config";
+import { useStudioBranding } from "@/components/providers/locale-provider";
 
 export function StudioInfo() {
+  const studio = useStudioBranding();
+
   return (
     <section className="py-20 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-hover)] text-white overflow-hidden relative">
       <div className="absolute inset-0 opacity-10">
@@ -16,7 +18,7 @@ export function StudioInfo() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="font-heading text-3xl md:text-4xl font-bold mb-6">
-              Visit {siteConfig.name}
+              Visit {studio.name}
             </h2>
             <p className="text-lg text-white/90 mb-8">
               Reformer sessions in a calm, fully equipped studio.
@@ -26,15 +28,15 @@ export function StudioInfo() {
             <ul className="space-y-4 mb-8 text-white/95">
               <li className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 shrink-0" />
-                {siteConfig.location}
+                {studio.location}
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 shrink-0" />
-                {siteConfig.phone}
+                {studio.phone}
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 shrink-0" />
-                {siteConfig.email}
+                {studio.email}
               </li>
             </ul>
 

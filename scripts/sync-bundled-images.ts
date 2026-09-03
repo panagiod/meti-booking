@@ -26,6 +26,7 @@ async function main() {
     ...current,
     heroImage: siteConfig.images.hero,
     reformerImage: siteConfig.images.reformer,
+    location: siteConfig.location,
   };
 
   await prisma.studioContent.update({
@@ -36,6 +37,7 @@ async function main() {
   console.log("Updated studio images:");
   console.log(`  hero: ${next.heroImage}`);
   console.log(`  reformer: ${next.reformerImage}`);
+  console.log(`  location: ${next.location}`);
   await prisma.$disconnect();
 }
 
