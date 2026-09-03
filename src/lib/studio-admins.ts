@@ -2,6 +2,7 @@
 export const DEFAULT_STUDIO_ADMIN_EMAILS = [
   "barridasg@gmail.com",
   "tyrri_meropi@hotmail.com",
+  "meropityrri@gmail.com",
 ];
 
 function parseEmailList(value: string): string[] {
