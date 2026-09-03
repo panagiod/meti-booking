@@ -9,6 +9,7 @@ const en: Messages = {
   nav: {
     sessions: "Sessions",
     signIn: "Sign in",
+    signOut: "Sign out",
     account: "Account",
     bookNow: "Book now",
   },

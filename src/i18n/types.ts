@@ -12,6 +12,7 @@ export type Messages = {
   nav: {
     sessions: string;
     signIn: string;
+    signOut: string;
     account: string;
     bookNow: string;
   };

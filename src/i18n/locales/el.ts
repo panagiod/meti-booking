@@ -9,6 +9,7 @@ const el: Messages = {
   nav: {
     sessions: "Μαθήματα",
     signIn: "Είσοδος",
+    signOut: "Αποσύνδεση",
     account: "Λογαριασμός",
     bookNow: "Κράτηση",
   },

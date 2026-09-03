@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/ui/logo";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
@@ -9,7 +10,9 @@ import { authClient } from "@/lib/auth-client";
 
 export function Navbar() {
   const t = useTranslations();
+  const router = useRouter();
   const [user, setUser] = useState<{ role?: string } | null>(null);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     authClient.getSession().then(({ data }) => {
@@ -20,6 +23,14 @@ export function Navbar() {
   const dashboardHref =
     user?.role === "ADMIN" ? "/admin" : user?.role === "ADVISOR" ? "/advisor" : "/dashboard";
 
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    await authClient.signOut();
+    setUser(null);
+    router.push("/");
+    router.refresh();
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--studio-line)] bg-[var(--studio-bg)]/95 backdrop-blur-md">
       <div className="studio-container flex h-16 items-center justify-between gap-3 sm:h-[4.25rem]">
@@ -28,16 +39,26 @@ export function Navbar() {
         <nav className="flex shrink-0 items-center gap-2 sm:gap-4">
           <LanguageSwitcher />
           {user ? (
-            <Link
-              href={dashboardHref}
-              className="hidden text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)] sm:inline"
-            >
-              {t.nav.account}
-            </Link>
+            <>
+              <Link
+                href={dashboardHref}
+                className="text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)]"
+              >
+                {t.nav.account}
+              </Link>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                disabled={isSigningOut}
+                className="text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)] disabled:opacity-60"
+              >
+                {t.nav.signOut}
+              </button>
+            </>
           ) : (
             <Link
               href="/login"
-              className="hidden text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)] sm:inline"
+              className="text-sm text-[var(--studio-muted)] transition hover:text-[var(--studio-ink)]"
             >
               {t.nav.signIn}
             </Link>
