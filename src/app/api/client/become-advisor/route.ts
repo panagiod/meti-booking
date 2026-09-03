@@ -16,6 +16,13 @@ export async function POST() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        { error: "Advisor signup is disabled. Studio management is at /admin." },
+        { status: 403 }
+      );
+    }
+
     const userId = session.user.id;
 
     // Verify the user is a client

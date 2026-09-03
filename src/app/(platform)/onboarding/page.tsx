@@ -103,12 +103,6 @@ export default function OnboardingPage() {
             case "ADMIN":
               router.push("/admin");
               break;
-            case "ADVISOR":
-              router.push("/advisor");
-              break;
-            case "CLIENT":
-              router.push("/dashboard");
-              break;
             default:
               router.push("/dashboard");
           }

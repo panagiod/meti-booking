@@ -20,8 +20,7 @@ export function Navbar() {
     });
   }, []);
 
-  const dashboardHref =
-    user?.role === "ADMIN" ? "/admin" : user?.role === "ADVISOR" ? "/advisor" : "/dashboard";
+  const dashboardHref = user?.role === "ADMIN" ? "/admin" : "/dashboard";
 
   const handleSignOut = async () => {
     setIsSigningOut(true);

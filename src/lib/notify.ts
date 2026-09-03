@@ -42,7 +42,7 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
   let sent = false;
   if (apt.client.email) sent = (await sendBookingConfirmedEmail(clientEmail, base)) || sent;
 
-  const studioBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
+  const studioBase = { ...base, appointmentUrl: `${getAppUrl()}/admin/schedule` };
 
   for (const studioEmail of studioEmails) {
     sent = (await sendNewBookingEmail(studioEmail, studioBase)) || sent;
@@ -73,7 +73,7 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
 
   const studioEmails = getStudioNotificationEmails();
   const advisorEmail = apt.advisor.user.email?.trim().toLowerCase();
-  const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/advisor/schedule` };
+  const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/admin/schedule` };
 
   for (const studioEmail of studioEmails) {
     sent = (await sendReminderEmail(studioEmail, advisorBase, "advisor")) || sent;

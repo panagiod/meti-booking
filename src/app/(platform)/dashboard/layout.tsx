@@ -81,10 +81,6 @@ export default function DashboardLayout({
             router.replace("/admin");
             return;
           }
-          if (role === "ADVISOR" && !viewingBookings) {
-            router.replace("/advisor");
-            return;
-          }
           setIsLoading(false);
           return;
         } catch {

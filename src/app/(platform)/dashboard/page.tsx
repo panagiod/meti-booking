@@ -4,21 +4,15 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { LoadingPage } from "@/components/ui/loading";
-import { AlertDialog } from "@/components/ui/alert-dialog";
-import { useDialog } from "@/hooks/use-dialog";
-import { Briefcase, Search, Calendar, Star, Clock, ArrowRight } from "lucide-react";
+import { Search, Calendar, Star, Clock, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { loginUrl } from "@/lib/auth-redirect";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const dialog = useDialog();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isRequesting, setIsRequesting] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -39,53 +33,12 @@ export default function DashboardPage() {
     checkSession();
   }, [router]);
 
-  const handleBecomeAdvisor = async () => {
-    setIsRequesting(true);
-    try {
-      const res = await fetch("/api/client/become-advisor", {
-        method: "POST",
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        setMessage(data.message);
-      } else {
-        const data = await res.json();
-        dialog.showAlert("Error", data.error || "Failed to process your request", "error");
-      }
-    } catch (error) {
-      dialog.showAlert("Error", "Connection error. Please try again.", "error");
-    } finally {
-      setIsRequesting(false);
-    }
-  };
-
   if (isLoading) return <LoadingPage />;
 
   if (!user) return null;
 
-  if (message) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-8 text-center">
-            <div className="w-16 h-16 rounded-full bg-[var(--accent-light)] flex items-center justify-center mx-auto mb-4">
-              <Briefcase className="w-8 h-8 text-[var(--accent)]" />
-            </div>
-            <h2 className="font-heading text-2xl font-bold text-[var(--text-primary)] mb-2">
-              Application submitted!
-            </h2>
-            <p className="text-[var(--text-muted)] mb-4">{message}</p>
-            <Button onClick={() => window.location.reload()}>Continue</Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-8">
-      {/* Welcome */}
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
           Hello, {user.name?.split(" ")[0]}! 👋
@@ -94,37 +47,6 @@ export default function DashboardPage() {
           Welcome to your dashboard
         </p>
       </div>
-
-      {/* CTA to become advisor */}
-      <Card className="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-hover)] text-white">
-        <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <h3 className="font-heading font-semibold text-lg mb-1">
-              Are you a professional?
-            </h3>
-            <p className="text-white/90">
-              Offer consultations and earn income with Meti
-            </p>
-          </div>
-          <Button
-            className="bg-white text-[var(--accent)] hover:bg-white/90"
-            onClick={handleBecomeAdvisor}
-            disabled={isRequesting}
-          >
-            {isRequesting ? (
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
-                Processing...
-              </div>
-            ) : (
-              <>
-                <Briefcase className="w-4 h-4 mr-2" />
-                Become an advisor
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -17,14 +17,7 @@ export function isSafeAuthNext(value: string | null | undefined): value is strin
 }
 
 export function homePathForRole(role?: string | null): string {
-  switch (role) {
-    case "ADMIN":
-      return "/admin";
-    case "ADVISOR":
-      return "/advisor";
-    default:
-      return "/dashboard";
-  }
+  return role === "ADMIN" ? "/admin" : "/dashboard";
 }
 
 export function loginUrl(next?: string | null): string {
