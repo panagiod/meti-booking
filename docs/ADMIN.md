@@ -4,6 +4,25 @@ How to manage the studio from the **admin dashboard** (`/admin`).
 
 **Login:** `admin@demo.meti-booking.local` / `Demo1234!`
 
+## Promoting a Google-login user to admin (via CI, no SSH)
+
+A Google sign-in always creates a normal client — there is no "make admin"
+button. To grant admin to an existing Google account without SSHing into
+the server, use the **Promote Admin** GitHub Action:
+
+1. One-time setup: generate a token with `openssl rand -hex 32`, add it to
+   the server `.env` as `ADMIN_PROMOTE_TOKEN` (then restart the app), and
+   add the same value as the `ADMIN_PROMOTE_TOKEN` secret at
+   https://github.com/panagiod/meti-booking/settings/secrets/actions.
+2. Ask the user to sign in with Google at least once (their row must exist).
+3. GitHub → **Actions** → **Promote Admin** → **Run workflow** → enter their
+   email.
+
+This calls `POST /api/ops/promote-admin` (`src/app/api/ops/promote-admin/route.ts`),
+which sets `role = ADMIN`, clears any leftover advisor/client profile, and
+revokes existing sessions so they must sign in again. See
+`.github/workflows/promote-admin.yml`.
+
 ---
 
 ## Admin navigation

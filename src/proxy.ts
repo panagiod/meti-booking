@@ -23,6 +23,8 @@ const publicRoutes = [
   "/api/appointments",
   "/api/advisors",
   "/api/services",
+  // Token-authenticated (not cookie-based) — see src/lib/admin-promote.ts
+  "/api/ops/promote-admin",
 ];
 
 /** Platform advisor dashboard paths (require login). Public profile pages use /advisor/{id}. */

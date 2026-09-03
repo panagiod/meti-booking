@@ -1,0 +1,55 @@
+name: Promote Admin
+
+# Promotes an existing user to ADMIN via the production API — no SSH needed.
+# The user must have signed in at least once (e.g. with Google) first.
+#
+# One-time setup:
+#   1. Generate a token:  openssl rand -hex 32
+#   2. Add it to the server .env as ADMIN_PROMOTE_TOKEN, then:
+#        sudo systemctl restart meti-booking   (lite deploy)
+#   3. Add the same value as the ADMIN_PROMOTE_TOKEN secret here:
+#        https://github.com/panagiod/meti-booking/settings/secrets/actions
+#
+# Then: Actions → Promote Admin → Run workflow → enter the email.
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: "Email of the user to promote to ADMIN (must have signed in once already)"
+        required: true
+        type: string
+
+jobs:
+  promote:
+    name: Promote user to ADMIN
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Call promote-admin API
+        env:
+          ADMIN_PROMOTE_TOKEN: ${{ secrets.ADMIN_PROMOTE_TOKEN }}
+          EMAIL: ${{ inputs.email }}
+        run: |
+          if [ -z "$ADMIN_PROMOTE_TOKEN" ]; then
+            echo "::error::Missing secret ADMIN_PROMOTE_TOKEN. See the setup steps at the top of this workflow file."
+            exit 1
+          fi
+
+          payload=$(jq -n --arg email "$EMAIL" --arg token "$ADMIN_PROMOTE_TOKEN" '{email: $email, token: $token}')
+
+          response=$(curl -sS -w '\n%{http_code}' -X POST https://meti-pilates.com/api/ops/promote-admin \
+            -H "Content-Type: application/json" \
+            -d "$payload")
+
+          status="${response##*$'\n'}"
+          body="${response%$'\n'*}"
+
+          echo "$body"
+
+          if [ "$status" != "200" ]; then
+            echo "::error::Promote failed with HTTP $status. Check ADMIN_PROMOTE_TOKEN matches the server .env, and that the user signed in at least once."
+            exit 1
+          fi
+
+          echo "Promoted $EMAIL to ADMIN. They must sign in again (old sessions were revoked)."
