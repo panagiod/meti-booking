@@ -7,8 +7,7 @@ import { LoadingPage } from "@/components/ui/loading";
 import { useTranslations } from "@/components/providers/locale-provider";
 import { loginUrl } from "@/lib/auth-redirect";
 
-// This layout is only used for client dashboard pages
-// Admin and advisor have their own layouts with sidebars
+// Client dashboard pages. Admin has its own shell; /advisor redirects away.
 export default function PlatformLayout({
   children,
 }: {
@@ -19,7 +18,7 @@ export default function PlatformLayout({
   const t = useTranslations();
   const [isLoading, setIsLoading] = useState(true);
 
-  // Skip auth check for admin, advisor, and checkout routes
+  // Skip auth check for admin, legacy /advisor redirects, and checkout
   const isAdminOrAdvisor = pathname.startsWith("/admin") || pathname.startsWith("/advisor");
   const isCheckout = pathname.startsWith("/checkout");
 

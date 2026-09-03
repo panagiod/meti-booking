@@ -114,9 +114,9 @@ async function main() {
       await prisma.user.update({ where: { id: user.id }, data: { role: "ADVISOR" } });
       await prisma.clientProfile.deleteMany({ where: { userId: user.id } });
 
-      let advisor = await prisma.advisorProfile.findUnique({ where: { userId: user.id } });
+      let advisor = await prisma.instructorProfile.findUnique({ where: { userId: user.id } });
       if (!advisor) {
-        advisor = await prisma.advisorProfile.create({
+        advisor = await prisma.instructorProfile.create({
           data: {
             userId: user.id,
             bio: "Certified STOTT Pilates instructor with 8+ years teaching reformer sessions.",
@@ -128,7 +128,7 @@ async function main() {
           },
         });
       } else if (RESET) {
-        await prisma.advisorProfile.update({
+        await prisma.instructorProfile.update({
           where: { id: advisor.id },
           data: {
             bio: "Certified STOTT Pilates instructor with 8+ years teaching reformer sessions.",
@@ -142,25 +142,25 @@ async function main() {
       }
 
       const category = await prisma.category.findUnique({ where: { slug: "pilates" } });
-      const existingCategories = await prisma.advisorCategory.count({
-        where: { advisorId: advisor.id },
+      const existingCategories = await prisma.instructorCategory.count({
+        where: { instructorId: advisor.id },
       });
       if (category && (RESET || existingCategories === 0)) {
-        await prisma.advisorCategory.deleteMany({ where: { advisorId: advisor.id } });
-        await prisma.advisorCategory.create({
-          data: { advisorId: advisor.id, categoryId: category.id },
+        await prisma.instructorCategory.deleteMany({ where: { instructorId: advisor.id } });
+        await prisma.instructorCategory.create({
+          data: { instructorId: advisor.id, categoryId: category.id },
         });
       }
 
-      const existingSchedule = await prisma.advisorSchedule.count({
-        where: { advisorId: advisor.id },
+      const existingSchedule = await prisma.instructorSchedule.count({
+        where: { instructorId: advisor.id },
       });
       if (RESET || existingSchedule === 0) {
-        await prisma.advisorSchedule.deleteMany({ where: { advisorId: advisor.id } });
+        await prisma.instructorSchedule.deleteMany({ where: { instructorId: advisor.id } });
         for (const row of studioScheduleSeedRows()) {
-          await prisma.advisorSchedule.create({
+          await prisma.instructorSchedule.create({
             data: {
-              advisorId: advisor.id,
+              instructorId: advisor.id,
               ...row,
               isActive: true,
             },
@@ -169,20 +169,20 @@ async function main() {
       }
 
       if (RESET) {
-        await prisma.advisorService.updateMany({
-          where: { advisorId: advisor.id, name: "Reformer Session" },
+        await prisma.instructorService.updateMany({
+          where: { instructorId: advisor.id, name: "Reformer Session" },
           data: { durationMin: STUDIO_SESSION_DURATION_MIN },
         });
       }
 
-      const existingServices = await prisma.advisorService.count({
-        where: { advisorId: advisor.id },
+      const existingServices = await prisma.instructorService.count({
+        where: { instructorId: advisor.id },
       });
       if (RESET || existingServices === 0) {
-        await prisma.advisorService.deleteMany({ where: { advisorId: advisor.id } });
-        await prisma.advisorService.create({
+        await prisma.instructorService.deleteMany({ where: { instructorId: advisor.id } });
+        await prisma.instructorService.create({
           data: {
-            advisorId: advisor.id,
+            instructorId: advisor.id,
             name: "Reformer Session",
             description: "Equipment-based full-body workout on the reformer.",
             durationMin: STUDIO_SESSION_DURATION_MIN,

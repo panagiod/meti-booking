@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
-import { resolveStudioAdvisor } from "@/lib/studio-advisor";
+import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import { mergeScheduleFromDb, validateStudioSchedule, formatScheduleHoursForLocale } from "@/lib/studio-schedule";
 import { schedulePayloadSchema } from "@/lib/schedule-schema";
 import { getStudioContent, saveStudioContent } from "@/lib/studio-content-server";
@@ -16,18 +16,18 @@ export async function GET() {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    const advisor = await resolveStudioAdvisor();
+    const advisor = await resolveStudioInstructor();
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
 
-    const schedules = await prisma.advisorSchedule.findMany({
-      where: { advisorId: advisor.id },
+    const schedules = await prisma.instructorSchedule.findMany({
+      where: { instructorId: advisor.id },
       orderBy: { dayOfWeek: "asc" },
     });
 
     return NextResponse.json({
-      advisorId: advisor.id,
+      instructorId: advisor.id,
       schedules: mergeScheduleFromDb(schedules),
     });
   } catch (error) {
@@ -43,7 +43,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    const advisor = await resolveStudioAdvisor();
+    const advisor = await resolveStudioInstructor();
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
@@ -56,17 +56,17 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: validationError }, { status: 400 });
     }
 
-    await prisma.advisorSchedule.deleteMany({
-      where: { advisorId: advisor.id },
+    await prisma.instructorSchedule.deleteMany({
+      where: { instructorId: advisor.id },
     });
 
     const createdSchedules = await Promise.all(
       schedules
         .filter((s) => s.isActive)
         .map((s) =>
-          prisma.advisorSchedule.create({
+          prisma.instructorSchedule.create({
             data: {
-              advisorId: advisor.id,
+              instructorId: advisor.id,
               dayOfWeek: s.dayOfWeek,
               startTime: s.startTime,
               endTime: s.endTime,

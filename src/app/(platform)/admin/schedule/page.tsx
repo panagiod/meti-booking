@@ -53,7 +53,7 @@ interface StudioBooking {
 
 interface StudioData {
   name: string;
-  advisorId: string;
+  instructorId: string;
   instructorName: string;
   instructorEmail: string;
   slotCapacity: number;

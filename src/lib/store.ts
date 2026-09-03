@@ -2,9 +2,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface BookingData {
-  advisorId: string;
-  advisorName: string;
-  advisorSpeciality: string;
+  instructorId: string;
+  instructorName: string;
   serviceName: string;
   servicePrice: number;
   serviceFee: number;

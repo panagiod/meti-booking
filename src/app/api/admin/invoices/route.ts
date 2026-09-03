@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     const invoices = await prisma.invoice.findMany({
       where,
       include: {
-        advisor: { include: { user: { select: { name: true, email: true } } } },
+        instructor: { include: { user: { select: { name: true, email: true } } } },
       },
       orderBy: [{ periodStart: "desc" }, { createdAt: "desc" }],
     });
@@ -43,8 +43,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       invoices: invoices.map((inv: any) => ({
         id: inv.id,
-        advisorName: inv.advisor.user.name,
-        advisorEmail: inv.advisor.user.email,
+        advisorName: inv.instructor.user.name,
+        advisorEmail: inv.instructor.user.email,
         periodStart: inv.periodStart.toISOString(),
         periodEnd: inv.periodEnd.toISOString(),
         totalFeeCents: inv.totalFeeCents,

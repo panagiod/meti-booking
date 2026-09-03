@@ -118,12 +118,12 @@ export default function CallPage({
               </p>
               <div className="flex flex-col gap-3">
                 {userRole === "advisor" ? (
-                  <Button onClick={() => router.push("/advisor/schedule")}>
+                  <Button onClick={() => router.push("/admin/schedule")}>
                     <Calendar className="w-4 h-4 mr-2" />
-                    View my schedule
+                    View schedule
                   </Button>
                 ) : (
-                  <Button onClick={() => router.push("/services")}>
+                  <Button onClick={() => router.push("/book")}>
                     <Calendar className="w-4 h-4 mr-2" />
                     Book another appointment
                   </Button>

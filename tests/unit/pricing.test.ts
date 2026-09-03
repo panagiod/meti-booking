@@ -5,7 +5,7 @@ describe("lib/pricing — calculatePrices", () => {
   it("without discount: fee on original price, total = earnings + fee", () => {
     const p = calculatePrices({ servicePriceCents: 10000, feePercentage: 15 });
     expect(p).toEqual({
-      advisorEarning: 10000,
+      instructorEarning: 10000,
       platformFee: 1500,
       totalCents: 11500,
     });
@@ -17,7 +17,7 @@ describe("lib/pricing — calculatePrices", () => {
       feePercentage: 15,
       discountCents: 2000,
     });
-    expect(p.advisorEarning).toBe(8000);
+    expect(p.instructorEarning).toBe(8000);
     expect(p.platformFee).toBe(1500);
     expect(p.totalCents).toBe(9500);
   });
@@ -28,7 +28,7 @@ describe("lib/pricing — calculatePrices", () => {
       feePercentage: 15,
       discountCents: 50000,
     });
-    expect(p.advisorEarning).toBe(0);
+    expect(p.instructorEarning).toBe(0);
     expect(p.totalCents).toBe(p.platformFee);
   });
 
@@ -40,6 +40,6 @@ describe("lib/pricing — calculatePrices", () => {
 
   it("fee percentage 0 → total = earnings", () => {
     const p = calculatePrices({ servicePriceCents: 5000, feePercentage: 0 });
-    expect(p).toEqual({ advisorEarning: 5000, platformFee: 0, totalCents: 5000 });
+    expect(p).toEqual({ instructorEarning: 5000, platformFee: 0, totalCents: 5000 });
   });
 });

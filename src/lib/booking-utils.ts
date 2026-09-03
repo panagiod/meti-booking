@@ -27,8 +27,16 @@ function parsePendingBooking(stored: string): URLSearchParams | null {
     Object.entries(data).forEach(([key, value]) => {
       if (value) params.set(key, String(value));
     });
-    if (!params.get("advisorId") || !params.get("serviceId")) {
+    const instructorId = params.get("instructorId") || params.get("advisorId");
+    if (!instructorId || !params.get("serviceId")) {
       return null;
+    }
+    if (!params.get("instructorId")) {
+      params.set("instructorId", instructorId);
+    }
+    const instructorName = params.get("instructorName") || params.get("advisorName");
+    if (instructorName && !params.get("instructorName")) {
+      params.set("instructorName", instructorName);
     }
     return params;
   } catch {

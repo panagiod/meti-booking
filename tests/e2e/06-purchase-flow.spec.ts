@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { newApi, withSession, BASE_URL } from "../helpers/api";
 import { prisma } from "../helpers/db";
-import { createActiveAdvisor, createClient, futureDate } from "../helpers/fixtures";
+import { createStudioInstructor, createClient, futureDate } from "../helpers/fixtures";
 import {
   E2E_SKIP_MP_CHECKOUT,
   MP_CHECKOUT_UNAVAILABLE,
@@ -21,11 +21,11 @@ async function waitForStatus(appointmentId: string, status: string, timeoutMs = 
 test.describe("06 · Mercado Pago sandbox purchase flow", () => {
   test("sandbox preference: valid initPoint and PENDING appointment with isTest", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
+    const fixture = await createStudioInstructor(request, { withMP: true, mpMode: "TEST" });
     const client = await createClient(request);
 
     const res = await withSession(api, client.sessionToken).post("/api/appointments", {
-      advisorId: fixture.advisorId,
+      instructorId: fixture.instructorId,
       serviceId: fixture.serviceId,
       scheduledAt: futureDate(3, 10, 0),
       discountCents: 0,
@@ -42,18 +42,18 @@ test.describe("06 · Mercado Pago sandbox purchase flow", () => {
     // Price includes Legal category fee (15%)
     expect(appointment.totalCents).toBe(11500);
     expect(appointment.platformFee).toBe(1500);
-    expect(appointment.advisorEarning).toBe(10000);
+    expect(appointment.instructorEarning).toBe(10000);
   });
 
   test("full sandbox purchase: test card payment → CONFIRMED appointment", async ({ request, page }) => {
     test.skip(E2E_SKIP_MP_CHECKOUT, "E2E_SKIP_MP_CHECKOUT=1");
 
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
+    const fixture = await createStudioInstructor(request, { withMP: true, mpMode: "TEST" });
     const client = await createClient(request);
 
     const res = await withSession(api, client.sessionToken).post("/api/appointments", {
-      advisorId: fixture.advisorId,
+      instructorId: fixture.instructorId,
       serviceId: fixture.serviceId,
       scheduledAt: futureDate(3, 10, 0),
       discountCents: 0,
@@ -111,11 +111,11 @@ test.describe("06 · Mercado Pago sandbox purchase flow", () => {
 
   test("webhook: error paths and idempotency without real payment", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
+    const fixture = await createStudioInstructor(request, { withMP: true, mpMode: "TEST" });
     const client = await createClient(request);
 
     const res = await withSession(api, client.sessionToken).post("/api/appointments", {
-      advisorId: fixture.advisorId,
+      instructorId: fixture.instructorId,
       serviceId: fixture.serviceId,
       scheduledAt: futureDate(5, 9, 0),
       discountCents: 0,
@@ -156,11 +156,11 @@ test.describe("06 · Mercado Pago sandbox purchase flow", () => {
 
   test("verify with fake paymentId does not confirm the appointment", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request, { withMP: true, mpMode: "TEST" });
+    const fixture = await createStudioInstructor(request, { withMP: true, mpMode: "TEST" });
     const client = await createClient(request);
 
     const res = await withSession(api, client.sessionToken).post("/api/appointments", {
-      advisorId: fixture.advisorId,
+      instructorId: fixture.instructorId,
       serviceId: fixture.serviceId,
       scheduledAt: futureDate(5, 14, 0),
       discountCents: 0,
@@ -181,11 +181,11 @@ test.describe("06 · Mercado Pago sandbox purchase flow", () => {
 
   test("purchase without advisor MP credentials → 400 with clear message", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request); // no MP
+    const fixture = await createStudioInstructor(request); // no MP
     const client = await createClient(request);
 
     const res = await withSession(api, client.sessionToken).post("/api/appointments", {
-      advisorId: fixture.advisorId,
+      instructorId: fixture.instructorId,
       serviceId: fixture.serviceId,
       scheduledAt: futureDate(3, 10, 0),
       discountCents: 0,

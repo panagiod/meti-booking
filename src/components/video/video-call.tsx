@@ -95,7 +95,7 @@ function CallContent({
     if (userRole === "client") {
       router.push(`/dashboard/appointments/${appointmentId}/review`);
     } else {
-      router.push("/advisor/schedule");
+      router.push("/dashboard/appointments");
     }
   }, [
     room,

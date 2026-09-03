@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
-import { resolveStudioAdvisor } from "@/lib/studio-advisor";
+import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import { blockedTimePayloadSchema } from "@/lib/schedule-schema";
 import { parseStudioDateInput } from "@/lib/timezone";
 import { z } from "zod";
@@ -15,13 +15,13 @@ export async function GET() {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    const advisor = await resolveStudioAdvisor();
+    const advisor = await resolveStudioInstructor();
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
 
     const blockedTimes = await prisma.blockedTime.findMany({
-      where: { advisorId: advisor.id },
+      where: { instructorId: advisor.id },
       orderBy: { startDate: "asc" },
     });
 
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    const advisor = await resolveStudioAdvisor();
+    const advisor = await resolveStudioInstructor();
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     const overlapping = await prisma.blockedTime.findFirst({
       where: {
-        advisorId: advisor.id,
+        instructorId: advisor.id,
         startDate: { lte: endDate },
         endDate: { gte: startDate },
       },
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     const blockedTime = await prisma.blockedTime.create({
       data: {
-        advisorId: advisor.id,
+        instructorId: advisor.id,
         title: validatedData.title,
         startDate,
         endDate,
@@ -118,7 +118,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    const advisor = await resolveStudioAdvisor();
+    const advisor = await resolveStudioInstructor();
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
@@ -131,7 +131,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const blockedTime = await prisma.blockedTime.findFirst({
-      where: { id, advisorId: advisor.id },
+      where: { id, instructorId: advisor.id },
     });
 
     if (!blockedTime) {

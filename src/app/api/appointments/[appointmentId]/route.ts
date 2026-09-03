@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
 import {
-  canAdvisorCancelAppointment,
+  canInstructorCancelAppointment,
   canClientCancelAppointment,
 } from "@/lib/appointment-cancel";
 
@@ -28,7 +28,7 @@ export async function GET(
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
-        advisor: {
+        instructor: {
           include: { user: true },
         },
         client: true,
@@ -45,7 +45,7 @@ export async function GET(
 
     // Verify user is part of this appointment
     const userId = session.user.id;
-    const isAdvisor = appointment.advisor.userId === userId;
+    const isAdvisor = appointment.instructor.userId === userId;
     const isClient = appointment.clientId === userId;
 
     if (!isAdvisor && !isClient) {
@@ -88,7 +88,7 @@ export async function PATCH(
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
-        advisor: { include: { user: true } },
+        instructor: { include: { user: true } },
         client: true,
         service: true,
       },
@@ -100,7 +100,7 @@ export async function PATCH(
 
     // Verify user is part of this appointment
     const userId = session.user.id;
-    const isAdvisor = appointment.advisor.userId === userId;
+    const isAdvisor = appointment.instructor.userId === userId;
     const isClient = appointment.clientId === userId;
     const isAdmin = (session.user as { role?: string }).role === "ADMIN";
 
@@ -114,7 +114,7 @@ export async function PATCH(
           scheduledAt: appointment.scheduledAt,
           rescheduleHoursMin: appointment.service.rescheduleHoursMin,
         })
-      : canAdvisorCancelAppointment(appointment.status)
+      : canInstructorCancelAppointment(appointment.status)
         ? { allowed: true as const }
         : { allowed: false as const, reason: "This appointment cannot be cancelled." };
 

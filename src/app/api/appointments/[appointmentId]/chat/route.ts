@@ -17,13 +17,13 @@ export async function GET(
 
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
-      include: { advisor: { select: { userId: true } } },
+      include: { instructor: { select: { userId: true } } },
     });
     if (!appointment) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const isParticipant =
       appointment.clientId === session.user.id ||
-      appointment.advisor.userId === session.user.id;
+      appointment.instructor.userId === session.user.id;
     if (!isParticipant) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const messages = await prisma.chatMessage.findMany({
@@ -65,11 +65,11 @@ export async function POST(
 
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
-      include: { advisor: { select: { userId: true } } },
+      include: { instructor: { select: { userId: true } } },
     });
     if (!appointment) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    const isAdvisor = appointment.advisor.userId === session.user.id;
+    const isAdvisor = appointment.instructor.userId === session.user.id;
     const isClient = appointment.clientId === session.user.id;
     if (!isAdvisor && !isClient) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 

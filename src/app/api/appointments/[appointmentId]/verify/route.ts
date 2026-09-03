@@ -9,7 +9,7 @@ import {
   assertPaymentIdNotReused,
   PaymentVerificationError,
 } from "@/lib/payment-verify";
-import { decryptMpAccessToken } from "@/lib/advisor-mp";
+import { decryptMpAccessToken } from "@/lib/instructor-mp";
 
 export async function POST(
   request: NextRequest,
@@ -32,7 +32,7 @@ export async function POST(
 
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
-      include: { advisor: true },
+      include: { instructor: true },
     });
 
     if (!appointment) {
@@ -47,7 +47,7 @@ export async function POST(
       return NextResponse.json({ ok: true, alreadyConfirmed: true });
     }
 
-    const mpToken = decryptMpAccessToken(appointment.advisor.mpAccessToken);
+    const mpToken = decryptMpAccessToken(appointment.instructor.mpAccessToken);
     if (!mpToken) {
       return NextResponse.json({ error: "Advisor has no MP credentials" }, { status: 400 });
     }

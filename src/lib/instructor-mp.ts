@@ -14,7 +14,7 @@ export function decryptMpAccessToken(stored: string | null | undefined): string 
   }
 }
 
-export function advisorMpConnected(
+export function instructorMpConnected(
   profile: { mpPublicKey?: string | null; mpAccessToken?: string | null } | null
 ): boolean {
   return !!(profile?.mpPublicKey && profile?.mpAccessToken);

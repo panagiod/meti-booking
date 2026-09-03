@@ -19,39 +19,39 @@ function dateStrFromUtc(utc: Date): string {
 }
 
 export async function validateBookableSlot(params: {
-  advisorId: string;
+  instructorId: string;
   serviceId: string;
   scheduledAt: Date;
 }): Promise<void> {
-  const { advisorId, serviceId, scheduledAt } = params;
+  const { instructorId, serviceId, scheduledAt } = params;
 
-  const advisorProfile = await prisma.advisorProfile.findUnique({
-    where: { id: advisorId },
+  const instructorProfile = await prisma.instructorProfile.findUnique({
+    where: { id: instructorId },
     select: { id: true, isActive: true, bookingLeadHours: true },
   });
 
-  if (!advisorProfile?.isActive) {
-    throw new SlotBookingError("Instructor is not available for booking", "ADVISOR_INACTIVE");
+  if (!instructorProfile?.isActive) {
+    throw new SlotBookingError("Instructor is not available for booking", "INSTRUCTOR_INACTIVE");
   }
 
-  const service = await prisma.advisorService.findUnique({
+  const service = await prisma.instructorService.findUnique({
     where: { id: serviceId },
-    select: { id: true, advisorId: true, durationMin: true, isActive: true },
+    select: { id: true, instructorId: true, durationMin: true, isActive: true },
   });
 
   if (!service?.isActive) {
     throw new SlotBookingError("Service not found", "SERVICE_MISMATCH");
   }
 
-  if (service.advisorId !== advisorId) {
+  if (service.instructorId !== instructorId) {
     throw new SlotBookingError("Service does not belong to this instructor", "SERVICE_MISMATCH");
   }
 
   const dateStr = dateStrFromUtc(scheduledAt);
   const dayOfWeek = getDayOfWeekForStudioDate(dateStr);
 
-  const daySchedule = await prisma.advisorSchedule.findUnique({
-    where: { advisorId_dayOfWeek: { advisorId, dayOfWeek } },
+  const daySchedule = await prisma.instructorSchedule.findUnique({
+    where: { instructorId_dayOfWeek: { instructorId, dayOfWeek } },
   });
 
   if (!daySchedule?.isActive) {
@@ -63,7 +63,7 @@ export async function validateBookableSlot(params: {
   const [existingAppointments, blockedTimesRaw] = await Promise.all([
     prisma.appointment.findMany({
       where: {
-        advisorId,
+        instructorId,
         scheduledAt: { gte: startOfDay, lte: endOfDay },
         status: { in: ["CONFIRMED", "IN_PROGRESS", "PENDING"] },
       },
@@ -71,7 +71,7 @@ export async function validateBookableSlot(params: {
     }),
     prisma.blockedTime.findMany({
       where: {
-        advisorId,
+        instructorId,
         startDate: { lte: endOfDay },
         endDate: { gte: startOfDay },
       },
@@ -93,7 +93,7 @@ export async function validateBookableSlot(params: {
     })
   );
 
-  const leadHours = resolveBookingLeadHours(advisorProfile.bookingLeadHours);
+  const leadHours = resolveBookingLeadHours(instructorProfile.bookingLeadHours);
   const minStartTime =
     leadHours > 0
       ? new Date(Date.now() + leadHours * 60 * 60 * 1000)

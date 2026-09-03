@@ -3,7 +3,7 @@ import { prisma } from "./db";
 import { MP_TEST_PUBLIC_KEY, MP_TEST_ACCESS_TOKEN } from "./mp";
 import { BASE_URL, extractSessionToken } from "./api";
 import { randomUUID } from "crypto";
-import { encryptMpAccessToken } from "@/lib/advisor-mp";
+import { encryptMpAccessToken } from "@/lib/instructor-mp";
 
 // Future date formatted as local ISO (for scheduledAt and slots)
 export function futureDate(daysAhead: number, hour = 10, minute = 0): string {
@@ -51,31 +51,32 @@ export async function signupUser(
   return { userId: data.user.id, email, sessionToken: sessionToken! };
 }
 
-export interface AdvisorFixture {
-  advisorId: string;
+export interface InstructorFixture {
+  instructorId: string;
   userId: string;
   sessionToken: string;
   serviceId: string;
 }
 
 // Active advisor with full schedule, Legal category, and a 60-min service
-export async function createActiveAdvisor(
+export async function createStudioInstructor(
   api: APIRequestContext,
   opts?: {
     hidden?: boolean;
     withMP?: boolean;
     mpMode?: "TEST" | "PRODUCTION";
   }
-): Promise<AdvisorFixture> {
+): Promise<InstructorFixture> {
   const { userId, sessionToken } = await signupUser(api, "E2E Advisor");
 
   // Convert to advisor and mark as approved (equivalent to the real flow)
   await prisma.user.update({ where: { id: userId }, data: { role: "ADVISOR" } });
   await prisma.clientProfile.deleteMany({ where: { userId } });
-  const advisor = await prisma.advisorProfile.create({
+  const advisor = await prisma.instructorProfile.create({
     data: {
       userId,
       isActive: true,
+      isVerified: true,
       isHidden: opts?.hidden || false,
       ...(opts?.withMP
         ? {
@@ -89,16 +90,16 @@ export async function createActiveAdvisor(
 
   const category = await prisma.category.findUnique({ where: { slug: "legal" } });
   if (category) {
-    await prisma.advisorCategory.create({
-      data: { advisorId: advisor.id, categoryId: category.id },
+    await prisma.instructorCategory.create({
+      data: { instructorId: advisor.id, categoryId: category.id },
     });
   }
 
   // Full schedule: Monday through Sunday 08:00-18:00
   for (let dow = 0; dow <= 6; dow++) {
-    await prisma.advisorSchedule.create({
+    await prisma.instructorSchedule.create({
       data: {
-        advisorId: advisor.id,
+        instructorId: advisor.id,
         dayOfWeek: dow,
         startTime: "08:00",
         endTime: "18:00",
@@ -107,9 +108,9 @@ export async function createActiveAdvisor(
     });
   }
 
-  const service = await prisma.advisorService.create({
+  const service = await prisma.instructorService.create({
     data: {
-      advisorId: advisor.id,
+      instructorId: advisor.id,
       name: "E2E Consulting",
       description: "Test service",
       durationMin: 60,
@@ -118,7 +119,7 @@ export async function createActiveAdvisor(
   });
 
   return {
-    advisorId: advisor.id,
+    instructorId: advisor.id,
     userId,
     sessionToken,
     serviceId: service.id,

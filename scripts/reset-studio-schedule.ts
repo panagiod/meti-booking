@@ -11,7 +11,7 @@ async function main() {
   const { getStudioContent, saveStudioContent } = await import(
     "../src/lib/studio-content-server"
   );
-  const { resolveStudioAdvisor } = await import("../src/lib/studio-advisor");
+  const { resolveStudioInstructor } = await import("../src/lib/studio-instructor");
 
   if (!process.env.DATABASE_URL) {
     throw new Error("DATABASE_URL is required");
@@ -20,30 +20,30 @@ async function main() {
   const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
   const prisma = new PrismaClient({ adapter });
 
-  const advisor = await resolveStudioAdvisor();
+  const advisor = await resolveStudioInstructor();
   if (!advisor) {
     throw new Error("No studio instructor configured");
   }
 
-  await prisma.advisorSchedule.deleteMany({ where: { advisorId: advisor.id } });
+  await prisma.instructorSchedule.deleteMany({ where: { instructorId: advisor.id } });
 
   for (const row of studioScheduleSeedRows()) {
-    await prisma.advisorSchedule.create({
+    await prisma.instructorSchedule.create({
       data: {
-        advisorId: advisor.id,
+        instructorId: advisor.id,
         ...row,
         isActive: true,
       },
     });
   }
 
-  await prisma.advisorService.updateMany({
-    where: { advisorId: advisor.id, name: "Reformer Session" },
+  await prisma.instructorService.updateMany({
+    where: { instructorId: advisor.id, name: "Reformer Session" },
     data: { durationMin: STUDIO_SESSION_DURATION_MIN },
   });
 
-  const schedules = await prisma.advisorSchedule.findMany({
-    where: { advisorId: advisor.id },
+  const schedules = await prisma.instructorSchedule.findMany({
+    where: { instructorId: advisor.id },
     orderBy: { dayOfWeek: "asc" },
   });
   const merged = mergeScheduleFromDb(schedules);

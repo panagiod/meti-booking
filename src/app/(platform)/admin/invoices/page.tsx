@@ -139,8 +139,8 @@ export default function InvoicesPage() {
                   {invoices.map((inv: any) => (
                     <tr key={inv.id} className="border-b border-[var(--border)] last:border-0 hover:bg-[var(--background)]">
                       <td className="px-4 py-3">
-                        <p className="font-medium text-[var(--text-primary)]">{inv.advisorName}</p>
-                        <p className="text-xs text-[var(--text-muted)]">{inv.advisorEmail}</p>
+                        <p className="font-medium text-[var(--text-primary)]">{inv.instructorName}</p>
+                        <p className="text-xs text-[var(--text-muted)]">{inv.instructorEmail}</p>
                       </td>
                       <td className="px-4 py-3 text-[var(--text-secondary)]">
                         {format(new Date(inv.periodStart), "MMM yyyy", { locale: enUS })}

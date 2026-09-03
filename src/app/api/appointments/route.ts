@@ -9,14 +9,15 @@ import { parseLocalISO } from "@/lib/timezone";
 import { buildBookingQuote } from "@/lib/booking-quote";
 import { siteConfig } from "@/lib/site-config";
 import { validateBookableSlot, SlotBookingError } from "@/lib/slot-booking";
-import { decryptMpAccessToken } from "@/lib/advisor-mp";
+import { decryptMpAccessToken } from "@/lib/instructor-mp";
 import { findOrCreateGuestUser, GuestUserError } from "@/lib/guest-user";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 import { notifyAppointmentConfirmed } from "@/lib/notify";
 import { isSqliteDatabase } from "@/lib/database-provider";
+import { readInstructorId } from "@/lib/studio-instructor";
 import {
   createDemoAppointment,
-  isDemoAdvisorId,
+  isDemoInstructorId,
   isDemoBookingMode,
   isDemoServiceId,
   validateDemoBookableSlot,
@@ -24,7 +25,8 @@ import {
 import { randomUUID } from "crypto";
 
 const appointmentSchema = z.object({
-  advisorId: z.string(),
+  instructorId: z.string().optional(),
+  advisorId: z.string().optional(),
   serviceId: z.string(),
   scheduledAt: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/),
   promotionId: z.string().nullable().optional(),
@@ -32,7 +34,6 @@ const appointmentSchema = z.object({
   guestName: z.string().trim().min(1).max(100).optional(),
 });
 
-// POST: Create appointment (PENDING) + Mercado Pago Checkout Pro preference
 export async function POST(request: NextRequest) {
   try {
     const headersList = await headers();
@@ -42,10 +43,15 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const parsed = appointmentSchema.parse(body);
-    const { advisorId, serviceId, scheduledAt, promotionId, guestEmail, guestName } = parsed;
+    const instructorId = readInstructorId(parsed);
+    const { serviceId, scheduledAt, promotionId, guestEmail, guestName } = parsed;
     const paymentsEnabled = isPaymentsEnabled();
 
-    if (isDemoBookingMode() && isDemoAdvisorId(advisorId) && isDemoServiceId(serviceId)) {
+    if (!instructorId) {
+      return NextResponse.json({ error: "instructorId is required" }, { status: 400 });
+    }
+
+    if (isDemoBookingMode() && isDemoInstructorId(instructorId) && isDemoServiceId(serviceId)) {
       const parsedDate = parseLocalISO(scheduledAt);
       if (!parsedDate) {
         return NextResponse.json({ error: "Invalid date/time" }, { status: 400 });
@@ -104,22 +110,22 @@ export async function POST(request: NextRequest) {
       payerEmail = guest.email;
     }
 
-    const advisorProfile = await prisma.advisorProfile.findUnique({
-      where: { id: advisorId },
+    const instructorProfile = await prisma.instructorProfile.findUnique({
+      where: { id: instructorId },
     });
 
-    if (!advisorProfile) {
-      return NextResponse.json({ error: "Advisor not found" }, { status: 404 });
+    if (!instructorProfile) {
+      return NextResponse.json({ error: "Instructor not found" }, { status: 404 });
     }
 
-    if (paymentsEnabled && !advisorProfile.mpAccessToken) {
+    if (paymentsEnabled && !instructorProfile.mpAccessToken) {
       return NextResponse.json(
-        { error: "Advisor has no Mercado Pago account configured" },
+        { error: "Instructor has no Mercado Pago account configured" },
         { status: 400 }
       );
     }
 
-    const service = await prisma.advisorService.findUnique({
+    const service = await prisma.instructorService.findUnique({
       where: { id: serviceId },
       include: {
         category: {
@@ -174,7 +180,7 @@ export async function POST(request: NextRequest) {
       maxFeeCents,
       discountCents,
     });
-    const { advisorEarningCents: advisorEarning, platformFeeCents: platformFee, totalCents } = quote;
+    const { instructorEarningCents: instructorEarning, platformFeeCents: platformFee, totalCents } = quote;
 
     const parsedDate = parseLocalISO(scheduledAt);
     if (!parsedDate) {
@@ -182,28 +188,28 @@ export async function POST(request: NextRequest) {
     }
 
     await validateBookableSlot({
-      advisorId,
+      instructorId,
       serviceId,
       scheduledAt: parsedDate,
     });
 
     const mpToken = paymentsEnabled
-      ? decryptMpAccessToken(advisorProfile.mpAccessToken)
+      ? decryptMpAccessToken(instructorProfile.mpAccessToken)
       : null;
     if (paymentsEnabled && !mpToken) {
       return NextResponse.json(
-        { error: "Advisor payment credentials are not configured" },
+        { error: "Instructor payment credentials are not configured" },
         { status: 400 }
       );
     }
 
-    const isTest = paymentsEnabled && advisorProfile.mpMode === "TEST";
+    const isTest = paymentsEnabled && instructorProfile.mpMode === "TEST";
 
     const appointment = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
         const bookedCount = await tx.appointment.count({
           where: {
-            advisorId: advisorProfile.id,
+            instructorId: instructorProfile.id,
             scheduledAt: parsedDate,
             status: { in: ["CONFIRMED", "IN_PROGRESS", "PENDING"] },
           },
@@ -216,13 +222,13 @@ export async function POST(request: NextRequest) {
         return tx.appointment.create({
           data: {
             clientId,
-            advisorId: advisorProfile.id,
+            instructorId: instructorProfile.id,
             serviceId: serviceId,
             scheduledAt: parsedDate,
             durationMin: service.durationMin,
             status: paymentsEnabled ? "PENDING" : "CONFIRMED",
             totalCents,
-            advisorEarning,
+            instructorEarning,
             platformFee,
             discountCents,
             isTest,

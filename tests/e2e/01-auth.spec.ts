@@ -41,9 +41,6 @@ test.describe("01 · Auth", () => {
     const api = newApi(request);
     const res = await api.get(`${BASE_URL}/api/client/appointments`);
     expect(res.status()).toBe(401);
-
-    const advisorRes = await api.get(`${BASE_URL}/api/advisor/dashboard`);
-    expect(advisorRes.status()).toBe(401);
   });
 
   test("client session accesses its endpoints and gets 403 on admin endpoints", async ({ request }) => {

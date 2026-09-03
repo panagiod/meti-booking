@@ -1,25 +1,25 @@
 import { test, expect } from "@playwright/test";
 import { newApi, withSession, BASE_URL } from "../helpers/api";
 import { prisma } from "../helpers/db";
-import { createActiveAdvisor, createClient } from "../helpers/fixtures";
+import { createStudioInstructor, createClient } from "../helpers/fixtures";
 
 test.describe("07 · Client appointments", () => {
   test("client lists their appointments with advisor and service details", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request);
+    const fixture = await createStudioInstructor(request);
     const client = await createClient(request);
     const other = await createClient(request);
 
     const apt = await prisma.appointment.create({
       data: {
         clientId: client.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         durationMin: 60,
         status: "CONFIRMED",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });
@@ -27,13 +27,13 @@ test.describe("07 · Client appointments", () => {
     await prisma.appointment.create({
       data: {
         clientId: other.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
         durationMin: 60,
         status: "CONFIRMED",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });
@@ -43,26 +43,26 @@ test.describe("07 · Client appointments", () => {
     const { appointments } = await res.json();
     expect(appointments.length).toBe(1);
     expect(appointments[0].id).toBe(apt.id);
-    expect(appointments[0].advisor.user.name).toBeTruthy();
+    expect(appointments[0].instructor.user.name).toBeTruthy();
     expect(appointments[0].service.name).toBe("E2E Consulting");
   });
 
   test("appointment detail: participants only (403 for outsiders)", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request);
+    const fixture = await createStudioInstructor(request);
     const client = await createClient(request);
     const intruder = await createClient(request);
 
     const apt = await prisma.appointment.create({
       data: {
         clientId: client.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         durationMin: 60,
         status: "CONFIRMED",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });
@@ -79,19 +79,19 @@ test.describe("07 · Client appointments", () => {
 
   test("review: only COMPLETED appointments and only the client", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request);
+    const fixture = await createStudioInstructor(request);
     const client = await createClient(request);
 
     const completed = await prisma.appointment.create({
       data: {
         clientId: client.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         durationMin: 60,
         status: "COMPLETED",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });
@@ -124,13 +124,13 @@ test.describe("07 · Client appointments", () => {
     const pending = await prisma.appointment.create({
       data: {
         clientId: client.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
         durationMin: 60,
         status: "PENDING",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });
@@ -143,20 +143,20 @@ test.describe("07 · Client appointments", () => {
 
   test("chat: only participants can access and post", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request);
+    const fixture = await createStudioInstructor(request);
     const client = await createClient(request);
     const intruder = await createClient(request);
 
     const apt = await prisma.appointment.create({
       data: {
         clientId: client.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
         durationMin: 60,
         status: "CONFIRMED",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });
@@ -185,19 +185,19 @@ test.describe("07 · Client appointments", () => {
 
   test("client can cancel a confirmed upcoming booking and free the slot", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request);
+    const fixture = await createStudioInstructor(request);
     const client = await createClient(request);
 
     const apt = await prisma.appointment.create({
       data: {
         clientId: client.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         durationMin: 60,
         status: "CONFIRMED",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });
@@ -218,19 +218,19 @@ test.describe("07 · Client appointments", () => {
 
   test("client cannot cancel a confirmed booking inside the lead window", async ({ request }) => {
     const api = newApi(request);
-    const fixture = await createActiveAdvisor(request);
+    const fixture = await createStudioInstructor(request);
     const client = await createClient(request);
 
     const apt = await prisma.appointment.create({
       data: {
         clientId: client.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000),
         durationMin: 60,
         status: "CONFIRMED",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });

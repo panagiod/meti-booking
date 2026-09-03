@@ -1,5 +1,5 @@
-// Prisma schema for Meti - Professional Advisory Platform
-// https://pris.ly/d/prisma-schema
+// Prisma schema for MeTi Pilates
+// TypeScript uses instructor names; @@map/@map keep the live SQLite/Postgres columns.
 
 generator client {
   provider = "prisma-client"
@@ -25,7 +25,7 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   admin         AdminProfile?
-  advisor       AdvisorProfile?
+  instructor    InstructorProfile?
   client        ClientProfile?
   sessions      Session[]
   accounts      Account[]
@@ -93,119 +93,113 @@ model Verification {
 // ============================================
 
 model AdminProfile {
-  id        String  @id @default(cuid())
-  userId    String  @unique
-  level     String  @default("GESTOR") // "SUPERADMIN" | "GESTOR"
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  level     String   @default("GESTOR") // "SUPERADMIN" | "GESTOR"
   createdAt DateTime @default(now())
 
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("admin_profiles")
 }
 
 // ============================================
-// ADVISOR
+// INSTRUCTOR (studio teacher; table: advisor_profiles)
 // ============================================
 
-model AdvisorProfile {
+model InstructorProfile {
   id              String   @id @default(cuid())
   userId          String   @unique
   bio             String?  @db.Text
-  speciality      String?  // Deprecated: use categories instead
-  videoUrl        String?  // Presentation video
+  speciality      String?
+  videoUrl        String?
   isActive        Boolean  @default(true)
-  isHidden        Boolean  @default(false) // Advisor hidden from public listing
-  
-  // Verification fields
-  isVerified      Boolean  @default(false)
-  verificationStatus String @default("NONE") // NONE | PENDING_AI | PENDING_MANUAL | APPROVED | REJECTED
-  verificationNotes String? @db.Text
+  isHidden        Boolean  @default(false)
 
-  // Booking
-  bookingLeadHours Int      @default(2) // Minimum advance booking notice (hours)
+  isVerified          Boolean @default(false)
+  verificationStatus  String  @default("NONE")
+  verificationNotes   String? @db.Text
 
-  // Contact (admin only)
-  whatsappPhone    String?  // WhatsApp phone for admin contact
+  bookingLeadHours Int     @default(2)
+  whatsappPhone    String?
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  // Mercado Pago credentials
-  mpMode          String   @default("PRODUCTION") // "TEST" | "PRODUCTION"
+  mpMode          String   @default("PRODUCTION")
   mpPublicKey     String?
-  mpAccessToken   String?  // Encrypted
+  mpAccessToken   String?
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  services        AdvisorService[]
-  schedule        AdvisorSchedule[]
+  services        InstructorService[]
+  schedule        InstructorSchedule[]
   promotions      Promotion[]
   appointments    Appointment[]
-  documents       AdvisorDocument[]
+  documents       InstructorDocument[]
   invoices        Invoice[]
-  categories      AdvisorCategory[]
+  categories      InstructorCategory[]
   blockedTimes    BlockedTime[]
 
   @@map("advisor_profiles")
 }
 
 // ============================================
-// CATEGORIES (Areas of expertise)
+// CATEGORIES
 // ============================================
 
 model Category {
   id                String   @id @default(cuid())
-  name              String   @unique // "Legal", "Finance", "Health"
-  slug              String   @unique // "legal", "finanzas", "salud"
+  name              String   @unique
+  slug              String   @unique
   description       String?  @db.Text
-  icon              String?  // Icon name from lucide
-  color             String?  // Hex color
-  
-  // Pricing configuration per category
-  minimumPriceCents Int      @default(10000) // $100 minimum in cents
-  feePercentage     Float    @default(15.0)  // 15% platform fee
-  maxFeeCents       Int      @default(100000) // Maximum fee $1,000 in cents
-  
+  icon              String?
+  color             String?
+
+  minimumPriceCents Int      @default(10000)
+  feePercentage     Float    @default(15.0)
+  maxFeeCents       Int      @default(100000)
+
   isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
-  advisors          AdvisorCategory[]
-  services          AdvisorService[]
+  instructors       InstructorCategory[]
+  services          InstructorService[]
 
   @@map("categories")
 }
 
-model AdvisorCategory {
-  id          String   @id @default(cuid())
-  advisorId   String
-  categoryId  String
-  createdAt   DateTime @default(now())
+model InstructorCategory {
+  id            String   @id @default(cuid())
+  instructorId  String   @map("advisorId")
+  categoryId    String
+  createdAt     DateTime @default(now())
 
-  advisor     AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
-  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  instructor    InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  category      Category          @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  @@unique([advisorId, categoryId])
+  @@unique([instructorId, categoryId], map: "advisor_categories_advisorId_categoryId_key")
   @@map("advisor_categories")
 }
 
 // ============================================
-// BLOCKED TIMES (Vacations, blocks, etc.)
+// BLOCKED TIMES
 // ============================================
 
 model BlockedTime {
   id            String   @id @default(cuid())
-  advisorId     String
-  title         String   // "Vacation", "Personal day", "Medical block"
-  startDate     DateTime // Start date/time
-  endDate       DateTime // End date/time
-  isAllDay      Boolean  @default(true) // All-day block or specific time range
+  instructorId  String   @map("advisorId")
+  title         String
+  startDate     DateTime
+  endDate       DateTime
+  isAllDay      Boolean  @default(true)
   reason        String?  @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  advisor       AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+  instructor    InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
 
-  @@index([advisorId, startDate, endDate])
+  @@index([instructorId, startDate, endDate], map: "blocked_times_advisorId_startDate_endDate_idx")
   @@map("blocked_times")
 }
 
@@ -213,21 +207,21 @@ model BlockedTime {
 // SERVICES
 // ============================================
 
-model AdvisorService {
+model InstructorService {
   id                  String   @id @default(cuid())
-  advisorId           String
-  categoryId          String?  // Service category (defines fee and minimum price)
-  name                String   // "General Consultation"
+  instructorId        String   @map("advisorId")
+  categoryId          String?
+  name                String
   description         String?  @db.Text
-  durationMin         Int      // 30, 60, 90, 120...
-  priceCents          Int      // What advisor wants to earn (in cents)
-  rescheduleHoursMin  Int      @default(24) // Minimum hours to reschedule
+  durationMin         Int
+  priceCents          Int
+  rescheduleHoursMin  Int      @default(24)
   isActive            Boolean  @default(true)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
-  advisor             AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
-  category            Category?      @relation(fields: [categoryId], references: [id])
+  instructor          InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  category            Category?         @relation(fields: [categoryId], references: [id])
   appointments        Appointment[]
   promotions          Promotion[]
 
@@ -235,56 +229,54 @@ model AdvisorService {
 }
 
 // ============================================
-// SCHEDULE (Recurring by day of week)
+// SCHEDULE
 // ============================================
 
-model AdvisorSchedule {
+model InstructorSchedule {
   id            String   @id @default(cuid())
-  advisorId     String
-  dayOfWeek     Int      // 0=Sun, 1=Mon, 2=Tue... 6=Sat
-  startTime     String   // "09:00"
-  endTime       String   // "17:00"
-  lunchStart    String?  // "12:00"
-  lunchEnd      String?  // "13:00"
-  gapMinutes    Int      @default(15) // Gap between appointments
+  instructorId  String   @map("advisorId")
+  dayOfWeek     Int
+  startTime     String
+  endTime       String
+  lunchStart    String?
+  lunchEnd      String?
+  gapMinutes    Int      @default(15)
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  advisor       AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+  instructor    InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
 
-  @@unique([advisorId, dayOfWeek])
+  @@unique([instructorId, dayOfWeek], map: "advisor_schedules_advisorId_dayOfWeek_key")
   @@map("advisor_schedules")
 }
 
 // ============================================
-// DOCUMENTS FOR VERIFICATION
+// DOCUMENTS
 // ============================================
 
-model AdvisorDocument {
-  id            String   @id @default(cuid())
-  advisorId     String
-  documentType  String   // "CERTIFICATE" | "LICENSE" | "DEGREE" | "RESUME" | "OTHER"
-  fileName      String
-  fileUrl       String
-  fileSize      Int      // in bytes
-  mimeType      String   // "application/pdf", "image/jpeg", etc.
-  
-  // AI Analysis
-  aiAnalysis    String?  @db.Text // JSON with AI analysis results
-  aiScore       Float?   // 0-100 confidence score
-  aiStatus      String?  // "PENDING" | "COMPLETED" | "FAILED"
-  
-  // Manual Verification
-  verifiedBy    String?  // Admin user ID
-  verifiedAt    DateTime?
-  manualStatus  String?  // "APPROVED" | "REJECTED"
-  rejectionReason String? @db.Text
-  
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model InstructorDocument {
+  id              String    @id @default(cuid())
+  instructorId    String    @map("advisorId")
+  documentType    String
+  fileName        String
+  fileUrl         String
+  fileSize        Int
+  mimeType        String
 
-  advisor       AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+  aiAnalysis      String?   @db.Text
+  aiScore         Float?
+  aiStatus        String?
+
+  verifiedBy      String?
+  verifiedAt      DateTime?
+  manualStatus    String?
+  rejectionReason String?   @db.Text
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  instructor      InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
 
   @@map("advisor_documents")
 }
@@ -295,25 +287,25 @@ model AdvisorDocument {
 
 model Promotion {
   id            String   @id @default(cuid())
-  advisorId     String
+  instructorId  String   @map("advisorId")
   serviceId     String
-  name          String   // "Black Friday Legal"
-  discountType  String   // "percentage" | "fixed"
-  discountValue Float    // 20 (percentage) or 10000 (fixed amount in cents)
+  name          String
+  discountType  String
+  discountValue Float
   startAt       DateTime
   endAt         DateTime
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  advisor       AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
-  service       AdvisorService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  instructor    InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  service       InstructorService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   @@map("promotions")
 }
 
 // ============================================
-// INVOICING (monthly fee billing)
+// INVOICING
 // ============================================
 
 enum InvoiceStatus {
@@ -323,20 +315,20 @@ enum InvoiceStatus {
 
 model Invoice {
   id                 String        @id @default(cuid())
-  advisorId          String
-  periodStart        DateTime      // Period start (first day of the month)
-  periodEnd          DateTime      // Period end (last day of the month)
-  totalFeeCents      Int           // Sum of platformFee from appointments in the period
-  totalEarningsCents Int           // Sum of advisorEarning from appointments in the period
+  instructorId       String        @map("advisorId")
+  periodStart        DateTime
+  periodEnd          DateTime
+  totalFeeCents      Int
+  totalEarningsCents Int
   appointmentCount   Int
   status             InvoiceStatus @default(PENDING)
   paidAt             DateTime?
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 
-  advisor            AdvisorProfile @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+  instructor         InstructorProfile @relation(fields: [instructorId], references: [id], onDelete: Cascade)
 
-  @@unique([advisorId, periodStart, periodEnd])
+  @@unique([instructorId, periodStart, periodEnd], map: "invoices_advisorId_periodStart_periodEnd_key")
   @@map("invoices")
 }
 
@@ -345,13 +337,13 @@ model Invoice {
 // ============================================
 
 model ClientProfile {
-  id        String  @id @default(cuid())
-  userId    String  @unique
+  id        String   @id @default(cuid())
+  userId    String   @unique
   phone     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("client_profiles")
 }
@@ -363,57 +355,51 @@ model ClientProfile {
 model Appointment {
   id              String            @id @default(cuid())
   clientId        String
-  advisorId       String
+  instructorId    String            @map("advisorId")
   serviceId       String
-  scheduledAt     DateTime          // Date and time of appointment
+  scheduledAt     DateTime
   durationMin     Int
   status          AppointmentStatus @default(PENDING)
 
-  // Payment
-  totalCents      Int               // Final price (service + fee)
-  advisorEarning  Int               // What advisor earns
-  platformFee     Int               // Platform fee
-  discountCents   Int  @default(0)  // Applied discount (promotion)
-  isTest          Boolean @default(false) // Appointment created in MP test mode
-  paymentId       String?           // Mercado Pago payment ID
-  mpPreferenceId  String?           // Mercado Pago preference ID (Checkout Pro)
+  totalCents         Int
+  instructorEarning  Int            @map("advisorEarning")
+  platformFee        Int
+  discountCents      Int            @default(0)
+  isTest             Boolean        @default(false)
+  paymentId          String?
+  mpPreferenceId     String?
 
-  // LiveKit
-  liveKitRoomId   String?
-  recordingUrl    String?
-  recordingEgressId String?          // Active LiveKit egress (recording in progress)
+  liveKitRoomId      String?
+  recordingUrl       String?
+  recordingEgressId  String?
 
-  // AI Notes
-  transcript      String?           @db.Text  // Full call transcript
-  summary         String?           @db.Text  // AI-generated summary
+  transcript         String?        @db.Text
+  summary            String?        @db.Text
 
-  // Cancellation
-  cancelReason    String?
-  cancelledAt     DateTime?
+  cancelReason       String?
+  cancelledAt        DateTime?
 
-  // Notifications
-  reminderSentAt  DateTime?          // Last reminder sent (24h cron)
+  reminderSentAt     DateTime?
 
-  // Timestamps
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
-  client          User              @relation("ClientAppointments", fields: [clientId], references: [id])
-  advisor         AdvisorProfile    @relation(fields: [advisorId], references: [id])
-  service         AdvisorService    @relation(fields: [serviceId], references: [id])
-  review          Review?
-  chatMessages    ChatMessage[]
+  client             User               @relation("ClientAppointments", fields: [clientId], references: [id])
+  instructor         InstructorProfile  @relation(fields: [instructorId], references: [id])
+  service            InstructorService  @relation(fields: [serviceId], references: [id])
+  review             Review?
+  chatMessages       ChatMessage[]
 
   @@map("appointments")
 }
 
 enum AppointmentStatus {
-  PENDING         // Waiting for payment
-  CONFIRMED       // Payment received, confirmed
-  IN_PROGRESS     // In videocall
-  COMPLETED       // Advisory completed
-  CANCELLED       // Cancelled
-  NO_SHOW         // Client didn't show up
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
 }
 
 // ============================================
@@ -423,7 +409,7 @@ enum AppointmentStatus {
 model Review {
   id            String   @id @default(cuid())
   appointmentId String   @unique
-  rating        Int      // 1-5
+  rating        Int
   comment       String?  @db.Text
   createdAt     DateTime @default(now())
 
@@ -441,7 +427,7 @@ model ChatMessage {
   appointmentId String
   senderId      String
   senderName    String
-  senderRole    String   // "advisor" | "client"
+  senderRole    String
   body          String   @db.Text
   createdAt     DateTime @default(now())
 
@@ -457,8 +443,8 @@ model ChatMessage {
 
 model PlatformConfig {
   id                String   @id @default(cuid())
-  feePercentage     Float    @default(15.0) // 15%
-  minimumPriceCents Int      @default(10000) // $100 minimum
+  feePercentage     Float    @default(15.0)
+  minimumPriceCents Int      @default(10000)
   updatedAt         DateTime @updatedAt
 
   @@map("platform_configs")

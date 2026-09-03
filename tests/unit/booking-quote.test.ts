@@ -22,7 +22,7 @@ describe("lib/booking-quote — buildBookingQuote", () => {
     expect(quote).toMatchObject({
       servicePriceCents: 5000,
       platformFeeCents: 0,
-      advisorEarningCents: 5000,
+      instructorEarningCents: 5000,
       totalCents: 5000,
       feePercentage: 0,
     });
@@ -38,7 +38,7 @@ describe("lib/booking-quote — buildBookingQuote", () => {
 
     expect(quote.totalCents).toBe(4000);
     expect(quote.platformFeeCents).toBe(0);
-    expect(quote.advisorEarningCents).toBe(4000);
+    expect(quote.instructorEarningCents).toBe(4000);
   });
 
   it("includes platform fees when payments are enabled", () => {

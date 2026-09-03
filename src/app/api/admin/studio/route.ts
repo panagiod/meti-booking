@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
-import { resolveStudioAdvisor } from "@/lib/studio-advisor";
+import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import { mergeScheduleFromDb } from "@/lib/studio-schedule";
 import { getStudioContent } from "@/lib/studio-content-server";
 import { siteConfig, REFORMER_SERVICE_NAME } from "@/lib/site-config";
@@ -15,22 +15,22 @@ export async function GET() {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    const advisor = await resolveStudioAdvisor();
+    const advisor = await resolveStudioInstructor();
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
 
     const [schedules, blockedTimes, service, content] = await Promise.all([
-      prisma.advisorSchedule.findMany({
-        where: { advisorId: advisor.id },
+      prisma.instructorSchedule.findMany({
+        where: { instructorId: advisor.id },
         orderBy: { dayOfWeek: "asc" },
       }),
       prisma.blockedTime.findMany({
-        where: { advisorId: advisor.id },
+        where: { instructorId: advisor.id },
         orderBy: { startDate: "asc" },
       }),
-      prisma.advisorService.findFirst({
-        where: { advisorId: advisor.id, isActive: true },
+      prisma.instructorService.findFirst({
+        where: { instructorId: advisor.id, isActive: true },
         orderBy: { createdAt: "asc" },
         select: { durationMin: true, name: true },
       }),
@@ -40,7 +40,7 @@ export async function GET() {
     return NextResponse.json({
       studio: {
         name: content.name,
-        advisorId: advisor.id,
+        instructorId: advisor.id,
         instructorName: advisor.user.name,
         instructorEmail: advisor.user.email,
         slotCapacity: siteConfig.slotCapacity,

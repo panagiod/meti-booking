@@ -18,16 +18,16 @@ type ScheduleRow = {
 };
 
 export async function getSlotsForDate(
-  advisorId: string,
+  instructorId: string,
   serviceId: string,
   date: string
 ): Promise<TimeSlot[]> {
-  const result = await getSlotsForDates(advisorId, serviceId, [date]);
+  const result = await getSlotsForDates(instructorId, serviceId, [date]);
   return result[date] ?? [];
 }
 
 export async function getSlotsForDates(
-  advisorId: string,
+  instructorId: string,
   serviceId: string,
   dates: string[]
 ): Promise<Record<string, TimeSlot[]>> {
@@ -36,7 +36,7 @@ export async function getSlotsForDates(
   const validDates = dates.filter((d) => isValidSlotDate(d));
   if (validDates.length === 0) return {};
 
-  const service = await prisma.advisorService.findUnique({
+  const service = await prisma.instructorService.findUnique({
     where: { id: serviceId },
   });
 
@@ -44,19 +44,19 @@ export async function getSlotsForDates(
     throw new Error("SERVICE_NOT_FOUND");
   }
 
-  const advisorProfile = await prisma.advisorProfile.findUnique({
-    where: { id: advisorId },
+  const instructorProfile = await prisma.instructorProfile.findUnique({
+    where: { id: instructorId },
     select: { bookingLeadHours: true },
   });
 
-  const leadHours = resolveBookingLeadHours(advisorProfile?.bookingLeadHours);
+  const leadHours = resolveBookingLeadHours(instructorProfile?.bookingLeadHours);
   const minStartTime =
     leadHours > 0 ? new Date(Date.now() + leadHours * 60 * 60 * 1000) : undefined;
 
   const dayOfWeeks = [...new Set(validDates.map((d) => getDayOfWeekForStudioDate(d)))];
-  const schedules = await prisma.advisorSchedule.findMany({
+  const schedules = await prisma.instructorSchedule.findMany({
     where: {
-      advisorId,
+      instructorId,
       dayOfWeek: { in: dayOfWeeks },
       isActive: true,
     },
@@ -72,7 +72,7 @@ export async function getSlotsForDates(
 
   const existingAppointments = await prisma.appointment.findMany({
     where: {
-      advisorId,
+      instructorId,
       scheduledAt: {
         gte: rangeStart,
         lte: rangeEnd,
@@ -89,7 +89,7 @@ export async function getSlotsForDates(
 
   const blockedTimesRaw = await prisma.blockedTime.findMany({
     where: {
-      advisorId,
+      instructorId,
       startDate: { lte: rangeEnd },
       endDate: { gte: rangeStart },
     },

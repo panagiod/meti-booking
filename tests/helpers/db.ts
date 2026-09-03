@@ -48,7 +48,7 @@ export async function createUserDirect(
   if (role === "ADMIN") {
     await prisma.adminProfile.create({ data: { userId: user.id, level: "GESTOR" } });
   } else if (role === "ADVISOR") {
-    await prisma.advisorProfile.create({
+    await prisma.instructorProfile.create({
       data: { userId: user.id, isActive: true },
     });
   } else {
@@ -99,7 +99,7 @@ export async function cleanupE2EData() {
   const userIds = e2eUsers.map((u: { id: string }) => u.id);
 
   // Advisor profiles linked to e2e users
-  const advisorProfiles = await prisma.advisorProfile.findMany({
+  const advisorProfiles = await prisma.instructorProfile.findMany({
     where: { userId: { in: userIds } },
     select: { id: true },
   });
@@ -110,25 +110,25 @@ export async function cleanupE2EData() {
     await prisma.appointment.deleteMany({
       where: {
         OR: [
-          { advisorId: { in: advisorIds } },
+          { instructorId: { in: advisorIds } },
           { clientId: { in: userIds } },
         ],
       },
     });
-    await prisma.promotion.deleteMany({ where: { advisorId: { in: advisorIds } } });
-    await prisma.advisorService.deleteMany({ where: { advisorId: { in: advisorIds } } });
-    await prisma.advisorSchedule.deleteMany({ where: { advisorId: { in: advisorIds } } });
-    await prisma.advisorDocument.deleteMany({ where: { advisorId: { in: advisorIds } } });
-    await prisma.blockedTime.deleteMany({ where: { advisorId: { in: advisorIds } } });
-    await prisma.invoice.deleteMany({ where: { advisorId: { in: advisorIds } } });
-    await prisma.advisorCategory.deleteMany({ where: { advisorId: { in: advisorIds } } });
+    await prisma.promotion.deleteMany({ where: { instructorId: { in: advisorIds } } });
+    await prisma.instructorService.deleteMany({ where: { instructorId: { in: advisorIds } } });
+    await prisma.instructorSchedule.deleteMany({ where: { instructorId: { in: advisorIds } } });
+    await prisma.instructorDocument.deleteMany({ where: { instructorId: { in: advisorIds } } });
+    await prisma.blockedTime.deleteMany({ where: { instructorId: { in: advisorIds } } });
+    await prisma.invoice.deleteMany({ where: { instructorId: { in: advisorIds } } });
+    await prisma.instructorCategory.deleteMany({ where: { instructorId: { in: advisorIds } } });
   }
 
   await prisma.appointment.deleteMany({ where: { clientId: { in: userIds } } });
 
   await prisma.adminProfile.deleteMany({ where: { userId: { in: userIds } } });
   await prisma.clientProfile.deleteMany({ where: { userId: { in: userIds } } });
-  await prisma.advisorProfile.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.instructorProfile.deleteMany({ where: { userId: { in: userIds } } });
   await prisma.session.deleteMany({ where: { userId: { in: userIds } } });
   await prisma.account.deleteMany({ where: { userId: { in: userIds } } });
   await prisma.verification.deleteMany({ where: { identifier: { in: e2eUsers.map((u: { email: string }) => u.email) } } });

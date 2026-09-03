@@ -14,7 +14,7 @@ async function loadAppointmentForNotify(appointmentId: string) {
     where: { id: appointmentId },
     include: {
       client: { select: { email: true, name: true } },
-      advisor: { include: { user: { select: { email: true, name: true } } } },
+      instructor: { include: { user: { select: { email: true, name: true } } } },
       service: { select: { name: true } },
     },
   });
@@ -27,11 +27,11 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
   if (!apt) return false;
 
   const clientEmail = apt.client.email;
-  const advisorEmail = apt.advisor.user.email?.trim().toLowerCase();
+  const advisorEmail = apt.instructor.user.email?.trim().toLowerCase();
   const studioEmails = getStudioNotificationEmails();
 
   const base: AppointmentEmailData = {
-    advisorName: apt.advisor.user.name,
+    advisorName: apt.instructor.user.name,
     clientName: apt.client.name,
     serviceName: apt.service.name,
     scheduledAt: apt.scheduledAt.toISOString(),
@@ -60,7 +60,7 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
   if (!apt) return false;
 
   const base: AppointmentEmailData = {
-    advisorName: apt.advisor.user.name,
+    advisorName: apt.instructor.user.name,
     clientName: apt.client.name,
     serviceName: apt.service.name,
     scheduledAt: apt.scheduledAt.toISOString(),
@@ -72,7 +72,7 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
   if (apt.client.email) sent = (await sendReminderEmail(apt.client.email, base, "client")) || sent;
 
   const studioEmails = getStudioNotificationEmails();
-  const advisorEmail = apt.advisor.user.email?.trim().toLowerCase();
+  const advisorEmail = apt.instructor.user.email?.trim().toLowerCase();
   const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/admin/schedule` };
 
   for (const studioEmail of studioEmails) {

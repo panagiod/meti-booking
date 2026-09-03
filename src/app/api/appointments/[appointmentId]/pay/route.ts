@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { createCheckoutPreference } from "@/lib/mercadopago";
-import { decryptMpAccessToken } from "@/lib/advisor-mp";
+import { decryptMpAccessToken } from "@/lib/instructor-mp";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 
 // POST: Regenerate MercadoPago checkout link for a pending appointment
@@ -33,7 +33,7 @@ export async function POST(
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
-        advisor: true,
+        instructor: true,
         service: true,
         client: true,
       },
@@ -56,10 +56,10 @@ export async function POST(
       );
     }
 
-    const mpToken = decryptMpAccessToken(appointment.advisor.mpAccessToken);
+    const mpToken = decryptMpAccessToken(appointment.instructor.mpAccessToken);
     if (!mpToken) {
       return NextResponse.json(
-        { error: "The advisor does not have a Mercado Pago account configured" },
+        { error: "The instructor does not have a Mercado Pago account configured" },
         { status: 400 }
       );
     }
@@ -84,7 +84,7 @@ export async function POST(
       data: { mpPreferenceId: preferenceId },
     });
 
-    const isTest = appointment.advisor.mpMode === "TEST";
+    const isTest = appointment.instructor.mpMode === "TEST";
     const checkoutUrl = isTest && sandboxInitPoint ? sandboxInitPoint : initPoint;
 
     return NextResponse.json({ initPoint: checkoutUrl, preferenceId });

@@ -5,7 +5,7 @@ export class SlotBookingError extends Error {
       | "INVALID_TIME"
       | "INACTIVE_DAY"
       | "SLOT_UNAVAILABLE"
-      | "ADVISOR_INACTIVE"
+      | "INSTRUCTOR_INACTIVE"
       | "SERVICE_MISMATCH"
   ) {
     super(message);

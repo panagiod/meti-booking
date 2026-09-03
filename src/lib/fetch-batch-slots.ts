@@ -3,14 +3,14 @@ import type { TimeSlot } from "@/lib/slots";
 export type SlotsByDate = Record<string, { slots: TimeSlot[]; hasAvailability: boolean }>;
 
 export async function fetchBatchSlots(
-  advisorId: string,
+  instructorId: string,
   serviceId: string,
   dateStrs: string[]
 ): Promise<SlotsByDate> {
   if (dateStrs.length === 0) return {};
 
   const params = new URLSearchParams({
-    advisorId,
+    instructorId,
     serviceId,
     dates: dateStrs.join(","),
   });

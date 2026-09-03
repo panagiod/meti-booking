@@ -7,7 +7,7 @@ import {
   assertPaymentIdNotReused,
   PaymentVerificationError,
 } from "@/lib/payment-verify";
-import { decryptMpAccessToken } from "@/lib/advisor-mp";
+import { decryptMpAccessToken } from "@/lib/instructor-mp";
 
 interface PaymentNotification {
   type?: string;
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
-        advisor: true,
+        instructor: true,
       },
     });
 
@@ -102,10 +102,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const mpToken = decryptMpAccessToken(appointment.advisor.mpAccessToken);
+    const mpToken = decryptMpAccessToken(appointment.instructor.mpAccessToken);
     if (!mpToken) {
       console.error(
-        `Advisor ${appointment.advisorId} has no usable MP access token (appointment ${appointment.id})`
+        `Advisor ${appointment.instructorId} has no usable MP access token (appointment ${appointment.id})`
       );
       return NextResponse.json(
         { error: "Advisor has no MP credentials" },

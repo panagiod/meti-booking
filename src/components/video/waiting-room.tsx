@@ -26,7 +26,7 @@ interface AppointmentData {
   scheduledAt: string;
   durationMin: number;
   service: { name: string };
-  advisor: { user: { name: string } };
+  instructor: { user: { name: string } };
   client: { name: string };
   status: string;
 }
@@ -123,12 +123,12 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
           <div className="flex items-center gap-3 text-sm">
             <User className="w-4 h-4 text-[var(--text-muted)]" />
             <span className="text-[var(--text-muted)]">
-              {userRole === "advisor" ? "Client:" : "Advisor:"}
+              {userRole === "advisor" ? "Client:" : "Instructor:"}
             </span>
             <span className="font-medium text-[var(--text-primary)]">
               {userRole === "advisor"
                 ? appointment.client.name
-                : appointment.advisor.user.name}
+                : appointment.instructor.user.name}
             </span>
           </div>
 
@@ -193,7 +193,7 @@ export function WaitingRoom({ appointmentId, userRole, onJoin }: WaitingRoomProp
         <p className="text-xs text-center text-[var(--text-muted)]">
           {userRole === "advisor"
             ? "The client will join when the session begins"
-            : "Your advisor will grant access when the session begins"}
+            : "Your instructor will grant access when the session begins"}
         </p>
       </CardContent>
     </Card>

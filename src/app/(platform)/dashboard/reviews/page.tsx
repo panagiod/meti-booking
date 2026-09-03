@@ -36,7 +36,7 @@ export default function ReviewsPage() {
               comment: apt.review.comment,
               createdAt: apt.review.createdAt,
               serviceName: apt.service.name,
-              advisorName: apt.advisor.user.name,
+              advisorName: apt.instructor.user.name,
             }));
           setReviews(items);
         }

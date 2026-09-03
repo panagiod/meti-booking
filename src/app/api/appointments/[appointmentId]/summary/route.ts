@@ -43,7 +43,7 @@ export async function POST(
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
-        advisor: { include: { user: true } },
+        instructor: { include: { user: true } },
         client: true,
         service: true,
       },
@@ -54,7 +54,7 @@ export async function POST(
     }
 
     const userId = session.user.id;
-    const isAdvisor = appointment.advisor.userId === userId;
+    const isAdvisor = appointment.instructor.userId === userId;
     const isClient = appointment.clientId === userId;
 
     if (!isAdvisor && !isClient) {
@@ -72,7 +72,7 @@ export async function POST(
 
     const prompt = `You are a professional assistant that generates consultation summaries.
 
-Analyze the following transcript of a "${appointment.service.name}" consultation between advisor "${appointment.advisor.user.name}" and client "${appointment.client.name}".
+Analyze the following transcript of a "${appointment.service.name}" consultation between advisor "${appointment.instructor.user.name}" and client "${appointment.client.name}".
 
 Generate a structured summary in English with:
 

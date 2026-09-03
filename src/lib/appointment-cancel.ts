@@ -33,7 +33,7 @@ export function canClientCancelAppointment(input: {
   return { allowed: true };
 }
 
-export function canAdvisorCancelAppointment(status: AppointmentStatus): boolean {
+export function canInstructorCancelAppointment(status: AppointmentStatus): boolean {
   return status === "PENDING" || status === "CONFIRMED" || status === "IN_PROGRESS";
 }
 

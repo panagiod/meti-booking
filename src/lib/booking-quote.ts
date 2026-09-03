@@ -7,7 +7,7 @@ export type BookingQuote = {
   servicePriceCents: number;
   discountCents: number;
   platformFeeCents: number;
-  advisorEarningCents: number;
+  instructorEarningCents: number;
   totalCents: number;
   feePercentage: number;
   promotion: {
@@ -38,14 +38,14 @@ export function buildBookingQuote(params: {
       servicePriceCents: params.servicePriceCents,
       discountCents,
       platformFeeCents: 0,
-      advisorEarningCents: netCents,
+      instructorEarningCents: netCents,
       totalCents: netCents,
       feePercentage: 0,
       promotion: params.promotion ?? null,
     };
   }
 
-  const { advisorEarning, platformFee, totalCents } = calculatePrices({
+  const { instructorEarning, platformFee, totalCents } = calculatePrices({
     servicePriceCents: params.servicePriceCents,
     feePercentage,
     maxFeeCents: params.maxFeeCents ?? null,
@@ -58,7 +58,7 @@ export function buildBookingQuote(params: {
     servicePriceCents: params.servicePriceCents,
     discountCents,
     platformFeeCents: platformFee,
-    advisorEarningCents: advisorEarning,
+    instructorEarningCents: instructorEarning,
     totalCents,
     feePercentage,
     promotion: params.promotion ?? null,

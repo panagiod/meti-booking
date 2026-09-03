@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId },
       include: {
-        advisor: {
+        instructor: {
           include: { user: true },
         },
         client: true,
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // Verify user is part of this appointment
     const userId = session.user.id;
-    const isAdvisor = appointment.advisor.userId === userId;
+    const isAdvisor = appointment.instructor.userId === userId;
     const isClient = appointment.clientId === userId;
 
     if (!isAdvisor && !isClient) {
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Generate token for the user
     const token = await generateToken(
       roomName,
-      isAdvisor ? appointment.advisor.user.name : appointment.client.name,
+      isAdvisor ? appointment.instructor.user.name : appointment.client.name,
       userId,
       {
         role: isAdvisor ? "advisor" : "client",

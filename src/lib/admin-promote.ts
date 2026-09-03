@@ -43,7 +43,7 @@ export async function promoteUserToAdmin(email: string) {
     create: { userId: user.id, level: "SUPERADMIN" },
     update: { level: "SUPERADMIN" },
   });
-  await prisma.advisorProfile.deleteMany({ where: { userId: user.id } });
+  await prisma.instructorProfile.deleteMany({ where: { userId: user.id } });
   await prisma.clientProfile.deleteMany({ where: { userId: user.id } });
   await prisma.session.deleteMany({ where: { userId: user.id } });
 

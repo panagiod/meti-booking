@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { createActiveAdvisor, localDateStr } from "../helpers/fixtures";
+import { createStudioInstructor, localDateStr } from "../helpers/fixtures";
 import { prisma } from "../helpers/db";
 import { parseLocalISO } from "../../src/lib/timezone";
 
@@ -20,16 +20,16 @@ test.describe("09 · Smoke: key page rendering", () => {
     await expect(page.locator("form")).toBeVisible();
   });
 
-  test("advisor listing renders cards", async ({ page, request }) => {
-    await createActiveAdvisor(request);
-    await page.goto("/services", { waitUntil: "domcontentloaded" });
-    await expect(page.locator('text="E2E Advisor"').first()).toBeVisible({ timeout: 30_000 });
+  test("book page renders the studio calendar", async ({ page, request }) => {
+    await createStudioInstructor(request);
+    await page.goto("/book", { waitUntil: "domcontentloaded" });
+    await expect(page.locator(".studio-booking").first()).toBeVisible({ timeout: 30_000 });
   });
 
-  test("advisor public profile renders service selector", async ({ page, request }) => {
-    const fixture = await createActiveAdvisor(request);
-    await page.goto(`/advisor/${fixture.advisorId}`);
-    await expect(page.locator('text="E2E Consulting"').first()).toBeVisible();
+  test("legacy advisor URL redirects to book", async ({ page, request }) => {
+    const fixture = await createStudioInstructor(request);
+    await page.goto(`/advisor/${fixture.instructorId}`);
+    await expect(page).toHaveURL(/\/book/);
   });
 
   test("checkout without booking data shows empty state", async ({ page }) => {
@@ -44,7 +44,7 @@ test.describe("09 · Smoke: key page rendering", () => {
   });
 
   test("slots: active schedule generates available slots and filters Sunday", async ({ request }) => {
-    const fixture = await createActiveAdvisor(request);
+    const fixture = await createStudioInstructor(request);
 
     // Find a future Monday
     const d = new Date();
@@ -52,7 +52,7 @@ test.describe("09 · Smoke: key page rendering", () => {
     const dateStr = localDateStr(d);
 
     const res = await request.get(
-      `/api/slots?advisorId=${fixture.advisorId}&serviceId=${fixture.serviceId}&date=${dateStr}`
+      `/api/slots?instructorId=${fixture.instructorId}&serviceId=${fixture.serviceId}&date=${dateStr}`
     );
     expect(res.status()).toBe(200);
     const { slots } = await res.json();
@@ -61,12 +61,12 @@ test.describe("09 · Smoke: key page rendering", () => {
     expect(slots[0].time).toBe("08:00");
 
     // Missing parameters → 400
-    const missing = await request.get(`/api/slots?advisorId=${fixture.advisorId}`);
+    const missing = await request.get(`/api/slots?instructorId=${fixture.instructorId}`);
     expect(missing.status()).toBe(400);
   });
 
   test("slots: existing appointment blocks the corresponding slot", async ({ request }) => {
-    const fixture = await createActiveAdvisor(request);
+    const fixture = await createStudioInstructor(request);
 
     const d = new Date();
     d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7));
@@ -79,19 +79,19 @@ test.describe("09 · Smoke: key page rendering", () => {
     await prisma.appointment.create({
       data: {
         clientId: fixture.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt,
         durationMin: 60,
         status: "CONFIRMED",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });
 
     const res = await request.get(
-      `/api/slots?advisorId=${fixture.advisorId}&serviceId=${fixture.serviceId}&date=${dateStr}`
+      `/api/slots?instructorId=${fixture.instructorId}&serviceId=${fixture.serviceId}&date=${dateStr}`
     );
     const { slots } = await res.json();
     const blocked = slots.find((s: any) => s.time === "09:15");

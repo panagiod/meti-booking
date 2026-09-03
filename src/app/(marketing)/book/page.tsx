@@ -7,19 +7,17 @@ import { CalendarPicker } from "@/components/booking/calendar-picker";
 import { TimeSlotPicker } from "@/components/booking/time-slot-picker";
 import { BookingSummary } from "@/components/booking/booking-summary";
 import { BookingSteps } from "@/components/booking/booking-steps";
-import { AlertDialog } from "@/components/ui/alert-dialog";
-import { useDialog } from "@/hooks/use-dialog";
-import { LoadingPage } from "@/components/ui/loading";
 import { fetchBatchSlots } from "@/lib/fetch-batch-slots";
-import { getAvailableDates, type TimeSlot } from "@/lib/slots";
-import { isReformerService, siteConfig } from "@/lib/site-config";
+import { getAvailableDates, type DaySlots, type TimeSlot } from "@/lib/slots";
+import { siteConfig } from "@/lib/site-config";
 import { resolveBookingLeadHours } from "@/lib/booking-config";
 import { useTranslations, useStudioBranding } from "@/components/providers/locale-provider";
+import { savePendingBooking } from "@/lib/booking-utils";
 import { ArrowLeft } from "lucide-react";
 
-interface Advisor {
-  id: string;
-  name: string;
+interface StudioBooking {
+  instructorId: string;
+  instructorName: string;
   services: Array<{
     id: string;
     name: string;
@@ -41,15 +39,14 @@ interface Advisor {
 
 export default function BookPage() {
   const router = useRouter();
-  const dialog = useDialog();
   const t = useTranslations();
   const studio = useStudioBranding();
-  const [advisor, setAdvisor] = useState<Advisor | null>(null);
+  const [booking, setBooking] = useState<StudioBooking | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [step, setStep] = useState<"date" | "time" | "summary">("date");
-  const [selectedService, setSelectedService] = useState<any>(null);
-  const [selectedDate, setSelectedDate] = useState<any>(null);
+  const [selectedService, setSelectedService] = useState<StudioBooking["services"][number] | null>(null);
+  const [selectedDate, setSelectedDate] = useState<DaySlots | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -64,22 +61,20 @@ export default function BookPage() {
         setLoadError(t.book.studioUnavailable);
         return;
       }
-      const { studio } = await studioRes.json();
-      const advisorRes = await fetch(`/api/advisors/${studio.advisorId}`);
-      if (!advisorRes.ok) {
+      const { studio: payload } = await studioRes.json();
+      const services = payload?.services ?? [];
+      if (!payload?.instructorId || services.length === 0 || !payload.schedule?.length) {
         setLoadError(t.book.scheduleError);
         return;
       }
-      const data = await advisorRes.json();
-      const reformerServices = data.advisor.services.filter((s: { name: string }) =>
-        isReformerService(s.name)
-      );
-      if (reformerServices.length === 0) {
-        setLoadError(t.book.scheduleError);
-        return;
-      }
-      setAdvisor({ ...data.advisor, services: reformerServices });
-      setSelectedService(reformerServices[0]);
+      setBooking({
+        instructorId: payload.instructorId,
+        instructorName: payload.instructorName || payload.name,
+        services,
+        schedule: payload.schedule,
+        bookingLeadHours: payload.bookingLeadHours,
+      });
+      setSelectedService(services[0]);
       setStep("date");
     } catch {
       setLoadError(t.book.loadError);
@@ -89,21 +84,21 @@ export default function BookPage() {
   };
 
   const availableDates = useMemo(() => {
-    if (!selectedService || !advisor?.schedule?.length) return [];
+    if (!selectedService || !booking?.schedule?.length) return [];
     return getAvailableDates(
-      advisor.schedule,
+      booking.schedule,
       selectedService.durationMin,
       siteConfig.bookingWeeksAhead,
       [],
-      resolveBookingLeadHours(advisor.bookingLeadHours)
+      resolveBookingLeadHours(booking.bookingLeadHours)
     );
-  }, [selectedService, advisor?.schedule, advisor?.bookingLeadHours]);
+  }, [selectedService, booking?.schedule, booking?.bookingLeadHours]);
 
   const [apiSlots, setApiSlots] = useState<Record<string, { slots: TimeSlot[]; hasAvailability: boolean }>>({});
   const [slotsLoading, setSlotsLoading] = useState(false);
 
   useEffect(() => {
-    if (!selectedService || !advisor || availableDates.length === 0) {
+    if (!selectedService || !booking || availableDates.length === 0) {
       setApiSlots({});
       return;
     }
@@ -111,7 +106,7 @@ export default function BookPage() {
     setSlotsLoading(true);
     const fetchRealSlots = async () => {
       const results = await fetchBatchSlots(
-        advisor.id,
+        booking.instructorId,
         selectedService.id,
         availableDates.map((day) => day.dateStr)
       );
@@ -125,7 +120,7 @@ export default function BookPage() {
       cancelled = true;
       setSlotsLoading(false);
     };
-  }, [selectedService, advisor, availableDates]);
+  }, [selectedService, booking, availableDates]);
 
   const mergedDates = useMemo(() => {
     return availableDates.map((day) => {
@@ -142,7 +137,7 @@ export default function BookPage() {
     return mergedDates.find((d) => d.dateStr === selectedDate.dateStr) || null;
   }, [selectedDate, selectedService, mergedDates]);
 
-  const handleDateSelect = (date: any) => {
+  const handleDateSelect = (date: DaySlots) => {
     setSelectedDate(date);
     setSelectedTime(null);
     setStep("time");
@@ -154,11 +149,11 @@ export default function BookPage() {
   };
 
   const handleConfirm = async () => {
-    if (!advisor || !selectedService || !selectedDate || !selectedTime) return;
+    if (!booking || !selectedService || !selectedDate || !selectedTime) return;
 
     const bookingData = {
-      advisorId: advisor.id,
-      advisorName: advisor.name,
+      instructorId: booking.instructorId,
+      instructorName: booking.instructorName,
       serviceId: selectedService.id,
       serviceName: selectedService.name,
       servicePrice: String(selectedService.priceCents),
@@ -167,7 +162,7 @@ export default function BookPage() {
       time: selectedTime,
     };
 
-    localStorage.setItem("meti-pending-booking", JSON.stringify(bookingData));
+    savePendingBooking(bookingData);
     const params = new URLSearchParams(bookingData);
     router.push(`/checkout?${params.toString()}`);
   };
@@ -191,7 +186,7 @@ export default function BookPage() {
     );
   }
 
-  if (loadError || !advisor) {
+  if (loadError || !booking) {
     return (
       <div className="studio-booking flex min-h-[60vh] items-center justify-center px-6">
         <p className="text-center text-[var(--studio-muted)]">{loadError || t.book.studioUnavailable}</p>
@@ -200,7 +195,6 @@ export default function BookPage() {
   }
 
   return (
-  <>
     <div className="studio-booking studio-container max-w-xl py-8 sm:py-10 lg:py-14">
       <div className="mb-8 sm:mb-10">
         {step !== "date" ? (
@@ -254,8 +248,6 @@ export default function BookPage() {
         )}
       </div>
     </div>
-
-    <AlertDialog state={dialog} />
   </>
   );
 }

@@ -4,7 +4,7 @@ import {
   encryptSecret,
   isEncryptedSecret,
 } from "@/lib/encryption";
-import { decryptMpAccessToken, encryptMpAccessToken } from "@/lib/advisor-mp";
+import { decryptMpAccessToken, encryptMpAccessToken } from "@/lib/instructor-mp";
 
 describe("encryption", () => {
   const originalKey = process.env.ENCRYPTION_KEY;

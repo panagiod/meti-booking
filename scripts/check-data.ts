@@ -13,13 +13,13 @@ async function check() {
   
   const prisma = new PrismaClient({ adapter });
 
-  const advisors = await prisma.advisorProfile.findMany({
+  const advisors = await prisma.instructorProfile.findMany({
     select: { id: true, isActive: true, verificationStatus: true, user: { select: { name: true } } },
   });
   console.log("Advisors:", JSON.stringify(advisors, null, 2));
   
-  const services = await prisma.advisorService.findMany({
-    select: { id: true, name: true, advisorId: true, isActive: true },
+  const services = await prisma.instructorService.findMany({
+    select: { id: true, name: true, instructorId: true, isActive: true },
   });
   console.log("Services:", JSON.stringify(services, null, 2));
   

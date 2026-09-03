@@ -166,7 +166,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if category has advisors
-    const advisorCount = await prisma.advisorCategory.count({
+    const advisorCount = await prisma.instructorCategory.count({
       where: { categoryId: id },
     });
 

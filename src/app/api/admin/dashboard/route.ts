@@ -14,28 +14,15 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userWithRole = session.user as any;
+    const userWithRole = session.user as { role?: string };
     if (userWithRole.role !== "ADMIN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const startOfDay = new Date(now);
+    const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
 
-    const [
-      totalAdvisors,
-      activeAdvisors,
-      pendingAdvisors,
-      totalUsers,
-      todayAppointments,
-      completedToday,
-      monthAppointments,
-    ] = await Promise.all([
-      prisma.advisorProfile.count(),
-      prisma.advisorProfile.count({ where: { isActive: true } }),
-      prisma.advisorProfile.count({ where: { isActive: false } }),
+    const [totalUsers, todayAppointments, completedToday] = await Promise.all([
       prisma.user.count(),
       prisma.appointment.count({
         where: {
@@ -49,53 +36,14 @@ export async function GET() {
           status: "COMPLETED",
         },
       }),
-      prisma.appointment.findMany({
-        where: {
-          createdAt: { gte: startOfMonth },
-          status: "COMPLETED",
-        },
-        select: { platformFee: true, advisorEarning: true, totalCents: true },
-      }),
     ]);
-
-    const monthRevenue = monthAppointments.reduce(
-      (sum: number, apt: any) => sum + apt.totalCents,
-      0
-    );
-    const monthFees = monthAppointments.reduce(
-      (sum: number, apt: any) => sum + apt.platformFee,
-      0
-    );
-
-    // Get recent advisors
-    const recentAdvisors = await prisma.advisorProfile.findMany({
-      include: {
-        user: {
-          select: { name: true, email: true, image: true, createdAt: true },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-    });
 
     return NextResponse.json({
       stats: {
-        activeAdvisors,
-        pendingAdvisors,
         totalUsers,
-        monthRevenue,
-        monthFees,
         todayAppointments,
         completedToday,
       },
-      recentAdvisors: recentAdvisors.map((a: any) => ({
-        id: a.id,
-        name: a.user.name,
-        email: a.user.email,
-        speciality: a.speciality || "Unspecified",
-        status: a.isActive ? "active" : "pending",
-        joinDate: a.user.createdAt.toISOString(),
-      })),
     });
   } catch (error) {
     console.error("Error fetching admin dashboard:", error);

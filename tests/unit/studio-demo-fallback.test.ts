@@ -1,8 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DEMO_REFORMER_SERVICE_ID,
-  DEMO_STUDIO_ADVISOR_ID,
-  getDemoAdvisorResponse,
+  DEMO_STUDIO_INSTRUCTOR_ID,
   getDemoSlotsForDates,
   getDemoStudioResponse,
   isDemoBookingMode,
@@ -18,13 +17,11 @@ describe("studio-demo-fallback", () => {
     expect(isDemoBookingMode()).toBe(true);
   });
 
-  it("returns demo studio and advisor payloads", () => {
+  it("returns demo studio payload with instructor and services", () => {
     const studio = getDemoStudioResponse();
-    expect(studio.studio.advisorId).toBe(DEMO_STUDIO_ADVISOR_ID);
-
-    const advisor = getDemoAdvisorResponse();
-    expect(advisor.advisor.services[0]?.id).toBe(DEMO_REFORMER_SERVICE_ID);
-    expect(advisor.advisor.schedule.length).toBeGreaterThan(0);
+    expect(studio.studio.instructorId).toBe(DEMO_STUDIO_INSTRUCTOR_ID);
+    expect(studio.studio.services[0]?.id).toBe(DEMO_REFORMER_SERVICE_ID);
+    expect(studio.studio.schedule.length).toBeGreaterThan(0);
   });
 
   it("generates slots for active demo days", () => {

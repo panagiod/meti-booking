@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const service = await prisma.advisorService.findUnique({
+    const service = await prisma.instructorService.findUnique({
       where: { id: serviceId },
       include: {
         category: {

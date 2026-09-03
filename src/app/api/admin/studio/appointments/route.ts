@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
-import { resolveStudioAdvisor } from "@/lib/studio-advisor";
+import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import { isAutomatedTestEmail } from "@/lib/appointment-cancel";
 import { z } from "zod";
 
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    const advisor = await resolveStudioAdvisor();
+    const advisor = await resolveStudioInstructor();
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
 
     const appointments = await prisma.appointment.findMany({
       where: {
-        advisorId: advisor.id,
+        instructorId: advisor.id,
         status: { in: ranged ? [...RANGE_STATUSES] : [...SLOT_HOLDING_STATUSES] },
         scheduledAt: ranged
           ? { gte: new Date(startDate!), lte: new Date(endDate!) }
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: authResult.error }, { status: authResult.status });
     }
 
-    const advisor = await resolveStudioAdvisor();
+    const advisor = await resolveStudioInstructor();
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     const holding = await prisma.appointment.findMany({
       where: {
-        advisorId: advisor.id,
+        instructorId: advisor.id,
         status: { in: [...SLOT_HOLDING_STATUSES] },
         scheduledAt: { gte: new Date() },
       },

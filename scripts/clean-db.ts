@@ -21,9 +21,9 @@ async function cleanDatabase() {
     await prisma.review.deleteMany();
     await prisma.appointment.deleteMany();
     await prisma.promotion.deleteMany();
-    await prisma.advisorService.deleteMany();
-    await prisma.advisorSchedule.deleteMany();
-    await prisma.advisorProfile.deleteMany();
+    await prisma.instructorService.deleteMany();
+    await prisma.instructorSchedule.deleteMany();
+    await prisma.instructorProfile.deleteMany();
     await prisma.adminProfile.deleteMany();
     await prisma.clientProfile.deleteMany();
     await prisma.session.deleteMany();

@@ -30,29 +30,29 @@ export async function POST(request: NextRequest) {
         scheduledAt: { gte: periodStart, lte: periodEnd },
       },
       select: {
-        advisorId: true,
+        instructorId: true,
         platformFee: true,
-        advisorEarning: true,
+        instructorEarning: true,
       },
     });
 
     // Group by advisor
     const byAdvisor = new Map<string, { fee: number; earnings: number; count: number }>();
     for (const apt of appointments) {
-      const entry = byAdvisor.get(apt.advisorId) || { fee: 0, earnings: 0, count: 0 };
+      const entry = byAdvisor.get(apt.instructorId) || { fee: 0, earnings: 0, count: 0 };
       entry.fee += apt.platformFee;
-      entry.earnings += apt.advisorEarning;
+      entry.earnings += apt.instructorEarning;
       entry.count++;
-      byAdvisor.set(apt.advisorId, entry);
+      byAdvisor.set(apt.instructorId, entry);
     }
 
     let created = 0;
     let updated = 0;
 
     // Upsert invoice per advisor (avoids duplicates)
-    for (const [advisorId, totals] of byAdvisor) {
+    for (const [instructorId, totals] of byAdvisor) {
       const existing = await prisma.invoice.findUnique({
-        where: { advisorId_periodStart_periodEnd: { advisorId, periodStart, periodEnd } },
+        where: { instructorId_periodStart_periodEnd: { instructorId, periodStart, periodEnd } },
       });
 
       if (existing) {
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       } else {
         await prisma.invoice.create({
           data: {
-            advisorId,
+            instructorId,
             periodStart,
             periodEnd,
             totalFeeCents: totals.fee,

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { newApi, signupClient, withSession, BASE_URL } from "../helpers/api";
 import { prisma } from "../helpers/db";
-import { createAdmin, createActiveAdvisor } from "../helpers/fixtures";
+import { createAdmin, createStudioInstructor } from "../helpers/fixtures";
 
 test.describe("08 · Admin panel", () => {
   test("initial setup: first admin only when no admins exist", async ({ request }) => {
@@ -37,34 +37,16 @@ test.describe("08 · Admin panel", () => {
   test("dashboard: stats and 403 for non-admin", async ({ request }) => {
     const api = newApi(request);
     const admin = await createAdmin(request);
-    await createActiveAdvisor(request);
+    await createStudioInstructor(request);
 
     const res = await withSession(api, admin.sessionToken).get("/api/admin/dashboard");
     expect(res.status(), await res.text()).toBe(200);
     const data = await res.json();
-    expect(data.stats.activeAdvisors).toBeGreaterThanOrEqual(1);
+    expect(data.stats.totalUsers).toBeGreaterThanOrEqual(1);
 
     const client = await signupClient(api);
     const forbidden = await withSession(api, client.sessionToken).get("/api/admin/dashboard");
     expect(forbidden.status()).toBe(403);
-  });
-
-  test("list advisors and filter by status", async ({ request }) => {
-    const api = newApi(request);
-    const admin = await createAdmin(request);
-    const active = await createActiveAdvisor(request);
-    await prisma.advisorProfile.update({
-      where: { id: active.advisorId },
-      data: { isActive: true },
-    });
-
-    const all = await withSession(api, admin.sessionToken).get("/api/admin/advisors");
-    expect(all.status()).toBe(200);
-    const { advisors } = await all.json();
-    expect(advisors.some((a: any) => a.id === active.advisorId)).toBe(true);
-
-    const pending = await withSession(api, admin.sessionToken).get("/api/admin/advisors?status=pending");
-    expect(pending.status()).toBe(200);
   });
 
   test("list users by role", async ({ request }) => {
@@ -81,19 +63,19 @@ test.describe("08 · Admin panel", () => {
   test("invoices: generate and list", async ({ request }) => {
     const api = newApi(request);
     const admin = await createAdmin(request);
-    const fixture = await createActiveAdvisor(request);
+    const fixture = await createStudioInstructor(request);
 
     // Billable appointment for the current month
     await prisma.appointment.create({
       data: {
         clientId: admin.userId,
-        advisorId: fixture.advisorId,
+        instructorId: fixture.instructorId,
         serviceId: fixture.serviceId,
         scheduledAt: new Date(),
         durationMin: 60,
         status: "COMPLETED",
         totalCents: 11500,
-        advisorEarning: 10000,
+        instructorEarning: 10000,
         platformFee: 1500,
       },
     });

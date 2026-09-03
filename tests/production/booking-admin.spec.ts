@@ -25,9 +25,9 @@ function sessionCookieHeader(token: string): { cookie: string } {
   };
 }
 
-async function slotAt(request: APIRequestContext, advisorId: string, serviceId: string, date: string, time: string) {
+async function slotAt(request: APIRequestContext, instructorId: string, serviceId: string, date: string, time: string) {
   const res = await request.get(
-    `${BASE_URL}/api/slots?advisorId=${advisorId}&serviceId=${serviceId}&date=${date}`
+    `${BASE_URL}/api/slots?instructorId=${instructorId}&serviceId=${serviceId}&date=${date}`
   );
   expect(res.status()).toBe(200);
   const { slots } = await res.json();
@@ -62,23 +62,19 @@ test.describe("Production · public site and booking APIs", () => {
     expect(errors).toEqual([]);
   });
 
-  test("studio, advisor, slots, quote, and search stay healthy", async ({ request }) => {
+  test("studio, slots, and quote stay healthy", async ({ request }) => {
     const studioRes = await request.get(`${BASE_URL}/api/studio`);
     expect(studioRes.status()).toBe(200);
     const studio = await studioRes.json();
-    expect(studio.studio.advisorId).toBeTruthy();
+    expect(studio.studio.instructorId).toBeTruthy();
+    expect(studio.studio.services.length).toBeGreaterThan(0);
+    expect(studio.studio.schedule.length).toBeGreaterThan(0);
     expect(studio.paymentsEnabled).toBe(false);
 
-    const advisorRes = await request.get(`${BASE_URL}/api/advisors/${studio.studio.advisorId}`);
-    expect(advisorRes.status()).toBe(200);
-    const { advisor } = await advisorRes.json();
-    expect(advisor.services.length).toBeGreaterThan(0);
-    expect(advisor.schedule.length).toBeGreaterThan(0);
-
-    const serviceId = advisor.services[0].id;
+    const serviceId = studio.studio.services[0].id;
     const date = nextSaturday();
     const slotsRes = await request.get(
-      `${BASE_URL}/api/slots?advisorId=${advisor.id}&serviceId=${serviceId}&date=${date}`
+      `${BASE_URL}/api/slots?instructorId=${studio.studio.instructorId}&serviceId=${serviceId}&date=${date}`
     );
     expect(slotsRes.status()).toBe(200);
     const { slots } = await slotsRes.json();
@@ -90,12 +86,6 @@ test.describe("Production · public site and booking APIs", () => {
     const quote = await quoteRes.json();
     expect(quote.quote.totalCents).toBe(1000);
     expect(quote.quote.platformFeeCents).toBe(0);
-
-    const searchRes = await request.get(`${BASE_URL}/api/services?search=pilates`);
-    expect(searchRes.status(), await searchRes.text()).toBe(200);
-    const search = await searchRes.json();
-    expect(search.advisors.some((item: { name: string }) => /meropi|pilates/i.test(item.name))).toBe(true);
-    expect(search.advisors[0].minPriceWithFee).toBe(search.advisors[0].minPrice);
   });
 });
 
@@ -105,7 +95,6 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
     expect((await request.get(`${BASE_URL}/api/admin/studio/content`)).status()).toBe(401);
     expect((await request.get(`${BASE_URL}/api/admin/studio/schedule`)).status()).toBe(401);
     expect((await request.get(`${BASE_URL}/api/admin/users`)).status()).toBe(401);
-    expect((await request.get(`${BASE_URL}/api/admin/advisors`)).status()).toBe(401);
     expect((await request.get(`${BASE_URL}/api/admin/studio/appointments`)).status()).toBe(401);
     expect(
       (
@@ -126,13 +115,12 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
     request,
   }) => {
     const studio = await (await request.get(`${BASE_URL}/api/studio`)).json();
-    const advisorId = studio.studio.advisorId as string;
-    const advisor = (await (await request.get(`${BASE_URL}/api/advisors/${advisorId}`)).json()).advisor;
-    const serviceId = advisor.services[0].id as string;
+    const instructorId = studio.studio.instructorId as string;
+    const serviceId = studio.studio.services[0].id as string;
     const date = nextSaturday();
 
     const openSlot = (await (
-      await request.get(`${BASE_URL}/api/slots?advisorId=${advisorId}&serviceId=${serviceId}&date=${date}`)
+      await request.get(`${BASE_URL}/api/slots?instructorId=${instructorId}&serviceId=${serviceId}&date=${date}`)
     ).json()).slots.find((slot: { available: boolean; remaining: number; time: string }) => {
       return slot.available && slot.remaining > 0 && slot.time !== "08:00";
     });
@@ -165,7 +153,7 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
     const book = await request.post(`${BASE_URL}/api/appointments`, {
       headers: { ...ORIGIN, ...cookie, "content-type": "application/json" },
       data: {
-        advisorId,
+        instructorId,
         serviceId,
         scheduledAt: `${date}T${time}`,
       },
@@ -176,7 +164,7 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
     expect(booked.appointment.totalCents).toBe(quote.quote.totalCents);
     expect(booked.appointment.platformFee).toBe(0);
 
-    const afterBook = await slotAt(request, advisorId, serviceId, date, time);
+    const afterBook = await slotAt(request, instructorId, serviceId, date, time);
     expect(afterBook?.booked).toBe(bookedBefore + 1);
 
     const list = await request.get(`${BASE_URL}/api/client/appointments`, { headers: cookie });
@@ -190,7 +178,7 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
     });
     expect(cancel.status(), await cancel.text()).toBe(200);
 
-    const afterCancel = await slotAt(request, advisorId, serviceId, date, time);
+    const afterCancel = await slotAt(request, instructorId, serviceId, date, time);
     expect(afterCancel?.booked).toBe(bookedBefore);
 
     const hidden = await request.get(`${BASE_URL}/api/client/appointments`, { headers: cookie });

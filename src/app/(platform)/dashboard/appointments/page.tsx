@@ -24,7 +24,7 @@ interface Appointment {
   status: string;
   totalCents: number;
   service: { name: string; rescheduleHoursMin: number };
-  advisor: { user: { name: string; image: string | null } };
+  instructor: { user: { name: string; image: string | null } };
   review?: { id: string; rating: number; comment: string | null } | null;
 }
 
@@ -244,15 +244,15 @@ export default function AppointmentsPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-[var(--primary-light)] flex items-center justify-center flex-shrink-0">
-                      {apt.advisor.user.image ? (
+                      {apt.instructor.user.image ? (
                         <img
-                          src={apt.advisor.user.image}
-                          alt={apt.advisor.user.name}
+                          src={apt.instructor.user.image}
+                          alt={apt.instructor.user.name}
                           className="w-12 h-12 rounded-full"
                         />
                       ) : (
                         <span className="font-medium text-[var(--primary)]">
-                          {apt.advisor.user.name?.charAt(0) || "?"}
+                          {apt.instructor.user.name?.charAt(0) || "?"}
                         </span>
                       )}
                     </div>
@@ -261,7 +261,7 @@ export default function AppointmentsPage() {
                         {apt.service.name}
                       </p>
                       <p className="text-sm text-[var(--text-muted)]">
-                        with {apt.advisor.user.name}
+                        with {apt.instructor.user.name}
                       </p>
                     </div>
                   </div>
@@ -362,7 +362,7 @@ export default function AppointmentsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-[var(--text-muted)]">
-                {reviewAppointment.service.name} with {reviewAppointment.advisor.user.name}
+                {reviewAppointment.service.name} with {reviewAppointment.instructor.user.name}
               </p>
 
               {/* Stars */}

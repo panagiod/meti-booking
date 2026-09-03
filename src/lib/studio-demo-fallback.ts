@@ -5,7 +5,6 @@ import { generateAvailableSlots, type TimeSlot } from "@/lib/slots";
 import { SlotBookingError } from "@/lib/slot-booking-errors";
 import {
   getDayOfWeekForStudioDate,
-  studioDayBoundsUTC,
   studioLocalMinutesFromUtc,
   utcToStudioLocal,
 } from "@/lib/timezone";
@@ -18,7 +17,7 @@ import {
 import { buildBookingQuote } from "@/lib/booking-quote";
 import { resolveBookingLeadHours } from "@/lib/booking-config";
 
-export const DEMO_STUDIO_ADVISOR_ID = "demo-studio-advisor";
+export const DEMO_STUDIO_INSTRUCTOR_ID = "demo-studio-instructor";
 export const DEMO_REFORMER_SERVICE_ID = "demo-reformer-service";
 
 const DEMO_SERVICE_PRICE_CENTS = 1000;
@@ -30,13 +29,12 @@ export function isDemoBookingMode(): boolean {
   }
   const dbUrl = process.env.DATABASE_URL?.trim();
   if (!dbUrl) return true;
-  // Local/dev URLs are never reachable on Vercel or other hosted previews.
   if (/localhost|127\.0\.0\.1/.test(dbUrl)) return true;
   return false;
 }
 
-export function isDemoAdvisorId(advisorId: string): boolean {
-  return advisorId === DEMO_STUDIO_ADVISOR_ID;
+export function isDemoInstructorId(instructorId: string): boolean {
+  return instructorId === DEMO_STUDIO_INSTRUCTOR_ID;
 }
 
 export function isDemoServiceId(serviceId: string): boolean {
@@ -58,28 +56,13 @@ export function getDemoStudioResponse() {
   const content = buildDefaultStudioContent();
   return {
     studio: {
-      advisorId: DEMO_STUDIO_ADVISOR_ID,
+      instructorId: DEMO_STUDIO_INSTRUCTOR_ID,
       name: content.name,
-    },
-  };
-}
-
-export function getDemoAdvisorResponse() {
-  const content = buildDefaultStudioContent();
-  return {
-    advisor: {
-      id: DEMO_STUDIO_ADVISOR_ID,
-      name: content.name,
+      instructorName: content.name,
       image: null,
-      speciality: "Clinical Pilates & Reformer",
-      bio: null,
-      videoUrl: null,
-      isVerified: true,
-      mpMode: null,
       bookingLeadHours: DEFAULT_BOOKING_LEAD_HOURS,
-      rating: 0,
-      reviewCount: 0,
-      categories: ["Pilates"],
+      mpConnected: false,
+      mpMode: null,
       services: [
         {
           id: DEMO_REFORMER_SERVICE_ID,
@@ -197,26 +180,18 @@ export function createDemoAppointment(params: {
   clientId: string;
   scheduledAt: Date;
 }) {
-  const quote = buildBookingQuote({
-    serviceId: DEMO_REFORMER_SERVICE_ID,
-    serviceName: REFORMER_SERVICE_NAME,
-    servicePriceCents: DEMO_SERVICE_PRICE_CENTS,
-    feePercentage: DEMO_FEE_PERCENTAGE,
-    maxFeeCents: null,
-    discountCents: 0,
-    promotion: null,
-  });
+  const quote = getDemoQuote();
 
   return {
     id: randomUUID(),
     clientId: params.clientId,
-    advisorId: DEMO_STUDIO_ADVISOR_ID,
+    instructorId: DEMO_STUDIO_INSTRUCTOR_ID,
     serviceId: DEMO_REFORMER_SERVICE_ID,
     scheduledAt: params.scheduledAt.toISOString(),
     durationMin: STUDIO_SESSION_DURATION_MIN,
     status: "CONFIRMED",
     totalCents: quote.totalCents,
-    advisorEarning: quote.advisorEarningCents,
+    instructorEarning: quote.instructorEarningCents,
     platformFee: quote.platformFeeCents,
     discountCents: 0,
     isTest: true,

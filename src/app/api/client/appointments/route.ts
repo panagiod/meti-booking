@@ -23,7 +23,7 @@ export async function GET() {
         status: { not: "CANCELLED" },
       },
       include: {
-        advisor: {
+        instructor: {
           include: { user: true },
         },
         service: true,

@@ -38,8 +38,8 @@ function CheckoutContent() {
   const t = useTranslations();
   const { locale } = useLocale();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [advisorHasMP, setAdvisorHasMP] = useState<boolean | null>(null);
-  const [advisorMpMode, setAdvisorMpMode] = useState<string | null>(null);
+  const [instructorHasMP, setInstructorHasMP] = useState<boolean | null>(null);
+  const [instructorMpMode, setInstructorMpMode] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [guestEmail, setGuestEmail] = useState("");
   const [guestName, setGuestName] = useState("");
@@ -55,8 +55,9 @@ function CheckoutContent() {
   const [quoteLoading, setQuoteLoading] = useState(true);
   const [paymentsEnabled, setPaymentsEnabled] = useState(false);
 
-  const advisorId = searchParams.get("advisorId");
-  const advisorName = searchParams.get("advisorName") || "Meropi Tirri";
+  const instructorId = searchParams.get("instructorId") || searchParams.get("advisorId");
+  const instructorName =
+    searchParams.get("instructorName") || searchParams.get("advisorName") || "Meropi Tirri";
   const serviceId = searchParams.get("serviceId");
   const rawServiceName = searchParams.get("serviceName") || "Service";
   const serviceName =
@@ -80,9 +81,9 @@ function CheckoutContent() {
   }, [serviceId]);
 
   useEffect(() => {
-    if (!paymentsEnabled || !advisorId) return;
-    checkAdvisorMP(advisorId);
-  }, [advisorId, paymentsEnabled]);
+    if (!paymentsEnabled || !instructorId) return;
+    checkInstructorMP();
+  }, [instructorId, paymentsEnabled]);
 
   useEffect(() => {
     if (!serviceId) return;
@@ -132,27 +133,25 @@ function CheckoutContent() {
     }
   };
 
-  const checkAdvisorMP = async (id: string) => {
+  const checkInstructorMP = async () => {
     try {
-      const res = await fetch(`/api/advisors/${id}/mercadopago`, {
-        credentials: "include",
-      });
+      const res = await fetch("/api/studio");
       if (res.ok) {
         const data = await res.json();
-        setAdvisorHasMP(data.isConnected);
-        setAdvisorMpMode(data.mpMode || null);
+        setInstructorHasMP(Boolean(data.studio?.mpConnected));
+        setInstructorMpMode(data.studio?.mpMode || null);
       } else {
-        setAdvisorHasMP(false);
+        setInstructorHasMP(false);
       }
     } catch {
-      setAdvisorHasMP(false);
+      setInstructorHasMP(false);
     }
   };
 
   const handleLogin = () => {
     const bookingData = {
-      advisorId,
-      advisorName,
+      instructorId,
+      instructorName,
       serviceId,
       serviceName: rawServiceName,
       servicePrice: String(servicePrice),
@@ -189,7 +188,7 @@ function CheckoutContent() {
       return;
     }
 
-    if (paymentsEnabled && !advisorHasMP) {
+    if (paymentsEnabled && !instructorHasMP) {
       dialog.showAlert(
         t.checkout.paymentUnavailable,
         t.checkout.paymentUnavailableSub,
@@ -206,7 +205,7 @@ function CheckoutContent() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          advisorId,
+          instructorId,
           serviceId,
           scheduledAt: `${date}T${time}:00`,
           promotionId: promotion?.id || null,
@@ -242,7 +241,7 @@ function CheckoutContent() {
     }
   };
 
-  if (!advisorId || !serviceId) {
+  if (!instructorId || !serviceId) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center px-4">
         <Card className="w-full max-w-md">
@@ -331,7 +330,7 @@ function CheckoutContent() {
                 </Card>
               )}
 
-              {paymentsEnabled && advisorMpMode === "TEST" && (
+              {paymentsEnabled && instructorMpMode === "TEST" && (
                 <Card className="border-[var(--warning)] bg-[var(--warning-light)]">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
@@ -358,7 +357,7 @@ function CheckoutContent() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {advisorHasMP === false ? (
+                    {instructorHasMP === false ? (
                       <div className="p-4 rounded-lg border-2 border-[var(--warning)] bg-[var(--warning-light)]">
                         <div className="flex items-center gap-3">
                           <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />
@@ -455,7 +454,7 @@ function CheckoutContent() {
                     <div className="w-10 h-10 rounded-full bg-[var(--primary-light)] flex items-center justify-center">
                       <User className="w-5 h-5 text-[var(--primary)]" />
                     </div>
-                    <p className="font-medium text-[var(--text-primary)]">{advisorName}</p>
+                    <p className="font-medium text-[var(--text-primary)]">{instructorName}</p>
                   </div>
 
                   <div className="border-t border-[var(--border)] pt-4 space-y-3">
@@ -520,7 +519,7 @@ function CheckoutContent() {
                     onClick={handleConfirmBooking}
                     disabled={
                       isProcessing ||
-                      (paymentsEnabled && advisorHasMP === false) ||
+                      (paymentsEnabled && instructorHasMP === false) ||
                       quoteLoading ||
                       isLoggedIn === null ||
                       !canConfirm
