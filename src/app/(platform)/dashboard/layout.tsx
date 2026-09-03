@@ -10,7 +10,6 @@ import {
   Search,
   Calendar,
   User,
-  Star,
   LogOut,
   Menu,
   X,
@@ -38,11 +37,6 @@ const navigation = [
     key: "myAppointments",
     href: "/dashboard/appointments",
     icon: Calendar,
-  },
-  {
-    key: "myReviews",
-    href: "/dashboard/reviews",
-    icon: Star,
   },
   {
     key: "myProfile",

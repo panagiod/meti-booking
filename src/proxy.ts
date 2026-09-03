@@ -1,50 +1,22 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { isPublicPath } from "@/lib/public-routes";
 
-const publicRoutes = [
-  "/",
-  "/login",
-  "/register",
-  "/forgot-password",
-  "/reset-password",
-  "/redirect",
-  "/api/auth",
-  "/services",
-  "/privacy",
-  "/terms",
-  "/book",
-  "/blog",
-  "/faq",
-  "/advisor",
-  "/api/studio",
-  "/api/slots",
-  "/api/categories",
-  "/api/promotions",
-  "/api/checkout/quote",
-  "/api/appointments",
-  // Token-authenticated (not cookie-based) — see src/lib/admin-promote.ts
-  "/api/ops/promote-admin",
-];
-
-function isPublicPath(pathname: string): boolean {
-  return publicRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`));
-}
-
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  if (isPublicPath(pathname)) {
-    return NextResponse.next();
-  }
-
-  if (
+function isStaticAsset(pathname: string): boolean {
+  return (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
     pathname.startsWith("/logo") ||
     pathname.startsWith("/images") ||
     pathname.startsWith("/uploads") ||
     pathname.includes(".")
-  ) {
+  );
+}
+
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (isPublicPath(pathname) || isStaticAsset(pathname)) {
     return NextResponse.next();
   }
 
@@ -69,6 +41,9 @@ export function proxy(request: NextRequest) {
   if (!sessionCookie) {
     if (pathname.startsWith("/checkout") || pathname.startsWith("/call")) {
       return NextResponse.next();
+    }
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     return NextResponse.redirect(new URL("/login", request.url));
   }

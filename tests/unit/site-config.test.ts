@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getSiteUrl, getStudioNotificationEmail, getStudioNotificationEmails } from "@/lib/site-config";
+import { getSiteUrl, getStudioNotificationEmail, getStudioNotificationEmails, isPublicPhone, sanitizeStudioPhone } from "@/lib/site-config";
 
 describe("getSiteUrl", () => {
   afterEach(() => {
@@ -57,5 +57,18 @@ describe("getStudioNotificationEmails", () => {
       "studio@example.com",
       "other@example.com",
     ]);
+  });
+});
+
+describe("studio phone", () => {
+  it("hides empty and placeholder numbers", () => {
+    expect(isPublicPhone("")).toBe(false);
+    expect(isPublicPhone("(555) 012-3456")).toBe(false);
+    expect(sanitizeStudioPhone("(555) 012-3456")).toBe("");
+  });
+
+  it("keeps a real number", () => {
+    expect(isPublicPhone("+357 25 123456")).toBe(true);
+    expect(sanitizeStudioPhone(" +357 25 123456 ")).toBe("+357 25 123456");
   });
 });

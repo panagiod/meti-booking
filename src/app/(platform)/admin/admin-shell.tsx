@@ -12,7 +12,6 @@ import {
   Menu,
   X,
   Shield,
-  BookOpen,
   CalendarDays,
   LayoutTemplate,
 } from "lucide-react";
@@ -40,11 +39,6 @@ const navigation = [
     name: "Website",
     href: "/admin/content",
     icon: LayoutTemplate,
-  },
-  {
-    name: "Blog",
-    href: "/admin/blog",
-    icon: BookOpen,
   },
 ];
 

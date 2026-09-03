@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, MapPin, Mail, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStudioBranding } from "@/components/providers/locale-provider";
+import { isPublicPhone } from "@/lib/site-config";
 
 export function StudioInfo() {
   const studio = useStudioBranding();
@@ -30,10 +31,12 @@ export function StudioInfo() {
                 <MapPin className="w-5 h-5 shrink-0" />
                 {studio.location}
               </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 shrink-0" />
-                {studio.phone}
-              </li>
+              {isPublicPhone(studio.phone) ? (
+                <li className="flex items-center gap-3">
+                  <Phone className="w-5 h-5 shrink-0" />
+                  {studio.phone}
+                </li>
+              ) : null}
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 shrink-0" />
                 {studio.email}
@@ -71,7 +74,7 @@ export function StudioInfo() {
                   </div>
                 </dl>
                 <p className="mt-4 text-xs text-[var(--text-muted)]">
-                  Free cancellation up to 12 hours before your session.
+                  Free cancellation up to 24 hours before your session.
                 </p>
               </div>
             </div>

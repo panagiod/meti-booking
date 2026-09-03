@@ -47,7 +47,7 @@ function layout(title: string, bodyHtml: string): string {
             <table role="presentation" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td width="32" height="32" align="center" valign="middle" style="background:#ff6b35;border-radius:8px;font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:800;color:#ffffff;line-height:32px;">M</td>
-                <td style="padding-left:10px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">Meti</td>
+                <td style="padding-left:10px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#ffffff;">MeTi Pilates</td>
               </tr>
             </table>
           </td>
@@ -58,7 +58,7 @@ function layout(title: string, bodyHtml: string): string {
         ${bodyHtml}
       </div>
       <div style="padding:16px 32px;border-top:1px solid #e5e7eb;font-size:12px;color:#6b7280;">
-        Meti — Professional online consultations · <a href="${getAppUrl()}" style="color:#ff6b35;">${getAppUrl()}</a>
+        MeTi Pilates — reformer sessions in Limassol · <a href="${getAppUrl()}" style="color:#ff6b35;">${getAppUrl()}</a>
       </div>
     </div>
   </div>
@@ -67,12 +67,13 @@ function layout(title: string, bodyHtml: string): string {
 }
 
 export interface AppointmentEmailData {
-  advisorName: string;
+  instructorName: string;
   clientName: string;
   serviceName: string;
   scheduledAt: string;
   totalCents: number;
   appointmentUrl: string;
+  manageUrl?: string;
 }
 
 // Client email: booking confirmation (payment approved)
@@ -86,12 +87,13 @@ export async function sendBookingConfirmedEmail(
   const body = `
     <p style="margin:0 0 16px;color:#374151;line-height:1.6;">Hi <strong>${data.clientName}</strong>, your reformer session is confirmed:</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
-      <tr><td style="padding:8px 0;color:#6b7280;">Studio</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.advisorName}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280;">Instructor</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.instructorName}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Service</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.serviceName}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Date and time</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${formatDate(data.scheduledAt)}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Session price</td><td style="padding:8px 0;font-weight:600;color:#ff6b35;text-align:right;">${formatCurrency(data.totalCents)}</td></tr>
     </table>
-    <a href="${data.appointmentUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">View my booking</a>
+    <a href="${data.appointmentUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">View or cancel booking</a>
+    <p style="margin:16px 0 0;color:#6b7280;font-size:13px;line-height:1.6;">Cancel from this email link or your account at least 24 hours before the session. Payment is at the studio.</p>
   `;
 
   const { error } = await client.emails.send({
@@ -137,34 +139,34 @@ export async function sendNewBookingEmail(
 export async function sendReminderEmail(
   to: string,
   data: AppointmentEmailData,
-  role: "client" | "advisor"
+  role: "client" | "instructor"
 ): Promise<boolean> {
   const client = getResend();
   if (!client) return false;
 
   const greeting =
     role === "client"
-      ? `Hi <strong>${data.clientName}</strong>, remember that tomorrow you have your consultation:`
-      : `Hi <strong>${data.advisorName}</strong>, remember that tomorrow you have a consultation:`;
+      ? `Hi <strong>${data.clientName}</strong>, remember that tomorrow you have your reformer session:`
+      : `Hi <strong>${data.instructorName}</strong>, remember that tomorrow you have a session:`;
 
   const counterparty =
-    role === "client" ? data.advisorName : data.clientName;
+    role === "client" ? data.instructorName : data.clientName;
 
   const body = `
     <p style="margin:0 0 16px;color:#374151;line-height:1.6;">${greeting}</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
-      <tr><td style="padding:8px 0;color:#6b7280;">${role === "client" ? "Advisor" : "Client"}</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${counterparty}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280;">${role === "client" ? "Instructor" : "Client"}</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${counterparty}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Service</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${data.serviceName}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Date and time</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${formatDate(data.scheduledAt)}</td></tr>
     </table>
-    <a href="${data.appointmentUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">${role === "client" ? "View my appointment" : "View my schedule"}</a>
+    <a href="${data.appointmentUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">${role === "client" ? "View or cancel booking" : "View my schedule"}</a>
   `;
 
   const { error } = await client.emails.send({
     from: FROM_EMAIL,
     to,
     subject: `⏰ Reminder: ${data.serviceName} tomorrow ${formatDate(data.scheduledAt)}`,
-    html: layout("Consultation reminder", body),
+    html: layout("Session reminder", body),
   });
 
   return !error;
@@ -197,6 +199,7 @@ export async function sendSummaryEmail(
   data: {
     clientName: string;
     advisorName: string;
+    instructorName?: string;
     serviceName: string;
     scheduledAt: string;
     summary: string;
@@ -215,7 +218,7 @@ export async function sendSummaryEmail(
 
   const body = `
     <p style="margin:0 0 16px;color:#374151;line-height:1.6;">Hi <strong>${data.clientName}</strong>,</p>
-    <p style="margin:0 0 16px;color:#374151;line-height:1.6;">Your consultation with <strong>${data.advisorName}</strong> has ended. Here is the summary:</p>
+    <p style="margin:0 0 16px;color:#374151;line-height:1.6;">Your session with <strong>${data.instructorName ?? data.advisorName}</strong> has ended. Here is the summary:</p>
     
     <div style="background:#f9fafb;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #e5e7eb;">
       <h3 style="margin:0 0 12px;color:#1a1a2e;font-size:16px;">📋 Consultation summary</h3>

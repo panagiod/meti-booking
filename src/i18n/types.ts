@@ -55,6 +55,10 @@ export type Messages = {
   footer: {
     book: string;
     contact: string;
+    privacy: string;
+    terms: string;
+    faq: string;
+    cookies: string;
   };
   book: {
     back: string;
@@ -175,6 +179,24 @@ export type Messages = {
     bookSession: string;
     errorCreateAppointment: string;
     min: string;
+  };
+  bookingManage: {
+    title: string;
+    subtitle: string;
+    loading: string;
+    invalid: string;
+    loadError: string;
+    session: string;
+    instructor: string;
+    when: string;
+    price: string;
+    status: string;
+    cancel: string;
+    cancelling: string;
+    cancelled: string;
+    cannotCancel: string;
+    confirmBody: string;
+    backHome: string;
   };
   checkoutResult: {
     signInToView: string;

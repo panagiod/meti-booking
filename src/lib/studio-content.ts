@@ -1,6 +1,6 @@
 import en from "@/i18n/locales/en";
 import el from "@/i18n/locales/el";
-import { siteConfig } from "@/lib/site-config";
+import { sanitizeStudioPhone, siteConfig } from "@/lib/site-config";
 import type { Locale, Messages } from "@/i18n";
 import type { StudioContentData, StudioLocaleContent } from "@/lib/studio-content-types";
 import { studioContentSchema } from "@/lib/studio-content-types";
@@ -51,6 +51,7 @@ export function normalizeStudioContent(data: unknown): StudioContentData {
   return studioContentSchema.parse({
     ...defaults,
     ...raw,
+    phone: sanitizeStudioPhone(raw.phone ?? defaults.phone),
     contentEn: mergeLocaleContent("en", raw.contentEn),
     contentEl: mergeLocaleContent("el", raw.contentEl),
   });
@@ -64,7 +65,7 @@ export function buildDefaultStudioContent(): StudioContentData {
     email: siteConfig.email,
     heroImage: siteConfig.images.hero,
     reformerImage: siteConfig.images.reformer,
-    sessionPriceFrom: siteConfig.sessionTypes[0]?.priceFrom ?? 45,
+    sessionPriceFrom: siteConfig.sessionTypes[0]?.priceFrom ?? 10,
     contentEn: buildDefaultLocaleContent("en"),
     contentEl: buildDefaultLocaleContent("el"),
   };

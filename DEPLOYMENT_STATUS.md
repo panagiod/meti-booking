@@ -26,7 +26,7 @@ Tunnel: `cloudflared tunnel --url http://localhost:3000`
 ## What the demo shows
 
 - **MeTi Pilates** — hero: "Book your session." / "Κλείστε το μάθημά σας."
-- **Reformer-only** booking · **3 spots per slot** · **EUR (€45)**
+- **Reformer-only** booking · **3 spots per slot** · **EUR (€10)**
 - **Mon, Wed, Sat · 2pm–5pm** (demo seed; admin-editable)
 - **8 weeks** booking horizon · **Europe/Athens** timezone
 - **EN | ΕΛ** with Greek fonts (Noto Sans + GFS Didot)

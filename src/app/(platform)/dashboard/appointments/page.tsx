@@ -8,8 +8,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingPage } from "@/components/ui/loading";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
-import { Calendar, Clock, Video, Star, MessageSquare, CreditCard, XCircle } from "lucide-react";
-import Link from "next/link";
+import { Calendar, Clock, Star, MessageSquare, CreditCard, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { sileo } from "sileo";
@@ -319,14 +318,6 @@ export default function AppointmentsPage() {
                       <span className="text-xs text-[var(--text-muted)] max-w-[10rem] text-right">
                         Cancel at least {apt.service.rescheduleHoursMin ?? 24}h before
                       </span>
-                    )}
-                    {apt.status === "IN_PROGRESS" && (
-                      <Button size="sm" asChild>
-                        <Link href={`/call/${apt.id}`}>
-                          <Video className="w-4 h-4 mr-1" />
-                          Join
-                        </Link>
-                      </Button>
                     )}
                     {apt.status === "COMPLETED" && (
                       <Button size="sm" variant={apt.review ? "secondary" : "default"} onClick={() => openReview(apt)}>

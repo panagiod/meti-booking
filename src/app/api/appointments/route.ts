@@ -23,6 +23,13 @@ import {
   validateDemoBookableSlot,
 } from "@/lib/studio-demo-fallback";
 import { randomUUID } from "crypto";
+import {
+  assertBookingRateLimit,
+  clientIpFromRequest,
+} from "@/lib/booking-rate-limit";
+import { attachGuestSession } from "@/lib/guest-session";
+import { createManageToken } from "@/lib/booking-manage-token";
+import { getSiteUrl } from "@/lib/site-config";
 
 const appointmentSchema = z.object({
   instructorId: z.string().optional(),
@@ -108,6 +115,15 @@ export async function POST(request: NextRequest) {
       const guest = await findOrCreateGuestUser(guestEmail, guestName);
       clientId = guest.id;
       payerEmail = guest.email;
+    }
+
+    const rateLimit = await assertBookingRateLimit({
+      ip: clientIpFromRequest(request),
+      email: payerEmail,
+      clientId,
+    });
+    if (!rateLimit.ok) {
+      return NextResponse.json({ error: rateLimit.error }, { status: 429 });
     }
 
     const instructorProfile = await prisma.instructorProfile.findUnique({
@@ -205,6 +221,26 @@ export async function POST(request: NextRequest) {
 
     const isTest = paymentsEnabled && instructorProfile.mpMode === "TEST";
 
+    function manageUrlFor(appointmentId: string, email: string): string | undefined {
+      try {
+        const token = createManageToken(appointmentId, email);
+        return `${getSiteUrl()}/booking/manage?t=${encodeURIComponent(token)}`;
+      } catch (error) {
+        console.error("Could not create booking manage token:", error);
+        return undefined;
+      }
+    }
+
+    async function withGuestSession(response: NextResponse) {
+      if (session) return response;
+      try {
+        await attachGuestSession(response, clientId, request);
+      } catch (error) {
+        console.error("Could not create guest session:", error);
+      }
+      return response;
+    }
+
     const appointment = await prisma.$transaction(
       async (tx: Prisma.TransactionClient) => {
         const bookedCount = await tx.appointment.count({
@@ -240,6 +276,8 @@ export async function POST(request: NextRequest) {
         : { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
     );
 
+    const manageUrl = manageUrlFor(appointment.id, payerEmail);
+
     if (!paymentsEnabled) {
       try {
         await notifyAppointmentConfirmed(appointment.id);
@@ -247,9 +285,11 @@ export async function POST(request: NextRequest) {
         console.error("Error sending confirmation emails:", notifyError);
       }
 
-      return NextResponse.json(
-        { appointment, paymentsEnabled: false },
-        { status: 201 }
+      return withGuestSession(
+        NextResponse.json(
+          { appointment, paymentsEnabled: false, manageUrl },
+          { status: 201 }
+        )
       );
     }
 
@@ -275,9 +315,11 @@ export async function POST(request: NextRequest) {
 
       const checkoutUrl = isTest && sandboxInitPoint ? sandboxInitPoint : initPoint;
 
-      return NextResponse.json(
-        { appointment, initPoint: checkoutUrl, preferenceId, paymentsEnabled: true },
-        { status: 201 }
+      return withGuestSession(
+        NextResponse.json(
+          { appointment, initPoint: checkoutUrl, preferenceId, paymentsEnabled: true, manageUrl },
+          { status: 201 }
+        )
       );
     } catch (prefError) {
       await prisma.appointment.delete({ where: { id: appointment.id } });

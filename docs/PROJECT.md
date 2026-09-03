@@ -13,7 +13,7 @@
 | **Brand** | **MeTi Pilates** |
 | **Customer site** | Homepage hero + `/book` + login + checkout |
 | **Languages** | English + Greek (`EN \| ΕΛ`); cookie `flow-locale` |
-| **Session** | **Reformer Session** — 45 min, **€45** demo |
+| **Session** | **Reformer Session** — 45 min, **€10** |
 | **Currency** | **EUR** (`siteConfig.currency`) |
 | **Timezone** | **Europe/Athens** (`STUDIO_TIMEZONE`) |
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |
@@ -215,7 +215,7 @@ Password: **`Demo1234!`** locally (override with `DEMO_PASSWORD`; not printed in
 ### `pnpm demo:setup` seeds
 
 - Users (admin, instructor, client)
-- One service: **Reformer Session** (50 min, €45)
+- One service: **Reformer Session** (45 min, €10)
 - Schedule: **Mon/Wed/Sat 14:00–17:00**
 - **`studio_content`** row with default EN/EL copy and images
 - Pilates category + instructor link

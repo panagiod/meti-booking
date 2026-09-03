@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { siteConfig } from "@/lib/site-config";
+
+const CONTACT = siteConfig.email;
 
 export default function PrivacyPolicyPage() {
   return (
@@ -11,124 +14,131 @@ export default function PrivacyPolicyPage() {
               Privacy Policy
             </h1>
             <p className="text-sm text-[var(--text-muted)]">
-              Last updated: August 15, 2026
+              Last updated: September 3, 2026
             </p>
           </div>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                1. Information we collect
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                When you use Meti, we collect the following information:
-              </p>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li><strong>Account data:</strong> name, email address, and profile image provided through Google OAuth.</li>
-                <li><strong>Profile data:</strong> biography, specialty, and verification documents (for advisors).</li>
-                <li><strong>Transaction data:</strong> advisory session history and payments processed through Mercado Pago.</li>
-                <li><strong>Usage data:</strong> interactions with the platform, reviews, and ratings.</li>
-              </ul>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              1. Who we are
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              MeTi Pilates is an in-person reformer pilates studio operated by Meropi Tirri
+              at {siteConfig.location}. This policy explains how we handle information when
+              you book a session on {siteConfig.siteUrl.replace("https://", "")}.
+            </p>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                2. How we use your information
-              </h2>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>To provide and improve our advisory services.</li>
-                <li>To process payments and manage advisory sessions.</li>
-                <li>To communicate with you about your account and sessions.</li>
-                <li>To verify the identity and credentials of advisors.</li>
-                <li>To prevent fraud and improve platform security.</li>
-              </ul>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              2. Information we collect
+            </h2>
+            <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
+              <li>
+                <strong>Booking details:</strong> name and email so we can confirm your
+                reformer session and contact you about changes.
+              </li>
+              <li>
+                <strong>Account data:</strong> if you create an account or sign in with
+                Google, we store your name, email, and profile image.
+              </li>
+              <li>
+                <strong>Session history:</strong> dates, times, and status of bookings at
+                the studio.
+              </li>
+            </ul>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                3. Data sharing
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                We do not sell your personal information. We share data only with:
-              </p>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li><strong>Mercado Pago:</strong> to process payments (the advisor receives payment directly).</li>
-                <li><strong>LiveKit:</strong> to facilitate advisory video calls.</li>
-                <li><strong>Google:</strong> for authentication through OAuth.</li>
-                <li><strong>Legal authorities:</strong> when required by law.</li>
-              </ul>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              3. How we use your information
+            </h2>
+            <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
+              <li>To reserve a reformer place and send confirmation or reminder emails.</li>
+              <li>To let you view or cancel a booking from your email link or account.</li>
+              <li>To run the studio schedule and communicate about your session.</li>
+            </ul>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                4. Data security
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                We implement technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. Payment transactions are processed through Mercado Pago with SSL/TLS encryption.
-              </p>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              4. Data sharing
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              We do not sell your personal information. We share data only with:
+            </p>
+            <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
+              <li>
+                <strong>Email delivery:</strong> to send booking confirmations and reminders.
+              </li>
+              <li>
+                <strong>Google:</strong> if you choose to sign in with Google.
+              </li>
+              <li>
+                <strong>Legal authorities:</strong> when required by law.
+              </li>
+            </ul>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              Payment for sessions is made at the studio. We do not process card payments
+              on this website.
+            </p>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                5. Data retention
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                We retain your personal information while your account is active or as needed to provide you services. If you delete your account, we will delete your personal data within 30 days, except when we must retain it for legal obligations.
-              </p>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              5. Data retention
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              We keep booking records as needed to run the studio. If you ask us to delete
+              your account, we will remove personal data that we no longer need to keep for
+              legal or operational reasons.
+            </p>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                6. Your rights
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                You have the right to:
-              </p>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>Access your personal data.</li>
-                <li>Rectify inaccurate data.</li>
-                <li>Request deletion of your data.</li>
-                <li>Object to the processing of your data.</li>
-                <li>Request portability of your data.</li>
-              </ul>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              6. Your rights
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              You may ask to access, correct, or delete your personal data, or object to
+              how we use it. Contact us using the address below.
+            </p>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                7. Cookies
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                Meti uses essential cookies for platform operation (authentication sessions). We do not use tracking or advertising cookies.
-              </p>
-            </section>
-
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                8. Changes to this policy
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                We reserve the right to update this privacy policy. Significant changes will be communicated through the platform or by email.
-              </p>
-            </section>
-
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                9. Contact
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                If you have questions about this privacy policy, contact us at{" "}
-                <a href="mailto:edwaramayadiaz@gmail.com" className="text-[var(--primary)] hover:underline">
-                  edwaramayadiaz@gmail.com
-                </a>.
-              </p>
-            </section>
-
-            <div className="pt-4 border-t border-[var(--border)]">
-              <Link href="/" className="text-sm text-[var(--primary)] hover:underline">
-                ← Back to home
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              7. Cookies
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              We use essential cookies to keep you signed in and remember language
+              preference. See our{" "}
+              <Link href="/cookies" className="text-[var(--primary)] hover:underline">
+                cookie policy
               </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+              .
+            </p>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              8. Contact
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              Questions about this policy:{" "}
+              <a href={`mailto:${CONTACT}`} className="text-[var(--primary)] hover:underline">
+                {CONTACT}
+              </a>
+              .
+            </p>
+          </section>
+
+          <div className="pt-4 border-t border-[var(--border)]">
+            <Link href="/" className="text-sm text-[var(--primary)] hover:underline">
+              ← Back to home
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

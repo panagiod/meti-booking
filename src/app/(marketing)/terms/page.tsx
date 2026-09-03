@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
+import { siteConfig } from "@/lib/site-config";
+
+const CONTACT = siteConfig.email;
 
 export default function TermsOfServicePage() {
   return (
@@ -11,135 +14,86 @@ export default function TermsOfServicePage() {
               Terms of Service
             </h1>
             <p className="text-sm text-[var(--text-muted)]">
-              Last updated: August 15, 2026
+              Last updated: September 3, 2026
             </p>
           </div>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                1. Service description
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                Meti is a platform that connects independent professionals (advisors) with clients seeking specialized advisory services. Services are delivered via video call and payments are processed through Mercado Pago.
-              </p>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              1. The studio
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              MeTi Pilates offers in-person reformer pilates sessions with Meropi Tirri at{" "}
+              {siteConfig.location}. This website is for booking those sessions. Sessions
+              are not delivered online.
+            </p>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                2. User accounts
-              </h2>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>You may create an account with email and password or Google sign-in (when configured).</li>
-                <li>You are responsible for maintaining the confidentiality of your account.</li>
-                <li>You must provide accurate and up-to-date information.</li>
-                <li>You may only create one account per person.</li>
-              </ul>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              2. Bookings
+            </h2>
+            <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
+              <li>You can book with an account or as a guest using your email.</li>
+              <li>A confirmed booking reserves a reformer place at the chosen time.</li>
+              <li>Please arrive about 10 minutes early for your first visit.</li>
+            </ul>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                3. User roles
-              </h2>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li><strong>Client:</strong> searches for and books advisory sessions with professionals.</li>
-                <li><strong>Advisor:</strong> offers professional advisory services, sets their own prices, schedules, and payment credentials.</li>
-                <li><strong>Administrator:</strong> manages the platform, verifies advisors, and configures fees.</li>
-              </ul>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              3. Payment
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              Payment is made at the studio. The current session price is shown when you
+              book. There is no online checkout at this time.
+            </p>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                4. Payments and fees
-              </h2>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>Payments are processed directly through the advisor&apos;s Mercado Pago account (non-custodial model).</li>
-                <li>Meti charges a service fee, visible at checkout before payment.</li>
-                <li>The final price includes: advisor price + platform fee.</li>
-                <li>Refunds are handled according to the advisor&apos;s cancellation policy.</li>
-              </ul>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              4. Cancellation
+            </h2>
+            <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
+              <li>
+                You may cancel from the link in your confirmation email or from your
+                account at least 24 hours before the session.
+              </li>
+              <li>If the studio must cancel, we will contact you to rebook.</li>
+            </ul>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                5. Cancellation and rescheduling
-              </h2>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li><strong>Reschedule:</strong> free with minimum advance notice configurable by the advisor.</li>
-                <li><strong>Cancel without rescheduling:</strong> no payment refund.</li>
-                <li><strong>No-show:</strong> no payment refund.</li>
-                <li>The minimum advance notice for rescheduling is shown at the time of booking.</li>
-              </ul>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              5. Studio conduct
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              Sessions take place in small groups. Follow instructor guidance so everyone
+              can train safely. We may refuse or end a session if behaviour puts others at
+              risk.
+            </p>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                6. Video calls
-              </h2>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>Advisory sessions are conducted via video call through the platform.</li>
-                <li>The video call link is sent after payment is confirmed.</li>
-                <li>Meti is not responsible for user connectivity issues.</li>
-                <li>Video call recordings are stored according to the advisor&apos;s configuration.</li>
-              </ul>
-            </section>
+          <section className="space-y-4">
+            <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
+              6. Contact
+            </h2>
+            <p className="text-[var(--text-secondary)] leading-relaxed">
+              Questions about these terms:{" "}
+              <a href={`mailto:${CONTACT}`} className="text-[var(--primary)] hover:underline">
+                {CONTACT}
+              </a>
+              .
+            </p>
+          </section>
 
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                7. Content and conduct
-              </h2>
-              <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
-                <li>Illegal, offensive, or third-party rights-violating content is not permitted.</li>
-                <li>Advisors must maintain professional conduct.</li>
-                <li>Meti reserves the right to suspend accounts that violate these terms.</li>
-              </ul>
-            </section>
-
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                8. Intellectual property
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                All platform content (design, code, brand) is owned by Meti. Advisors retain rights to their professional content (biography, specialties).
-              </p>
-            </section>
-
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                9. Limitation of liability
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                Meti acts as an intermediary between advisors and clients. We are not part of the contractual relationship between advisor and client. We do not guarantee the quality of services provided by advisors.
-              </p>
-            </section>
-
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                10. Changes to these terms
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                We reserve the right to modify these terms at any time. Significant changes will be communicated through the platform.
-              </p>
-            </section>
-
-            <section className="space-y-4">
-              <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-                11. Contact
-              </h2>
-              <p className="text-[var(--text-secondary)] leading-relaxed">
-                For questions about these terms, contact us at{" "}
-                <a href="mailto:edwaramayadiaz@gmail.com" className="text-[var(--primary)] hover:underline">
-                  edwaramayadiaz@gmail.com
-                </a>.
-              </p>
-            </section>
-
-            <div className="pt-4 border-t border-[var(--border)]">
-              <Link href="/" className="text-sm text-[var(--primary)] hover:underline">
-                ← Back to home
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          <div className="pt-4 border-t border-[var(--border)]">
+            <Link href="/" className="text-sm text-[var(--primary)] hover:underline">
+              ← Back to home
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

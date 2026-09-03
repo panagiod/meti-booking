@@ -6,9 +6,9 @@ import { FileText } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Blog | Meti",
+  title: "Blog | MeTi Pilates",
   description:
-    "Articles and resources on professional advisory, entrepreneurship, and more.",
+    "Notes on reformer pilates, movement, and studio life at MeTi Pilates in Limassol.",
 };
 
 async function getBlogPosts() {
@@ -45,7 +45,7 @@ export default async function BlogPage() {
           Blog
         </h1>
         <p className="mt-3 text-lg text-[var(--text-muted)] max-w-2xl mx-auto">
-          Articles and resources on professional advisory, entrepreneurship, and more.
+          Notes on reformer pilates, clinical movement, and studio life in Limassol.
         </p>
       </div>
 

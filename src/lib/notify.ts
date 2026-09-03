@@ -5,8 +5,18 @@ import {
   sendReminderEmail,
   type AppointmentEmailData,
 } from "@/lib/email";
-import { getStudioNotificationEmails } from "@/lib/site-config";
-import { getAppUrl } from "@/lib/mercadopago";
+import { getStudioNotificationEmails, getSiteUrl } from "@/lib/site-config";
+import { createManageToken } from "@/lib/booking-manage-token";
+
+function clientManageUrl(appointmentId: string, email: string): string | undefined {
+  try {
+    const token = createManageToken(appointmentId, email);
+    return `${getSiteUrl()}/booking/manage?t=${encodeURIComponent(token)}`;
+  } catch (error) {
+    console.error("Could not create booking manage token:", error);
+    return undefined;
+  }
+}
 
 // Load the appointment with the relations needed for notifications
 async function loadAppointmentForNotify(appointmentId: string) {
@@ -20,67 +30,73 @@ async function loadAppointmentForNotify(appointmentId: string) {
   });
 }
 
-// Send payment confirmation emails (client + advisor).
+// Send payment confirmation emails (client + studio).
 // Returns false if no email API key is configured.
 export async function notifyAppointmentConfirmed(appointmentId: string): Promise<boolean> {
   const apt = await loadAppointmentForNotify(appointmentId);
   if (!apt) return false;
 
   const clientEmail = apt.client.email;
-  const advisorEmail = apt.instructor.user.email?.trim().toLowerCase();
+  const instructorEmail = apt.instructor.user.email?.trim().toLowerCase();
   const studioEmails = getStudioNotificationEmails();
+  const manageUrl = clientEmail ? clientManageUrl(apt.id, clientEmail) : undefined;
 
   const base: AppointmentEmailData = {
-    advisorName: apt.instructor.user.name,
+    instructorName: apt.instructor.user.name,
     clientName: apt.client.name,
     serviceName: apt.service.name,
     scheduledAt: apt.scheduledAt.toISOString(),
     totalCents: apt.totalCents,
-    appointmentUrl: `${getAppUrl()}/dashboard/appointments`,
+    appointmentUrl: manageUrl || `${getSiteUrl()}/dashboard/appointments`,
+    manageUrl,
   };
 
   let sent = false;
   if (apt.client.email) sent = (await sendBookingConfirmedEmail(clientEmail, base)) || sent;
 
-  const studioBase = { ...base, appointmentUrl: `${getAppUrl()}/admin/schedule` };
+  const studioBase = { ...base, appointmentUrl: `${getSiteUrl()}/admin/schedule` };
 
   for (const studioEmail of studioEmails) {
     sent = (await sendNewBookingEmail(studioEmail, studioBase)) || sent;
   }
 
-  if (advisorEmail && !studioEmails.includes(advisorEmail)) {
-    sent = (await sendNewBookingEmail(advisorEmail, studioBase)) || sent;
+  if (instructorEmail && !studioEmails.includes(instructorEmail)) {
+    sent = (await sendNewBookingEmail(instructorEmail, studioBase)) || sent;
   }
   return sent;
 }
 
-// Send the 24h reminder before the consultation (client + advisor).
+// Send the 24h reminder before the session (client + studio).
 export async function notifyAppointmentReminder(appointmentId: string): Promise<boolean> {
   const apt = await loadAppointmentForNotify(appointmentId);
   if (!apt) return false;
 
+  const clientEmail = apt.client.email;
+  const manageUrl = clientEmail ? clientManageUrl(apt.id, clientEmail) : undefined;
+
   const base: AppointmentEmailData = {
-    advisorName: apt.instructor.user.name,
+    instructorName: apt.instructor.user.name,
     clientName: apt.client.name,
     serviceName: apt.service.name,
     scheduledAt: apt.scheduledAt.toISOString(),
     totalCents: apt.totalCents,
-    appointmentUrl: `${getAppUrl()}/dashboard/appointments`,
+    appointmentUrl: manageUrl || `${getSiteUrl()}/dashboard/appointments`,
+    manageUrl,
   };
 
   let sent = false;
   if (apt.client.email) sent = (await sendReminderEmail(apt.client.email, base, "client")) || sent;
 
   const studioEmails = getStudioNotificationEmails();
-  const advisorEmail = apt.instructor.user.email?.trim().toLowerCase();
-  const advisorBase = { ...base, appointmentUrl: `${getAppUrl()}/admin/schedule` };
+  const instructorEmail = apt.instructor.user.email?.trim().toLowerCase();
+  const studioBase = { ...base, appointmentUrl: `${getSiteUrl()}/admin/schedule` };
 
   for (const studioEmail of studioEmails) {
-    sent = (await sendReminderEmail(studioEmail, advisorBase, "advisor")) || sent;
+    sent = (await sendReminderEmail(studioEmail, studioBase, "instructor")) || sent;
   }
 
-  if (advisorEmail && !studioEmails.includes(advisorEmail)) {
-    sent = (await sendReminderEmail(advisorEmail, advisorBase, "advisor")) || sent;
+  if (instructorEmail && !studioEmails.includes(instructorEmail)) {
+    sent = (await sendReminderEmail(instructorEmail, studioBase, "instructor")) || sent;
   }
   return sent;
 }

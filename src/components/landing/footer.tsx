@@ -15,9 +15,21 @@ export function Footer() {
           <span className="mx-2 hidden sm:inline">·</span>
           <span className="mt-1 block sm:mt-0 sm:inline">{studio.location}</span>
         </p>
-        <div className="flex gap-5">
+        <div className="flex flex-wrap justify-center gap-5 sm:justify-end">
           <Link href="/book" className="transition hover:text-[var(--studio-ink)]">
             {t.footer.book}
+          </Link>
+          <Link href="/faq" className="transition hover:text-[var(--studio-ink)]">
+            {t.footer.faq}
+          </Link>
+          <Link href="/privacy" className="transition hover:text-[var(--studio-ink)]">
+            {t.footer.privacy}
+          </Link>
+          <Link href="/terms" className="transition hover:text-[var(--studio-ink)]">
+            {t.footer.terms}
+          </Link>
+          <Link href="/cookies" className="transition hover:text-[var(--studio-ink)]">
+            {t.footer.cookies}
           </Link>
           <Link href={`mailto:${studio.email}`} className="transition hover:text-[var(--studio-ink)]">
             {t.footer.contact}
