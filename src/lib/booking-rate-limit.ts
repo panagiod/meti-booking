@@ -81,12 +81,13 @@ export async function assertBookingRateLimit(input: {
   ip: string;
   email: string;
   clientId: string;
+  hasSession?: boolean;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   if (isBookingRateLimitDisabled() || isAutomatedTestEmail(input.email)) {
     return { ok: true };
   }
 
-  if (!recordAndCheckIpLimit(input.ip)) {
+  if (!input.hasSession && !recordAndCheckIpLimit(input.ip)) {
     return {
       ok: false,
       error: "Too many booking attempts from this network. Please try again later.",

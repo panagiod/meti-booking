@@ -121,6 +121,7 @@ export async function POST(request: NextRequest) {
       ip: clientIpFromRequest(request),
       email: payerEmail,
       clientId,
+      hasSession: Boolean(session),
     });
     if (!rateLimit.ok) {
       return NextResponse.json({ error: rateLimit.error }, { status: 429 });

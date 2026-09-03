@@ -25,7 +25,8 @@ export function TimeSlotPicker({
   const t = useTranslations();
   const { locale } = useLocale();
   const dateFnsLocale = getDateFnsLocale(locale);
-  const hasAnySlot = daySlots.slots.length > 0;
+  const visibleSlots = daySlots.slots.filter((slot) => slot.available || slot.remaining === 0);
+  const hasAnySlot = visibleSlots.length > 0;
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -41,7 +42,7 @@ export function TimeSlotPicker({
       <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-4 sm:p-6">
         {hasAnySlot ? (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
-            {daySlots.slots.map((slot) => {
+            {visibleSlots.map((slot) => {
               const isSelected = selectedTime === slot.time;
               const isFull = !slot.available;
 

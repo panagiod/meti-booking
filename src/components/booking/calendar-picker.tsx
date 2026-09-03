@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   format,
   addMonths,
@@ -36,6 +36,7 @@ export function CalendarPicker({
   const { locale } = useLocale();
   const dateFnsLocale = getDateFnsLocale(locale);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [didJumpToAvailability, setDidJumpToAvailability] = useState(false);
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -47,6 +48,14 @@ export function CalendarPicker({
       : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const availableDatesMap = new Map(availableDates.map((d) => [d.dateStr, d]));
+
+  useEffect(() => {
+    if (didJumpToAvailability) return;
+    const firstAvailable = availableDates.find((d) => d.hasAvailability);
+    if (!firstAvailable) return;
+    setDidJumpToAvailability(true);
+    setCurrentMonth(startOfMonth(firstAvailable.date));
+  }, [availableDates, didJumpToAvailability]);
 
   const minDate = availableDates[0]?.date;
   const maxDate = availableDates[availableDates.length - 1]?.date;
@@ -108,7 +117,7 @@ export function CalendarPicker({
           {monthDays.map((day) => {
             const dateStr = format(day, "yyyy-MM-dd");
             const dayData = availableDatesMap.get(dateStr);
-            const isAvailable = !isLoading && (dayData?.hasAvailability ?? false);
+            const isAvailable = dayData?.hasAvailability ?? false;
             const isSelected = selectedDate?.dateStr === dateStr;
             const isPast = isBefore(day, startOfDay(new Date()));
             const isCurrentMonth = isSameMonth(day, currentMonth);
@@ -122,13 +131,13 @@ export function CalendarPicker({
                 className={cn(
                   "flex h-11 items-center justify-center rounded-lg text-sm transition sm:h-10",
                   !isCurrentMonth && "text-transparent",
-                  isCurrentMonth && !isAvailable && "text-[var(--studio-muted)]/40",
+                  isCurrentMonth && !isAvailable && "text-[var(--studio-muted)]/35",
                   isCurrentMonth &&
                     isAvailable &&
                     !isSelected &&
-                    "text-[var(--studio-ink)] hover:bg-[var(--studio-warm)]",
-                  isSelected && "bg-[var(--studio-ink)] text-white",
-                  isPast && "text-[var(--studio-muted)]/30"
+                    "bg-[var(--studio-warm)] font-semibold text-[var(--studio-ink)] hover:bg-[var(--studio-line)]",
+                  isSelected && "bg-[var(--studio-ink)] font-semibold text-white",
+                  isPast && !isAvailable && "text-[var(--studio-muted)]/25"
                 )}
               >
                 {format(day, "d")}

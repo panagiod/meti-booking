@@ -125,9 +125,7 @@ export default function BookPage() {
   const mergedDates = useMemo(() => {
     return availableDates.map((day) => {
       const real = apiSlots[day.dateStr];
-      if (!real) {
-        return { ...day, slots: [], hasAvailability: false };
-      }
+      if (!real) return day;
       return { ...day, slots: real.slots, hasAvailability: real.hasAvailability };
     });
   }, [availableDates, apiSlots]);

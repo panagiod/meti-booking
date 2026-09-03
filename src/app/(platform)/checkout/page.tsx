@@ -236,7 +236,11 @@ function CheckoutContent() {
       window.location.href = data.initPoint;
     } catch (error) {
       console.error("Error:", error);
-      dialog.showAlert(t.common.error, t.checkout.errorCreateAppointment, "error");
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : t.checkout.errorCreateAppointment;
+      dialog.showAlert(t.common.error, message, "error");
       setIsProcessing(false);
     }
   };

@@ -116,7 +116,7 @@ const en: Messages = {
     selectSession: "Select a session",
     selectSessionSub: "Choose what you'd like to book",
     pickDate: "Pick a date",
-    pickDateSub: "When would you like to come in?",
+    pickDateSub: "Sessions are Tuesday, Thursday, and Saturday. Dark days have open times.",
     pickTime: "Pick a time",
     noSlots: "No slots available this day",
     spotsLeft: "{remaining} left",

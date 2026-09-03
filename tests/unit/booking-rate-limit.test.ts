@@ -56,6 +56,19 @@ describe("booking rate limit", () => {
     expect(prisma.appointment.count).not.toHaveBeenCalled();
   });
 
+  it("does not apply the IP cap to signed-in clients", async () => {
+    for (let i = 0; i < BOOKING_IP_LIMIT; i += 1) {
+      recordAndCheckIpLimit("1.2.3.4");
+    }
+    const result = await assertBookingRateLimit({
+      ip: "1.2.3.4",
+      email: "person@studio.com",
+      clientId: "client-1",
+      hasSession: true,
+    });
+    expect(result.ok).toBe(true);
+  });
+
   it("blocks when the client already has too many recent bookings", async () => {
     vi.mocked(prisma.appointment.count)
       .mockResolvedValueOnce(3)
