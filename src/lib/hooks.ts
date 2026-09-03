@@ -13,15 +13,11 @@ export function useAdminDashboard() {
   });
 }
 
-export function useAdminUsers(params?: { role?: string; search?: string }) {
+export function useAdminUsers() {
   return useQuery({
-    queryKey: ["admin-users", params],
+    queryKey: ["admin-users"],
     queryFn: async () => {
-      const searchParams = new URLSearchParams();
-      if (params?.role) searchParams.set("role", params.role);
-      if (params?.search) searchParams.set("search", params.search);
-
-      const res = await fetch(`/api/admin/users?${searchParams.toString()}`);
+      const res = await fetch("/api/admin/users");
       if (!res.ok) throw new Error("Failed to fetch users");
       return res.json();
     },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,27 +8,44 @@ import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingPage } from "@/components/ui/loading";
 import { useAdminUsers } from "@/lib/hooks";
-import { Search, Users, Mail } from "lucide-react";
+import {
+  filterAdminUsers,
+  normalizeAdminUserRole,
+  summarizeAdminUsers,
+  type AdminUserListItem,
+} from "@/lib/admin-users";
+import { Search, Users } from "lucide-react";
+
+function roleLabel(role: string): string {
+  const normalized = normalizeAdminUserRole(role);
+  if (normalized === "admin") return "Admin";
+  if (normalized === "instructor") return "Instructor";
+  return "Client";
+}
+
+function roleBadgeVariant(role: string): "default" | "secondary" | "outline" {
+  const normalized = normalizeAdminUserRole(role);
+  if (normalized === "admin") return "default";
+  if (normalized === "instructor") return "outline";
+  return "secondary";
+}
 
 export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const { data, isLoading } = useAdminUsers();
 
-  const { data, isLoading } = useAdminUsers({
-    role: roleFilter !== "all" ? roleFilter : undefined,
-    search: searchQuery || undefined,
-  });
-
-  const users = data?.users || [];
-
-  const totalClients = users.filter((u: any) => u.role !== "admin").length;
-  const totalAdmins = users.filter((u: any) => u.role === "admin").length;
+  const users = (data?.users || []) as AdminUserListItem[];
+  const totals = summarizeAdminUsers(users);
+  const visibleUsers = useMemo(
+    () => filterAdminUsers(users, { role: roleFilter, search: searchQuery }),
+    [users, roleFilter, searchQuery]
+  );
 
   if (isLoading) return <LoadingPage />;
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
           User Management
@@ -38,49 +55,35 @@ export default function UsersPage() {
         </p>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[var(--text-muted)]">Total users</p>
-                <p className="text-2xl font-heading font-bold text-[var(--text-primary)]">
-                  {users.length}
-                </p>
-              </div>
-            </div>
+            <p className="text-sm text-[var(--text-muted)]">Total users</p>
+            <p className="text-2xl font-heading font-bold text-[var(--text-primary)]">
+              {totals.total}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[var(--text-muted)]">Clients</p>
-                <p className="text-2xl font-heading font-bold text-[var(--accent)]">
-                  {totalClients}
-                </p>
-              </div>
-            </div>
+            <p className="text-sm text-[var(--text-muted)]">Clients</p>
+            <p className="text-2xl font-heading font-bold text-[var(--accent)]">
+              {totals.clients}
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-[var(--text-muted)]">Admins</p>
-                <p className="text-2xl font-heading font-bold text-[var(--success)]">
-                  {totalAdmins}
-                </p>
-              </div>
-            </div>
+            <p className="text-sm text-[var(--text-muted)]">Admins</p>
+            <p className="text-2xl font-heading font-bold text-[var(--success)]">
+              {totals.admins}
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Filters */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -120,23 +123,26 @@ export default function UsersPage() {
         </CardContent>
       </Card>
 
-      {/* Users List */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
-            {users.length} users found
+            {visibleUsers.length} {visibleUsers.length === 1 ? "user" : "users"} found
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {users.length === 0 ? (
+          {visibleUsers.length === 0 ? (
             <EmptyState
               icon={Users}
-              title="No registered users"
-              description="When users sign up on the platform, they will appear here."
+              title={users.length === 0 ? "No registered users" : "No matching users"}
+              description={
+                users.length === 0
+                  ? "When users sign up or book a session, they will appear here."
+                  : "Try a different search or filter. Totals above stay the same."
+              }
             />
           ) : (
             <div className="space-y-4">
-              {users.map((user: any) => (
+              {visibleUsers.map((user) => (
                 <div
                   key={user.id}
                   className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-lg bg-[var(--background)]"
@@ -152,10 +158,8 @@ export default function UsersPage() {
                         <h3 className="font-medium text-[var(--text-primary)]">
                           {user.name}
                         </h3>
-                        <Badge
-                          variant={user.role === "admin" ? "default" : "secondary"}
-                        >
-                          {user.role === "admin" ? "Admin" : "Client"}
+                        <Badge variant={roleBadgeVariant(user.role)}>
+                          {roleLabel(user.role)}
                         </Badge>
                       </div>
                       <p className="text-sm text-[var(--text-muted)]">
