@@ -22,6 +22,25 @@ export default function DashboardPage() {
           router.replace(loginUrl("/dashboard"));
           return;
         }
+        let role = (data.user as { role?: string }).role;
+        if (role !== "ADMIN") {
+          try {
+            const claim = await fetch("/api/admin/claim", {
+              method: "POST",
+              credentials: "include",
+            });
+            if (claim.ok) {
+              const body = (await claim.json()) as { role?: string };
+              if (body.role) role = body.role;
+            }
+          } catch {
+            // Stay on the client dashboard
+          }
+        }
+        if (role === "ADMIN") {
+          router.replace("/admin");
+          return;
+        }
         setUser(data.user);
       } catch {
         router.replace(loginUrl("/dashboard"));
