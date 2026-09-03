@@ -38,7 +38,7 @@ export async function ensureStudioOwnerAdmin(email: string) {
     create: { userId: user.id, level: "SUPERADMIN" },
     update: { level: "SUPERADMIN" },
   });
-  await prisma.instructorProfile.deleteMany({ where: { userId: user.id } });
+  // Keep InstructorProfile if this is also the studio instructor.
   await prisma.clientProfile.deleteMany({ where: { userId: user.id } });
 
   return { email: normalizedEmail, previousRole, role: "ADMIN" as const, userId: user.id };

@@ -1,5 +1,8 @@
-/** Google accounts that should always get /admin on this single-studio site. */
-export const DEFAULT_STUDIO_ADMIN_EMAILS = ["barridasg@gmail.com"];
+/** Accounts that should always get /admin on this single-studio site. */
+export const DEFAULT_STUDIO_ADMIN_EMAILS = [
+  "barridasg@gmail.com",
+  "tyrri_meropi@hotmail.com",
+];
 
 function parseEmailList(value: string): string[] {
   return value
@@ -8,12 +11,19 @@ function parseEmailList(value: string): string[] {
     .filter(Boolean);
 }
 
-/** STUDIO_ADMIN_EMAILS / STUDIO_ADMIN_EMAIL override the default owner list. */
+/** Defaults plus any extra addresses in STUDIO_ADMIN_EMAILS / STUDIO_ADMIN_EMAIL. */
 export function studioAdminEmails(): string[] {
   const fromEnv = parseEmailList(
     `${process.env.STUDIO_ADMIN_EMAILS || ""},${process.env.STUDIO_ADMIN_EMAIL || ""}`
   );
-  return fromEnv.length > 0 ? fromEnv : [...DEFAULT_STUDIO_ADMIN_EMAILS];
+  const seen = new Set<string>();
+  const emails: string[] = [];
+  for (const email of [...DEFAULT_STUDIO_ADMIN_EMAILS, ...fromEnv]) {
+    if (seen.has(email)) continue;
+    seen.add(email);
+    emails.push(email);
+  }
+  return emails;
 }
 
 export function isStudioAdminEmail(email?: string | null): boolean {
