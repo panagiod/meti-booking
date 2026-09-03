@@ -188,6 +188,7 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans), system-ui, sans-serif;
   line-height: 1.6;
+  overflow-x: clip;
 }
 
 /* Ocultar flechas de incremento/decremento en inputs number */

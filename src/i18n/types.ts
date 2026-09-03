@@ -15,6 +15,8 @@ export type Messages = {
     signOut: string;
     account: string;
     bookNow: string;
+    menu: string;
+    closeMenu: string;
   };
   hero: {
     eyebrow: string;

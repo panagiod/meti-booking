@@ -45,7 +45,7 @@ export function Hero() {
                 {t.hero.bookSession}
               </Link>
             </div>
-            <p className="mt-8 text-sm leading-relaxed text-[var(--studio-muted)] sm:mt-12">
+            <p className="mt-8 text-sm leading-relaxed break-words text-[var(--studio-muted)] sm:mt-12">
               {studio.location}
               <span className="mx-2 hidden text-[var(--studio-line)] sm:inline">·</span>
               <span className="mt-1 block sm:mt-0 sm:inline">{t.common.hours}</span>

@@ -12,6 +12,8 @@ const en: Messages = {
     signOut: "Sign out",
     account: "Account",
     bookNow: "Book now",
+    menu: "Menu",
+    closeMenu: "Close menu",
   },
   hero: {
     eyebrow: "Clinical Pilates & Reformer",

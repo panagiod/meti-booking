@@ -260,16 +260,16 @@ function CheckoutContent() {
     <>
       <div className="min-h-screen bg-[var(--background)]">
         <header className="sticky top-0 z-30 bg-[var(--surface)]/80 backdrop-blur-lg border-b border-[var(--border)]">
-          <div className="container-meti flex items-center justify-between h-16">
-            <div className="flex items-center">
+          <div className="container-meti flex h-16 min-w-0 items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center">
               <Button variant="ghost" size="icon" onClick={() => router.back()}>
                 <ArrowLeft className="w-5 h-5" />
               </Button>
-              <h1 className="ml-4 font-heading font-semibold text-[var(--text-primary)]">
+              <h1 className="ml-2 truncate font-heading font-semibold text-[var(--text-primary)] sm:ml-4">
                 {pageTitle}
               </h1>
             </div>
-            <LanguageSwitcher className="border-[var(--border)]" />
+            <LanguageSwitcher className="shrink-0 border-[var(--border)]" />
           </div>
         </header>
 
@@ -317,7 +317,7 @@ function CheckoutContent() {
                         onChange={(e) => setGuestName(e.target.value)}
                       />
                     </div>
-                    <div className="flex items-center justify-between gap-4 pt-2">
+                    <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-sm text-[var(--text-muted)]">
                         {t.checkout.signInToContinueSub}
                       </p>

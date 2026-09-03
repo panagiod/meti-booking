@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans, GFS_Didot, JetBrains_Mono, Noto_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "sileo";
@@ -68,6 +68,12 @@ export const metadata: Metadata = {
       "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results.",
   },
   metadataBase: new URL(siteUrl),
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#fdfcfa",
 };
 
 export default function RootLayout({

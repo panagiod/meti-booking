@@ -12,6 +12,8 @@ const el: Messages = {
     signOut: "Αποσύνδεση",
     account: "Λογαριασμός",
     bookNow: "Κράτηση",
+    menu: "Μενού",
+    closeMenu: "Κλείσιμο μενού",
   },
   hero: {
     eyebrow: "Clinical Pilates & Reformer",

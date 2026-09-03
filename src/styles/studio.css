@@ -18,6 +18,8 @@
   font-family: var(--studio-font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 html[lang="el"] .studio,
@@ -90,6 +92,8 @@ html[lang="el"] .font-display {
   background: var(--studio-bg);
   color: var(--studio-ink);
   font-family: var(--studio-font-body);
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 .studio-booking .font-display {
@@ -101,5 +105,7 @@ html[lang="el"] .font-display {
   .studio-btn {
     padding: 0.75rem 1.25rem;
     font-size: 0.8125rem;
+    white-space: normal;
+    text-align: center;
   }
 }

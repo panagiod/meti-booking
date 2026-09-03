@@ -63,7 +63,7 @@ export function AboutSection() {
               {about.closingText}
             </p>
             <div className="mt-6">
-              <Link href="/book" className="studio-btn studio-btn-primary">
+              <Link href="/book" className="studio-btn studio-btn-primary w-full sm:w-auto">
                 {t.hero.bookSession}
               </Link>
             </div>
