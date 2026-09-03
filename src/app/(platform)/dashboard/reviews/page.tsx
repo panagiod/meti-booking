@@ -55,10 +55,10 @@ export default function ReviewsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          Mis Reviews
+          My reviews
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Rate the consultations you have received
+          Reviews for your reformer sessions
         </p>
       </div>
 
@@ -68,7 +68,7 @@ export default function ReviewsPage() {
             <EmptyState
               icon={Star}
               title="No reviews yet"
-              description="After completing a consultation, you can rate your experience."
+              description="After a session, you can rate your experience."
             />
           </CardContent>
         </Card>

@@ -21,8 +21,8 @@ export default function UsersPage() {
 
   const users = data?.users || [];
 
-  const totalClients = users.filter((u: any) => u.role === "client").length;
-  const totalAdvisors = users.filter((u: any) => u.role === "advisor").length;
+  const totalClients = users.filter((u: any) => u.role !== "admin").length;
+  const totalAdmins = users.filter((u: any) => u.role === "admin").length;
 
   if (isLoading) return <LoadingPage />;
 
@@ -34,7 +34,7 @@ export default function UsersPage() {
           User Management
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Manage clients and advisors on the platform
+          People who have signed in or booked a session
         </p>
       </div>
 
@@ -70,9 +70,9 @@ export default function UsersPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Advisors</p>
+                <p className="text-sm text-[var(--text-muted)]">Admins</p>
                 <p className="text-2xl font-heading font-bold text-[var(--success)]">
-                  {totalAdvisors}
+                  {totalAdmins}
                 </p>
               </div>
             </div>
@@ -109,11 +109,11 @@ export default function UsersPage() {
                 Clients
               </Button>
               <Button
-                variant={roleFilter === "advisor" ? "default" : "secondary"}
+                variant={roleFilter === "admin" ? "default" : "secondary"}
                 size="sm"
-                onClick={() => setRoleFilter("advisor")}
+                onClick={() => setRoleFilter("admin")}
               >
-                Advisors
+                Admins
               </Button>
             </div>
           </div>
@@ -153,19 +153,9 @@ export default function UsersPage() {
                           {user.name}
                         </h3>
                         <Badge
-                          variant={
-                            user.role === "admin"
-                              ? "default"
-                              : user.role === "advisor"
-                              ? "accent"
-                              : "secondary"
-                          }
+                          variant={user.role === "admin" ? "default" : "secondary"}
                         >
-                          {user.role === "admin"
-                            ? "Admin"
-                            : user.role === "advisor"
-                            ? "Advisor"
-                            : "Client"}
+                          {user.role === "admin" ? "Admin" : "Client"}
                         </Badge>
                       </div>
                       <p className="text-sm text-[var(--text-muted)]">

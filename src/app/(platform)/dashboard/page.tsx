@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingPage } from "@/components/ui/loading";
-import { Search, Calendar, Star, Clock, ArrowRight } from "lucide-react";
+import { Calendar, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { loginUrl } from "@/lib/auth-redirect";
 
@@ -23,7 +23,7 @@ export default function DashboardPage() {
           return;
         }
         setUser(data.user);
-      } catch (error) {
+      } catch {
         router.replace(loginUrl("/dashboard"));
       } finally {
         setIsLoading(false);
@@ -41,28 +41,25 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          Hello, {user.name?.split(" ")[0]}! 👋
+          Hello, {user.name?.split(" ")[0]}!
         </h1>
-        <p className="text-[var(--text-muted)] mt-1">
-          Welcome to your dashboard
-        </p>
+        <p className="text-[var(--text-muted)] mt-1">Welcome to your bookings</p>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link href="/services">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Link href="/book">
           <Card className="hover:shadow-lg transition-all cursor-pointer h-full group">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-[var(--primary-light)] flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Search className="w-6 h-6 text-[var(--primary)]" />
+                  <Calendar className="w-6 h-6 text-[var(--primary)]" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-heading font-semibold text-[var(--text-primary)] mb-1">
-                    Browse Advisors
+                    Book a session
                   </h3>
                   <p className="text-sm text-[var(--text-muted)]">
-                    Endd expert professionals
+                    Choose a date and time for reformer pilates
                   </p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all" />
@@ -76,35 +73,14 @@ export default function DashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-[var(--accent-light)] flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Calendar className="w-6 h-6 text-[var(--accent)]" />
+                  <Star className="w-6 h-6 text-[var(--accent)]" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-heading font-semibold text-[var(--text-primary)] mb-1">
-                    My Appointments
+                    My bookings
                   </h3>
                   <p className="text-sm text-[var(--text-muted)]">
-                    Manage your consultations
-                  </p>
-                </div>
-                <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all" />
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
-
-        <Link href="/dashboard/reviews">
-          <Card className="hover:shadow-lg transition-all cursor-pointer h-full group">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-[var(--warning-light)] flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Star className="w-6 h-6 text-[var(--warning)]" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-heading font-semibold text-[var(--text-primary)] mb-1">
-                    Mis Reviews
-                  </h3>
-                  <p className="text-sm text-[var(--text-muted)]">
-                    Rate your consultations
+                    View or cancel upcoming sessions
                   </p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all" />
@@ -114,25 +90,9 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Recent Activity */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Recent activity</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Clock className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-            <p className="text-[var(--text-muted)]">
-              Your recent activity will appear here
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* User Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Account information</CardTitle>
+          <CardTitle className="text-lg">Account</CardTitle>
         </CardHeader>
         <CardContent>
           <dl className="space-y-3">
@@ -140,13 +100,9 @@ export default function DashboardPage() {
               <dt className="text-sm text-[var(--text-muted)]">Name</dt>
               <dd className="text-sm font-medium text-[var(--text-primary)]">{user.name}</dd>
             </div>
-            <div className="flex justify-between py-2 border-b border-[var(--border)]">
+            <div className="flex justify-between py-2">
               <dt className="text-sm text-[var(--text-muted)]">Email</dt>
               <dd className="text-sm font-medium text-[var(--text-primary)]">{user.email}</dd>
-            </div>
-            <div className="flex justify-between py-2">
-              <dt className="text-sm text-[var(--text-muted)]">Role</dt>
-              <dd className="text-sm font-medium text-[var(--primary)]">Client</dd>
             </div>
           </dl>
         </CardContent>

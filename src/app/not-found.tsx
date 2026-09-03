@@ -49,10 +49,10 @@ export default function NotFound() {
           </p>
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <Link
-              href="/services"
+              href="/book"
               className="text-[var(--primary)] hover:underline"
             >
-              Browse advisors
+              Book a session
             </Link>
             <Link
               href="/dashboard"

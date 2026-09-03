@@ -8,14 +8,10 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Users,
-  Briefcase,
-  Settings,
-  FileText,
   LogOut,
   Menu,
   X,
   Shield,
-  CheckCircle,
   BookOpen,
   CalendarDays,
   LayoutTemplate,
@@ -29,16 +25,6 @@ const navigation = [
     name: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
-  },
-  {
-    name: "Advisors",
-    href: "/admin/advisors",
-    icon: Briefcase,
-  },
-  {
-    name: "Verification",
-    href: "/admin/verification",
-    icon: CheckCircle,
   },
   {
     name: "Users",
@@ -59,16 +45,6 @@ const navigation = [
     name: "Blog",
     href: "/admin/blog",
     icon: BookOpen,
-  },
-  {
-    name: "Billing",
-    href: "/admin/invoices",
-    icon: FileText,
-  },
-  {
-    name: "Settings",
-    href: "/admin/config",
-    icon: Settings,
   },
 ];
 
