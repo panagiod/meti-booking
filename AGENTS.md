@@ -24,7 +24,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **Repo name:** `meti-booking` (legacy Meti advisory marketplace)
 - **Customer routes:** `/`, `/book`, `/login`, `/checkout`
 - **Admin (MeTi):** `/admin/schedule`, `/admin/content`
-- **Currency:** EUR · **Timezone:** Europe/Athens · **Booking window:** 8 weeks
+- **Currency:** EUR · **Timezone:** Asia/Nicosia · **Booking window:** 8 weeks
 - **Legacy:** `/services`, `/advisor/*`, LiveKit video
 
 ## Development workflow
@@ -74,7 +74,7 @@ Close fixed audit issues: `./scripts/close-resolved-issues.sh`
 - Copy only in locale files — **admin CMS overrides DB**
 - Tue/Thu/Sat schedule — demo seed is **Tue/Thu 15:45–18:00, Sat 08:00–12:45**
 - COP currency — everything is **EUR**
-- Colombia timezone — use **Europe/Athens** via `timezone.ts`
+- Colombia timezone — use **Nicosia, Cyprus** (`Asia/Nicosia`) via `timezone.ts`
 - Greek genitive months — use **nominative** via `date-locale.ts`
 - `bookingLeadHours` default is **2h** — use `resolveBookingLeadHours()`
 - Hardcoded fees — use **`GET /api/checkout/quote`**

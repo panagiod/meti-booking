@@ -54,7 +54,7 @@ const checks: Check[] = [
     name: "STUDIO_TIMEZONE",
     required: true,
     ok: has("STUDIO_TIMEZONE"),
-    hint: "Europe/Athens",
+    hint: "Asia/Nicosia",
   },
   {
     name: "CRON_SECRET",

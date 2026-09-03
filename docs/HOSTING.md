@@ -96,7 +96,7 @@ Copy **`deploy/env.production.example`** → **`.env`** in the project root.
 | `BETTER_AUTH_SECRET` | ✅ | `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | ✅ | `https://yourdomain.com` (no trailing slash) |
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | ✅ | Same as above |
-| `STUDIO_TIMEZONE` | ✅ | `Europe/Athens` |
+| `STUDIO_TIMEZONE` | ✅ | `Asia/Nicosia` |
 | `CRON_SECRET` | ✅ | `openssl rand -hex 24` |
 | `ENCRYPTION_KEY` | ✅ | MP token encryption — `openssl rand -base64 32` |
 | `SELF_HOSTED` | ✅ | `1` — enables local disk image uploads |
@@ -134,7 +134,7 @@ git pull origin main
 | Booking reminders | 12:00 | `/api/cron/reminders` |
 | Cleanup cancelled | 03:00 | `/api/cron/cleanup-cancelled` |
 
-12:00 UTC ≈ 14:00 Athens (summer) / 13:00 (winter). Edit `/etc/cron.d/meti-booking` to change.
+12:00 UTC ≈ 15:00 Nicosia (summer) / 14:00 (winter). Edit `/etc/cron.d/meti-booking` to change.
 
 ### Recommended backup cron
 

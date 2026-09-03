@@ -25,7 +25,7 @@ describe("studio-demo-fallback", () => {
   });
 
   it("generates slots for active demo days", () => {
-    vi.stubEnv("STUDIO_TIMEZONE", "Europe/Athens");
+    vi.stubEnv("STUDIO_TIMEZONE", "Asia/Nicosia");
     vi.stubEnv("BOOKING_DEMO_FALLBACK", "1");
 
     const slots = getDemoSlotsForDates(["2099-06-02", "2099-06-04"]);

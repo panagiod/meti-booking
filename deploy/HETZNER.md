@@ -316,7 +316,7 @@ BETTER_AUTH_URL=https://meti-pilates.com
 NEXT_PUBLIC_BETTER_AUTH_URL=https://meti-pilates.com
 APP_URL=https://meti-pilates.com
 
-STUDIO_TIMEZONE=Europe/Athens
+STUDIO_TIMEZONE=Asia/Nicosia
 CRON_SECRET=<openssl rand -hex 24>
 ENCRYPTION_KEY=<openssl rand -base64 32>
 

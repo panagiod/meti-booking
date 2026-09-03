@@ -29,6 +29,12 @@ if [[ ! -f .env ]]; then
   ./deploy/init-env-lite.sh
 fi
 
+if grep -q '^STUDIO_TIMEZONE=' .env; then
+  sed -i 's|^STUDIO_TIMEZONE=.*|STUDIO_TIMEZONE=Asia/Nicosia|' .env
+else
+  echo 'STUDIO_TIMEZONE=Asia/Nicosia' >> .env
+fi
+
 ./deploy/fix-env-syntax.sh .env
 ./deploy/validate-env.sh .env
 

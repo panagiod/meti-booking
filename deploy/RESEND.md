@@ -51,7 +51,7 @@ Both addresses receive new-booking alerts and reminder emails.
 
 **Password reset** also uses Resend (`/forgot-password` on the site). Without `RESEND_API_KEY`, users cannot self-reset — use the server script below.
 
-Reminders run from the daily cron job (`/api/cron/reminders`). On your Hetzner VPS this is already set up by `./deploy/setup-cron.sh` (runs at **12:00 UTC** ≈ **14:00 Athens** in summer).
+Reminders run from the daily cron job (`/api/cron/reminders`). On your Hetzner VPS this is already set up by `./deploy/setup-cron.sh` (runs at **12:00 UTC** ≈ **15:00 Nicosia** in summer).
 
 ---
 
@@ -248,7 +248,7 @@ curl -sS -X POST "https://meti-pilates.com/api/cron/reminders" \
 
 Book a session for **tomorrow** if you want to test the real cron path. Otherwise the manual curl only sends reminders for appointments already in the 24h window.
 
-**Cron schedule:** `/etc/cron.d/meti-booking` — default reminder run is **12:00 UTC** (≈ 14:00 Athens summer / 13:00 winter). Edit that file if you want a different time.
+**Cron schedule:** `/etc/cron.d/meti-booking` — default reminder run is **12:00 UTC** (≈ 15:00 Nicosia summer / 14:00 winter). Edit that file if you want a different time.
 
 ---
 

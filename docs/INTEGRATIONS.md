@@ -159,7 +159,7 @@ User requested **Stripe or Revolut** with Apple Pay / Google Pay:
 | Reformer booking | ✅ | `/book` only |
 | 3-slot capacity | ✅ | `siteConfig.slotCapacity` |
 | EUR pricing | ✅ | `siteConfig.currency` |
-| Europe/Athens TZ | ✅ | `STUDIO_TIMEZONE` |
+| Asia/Nicosia TZ | ✅ | `STUDIO_TIMEZONE` |
 | Google login | ❌ | Real OAuth needed |
 | Payments | ❌ | Instructor MP or future Stripe |
 | Blob uploads (prod) | ❌ | Needs `BLOB_READ_WRITE_TOKEN` |

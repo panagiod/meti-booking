@@ -22,7 +22,7 @@ Copy from `.env.example`. **Required for production:**
 | `BETTER_AUTH_SECRET` | `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | `https://your-app.vercel.app` (or custom domain) |
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | Same as `BETTER_AUTH_URL` |
-| `STUDIO_TIMEZONE` | `Europe/Athens` |
+| `STUDIO_TIMEZONE` | `Asia/Nicosia` |
 | `ENCRYPTION_KEY` | `openssl rand -base64 32` — required if advisors connect Mercado Pago |
 | `CRON_SECRET` | `openssl rand -hex 24` — protects `/api/cron/*` |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional but recommended for sign-in |
@@ -72,7 +72,7 @@ Before or after setting Vercel env vars locally:
 ```bash
 BETTER_AUTH_URL=https://your-app.vercel.app \
 NEXT_PUBLIC_BETTER_AUTH_URL=https://your-app.vercel.app \
-DATABASE_URL=... BETTER_AUTH_SECRET=... CRON_SECRET=... STUDIO_TIMEZONE=Europe/Athens \
+DATABASE_URL=... BETTER_AUTH_SECRET=... CRON_SECRET=... STUDIO_TIMEZONE=Asia/Nicosia \
 pnpm deploy:check
 ```
 

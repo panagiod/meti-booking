@@ -15,7 +15,7 @@
 | **Languages** | English + Greek (`EN \| ΕΛ`); cookie `flow-locale` |
 | **Session** | **Reformer Session** — 45 min, **€10** |
 | **Currency** | **EUR** (`siteConfig.currency`) |
-| **Timezone** | **Europe/Athens** (`STUDIO_TIMEZONE`) |
+| **Timezone** | **Asia/Nicosia** (`STUDIO_TIMEZONE`) |
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |
 | **Booking window** | **8 weeks ahead** (`bookingWeeksAhead`) |
 | **Lead time** | **2 hours** minimum before first bookable slot |
@@ -70,7 +70,7 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 | **Booking schedule** | DB `advisor_schedule` | `src/lib/studio-schedule.ts` |
 | **Slot capacity** | `siteConfig.slotCapacity` (3) | code only |
 | **Booking window** | `siteConfig.bookingWeeksAhead` (8) | code only |
-| **Timezone** | `STUDIO_TIMEZONE` env | `Europe/Athens` |
+| **Timezone** | `STUDIO_TIMEZONE` env | `Asia/Nicosia` |
 | **Reformer service** | DB `advisor_services` | `scripts/demo-setup.ts` |
 | **Code defaults** | `site-config.ts`, locale files | used on first seed |
 
@@ -195,7 +195,7 @@ Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
 2. Demo seed: **Mon/Wed/Sat 14:00–17:00**, gap 10 min → **3 slots/day**
 3. `GET /api/slots` — counts appointments, applies blocked times (read-only)
 4. `POST /api/appointments` — serializable transaction, 409 when full
-5. All slot times interpreted in **Europe/Athens**
+5. All slot times interpreted in **Asia/Nicosia**
 6. Booking horizon: **8 weeks** (`siteConfig.bookingWeeksAhead`)
 
 Tests: `tests/unit/slots.test.ts`, `tests/unit/studio-schedule.test.ts`, `tests/unit/timezone.test.ts`, `tests/unit/date-locale.test.ts`
@@ -241,7 +241,7 @@ Copy `.env.demo.example` → `.env`. See `.env.example` for production.
 | `BETTER_AUTH_SECRET` | ✅ | `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | ✅ | Public URL, no trailing slash |
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | ✅ | Same |
-| `STUDIO_TIMEZONE` | ⚠️ | Default `Europe/Athens` |
+| `STUDIO_TIMEZONE` | ⚠️ | Default `Asia/Nicosia` |
 | `ENCRYPTION_KEY` | ✅ prod | MP token encryption; `openssl rand -base64 32` |
 | `BLOB_READ_WRITE_TOKEN` | Vercel prod | Admin image uploads on Vercel |
 | `SELF_HOSTED` | VPS prod | Set `1` on Hetzner — local disk uploads instead of Blob |
@@ -323,7 +323,7 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 | Guest checkout | ✅ Done (`guest-user.ts`, checkout email form) |
 | Batch slots API | ✅ Done (`GET /api/slots/batch`) |
 | Admin/advisor UI Greek | Not translated |
-| Timezone Europe/Athens | ✅ Done |
+| Timezone Asia/Nicosia | ✅ Done |
 | Server slot validation | ✅ Done |
 | Booking lead time (2h) | ✅ Done (`booking-config.ts`) |
 | Server checkout quote | ✅ Done (`/book` summary + checkout) |

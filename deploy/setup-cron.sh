@@ -33,7 +33,7 @@ CRON_SECRET=${CRON_SECRET}
 # Expire unpaid pending bookings (midnight UTC)
 0 0 * * * root curl -fsS -H "Authorization: Bearer \${CRON_SECRET}" ${BASE_URL}/api/cron/expire-pending >/dev/null 2>&1
 
-# Booking reminders (noon UTC — adjust for Athens if needed)
+# Booking reminders (noon UTC — 15:00 Nicosia in summer)
 0 12 * * * root curl -fsS -H "Authorization: Bearer \${CRON_SECRET}" ${BASE_URL}/api/cron/reminders >/dev/null 2>&1
 
 # Cleanup old cancelled appointments (03:00 UTC)
@@ -42,4 +42,4 @@ EOF
 
 sudo chmod 644 "$CRON_FILE"
 echo "Cron jobs installed at $CRON_FILE"
-echo "Reminder job runs at 12:00 UTC (= 14:00 Athens in summer, 13:00 in winter). Edit the file to change times."
+echo "Reminder job runs at 12:00 UTC (= 15:00 Nicosia in summer, 14:00 in winter). Edit the file to change times."

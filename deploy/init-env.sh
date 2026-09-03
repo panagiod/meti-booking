@@ -52,7 +52,7 @@ NEXT_PUBLIC_BETTER_AUTH_URL=${BASE_URL}
 SELF_HOSTED=1
 
 # --- Studio ---
-STUDIO_TIMEZONE=Europe/Athens
+STUDIO_TIMEZONE=Asia/Nicosia
 APP_URL=${BASE_URL}
 
 # --- Security ---

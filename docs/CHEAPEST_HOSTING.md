@@ -187,7 +187,7 @@ In Vercel → your project → **Settings → Environment Variables**, add these
 | `BETTER_AUTH_SECRET` | first `openssl` output |
 | `BETTER_AUTH_URL` | `https://YOUR-PROJECT.vercel.app` *(set after first deploy if unknown)* |
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | **same** as `BETTER_AUTH_URL` |
-| `STUDIO_TIMEZONE` | `Europe/Athens` |
+| `STUDIO_TIMEZONE` | `Asia/Nicosia` |
 | `CRON_SECRET` | third `openssl` output |
 
 ### Recommended (add before going live)
@@ -262,7 +262,7 @@ NEXT_PUBLIC_BETTER_AUTH_URL=https://YOUR-PROJECT.vercel.app \
 DATABASE_URL="postgresql://..." \
 BETTER_AUTH_SECRET="..." \
 CRON_SECRET="..." \
-STUDIO_TIMEZONE=Europe/Athens \
+STUDIO_TIMEZONE=Asia/Nicosia \
 pnpm deploy:check
 ```
 

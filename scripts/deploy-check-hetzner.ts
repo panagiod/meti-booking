@@ -76,7 +76,7 @@ const checks: Check[] = [
       process.env.NEXT_PUBLIC_BETTER_AUTH_URL === process.env.BETTER_AUTH_URL,
     hint: "Must match BETTER_AUTH_URL exactly",
   },
-  { name: "STUDIO_TIMEZONE", required: true, ok: has("STUDIO_TIMEZONE"), hint: "Europe/Athens" },
+  { name: "STUDIO_TIMEZONE", required: true, ok: has("STUDIO_TIMEZONE"), hint: "Asia/Nicosia" },
   { name: "CRON_SECRET", required: true, ok: has("CRON_SECRET"), hint: "openssl rand -hex 24" },
   { name: "SELF_HOSTED", required: true, ok: process.env.SELF_HOSTED === "1", hint: "Set SELF_HOSTED=1 for VPS uploads" },
   {

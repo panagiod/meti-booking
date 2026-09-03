@@ -1,8 +1,8 @@
 /**
  * Studio timezone — all schedules and slots use this zone regardless of server TZ.
- * Override with STUDIO_TIMEZONE env (IANA name, e.g. Europe/Athens).
+ * Override with STUDIO_TIMEZONE env (IANA name, e.g. Asia/Nicosia).
  */
-export const STUDIO_TIMEZONE = process.env.STUDIO_TIMEZONE || "Europe/Athens";
+export const STUDIO_TIMEZONE = process.env.STUDIO_TIMEZONE || "Asia/Nicosia";
 
 /** @deprecated Use STUDIO_TIMEZONE-aware helpers instead */
 export const APP_TIMEZONE_OFFSET_HOURS = getFixedOffsetHours(

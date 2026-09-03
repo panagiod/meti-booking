@@ -20,7 +20,7 @@ Book **reformer sessions** online: pick a date, time, sign in, pay.
 | **Booking window** | 8 weeks ahead |
 | **Capacity** | 3 clients per time slot |
 | **Currency** | EUR (€) |
-| **Timezone** | Europe/Athens |
+| **Timezone** | Asia/Nicosia (Cyprus) |
 | **Booking lead time** | 2 hours minimum (`resolveBookingLeadHours`) |
 | **Languages** | EN + ΕΛ (Noto Sans / GFS Didot for Greek) |
 | **Demo password** | `Demo1234!` (or `DEMO_PASSWORD` env) |
@@ -93,7 +93,7 @@ src/
     site-config.ts       # Code defaults (EUR, capacity, booking window)
     studio-content*.ts   # CMS logic
     studio-schedule.ts   # Calendar defaults
-    timezone.ts          # Europe/Athens slot times
+    timezone.ts          # Asia/Nicosia slot times
     booking-config.ts    # resolveBookingLeadHours() — 2h default
     date-locale.ts       # Greek nominative month names
     proxy.ts             # Auth middleware (public routes)

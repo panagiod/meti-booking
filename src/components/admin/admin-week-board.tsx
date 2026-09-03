@@ -9,7 +9,6 @@ import { generateAvailableSlots } from "@/lib/slots";
 import { siteConfig } from "@/lib/site-config";
 import type { StudioDaySchedule } from "@/lib/studio-schedule";
 import {
-  STUDIO_TIMEZONE,
   addStudioDays,
   formatStudioTime,
   getDayOfWeekForStudioDate,
@@ -93,7 +92,7 @@ export function AdminWeekBoard({
         <div>
           <CardTitle className="text-lg">Week schedule</CardTitle>
           <p className="text-sm text-[var(--text-muted)] mt-1">
-            Open slots and bookings in {STUDIO_TIMEZONE.replace("_", " ")}
+            Open slots and bookings in Nicosia, Cyprus
           </p>
         </div>
         <div className="flex items-center gap-2">

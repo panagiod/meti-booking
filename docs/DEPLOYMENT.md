@@ -53,7 +53,7 @@ A phased plan to go from **$0/month demo** to the **cheapest sustainable product
    BETTER_AUTH_SECRET=<openssl rand -base64 32>
    BETTER_AUTH_URL=https://your-app.vercel.app
    NEXT_PUBLIC_BETTER_AUTH_URL=https://your-app.vercel.app
-   STUDIO_TIMEZONE=Europe/Athens
+   STUDIO_TIMEZONE=Asia/Nicosia
    ENCRYPTION_KEY=<openssl rand -base64 32>
    CRON_SECRET=<openssl rand -hex 24>
    GOOGLE_CLIENT_ID=...

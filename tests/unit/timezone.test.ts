@@ -11,11 +11,11 @@ import {
 } from "@/lib/timezone";
 
 describe("lib/timezone", () => {
-  it("uses Europe/Athens by default", () => {
-    expect(STUDIO_TIMEZONE).toBe("Europe/Athens");
+  it("uses Asia/Nicosia (Cyprus) by default", () => {
+    expect(STUDIO_TIMEZONE).toBe("Asia/Nicosia");
   });
 
-  it("localToUTCDate converts Athens summer time (EEST, UTC+3) to UTC", () => {
+  it("localToUTCDate converts Nicosia summer time (EEST, UTC+3) to UTC", () => {
     const d = localToUTCDate(2026, 8, 17, 14, 0);
     expect(d.toISOString()).toBe("2026-08-17T11:00:00.000Z");
   });
@@ -57,9 +57,9 @@ describe("lib/timezone", () => {
     expect(addStudioDays("2026-09-01", -1)).toBe("2026-08-31");
   });
 
-  it("studioWeekStartDateStr returns Monday in Europe/Athens", () => {
+  it("studioWeekStartDateStr returns Monday in Asia/Nicosia", () => {
     expect(studioWeekStartDateStr(new Date("2026-09-02T10:00:00Z"))).toBe("2026-08-31");
-    // 21:30 UTC on Sunday 6 Sep is already Monday 7 Sep in Athens
+    // 21:30 UTC on Sunday 6 Sep is already Monday 7 Sep in Nicosia
     expect(studioWeekStartDateStr(new Date("2026-09-06T21:30:00Z"))).toBe("2026-09-07");
   });
 

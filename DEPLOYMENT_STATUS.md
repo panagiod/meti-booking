@@ -28,7 +28,7 @@ Tunnel: `cloudflared tunnel --url http://localhost:3000`
 - **MeTi Pilates** — hero: "Book your session." / "Κλείστε το μάθημά σας."
 - **Reformer-only** booking · **3 spots per slot** · **EUR (€10)**
 - **Mon, Wed, Sat · 2pm–5pm** (demo seed; admin-editable)
-- **8 weeks** booking horizon · **Europe/Athens** timezone
+- **8 weeks** booking horizon · **Asia/Nicosia** timezone
 - **EN | ΕΛ** with Greek fonts (Noto Sans + GFS Didot)
 - Greek calendar months in **nominative** form (Σεπτέμβριος, not Σεπτεμβρίου)
 - **Admin CMS** — edit text + images at `/admin/content`
