@@ -281,6 +281,7 @@ function ImageUploadCard({
 
 export default function AdminContentPage() {
   const dialog = useDialog();
+  const { showAlert } = dialog;
   const [tab, setTab] = useState<Tab>("en");
   const [content, setContent] = useState<StudioContentData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -298,11 +299,11 @@ export default function AdminContentPage() {
       setContent(data.content);
       setHasChanges(false);
     } catch {
-      dialog.showAlert("Error", "Could not load website content", "error");
+      showAlert("Error", "Could not load website content", "error");
     } finally {
       setIsLoading(false);
     }
-  }, [dialog]);
+  }, [showAlert]);
 
   useEffect(() => {
     loadContent();

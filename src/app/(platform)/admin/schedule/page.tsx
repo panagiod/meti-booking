@@ -65,6 +65,7 @@ interface StudioData {
 
 export default function AdminSchedulePage() {
   const dialog = useDialog();
+  const { showAlert } = dialog;
   const [isLoading, setIsLoading] = useState(true);
   const [studio, setStudio] = useState<StudioData | null>(null);
   const [schedule, setSchedule] = useState<StudioDaySchedule[]>(weeklyScheduleTemplate());
@@ -138,11 +139,11 @@ export default function AdminSchedulePage() {
       setBlockedTimes(data.studio.blockedTimes);
       setHasChanges(false);
     } catch {
-      dialog.showAlert("Error", "Could not load studio calendar", "error");
+      showAlert("Error", "Could not load studio calendar", "error");
     } finally {
       setIsLoading(false);
     }
-  }, [dialog]);
+  }, [showAlert]);
 
   useEffect(() => {
     loadStudio();

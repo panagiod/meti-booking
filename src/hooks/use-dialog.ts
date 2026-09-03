@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 interface DialogState {
   open: boolean;
@@ -96,13 +96,16 @@ export function useDialog() {
     setInputValue("");
   }, []);
 
-  return {
-    ...state,
-    inputValue,
-    setInputValue,
-    showAlert,
-    showConfirm,
-    showPrompt,
-    close,
-  };
+  return useMemo(
+    () => ({
+      ...state,
+      inputValue,
+      setInputValue,
+      showAlert,
+      showConfirm,
+      showPrompt,
+      close,
+    }),
+    [state, inputValue, showAlert, showConfirm, showPrompt, close]
+  );
 }
