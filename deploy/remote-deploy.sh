@@ -74,6 +74,9 @@ fi
 # Seed studio if /api/studio not ready (idempotent)
 ./deploy/ensure-studio-seed.sh
 
+echo "==> Ensure studio owner is ADMIN..."
+pnpm exec tsx scripts/ensure-studio-admin.ts || true
+
 # Sync CMS to bundled hero/reformer files (picks up image updates from git)
 pnpm exec tsx scripts/sync-bundled-images.ts || true
 

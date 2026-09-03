@@ -21,23 +21,18 @@ export function isAdminPromoteTokenValid(provided: string | null | undefined): b
 }
 
 /**
- * Promotes an existing user to ADMIN. The user must have signed in at least
- * once (e.g. via Google) so their row already exists.
+ * Make this user an admin without revoking their current session.
+ * Used when a studio owner is already logged in and needs /admin.
  */
-export async function promoteUserToAdmin(email: string) {
+export async function ensureStudioOwnerAdmin(email: string) {
   const normalizedEmail = email.trim().toLowerCase();
-
   const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-  if (!user) {
-    throw new AdminPromoteError(
-      "No user found for that email. Sign in at least once first.",
-      404
-    );
-  }
+  if (!user) return null;
 
   const previousRole = user.role;
-
-  await prisma.user.update({ where: { id: user.id }, data: { role: "ADMIN" } });
+  if (previousRole !== "ADMIN") {
+    await prisma.user.update({ where: { id: user.id }, data: { role: "ADMIN" } });
+  }
   await prisma.adminProfile.upsert({
     where: { userId: user.id },
     create: { userId: user.id, level: "SUPERADMIN" },
@@ -45,7 +40,23 @@ export async function promoteUserToAdmin(email: string) {
   });
   await prisma.instructorProfile.deleteMany({ where: { userId: user.id } });
   await prisma.clientProfile.deleteMany({ where: { userId: user.id } });
-  await prisma.session.deleteMany({ where: { userId: user.id } });
 
-  return { email: normalizedEmail, previousRole, role: "ADMIN" as const };
+  return { email: normalizedEmail, previousRole, role: "ADMIN" as const, userId: user.id };
+}
+
+/**
+ * Promotes an existing user to ADMIN. The user must have signed in at least
+ * once (e.g. via Google) so their row already exists.
+ */
+export async function promoteUserToAdmin(email: string) {
+  const result = await ensureStudioOwnerAdmin(email);
+  if (!result) {
+    throw new AdminPromoteError(
+      "No user found for that email. Sign in at least once first.",
+      404
+    );
+  }
+
+  await prisma.session.deleteMany({ where: { userId: result.userId } });
+  return { email: result.email, previousRole: result.previousRole, role: result.role };
 }

@@ -75,7 +75,21 @@ export default function DashboardLayout({
             continue;
           }
           setUser(data.user);
-          const role = (data.user as { role?: string }).role;
+          let role = (data.user as { role?: string }).role;
+          if (role !== "ADMIN") {
+            try {
+              const claim = await fetch("/api/admin/claim", {
+                method: "POST",
+                credentials: "include",
+              });
+              if (claim.ok) {
+                const body = (await claim.json()) as { role?: string };
+                if (body.role) role = body.role;
+              }
+            } catch {
+              // Keep the session role
+            }
+          }
           const viewingBookings = pathname.startsWith("/dashboard/appointments");
           if (role === "ADMIN" && !viewingBookings) {
             router.replace("/admin");

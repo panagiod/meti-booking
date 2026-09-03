@@ -42,14 +42,33 @@ function RedirectContent() {
           return;
         }
 
+        const user = data.user as { id?: string; role?: string; email?: string };
+        let role = user.role;
+
+        try {
+          const claim = await fetch("/api/admin/claim", {
+            method: "POST",
+            credentials: "include",
+          });
+          if (claim.ok) {
+            const body = (await claim.json()) as { role?: string };
+            if (body.role) role = body.role;
+          }
+        } catch {
+          // Keep the session role
+        }
+
         if (explicitNext) {
           router.replace(explicitNext);
           return;
         }
 
-        const user = data.user as { id?: string; role?: string };
+        if (role === "ADMIN") {
+          router.replace("/admin");
+          return;
+        }
 
-        if (user.role === "CLIENT") {
+        if (role === "CLIENT") {
           try {
             const res = await fetch("/api/admin/setup", { credentials: "include" });
             const { hasAdmins } = await res.json();
@@ -68,7 +87,7 @@ function RedirectContent() {
           }
         }
 
-        router.replace(homePathForRole(user.role));
+        router.replace(homePathForRole(role));
       } catch {
         router.replace("/login");
       }

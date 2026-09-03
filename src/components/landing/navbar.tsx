@@ -15,8 +15,27 @@ export function Navbar() {
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
-    authClient.getSession().then(({ data }) => {
-      if (data?.user) setUser(data.user as { role?: string });
+    authClient.getSession().then(async ({ data }) => {
+      if (!data?.user) return;
+      const sessionUser = data.user as { role?: string };
+      if (sessionUser.role === "ADMIN") {
+        setUser(sessionUser);
+        return;
+      }
+      try {
+        const claim = await fetch("/api/admin/claim", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (claim.ok) {
+          const body = (await claim.json()) as { role?: string };
+          setUser({ ...sessionUser, role: body.role || sessionUser.role });
+          return;
+        }
+      } catch {
+        // Fall back to the session role
+      }
+      setUser(sessionUser);
     });
   }, []);
 
