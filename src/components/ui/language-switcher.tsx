@@ -16,7 +16,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full border border-[var(--studio-line)] p-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-full border border-[var(--border)] p-0.5 text-xs font-medium",
         className
       )}
       role="group"
@@ -28,10 +28,10 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           type="button"
           onClick={() => setLocale(opt.code)}
           className={cn(
-            "rounded-full px-2.5 py-1 transition",
+            "min-w-10 rounded-full px-3 py-1.5 transition",
             locale === opt.code
-              ? "bg-[var(--studio-ink)] text-white"
-              : "text-[var(--studio-muted)] hover:text-[var(--studio-ink)]"
+              ? "bg-[var(--text-primary)] text-[var(--surface)]"
+              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
           aria-pressed={locale === opt.code}
         >

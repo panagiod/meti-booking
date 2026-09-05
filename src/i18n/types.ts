@@ -1,8 +1,8 @@
 export type Locale = "en" | "el";
 
 export const locales: Locale[] = ["en", "el"];
-export const defaultLocale: Locale = "en";
-export const LOCALE_COOKIE = "flow-locale";
+export const defaultLocale: Locale = "el";
+export const LOCALE_COOKIE = "meti-locale";
 
 export type Messages = {
   meta: {
