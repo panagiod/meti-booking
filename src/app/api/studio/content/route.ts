@@ -7,7 +7,11 @@ export async function GET() {
   try {
     const content = await getStudioContent();
     return NextResponse.json({
-      branding: studioBranding(content),
+      branding: {
+        ...studioBranding(content),
+        location: content.location,
+        locationEl: content.locationEl,
+      },
       contentEn: content.contentEn,
       contentEl: content.contentEl,
     });

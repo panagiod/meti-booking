@@ -81,6 +81,8 @@ export function normalizeStudioContent(data: unknown): StudioContentData {
     ...defaults,
     ...raw,
     phone: sanitizeStudioPhone(raw.phone) || defaults.phone,
+    location: raw.location?.trim() || defaults.location,
+    locationEl: raw.locationEl?.trim() || defaults.locationEl,
     contentEn: mergeLocaleContent("en", raw.contentEn),
     contentEl: mergeLocaleContent("el", raw.contentEl),
   });
@@ -90,6 +92,7 @@ export function buildDefaultStudioContent(): StudioContentData {
   return {
     name: siteConfig.name,
     location: siteConfig.location,
+    locationEl: siteConfig.locationEl,
     phone: siteConfig.phone,
     email: siteConfig.email,
     heroImage: siteConfig.images.hero,
@@ -122,10 +125,10 @@ export function localeContentFromStudio(
   return locale === "el" ? content.contentEl : content.contentEn;
 }
 
-export function studioBranding(content: StudioContentData) {
+export function studioBranding(content: StudioContentData, locale: Locale = "en") {
   return {
     name: content.name,
-    location: content.location,
+    location: locale === "el" ? content.locationEl : content.location,
     phone: content.phone,
     email: content.email,
     images: {

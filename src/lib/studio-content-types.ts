@@ -41,6 +41,7 @@ export const studioLocaleContentSchema = z.object({
 export const studioContentSchema = z.object({
   name: z.string().min(1),
   location: z.string().min(1),
+  locationEl: z.string().min(1),
   phone: z.string(),
   email: z.string().email(),
   heroImage: z.string().min(1),

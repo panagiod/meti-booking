@@ -27,6 +27,7 @@ async function main() {
     heroImage: siteConfig.images.hero,
     reformerImage: siteConfig.images.reformer,
     location: siteConfig.location,
+    locationEl: siteConfig.locationEl,
     phone: siteConfig.phone,
     sessionPriceFrom: siteConfig.sessionTypes[0]?.priceFrom ?? current.sessionPriceFrom,
   };
@@ -40,6 +41,7 @@ async function main() {
   console.log(`  hero: ${next.heroImage}`);
   console.log(`  reformer: ${next.reformerImage}`);
   console.log(`  location: ${next.location}`);
+  console.log(`  locationEl: ${next.locationEl}`);
   console.log(`  phone: ${next.phone || "(hidden)"}`);
   console.log(`  sessionPriceFrom: €${next.sessionPriceFrom}`);
   await prisma.$disconnect();

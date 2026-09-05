@@ -446,11 +446,20 @@ export default function AdminContentPage() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
-                    Address / location
+                    Address / location (English)
                   </label>
                   <Input
                     value={content.location}
                     onChange={(e) => updateContent({ location: e.target.value })}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
+                    Address / location (Greek)
+                  </label>
+                  <Input
+                    value={content.locationEl}
+                    onChange={(e) => updateContent({ locationEl: e.target.value })}
                   />
                 </div>
                 <div>

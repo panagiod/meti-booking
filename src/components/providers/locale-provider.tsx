@@ -87,6 +87,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
         ...defaultContent,
         name: data.branding.name,
         location: data.branding.location,
+        locationEl: data.branding.locationEl ?? defaultContent.locationEl,
         phone: data.branding.phone,
         email: data.branding.email,
         heroImage: data.branding.images.hero,
@@ -121,7 +122,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     return mergeMessages(base, overrides);
   }, [locale, studioContent]);
 
-  const studio = useMemo(() => studioBranding(studioContent), [studioContent]);
+  const studio = useMemo(() => studioBranding(studioContent, locale), [studioContent, locale]);
 
   const value = useMemo(
     () => ({

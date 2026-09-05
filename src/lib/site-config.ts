@@ -21,6 +21,7 @@ export const siteConfig = {
   currency: "EUR",
   deliveryMode: "in-person" as const,
   location: "60A Christoforou Giatrou, Agios Ioannis Pitsilias, 4071 Limassol",
+  locationEl: "Χριστόφορου Γιατρού 60Α, Άγιος Ιωάννης Πιτσιλιάς, 4071, Λεμεσός",
   mapsUrl: "https://maps.app.goo.gl/r2C9X5e88pgco3hT7?g_st=ac",
   mapsLat: 34.893656,
   mapsLng: 33.025257,
