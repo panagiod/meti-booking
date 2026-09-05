@@ -20,11 +20,10 @@ with a live IP in this repo.
 
 ## Full runbook
 
-Clone the private ops repo and read `docs/OPS.md`, `docs/BACKUP.md`,
-`docs/GITHUB-SECRETS.md`, and `docs/RECOVERY.md`.
+Clone the private ops repo (`OPS_REPO`) and read `docs/OPS.md`,
+`docs/BACKUP.md`, `docs/GITHUB-SECRETS.md`, and `docs/RECOVERY.md`.
 
-To refresh those files from this repo (only while `deploy/ops-repo/docs/`
-still contains a payload): **Actions → Publish Ops Docs**.
+Edit those files in the private repo. Do not copy them back here.
 
 ## Public-repo hygiene
 

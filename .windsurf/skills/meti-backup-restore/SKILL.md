@@ -46,4 +46,4 @@ Do not invent a second restore path. Do not `--force-reset` or cancel upcoming b
 
 **New VPS:** Actions → **Rebuild Production** → `REBUILD`. Needs `BACKUP_ENCRYPTION_KEY` plus an unrestricted recovery SSH key.
 
-**Refresh private runbooks:** Actions → **Publish Ops Docs** (only while `deploy/ops-repo/docs/` still has a payload).
+**Refresh private runbooks:** edit `docs/` in the private ops repo. Do not copy host facts back into this public tree.
