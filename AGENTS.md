@@ -35,6 +35,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Production: set `ENCRYPTION_KEY`, `STUDIO_TIMEZONE`, `CRON_SECRET`
 - **Private ops repo:** encrypted DB + `.env` backups — [deploy/OPS.md](deploy/OPS.md)
 - **If production data is lost, follow Disaster recovery below** — do not invent a new restore path
+- **If you change backup or restore, update the procedures in the same change** — [deploy/OPS.md](deploy/OPS.md), [deploy/BACKUP.md](deploy/BACKUP.md), this Disaster recovery section, and [`.agents/skills/meti-backup-restore/SKILL.md`](.agents/skills/meti-backup-restore/SKILL.md). Do not leave the runbooks describing an old path.
 - **Hetzner VPS:** `SELF_HOSTED=1`, use `./deploy/deploy.sh` — see [docs/HOSTING.md](docs/HOSTING.md)
 - **Vercel:** `BLOB_READ_WRITE_TOKEN` for admin uploads
 
@@ -57,12 +58,14 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | MP encryption | `src/lib/encryption.ts`, `src/lib/advisor-mp.ts` |
 | Checkout pricing | `src/app/api/checkout/quote/route.ts` |
 | **Production deploy** | `deploy/HETZNER.md`, `docs/HOSTING.md` |
-| **Backup / restore** | [deploy/OPS.md](deploy/OPS.md) |
+| **Backup / restore** | [deploy/OPS.md](deploy/OPS.md), skill [meti-backup-restore](.agents/skills/meti-backup-restore/SKILL.md) |
 | **Downtime / usage alerts** | [deploy/OPS.md](deploy/OPS.md) — VPS cron + GitHub **Uptime** |
 
 ## Disaster recovery
 
-Full runbook: **[deploy/OPS.md](deploy/OPS.md)**. Private vault: `panagiod/meti-studio-ops`.
+Full runbook: **[deploy/OPS.md](deploy/OPS.md)**. Private vault: `panagiod/meti-studio-ops`. Agent skill: [`.agents/skills/meti-backup-restore/SKILL.md`](.agents/skills/meti-backup-restore/SKILL.md).
+
+Any change that affects encrypting, publishing, verifying, restoring, or rebuilding studio data must update those docs and this section in the same commit. That includes `deploy/backup-*.sh`, `deploy/restore-*.sh`, `deploy/bootstrap-from-ops.sh`, `deploy/ci-deploy-wrapper.sh`, `deploy/backup-crypto.sh`, and `.github/workflows/*backup*`, `*restore*`, `*rebuild*`.
 
 **Test without replacing live data:** Actions → **Backup Production**, then **Verify Restore**. That decrypts the backup and checks it.
 

@@ -8,6 +8,8 @@ The public repo must not keep those files in plaintext. Encrypted copies go to t
 
 **Setup and disaster recovery:** [OPS.md](./OPS.md)
 
+If you change backup or restore, update this file, [OPS.md](./OPS.md), [AGENTS.md](../AGENTS.md) Disaster recovery, and `.agents/skills/meti-backup-restore/SKILL.md` in the same commit.
+
 ## What runs automatically
 
 1. **On the VPS, every night at 02:00 UTC** (05:00 Nicosia in summer)  
