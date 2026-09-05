@@ -98,11 +98,12 @@ export default function AdminShell({ children, user }: AdminShellProps) {
             </button>
           </div>
 
-          <div className="px-4 py-3 border-b border-white/10">
+          <div className="px-4 py-3 border-b border-white/10 space-y-3">
             <div className="flex items-center gap-2 text-sm">
               <Shield className="w-4 h-4 text-[var(--accent)]" />
               <span className="text-white/90">{t.admin.studioAdmin}</span>
             </div>
+            <LanguageSwitcher tone="onDark" />
           </div>
 
           <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">

@@ -9,14 +9,22 @@ const options: { code: Locale; label: string }[] = [
   { code: "el", label: "ΕΛ" },
 ];
 
-export function LanguageSwitcher({ className }: { className?: string }) {
+export function LanguageSwitcher({
+  className,
+  tone = "default",
+}: {
+  className?: string;
+  tone?: "default" | "onDark";
+}) {
   const { locale, setLocale } = useLocale();
   const t = useTranslations();
+  const onDark = tone === "onDark";
 
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full border border-[var(--border)] p-0.5 text-xs font-medium",
+        "inline-flex items-center rounded-full border p-0.5 text-xs font-medium",
+        onDark ? "border-white/20" : "border-[var(--border)]",
         className
       )}
       role="group"
@@ -30,8 +38,12 @@ export function LanguageSwitcher({ className }: { className?: string }) {
           className={cn(
             "min-w-10 rounded-full px-3 py-1.5 transition",
             locale === opt.code
-              ? "bg-[var(--text-primary)] text-[var(--surface)]"
-              : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
+              ? onDark
+                ? "bg-white text-[var(--secondary)]"
+                : "bg-[var(--text-primary)] text-[var(--surface)]"
+              : onDark
+                ? "text-white/70 hover:text-white"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           )}
           aria-pressed={locale === opt.code}
         >
