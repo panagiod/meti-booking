@@ -9,6 +9,12 @@ function requestFor(path: string, cookie?: string) {
 }
 
 describe("proxy", () => {
+  it("lets Google fetch the studio icon without a login redirect", () => {
+    const res = proxy(requestFor("/icon"));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("location")).toBeNull();
+  });
+
   it("lets public pages through without a session", () => {
     const res = proxy(requestFor("/cookies"));
     expect(res.status).toBe(200);

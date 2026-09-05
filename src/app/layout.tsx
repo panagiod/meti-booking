@@ -48,10 +48,19 @@ export const metadata: Metadata = {
   },
   description:
     "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results. Book online.",
+  alternates: {
+    canonical: siteUrl,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
   icons: {
     icon: [
+      { url: "/icon-96.png", sizes: "96x96", type: "image/png" },
+      { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/icon.svg", type: "image/svg+xml" },
     ],
     apple: { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },

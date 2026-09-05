@@ -18,6 +18,8 @@ export const PUBLIC_PATHS = [
   "/booking",
   "/blog",
   "/faq",
+  "/icon",
+  "/apple-icon",
   "/advisor",
   "/api/studio",
   "/api/health",

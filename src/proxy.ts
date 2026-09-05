@@ -6,6 +6,9 @@ function isStaticAsset(pathname: string): boolean {
   return (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||
+    pathname === "/icon" ||
+    pathname.startsWith("/icon/") ||
+    pathname.startsWith("/apple-icon") ||
     pathname.startsWith("/logo") ||
     pathname.startsWith("/images") ||
     pathname.startsWith("/uploads") ||

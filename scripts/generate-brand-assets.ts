@@ -9,7 +9,6 @@ import sharp from "sharp";
 const root = join(__dirname, "..");
 const iconSvg = readFileSync(join(root, "public/icon.svg"));
 const wordmarkSvg = readFileSync(join(root, "public/logo-wordmark.svg"));
-writeFileSync(join(root, "src/app/icon.svg"), iconSvg);
 writeFileSync(join(root, "public/logo.svg"), iconSvg);
 
 function pngToIco(png: Buffer, size: number): Buffer {
@@ -33,9 +32,13 @@ async function main() {
   const sizes: Array<[string, number]> = [
     ["public/favicon-16x16.png", 16],
     ["public/favicon-32x32.png", 32],
+    ["public/icon-48.png", 48],
+    ["public/icon-96.png", 96],
     ["public/apple-touch-icon.png", 180],
     ["public/icon-192.png", 192],
     ["public/icon-512.png", 512],
+    ["src/app/icon.png", 96],
+    ["src/app/apple-icon.png", 180],
   ];
 
   for (const [file, size] of sizes) {
@@ -43,8 +46,8 @@ async function main() {
     console.log(`✓ ${file}`);
   }
 
-  const faviconPng = await sharp(iconSvg).resize(32, 32).png().toBuffer();
-  writeFileSync(join(root, "src/app/favicon.ico"), pngToIco(faviconPng, 32));
+  const faviconPng = await sharp(iconSvg).resize(48, 48).png().toBuffer();
+  writeFileSync(join(root, "src/app/favicon.ico"), pngToIco(faviconPng, 48));
   console.log("✓ src/app/favicon.ico");
 
   await sharp(wordmarkSvg)

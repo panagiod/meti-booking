@@ -14,6 +14,8 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/stories")).toBe(true);
     expect(isPublicPath("/booking/manage")).toBe(true);
     expect(isPublicPath("/blog")).toBe(true);
+    expect(isPublicPath("/icon")).toBe(true);
+    expect(isPublicPath("/apple-icon")).toBe(true);
   });
 
   it("allows public APIs including appointment create and manage", () => {
