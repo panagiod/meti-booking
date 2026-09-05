@@ -13,6 +13,7 @@ import {
   addStudioDays,
   formatStudioTime,
   getDayOfWeekForStudioDate,
+  isStudioDateInPast,
   studioDateStrFromUtc,
   studioWeekStartDateStr,
   weekBoundsIso,
@@ -60,9 +61,14 @@ export function AdminWeekBoard({
   onCancel,
 }: AdminWeekBoardProps) {
   const [weekStartStr, setWeekStartStr] = useState(() => studioWeekStartDateStr());
+  const thisWeekStart = studioWeekStartDateStr();
+  const canGoBack = weekStartStr > thisWeekStart;
 
   const days = useMemo(
-    () => Array.from({ length: 7 }, (_, index) => addStudioDays(weekStartStr, index)),
+    () =>
+      Array.from({ length: 7 }, (_, index) => addStudioDays(weekStartStr, index)).filter(
+        (dateStr) => !isStudioDateInPast(dateStr)
+      ),
     [weekStartStr]
   );
 
@@ -101,6 +107,7 @@ export function AdminWeekBoard({
             variant="secondary"
             size="sm"
             onClick={() => setWeekStartStr((prev) => addStudioDays(prev, -7))}
+            disabled={!canGoBack}
             aria-label="Previous week"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -124,8 +131,13 @@ export function AdminWeekBoard({
       </CardHeader>
       <CardContent className={cn("space-y-4", isLoadingBookings && "opacity-60")}>
         <p className="text-sm font-medium text-[var(--text-primary)]">
-          {dateLabel(weekStartStr, "d MMM")} – {dateLabel(addStudioDays(weekStartStr, 6), "d MMM yyyy")}
+          {days.length > 0
+            ? `${dateLabel(days[0], "d MMM")} – ${dateLabel(days[days.length - 1], "d MMM yyyy")}`
+            : dateLabel(weekStartStr, "d MMM yyyy")}
         </p>
+        {days.length === 0 ? (
+          <p className="text-sm italic text-[var(--text-muted)]">No upcoming days in this week.</p>
+        ) : null}
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {days.map((dateStr) => {
             const holiday = getCyprusHoliday(dateStr);

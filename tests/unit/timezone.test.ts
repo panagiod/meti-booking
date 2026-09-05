@@ -6,6 +6,7 @@ import {
   getDayOfWeekForStudioDate,
   studioDayBoundsUTC,
   studioWeekStartDateStr,
+  isStudioDateInPast,
   weekBoundsIso,
   STUDIO_TIMEZONE,
 } from "@/lib/timezone";
@@ -61,6 +62,12 @@ describe("lib/timezone", () => {
     expect(studioWeekStartDateStr(new Date("2026-09-02T10:00:00Z"))).toBe("2026-08-31");
     // 21:30 UTC on Sunday 6 Sep is already Monday 7 Sep in Nicosia
     expect(studioWeekStartDateStr(new Date("2026-09-06T21:30:00Z"))).toBe("2026-09-07");
+  });
+
+  it("isStudioDateInPast uses the Cyprus calendar day", () => {
+    expect(isStudioDateInPast("2026-09-04", new Date("2026-09-05T12:00:00Z"))).toBe(true);
+    expect(isStudioDateInPast("2026-09-05", new Date("2026-09-05T12:00:00Z"))).toBe(false);
+    expect(isStudioDateInPast("2026-09-06", new Date("2026-09-05T12:00:00Z"))).toBe(false);
   });
 
   it("weekBoundsIso covers Mon–Sun in studio time", () => {

@@ -187,6 +187,10 @@ export function studioDateStrFromUtc(utc: Date): string {
   return `${String(local.year).padStart(4, "0")}-${String(local.month).padStart(2, "0")}-${String(local.day).padStart(2, "0")}`;
 }
 
+export function isStudioDateInPast(dateStr: string, now = new Date()): boolean {
+  return dateStr < studioDateStrFromUtc(now);
+}
+
 /** Shift a YYYY-MM-DD studio calendar date by whole days. */
 export function addStudioDays(dateStr: string, days: number): string {
   const parts = parseStudioDateOnly(dateStr);
