@@ -2,7 +2,7 @@ import type { Locale } from "@/i18n";
 import { enUS, el } from "date-fns/locale";
 import type { Locale as DateFnsLocale } from "date-fns";
 
-/** Nominative Greek month names (not genitive e.g. Σεπτεμβρίου). */
+/** Nominative month names — for standalone use (calendar header, month + year). */
 export const GREEK_MONTHS_WIDE = [
   "Ιανουάριος",
   "Φεβρουάριος",
@@ -16,6 +16,22 @@ export const GREEK_MONTHS_WIDE = [
   "Οκτώβριος",
   "Νοέμβριος",
   "Δεκέμβριος",
+] as const;
+
+/** Genitive month names — required after a day number (3 Σεπτεμβρίου). */
+export const GREEK_MONTHS_GENITIVE = [
+  "Ιανουαρίου",
+  "Φεβρουαρίου",
+  "Μαρτίου",
+  "Απριλίου",
+  "Μαΐου",
+  "Ιουνίου",
+  "Ιουλίου",
+  "Αυγούστου",
+  "Σεπτεμβρίου",
+  "Οκτωβρίου",
+  "Νοεμβρίου",
+  "Δεκεμβρίου",
 ] as const;
 
 export const GREEK_MONTHS_ABBR = [
@@ -33,21 +49,6 @@ export const GREEK_MONTHS_ABBR = [
   "Δεκ",
 ] as const;
 
-export const GREEK_MONTHS_NARROW = [
-  "Ι",
-  "Φ",
-  "Μ",
-  "Α",
-  "Μ",
-  "Ι",
-  "Ι",
-  "Α",
-  "Σ",
-  "Ο",
-  "Ν",
-  "Δ",
-] as const;
-
 export const GREEK_WEEKDAYS_WIDE = [
   "Κυριακή",
   "Δευτέρα",
@@ -58,31 +59,9 @@ export const GREEK_WEEKDAYS_WIDE = [
   "Σάββατο",
 ] as const;
 
-function greekMonthName(
-  monthIndex: number,
-  width: string = "wide"
-): string {
-  if (width === "abbreviated" || width === "short") {
-    return GREEK_MONTHS_ABBR[monthIndex];
-  }
-  if (width === "narrow") {
-    return GREEK_MONTHS_NARROW[monthIndex];
-  }
-  return GREEK_MONTHS_WIDE[monthIndex];
-}
-
-/** date-fns `el` uses genitive months in formatted dates — override to nominative. */
-const elNominative: DateFnsLocale = {
-  ...el,
-  localize: {
-    ...el.localize,
-    month: (value, options) =>
-      greekMonthName(value, options?.width ? String(options.width) : "wide"),
-  },
-};
-
+/** Native date-fns `el` uses genitive months with a day, which is correct Greek. */
 export function getDateFnsLocale(locale: Locale): DateFnsLocale {
-  return locale === "el" ? elNominative : enUS;
+  return locale === "el" ? el : enUS;
 }
 
 export function formatGreekDate(
@@ -100,6 +79,6 @@ export function formatGreekDate(
       return `${GREEK_WEEKDAYS_WIDE[date.getDay()]}, ${day} ${GREEK_MONTHS_ABBR[month]}`;
     case "long":
     default:
-      return `${GREEK_WEEKDAYS_WIDE[date.getDay()]}, ${day} ${GREEK_MONTHS_WIDE[month]} ${year}`;
+      return `${GREEK_WEEKDAYS_WIDE[date.getDay()]}, ${day} ${GREEK_MONTHS_GENITIVE[month]} ${year}`;
   }
 }

@@ -38,9 +38,28 @@ describe("mergeLocaleContent", () => {
     });
 
     expect(merged.hero.title).toBe("Η υγεία σας, η κίνησή σας.");
-    expect(merged.hero.bookSession).toBe("Κράτηση reformer");
+    expect(merged.hero.bookSession).toBe("Κλείστε θέση");
     expect(merged.about.title).toBe("Σχετικά | Μερόπη Τίρρη");
     expect(merged.about.philosophyTitle).toBe("Η φιλοσοφία μας");
+  });
+
+  it("refreshes older translated Greek biography and CTAs", () => {
+    const merged = mergeLocaleContent("el", {
+      hero: {
+        bookSession: "Κράτηση reformer",
+        description:
+          "Reformer pilates με βάση τη φυσιοθεραπεία σε μικρά τμήματα — εξατομικευμένη φροντίδα, ασφαλής κίνηση και διαρκή αποτελέσματα.",
+      },
+      about: {
+        intro:
+          "Η Μερόπη Τίρρη είναι εξειδικευμένη Φυσιοθεραπεύτρια, απόφοιτος του Τμήματος Φυσιοθεραπείας του Διεθνούς Πανεπιστημίου της Ελλάδος (πρώην ΤΕΙ Θεσσαλονίκης). Από το 2015 ασκεί το επάγγελμα της φυσιοθεραπείας με απόλυτη αφοσίωση, επενδύοντας διαρκώς στη διεύρυνση των γνώσεών της μέσα από εξειδικευμένα σεμινάρια και μεταπτυχιακά προγράμματα υψηλού επιπέδου.",
+      },
+    });
+
+    expect(merged.hero.bookSession).toBe("Κλείστε θέση");
+    expect(merged.hero.description).toContain("ολιγομελή τμήματα");
+    expect(merged.about.intro).toContain("απόφοιτη");
+    expect(merged.about.intro).not.toContain("απόφοιτος");
   });
 
   it("keeps custom Greek copy", () => {

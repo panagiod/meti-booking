@@ -21,7 +21,7 @@ import {
   useLocale,
   useTranslations,
 } from "@/components/providers/locale-provider";
-import { getDateFnsLocale } from "@/lib/date-locale";
+import { formatGreekDate, getDateFnsLocale } from "@/lib/date-locale";
 
 interface CalendarPickerProps {
   availableDates: DaySlots[];
@@ -99,7 +99,9 @@ export function CalendarPicker({
             <ChevronLeft className="h-5 w-5" />
           </button>
           <h3 className="font-display text-xl text-[var(--studio-ink)]">
-            {format(currentMonth, "MMMM yyyy", { locale: dateFnsLocale })}
+            {locale === "el"
+              ? formatGreekDate(currentMonth, "monthYear")
+              : format(currentMonth, "MMMM yyyy", { locale: dateFnsLocale })}
           </h3>
           <button
             type="button"

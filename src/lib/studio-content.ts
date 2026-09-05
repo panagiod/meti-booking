@@ -23,12 +23,25 @@ export function buildDefaultLocaleContent(locale: Locale): StudioLocaleContent {
   };
 }
 
-/** Previous Greek defaults that made titles wrap unlike English. */
+/** Older Greek defaults that were translated from English or had grammar issues. */
 const SUPERSEDED_EL_COPY: Record<string, string> = {
   "Η υγεία και η κίνησή σας.": el.hero.title,
   "Κράτηση μαθήματος": el.hero.bookSession,
+  "Κράτηση reformer": el.hero.bookSession,
   "Σχετικά με εμάς | Μερόπη Τίρρη": el.about.title,
   "Η Φιλοσοφία του Κέντρου μας": el.about.philosophyTitle,
+  "Reformer pilates με βάση τη φυσιοθεραπεία σε μικρά τμήματα — εξατομικευμένη φροντίδα, ασφαλής κίνηση και διαρκή αποτελέσματα.":
+    el.hero.description,
+  "Reformer pilates — κλείστε μάθημα στη Λεμεσό": el.hero.imageAlt,
+  "Φυσιοθεραπεύτρια και εκπαιδεύτρια Clinical Pilates. Μαθήματα reformer σε μικρά τμήματα — εξατομικευμένη φροντίδα και ασφαλής κίνηση. Κλείστε online.":
+    el.meta.description,
+  "Η Μερόπη Τίρρη είναι εξειδικευμένη Φυσιοθεραπεύτρια, απόφοιτος του Τμήματος Φυσιοθεραπείας του Διεθνούς Πανεπιστημίου της Ελλάδος (πρώην ΤΕΙ Θεσσαλονίκης). Από το 2015 ασκεί το επάγγελμα της φυσιοθεραπείας με απόλυτη αφοσίωση, επενδύοντας διαρκώς στη διεύρυνση των γνώσεών της μέσα από εξειδικευμένα σεμινάρια και μεταπτυχιακά προγράμματα υψηλού επιπέδου.":
+    el.about.intro,
+  "Υιοθετώντας τη φιλοσοφία των ολιγομελών τμημάτων (small groups), διασφαλίζουμε ότι κάθε ασκούμενος απολαμβάνει την προσωπική προσοχή και την αυστηρή επίβλεψη που του αρμόζει. Η ροή του μαθήματος προσαρμόζεται προκειμένου να εγγυάται τη σωστή και ασφαλή εκτέλεση κάθε κίνησης.":
+    el.about.philosophyParagraph2,
+  "Βασισμένο εξολοκλήρου στις αρχές της φυσιοθεραπείας, το πρόγραμμά μας είναι ιδανικό για:":
+    el.about.programIntro,
+  "Τρί, Πέμ, Σάβ · δείτε το ημερολόγιο": el.common.hours,
 };
 
 function refreshSupersededCopy(value: string, locale: Locale): string {
@@ -63,19 +76,33 @@ export function mergeLocaleContent(
     programBenefits: partial.about?.programBenefits ?? defaults.about.programBenefits,
   };
 
+  const meta = { ...defaults.meta, ...partial.meta };
+  const common = { ...defaults.common, ...partial.common };
+
   return {
-    meta: { ...defaults.meta, ...partial.meta },
+    meta: {
+      ...meta,
+      description: refreshSupersededCopy(meta.description, locale),
+    },
     hero: {
       ...hero,
       title: refreshSupersededCopy(hero.title, locale),
+      description: refreshSupersededCopy(hero.description, locale),
       bookSession: refreshSupersededCopy(hero.bookSession, locale),
+      imageAlt: refreshSupersededCopy(hero.imageAlt, locale),
     },
     about: {
       ...about,
       title: refreshSupersededCopy(about.title, locale),
+      intro: refreshSupersededCopy(about.intro, locale),
       philosophyTitle: refreshSupersededCopy(about.philosophyTitle, locale),
+      philosophyParagraph2: refreshSupersededCopy(about.philosophyParagraph2, locale),
+      programIntro: refreshSupersededCopy(about.programIntro, locale),
     },
-    common: { ...defaults.common, ...partial.common },
+    common: {
+      ...common,
+      hours: refreshSupersededCopy(common.hours, locale),
+    },
   };
 }
 
