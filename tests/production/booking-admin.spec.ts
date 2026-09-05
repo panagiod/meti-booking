@@ -196,7 +196,11 @@ test.describe("Production · logged-in booking, cancel, and admin guards", () =>
   test("admin pages redirect guests to login", async ({ page }) => {
     await page.goto("/admin");
     await expect(page).toHaveURL(/\/login/);
+    await page.goto("/admin/bookings");
+    await expect(page).toHaveURL(/\/login/);
     await page.goto("/admin/schedule");
+    await expect(page).toHaveURL(/\/login/);
+    await page.goto("/admin/closures");
     await expect(page).toHaveURL(/\/login/);
     await page.goto("/admin/content");
     await expect(page).toHaveURL(/\/login/);

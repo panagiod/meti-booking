@@ -69,14 +69,22 @@ export function AdminDashboardSchedule() {
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-          Studio schedule
+          This week
         </h2>
-        <Link
-          href="/admin/schedule"
-          className="text-sm text-[var(--primary)] hover:underline flex items-center gap-1"
-        >
-          Manage calendar <ArrowRight className="w-4 h-4" />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/bookings"
+            className="text-sm text-[var(--primary)] hover:underline flex items-center gap-1"
+          >
+            Open bookings <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            href="/admin/schedule"
+            className="text-sm text-[var(--text-muted)] hover:text-[var(--primary)] hover:underline"
+          >
+            Edit hours
+          </Link>
+        </div>
       </div>
       <AdminWeekBoard
         schedules={studio.schedules}

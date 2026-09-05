@@ -3,9 +3,36 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { LoadingPage } from "@/components/ui/loading";
 import { useAdminDashboard } from "@/lib/hooks";
-import { Users, Calendar, TrendingUp, ArrowRight } from "lucide-react";
+import { Users, Calendar, TrendingUp, ArrowRight, ClipboardList, Clock, Ban } from "lucide-react";
 import Link from "next/link";
 import { AdminDashboardSchedule } from "@/components/admin/admin-dashboard-schedule";
+
+const shortcuts = [
+  {
+    href: "/admin/bookings",
+    title: "Bookings",
+    description: "Who is coming and free a slot",
+    icon: ClipboardList,
+  },
+  {
+    href: "/admin/users",
+    title: "Clients",
+    description: "Names, phone, and session dates",
+    icon: Users,
+  },
+  {
+    href: "/admin/schedule",
+    title: "Hours",
+    description: "Weekly open days and times",
+    icon: Clock,
+  },
+  {
+    href: "/admin/closures",
+    title: "Closures",
+    description: "Holidays and extra days off",
+    icon: Ban,
+  },
+];
 
 export default function AdminDashboard() {
   const { data, isLoading } = useAdminDashboard();
@@ -16,6 +43,7 @@ export default function AdminDashboard() {
     totalUsers: 0,
     todayAppointments: 0,
     completedToday: 0,
+    upcomingAppointments: 0,
   };
 
   return (
@@ -39,7 +67,7 @@ export default function AdminDashboard() {
                   Book a session
                 </h3>
                 <p className="text-sm text-[var(--text-muted)]">
-                  Tue, Thu &amp; Sat · open the calendar to pick a time
+                  Open the public calendar to book for a client
                 </p>
               </div>
               <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all" />
@@ -48,9 +76,25 @@ export default function AdminDashboard() {
         </Card>
       </Link>
 
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {shortcuts.map((item) => (
+          <Link key={item.href} href={item.href}>
+            <Card className="h-full hover:shadow-md transition-all cursor-pointer group">
+              <CardContent className="p-4">
+                <item.icon className="w-5 h-5 text-[var(--primary)] mb-2" />
+                <p className="font-heading font-semibold text-[var(--text-primary)] group-hover:text-[var(--primary)]">
+                  {item.title}
+                </p>
+                <p className="text-xs text-[var(--text-muted)] mt-1">{item.description}</p>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+
       <AdminDashboardSchedule />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
@@ -87,10 +131,26 @@ export default function AdminDashboard() {
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-[var(--primary-light)]">
+                <ClipboardList className="w-5 h-5 text-[var(--primary)]" />
+              </div>
+              <div>
+                <p className="text-sm text-[var(--text-muted)]">Upcoming</p>
+                <p className="text-xl font-heading font-bold text-[var(--text-primary)]">
+                  {stats.upcomingAppointments}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-[var(--primary-light)]">
                 <Users className="w-5 h-5 text-[var(--primary)]" />
               </div>
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Total users</p>
+                <p className="text-sm text-[var(--text-muted)]">Clients</p>
                 <p className="text-xl font-heading font-bold text-[var(--text-primary)]">
                   {stats.totalUsers}
                 </p>

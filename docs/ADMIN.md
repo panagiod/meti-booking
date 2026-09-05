@@ -29,23 +29,20 @@ revokes existing sessions so they must sign in again. See
 
 | Page | URL | Purpose |
 |------|-----|---------|
-| Dashboard | `/admin` | Platform stats overview |
-| Advisors | `/admin/advisors` | Approve/suspend instructors (legacy) |
-| Verification | `/admin/verification` | Document review (legacy) |
-| Users | `/admin/users` | User list |
-| **Calendar** | `/admin/schedule` | **Weekly booking hours + block dates** |
-| **Website** | `/admin/content` | **Homepage text, images, contact info** |
-| Blog | `/admin/blog` | Blog posts (legacy) |
-| Billing | `/admin/invoices` | Invoices (legacy) |
-| Settings | `/admin/config` | Category pricing (legacy marketplace) |
+| **Overview** | `/admin` | This week’s board, today’s counts, shortcuts |
+| **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot, book for a client |
+| **Clients** | `/admin/users` | Client list with phone and session dates |
+| **Hours** | `/admin/schedule` | Weekly open days, times, lunch, gap |
+| **Closures** | `/admin/closures` | Cyprus holidays + extra days off |
+| **Website** | `/admin/content` | Homepage text, images, contact info |
 
-For MeTi Pilates day-to-day operations, use **Calendar** and **Website**.
+Legacy marketplace pages (`/admin/blog`, `/admin/invoices`, `/admin/config`) stay off the sidebar.
 
 ---
 
-## Calendar (`/admin/schedule`)
+## Hours (`/admin/schedule`)
 
-Controls when customers can book on the public `/book` page.
+Controls when customers can book on the public `/book` page. Holidays and extra days off are managed on **Closures** (`/admin/closures`).
 
 ### Default schedule (demo seed)
 
@@ -61,7 +58,7 @@ Controls when customers can book on the public `/book` page.
 3. **Set gap between slots** — minutes between session start times (default 10)
 4. **Set lunch break** — optional `lunch start` / `lunch end` to block mid-day slots
 5. **Save schedule** — updates public booking immediately
-6. **Block dates** — holidays/closures; blocked days hidden from `/book`  
+6. **Block dates** — use **Closures**; blocked days are hidden from `/book`.  
    For a **single day**, set the same **From** and **To** date.
 
 ### APIs (admin auth required)
@@ -73,6 +70,12 @@ Controls when customers can book on the public `/book` page.
 | `GET/POST/DELETE` | `/api/admin/studio/blocked-times` |
 
 Blocked times are respected by `GET /api/slots`.
+
+---
+
+## Closures (`/admin/closures`)
+
+Cyprus public holidays close the studio automatically. Add extra vacation or days off here. For a **single day**, set the same **From** and **To** date.
 
 ---
 

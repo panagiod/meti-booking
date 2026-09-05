@@ -46,7 +46,11 @@ Open [http://localhost:3000](http://localhost:3000) → **Book**.
 
 | Page | URL | Purpose |
 |------|-----|---------|
-| **Calendar** | [/admin/schedule](http://localhost:3000/admin/schedule) | Open days, hours, lunch breaks, block holidays |
+| **Overview** | [/admin](http://localhost:3000/admin) | This week’s board and today’s sessions |
+| **Bookings** | [/admin/bookings](http://localhost:3000/admin/bookings) | Upcoming sessions and free a slot |
+| **Clients** | [/admin/users](http://localhost:3000/admin/users) | Client names, phone, session dates |
+| **Hours** | [/admin/schedule](http://localhost:3000/admin/schedule) | Weekly open days and times |
+| **Closures** | [/admin/closures](http://localhost:3000/admin/closures) | Cyprus holidays and extra days off |
 | **Website** | [/admin/content](http://localhost:3000/admin/content) | Hero text, images, contact info |
 
 See [docs/ADMIN.md](docs/ADMIN.md) for details.

@@ -12,9 +12,10 @@ import {
   Menu,
   X,
   Shield,
-  CalendarDays,
-  CalendarPlus,
+  Clock,
+  Ban,
   LayoutTemplate,
+  ClipboardList,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -22,31 +23,30 @@ import { Logo } from "@/components/ui/logo";
 
 const navigation = [
   {
-    name: "Dashboard",
-    href: "/admin",
-    icon: LayoutDashboard,
+    label: "Studio",
+    items: [
+      { name: "Overview", href: "/admin", icon: LayoutDashboard },
+      { name: "Bookings", href: "/admin/bookings", icon: ClipboardList },
+      { name: "Clients", href: "/admin/users", icon: Users },
+    ],
   },
   {
-    name: "Clients",
-    href: "/admin/users",
-    icon: Users,
+    label: "Calendar",
+    items: [
+      { name: "Hours", href: "/admin/schedule", icon: Clock },
+      { name: "Closures", href: "/admin/closures", icon: Ban },
+    ],
   },
   {
-    name: "Book a session",
-    href: "/book",
-    icon: CalendarPlus,
-  },
-  {
-    name: "Schedule",
-    href: "/admin/schedule",
-    icon: CalendarDays,
-  },
-  {
-    name: "Website",
-    href: "/admin/content",
-    icon: LayoutTemplate,
+    label: "Site",
+    items: [{ name: "Website", href: "/admin/content", icon: LayoutTemplate }],
   },
 ];
+
+function isNavActive(pathname: string, href: string) {
+  if (href === "/admin") return pathname === "/admin";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 interface AdminShellProps {
   children: React.ReactNode;
@@ -69,7 +69,6 @@ export default function AdminShell({ children, user }: AdminShellProps) {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -77,7 +76,6 @@ export default function AdminShell({ children, user }: AdminShellProps) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-64 bg-[var(--secondary)] text-white transform transition-transform duration-200 ease-in-out lg:translate-x-0",
@@ -85,7 +83,6 @@ export default function AdminShell({ children, user }: AdminShellProps) {
         )}
       >
         <div className="flex flex-col h-full">
-          {/* Logo */}
           <div className="flex items-center justify-between h-16 px-4 border-b border-white/10">
             <Link href="/" className="flex items-center gap-2">
               <Logo className="h-9 w-auto" />
@@ -98,45 +95,49 @@ export default function AdminShell({ children, user }: AdminShellProps) {
             </button>
           </div>
 
-          {/* Admin badge */}
           <div className="px-4 py-3 border-b border-white/10">
             <div className="flex items-center gap-2 text-sm">
               <Shield className="w-4 h-4 text-[var(--accent)]" />
-              <span className="text-white/90">Admin Dashboard</span>
+              <span className="text-white/90">Studio admin</span>
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-            {navigation.map((item) => {
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/admin" && pathname.startsWith(item.href));
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-white/10 text-white"
-                      : "text-white/70 hover:bg-white/5 hover:text-white"
-                  )}
-                >
-                  <item.icon
-                    className={cn(
-                      "w-5 h-5",
-                      isActive ? "text-[var(--accent)]" : "text-white/50"
-                    )}
-                  />
-                  {item.name}
-                </Link>
-              );
-            })}
+          <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
+            {navigation.map((group) => (
+              <div key={group.label}>
+                <p className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/40">
+                  {group.label}
+                </p>
+                <div className="space-y-1">
+                  {group.items.map((item) => {
+                    const isActive = isNavActive(pathname, item.href);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setSidebarOpen(false)}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                          isActive
+                            ? "bg-white/10 text-white"
+                            : "text-white/70 hover:bg-white/5 hover:text-white"
+                        )}
+                      >
+                        <item.icon
+                          className={cn(
+                            "w-5 h-5",
+                            isActive ? "text-[var(--accent)]" : "text-white/50"
+                          )}
+                        />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
 
-          {/* User section */}
           <div className="p-4 border-t border-white/10">
             <div className="flex items-center gap-3 mb-3">
               {user.image ? (
@@ -171,9 +172,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
         </div>
       </aside>
 
-      {/* Main content */}
       <div className="lg:pl-64">
-        {/* Top bar */}
         <header className="sticky top-0 z-30 h-16 bg-[var(--surface)]/80 backdrop-blur-lg border-b border-[var(--border)]">
           <div className="flex items-center justify-between h-full px-4">
             <button
@@ -182,16 +181,13 @@ export default function AdminShell({ children, user }: AdminShellProps) {
             >
               <Menu className="w-5 h-5" />
             </button>
-
             <div className="flex-1 lg:flex-none" />
-
             <div className="flex items-center gap-4">
               <ThemeToggle />
             </div>
           </div>
         </header>
 
-        {/* Page content */}
         <main className="p-4 md:p-6 lg:p-8">{children}</main>
       </div>
     </div>

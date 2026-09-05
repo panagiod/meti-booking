@@ -23,7 +23,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **Public product:** MeTi Pilates — reformer-only studio booking
 - **Repo name:** `meti-booking` (legacy Meti advisory marketplace)
 - **Customer routes:** `/`, `/book`, `/login`, `/checkout`
-- **Admin (MeTi):** `/admin/schedule`, `/admin/content`
+- **Admin (MeTi):** `/admin`, `/admin/bookings`, `/admin/users`, `/admin/schedule`, `/admin/closures`, `/admin/content`
 - **Currency:** EUR · **Timezone:** Asia/Nicosia · **Booking window:** 8 weeks
 - **Legacy:** `/services`, `/advisor/*`, LiveKit video
 
@@ -42,7 +42,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 |------|-------|
 | **Live homepage copy/images** | Admin `/admin/content` → DB `studio_content` |
 | **Code copy defaults** | `src/i18n/locales/en.ts`, `el.ts` |
-| **Live booking schedule** | Admin `/admin/schedule` → `advisor_schedule` |
+| **Live booking schedule** | Admin `/admin/schedule` (hours) + `/admin/closures` (days off) → `advisor_schedule` |
 | **Schedule code defaults** | `src/lib/studio-schedule.ts`, `demo-setup.ts` |
 | Slot capacity / booking window | `src/lib/site-config.ts` |
 | Timezone / slot times | `src/lib/timezone.ts` |

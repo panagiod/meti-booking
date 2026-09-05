@@ -20,7 +20,7 @@
 | **Booking window** | **8 weeks ahead** (`bookingWeeksAhead`) |
 | **Lead time** | **2 hours** minimum before first bookable slot |
 | **Weekly schedule** | **Admin-configurable** — demo seed: Tue, Thu, Sat |
-| **Admin calendar** | `/admin/schedule` — days, hours, lunch break, gap, blocked dates |
+| **Admin calendar** | Hours `/admin/schedule` + closures `/admin/closures` |
 | **Admin CMS** | `/admin/content` — text, images, contact (DB-backed) |
 | **Greek typography** | Noto Sans (body) + GFS Didot (headlines) when `lang="el"` |
 | **Greek dates** | Nominative month names (Σεπτέμβριος) via `date-locale.ts` |
@@ -52,7 +52,11 @@
 
 | Page | URL | What it manages |
 |------|-----|-----------------|
-| **Calendar** | `/admin/schedule` | Weekly open days/hours, lunch break, gap, block holidays |
+| **Overview** | `/admin` | This week’s board and today’s session counts |
+| **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot |
+| **Clients** | `/admin/users` | Client list with phone and session dates |
+| **Hours** | `/admin/schedule` | Weekly open days/hours, lunch break, gap |
+| **Closures** | `/admin/closures` | Cyprus holidays and extra days off |
 | **Website** | `/admin/content` | Hero copy EN/EL, SEO, images, name, address, email, price |
 
 Full admin guide: **[docs/ADMIN.md](./ADMIN.md)**
@@ -115,7 +119,9 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 
 | File | Purpose |
 |------|---------|
-| `src/app/(platform)/admin/schedule/page.tsx` | Calendar UI (lunch/gap fields) |
+| `src/app/(platform)/admin/bookings/page.tsx` | Upcoming bookings and free a slot |
+| `src/app/(platform)/admin/schedule/page.tsx` | Weekly hours UI (lunch/gap fields) |
+| `src/app/(platform)/admin/closures/page.tsx` | Holidays and extra days off |
 | `src/app/(platform)/admin/content/page.tsx` | Website CMS UI |
 | `src/app/api/admin/studio/*` | Schedule, content, upload APIs |
 
@@ -210,7 +216,7 @@ Password: **`Demo1234!`** locally (override with `DEMO_PASSWORD`; not printed in
 |------|-------|-----|
 | Client | `client@demo.meti-booking.local` | Book at `/book` |
 | Instructor | `instructor@meti-pilates.studio` | `/advisor` |
-| Admin | `admin@demo.meti-booking.local` | `/admin/schedule`, `/admin/content` |
+| Admin | `admin@demo.meti-booking.local` | `/admin`, `/admin/bookings`, `/admin/schedule`, `/admin/closures`, `/admin/content` |
 
 ### `pnpm demo:setup` seeds
 
@@ -299,7 +305,11 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 
 | Route | Description |
 |-------|-------------|
-| `/admin/schedule` | Calendar management |
+| `/admin` | Overview |
+| `/admin/bookings` | Upcoming bookings |
+| `/admin/users` | Clients |
+| `/admin/schedule` | Weekly hours |
+| `/admin/closures` | Holidays and extra days off |
 | `/admin/content` | Website CMS |
 
 ### Legacy
@@ -333,7 +343,7 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 | Greek nominative months | ✅ Done |
 | OG image | ✅ Done |
 | Admin CMS | ✅ `/admin/content` |
-| Admin calendar | ✅ `/admin/schedule` |
+| Admin calendar | ✅ `/admin/schedule` (hours) + `/admin/closures` |
 
 ### GitHub issues
 

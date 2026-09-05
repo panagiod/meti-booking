@@ -57,7 +57,7 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
   let sent = false;
   if (apt.client.email) sent = (await sendBookingConfirmedEmail(clientEmail, base)) || sent;
 
-  const studioBase = { ...base, appointmentUrl: `${getSiteUrl()}/admin/schedule` };
+  const studioBase = { ...base, appointmentUrl: `${getSiteUrl()}/admin/bookings` };
 
   for (const studioEmail of studioEmails) {
     sent = (await sendNewBookingEmail(studioEmail, studioBase)) || sent;
@@ -92,7 +92,7 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
 
   const studioEmails = getStudioNotificationEmails();
   const instructorEmail = apt.instructor.user.email?.trim().toLowerCase();
-  const studioBase = { ...base, appointmentUrl: `${getSiteUrl()}/admin/schedule` };
+  const studioBase = { ...base, appointmentUrl: `${getSiteUrl()}/admin/bookings` };
 
   for (const studioEmail of studioEmails) {
     sent = (await sendReminderEmail(studioEmail, studioBase, "instructor")) || sent;
@@ -139,7 +139,7 @@ export async function notifyAppointmentCancelled(
 
   if (options.cancelledBy !== "client") return sent;
 
-  const studioBase = { ...base, appointmentUrl: `${getSiteUrl()}/admin/schedule` };
+  const studioBase = { ...base, appointmentUrl: `${getSiteUrl()}/admin/bookings` };
   for (const studioEmail of studioEmails) {
     sent = (await sendBookingCancelledStudioEmail(studioEmail, studioBase)) || sent;
   }
