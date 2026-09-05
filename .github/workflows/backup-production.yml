@@ -43,8 +43,9 @@ jobs:
           PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
           PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
         run: |
-          python3 -m pip install --quiet paramiko
-          python3 .github/scripts/ssh-meti-cmd.py METI_BACKUP > "$RUNNER_TEMP/backup.txt"
+          npm install --silent --no-fund --no-audit --prefix "$RUNNER_TEMP/sshmod" ssh2
+          NODE_PATH="$RUNNER_TEMP/sshmod/node_modules" node .github/scripts/ssh-meti-cmd.mjs METI_BACKUP \
+            > "$RUNNER_TEMP/backup.txt"
           test -s "$RUNNER_TEMP/backup.txt"
 
           awk '/^METI_BACKUP_BEGIN$/{p=1;next} /^METI_BACKUP_END$/{p=0} p' \
