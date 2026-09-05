@@ -36,55 +36,19 @@ jobs:
           PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
           PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
           PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
-          OPS_REPO: ${{ secrets.OPS_REPO }}
-          OPS_REPO_TOKEN: ${{ secrets.OPS_REPO_TOKEN }}
         run: |
           missing=0
           if [ -z "$PRODUCTION_HOST" ]; then echo "::error::Missing PRODUCTION_HOST"; missing=1; fi
           if [ -z "$PRODUCTION_USER" ]; then echo "::error::Missing PRODUCTION_USER"; missing=1; fi
           if [ -z "$PRODUCTION_SSH_KEY" ]; then echo "::error::Missing PRODUCTION_SSH_KEY"; missing=1; fi
-          if [ -z "$OPS_REPO_TOKEN" ]; then echo "::error::Missing OPS_REPO_TOKEN — create the private ops repo first"; missing=1; fi
           if [ "$missing" -eq 1 ]; then exit 1; fi
 
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download encrypted backup
-        env:
-          OPS_REPO: ${{ secrets.OPS_REPO }}
-          OPS_REPO_TOKEN: ${{ secrets.OPS_REPO_TOKEN }}
-          BACKUP_DAY: ${{ inputs.backup_day }}
-        run: |
-          REPO="${OPS_REPO:-panagiod/meti-studio-ops}"
-          git clone --depth 1 "https://x-access-token:${OPS_REPO_TOKEN}@github.com/${REPO}.git" "$RUNNER_TEMP/ops"
-          if [ "$BACKUP_DAY" = "latest" ]; then
-            SRC="$RUNNER_TEMP/ops/backups/latest.db.enc"
-          else
-            SRC="$RUNNER_TEMP/ops/backups/${BACKUP_DAY}.db.enc"
-          fi
-          if [ ! -s "$SRC" ]; then
-            echo "::error::No backup at backups/${BACKUP_DAY}.db.enc in ${REPO}"
-            exit 1
-          fi
-          cp "$SRC" "$RUNNER_TEMP/backup.db.enc"
-          BYTES="$(wc -c < "$RUNNER_TEMP/backup.db.enc" | tr -d ' ')"
-          if [ "${BYTES:-0}" -lt 64 ]; then
-            echo "::error::Downloaded backup is too small"
-            exit 1
-          fi
-          echo "Downloaded backups/${BACKUP_DAY}.db.enc (${BYTES} bytes)"
-          rm -rf "$RUNNER_TEMP/ops"
-
-      - name: Restore on the live VPS
-        env:
-          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
-          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
-          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
-        run: |
-          mkdir -p "$HOME/.ssh"
-          chmod +x .github/scripts/write-ssh-key.sh
-          .github/scripts/write-ssh-key.sh "$HOME/.ssh/restore_key"
-          ssh-keyscan -H "$PRODUCTION_HOST" >> "$HOME/.ssh/known_hosts"
-          base64 "$RUNNER_TEMP/backup.db.enc" | \
-            ssh -i "$HOME/.ssh/restore_key" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
-              "${PRODUCTION_USER}@${PRODUCTION_HOST}" METI_RESTORE
+      - name: Restore from the private ops repo
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          port: 22
+          command_timeout: 15m
+          script: METI_RESTORE ${{ inputs.backup_day }}

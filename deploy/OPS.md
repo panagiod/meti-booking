@@ -72,12 +72,20 @@ After that, `meti-studio-ops` contains:
 
 ## Restore on the same machine
 
+The live VPS already has `BACKUP_ENCRYPTION_KEY` and `OPS_REPO_TOKEN` in `.env`. It pulls the encrypted file from `meti-studio-ops` itself.
+
 **Actions → Restore Production → Run workflow**
 
 - Backup: `latest` or `YYYY-MM-DD`
 - Confirm: `RESTORE`
 
-The Action downloads the encrypted file from the private repo and restores it on the current VPS. The decrypt key already lives in the server `.env`.
+Or on the server:
+
+```bash
+ssh root@2.29.22.46
+cd ~/meti-booking
+CONFIRM=RESTORE ./deploy/restore-from-ops.sh latest
+```
 
 ## Rebuild if the primary VPS is destroyed
 

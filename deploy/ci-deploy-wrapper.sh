@@ -20,15 +20,11 @@ if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_BACKUP" || "${SSH_ORIGINAL_COMMAND:-}
 fi
 
 if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_RESTORE" || "${SSH_ORIGINAL_COMMAND:-}" == *METI_RESTORE* ]]; then
-  tmp="$(mktemp)"
-  cleanup_restore() { rm -f "$tmp"; }
-  trap cleanup_restore EXIT
-  base64 -d >"$tmp"
-  if [[ ! -s "$tmp" ]]; then
-    echo "ERROR: empty restore payload" >&2
-    exit 1
+  day="latest"
+  if [[ "${SSH_ORIGINAL_COMMAND}" =~ METI_RESTORE[[:space:]]+([0-9]{4}-[0-9]{2}-[0-9]{2}|latest) ]]; then
+    day="${BASH_REMATCH[1]}"
   fi
-  CONFIRM=RESTORE "$REPO/deploy/restore-studio-data.sh" "$tmp"
+  CONFIRM=RESTORE "$REPO/deploy/restore-from-ops.sh" "$day"
   exit 0
 fi
 

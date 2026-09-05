@@ -33,7 +33,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Schema changes: `pnpm db:migrate` + update `demo-setup.ts`
 - After seed changes: `pnpm demo:setup`
 - Production: set `ENCRYPTION_KEY`, `STUDIO_TIMEZONE`, `CRON_SECRET`
-- **Private ops repo:** encrypted DB + `.env` backups, restore/rebuild Actions — [deploy/OPS.md](deploy/OPS.md)
+- **Private ops repo:** encrypted DB + `.env` backups — [deploy/OPS.md](deploy/OPS.md)
+- **If production data is lost, follow Disaster recovery below** — do not invent a new restore path
 - **Hetzner VPS:** `SELF_HOSTED=1`, use `./deploy/deploy.sh` — see [docs/HOSTING.md](docs/HOSTING.md)
 - **Vercel:** `BLOB_READ_WRITE_TOKEN` for admin uploads
 
@@ -56,6 +57,36 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | MP encryption | `src/lib/encryption.ts`, `src/lib/advisor-mp.ts` |
 | Checkout pricing | `src/app/api/checkout/quote/route.ts` |
 | **Production deploy** | `deploy/HETZNER.md`, `docs/HOSTING.md` |
+| **Backup / restore** | [deploy/OPS.md](deploy/OPS.md) |
+
+## Disaster recovery
+
+Full runbook: **[deploy/OPS.md](deploy/OPS.md)**. Private vault: `panagiod/meti-studio-ops`.
+
+**Same VPS (database wiped or bad deploy):**
+
+1. GitHub → `panagiod/meti-booking` → Actions → **Restore Production**
+2. Backup: `latest` (or `YYYY-MM-DD`)
+3. Confirm: `RESTORE`
+4. The VPS pulls `backups/*.db.enc` from `meti-studio-ops` and decrypts with `BACKUP_ENCRYPTION_KEY` already in `~/meti-booking/.env`
+
+Manual on the live server:
+
+```bash
+ssh root@2.29.22.46
+cd ~/meti-booking
+CONFIRM=RESTORE ./deploy/restore-from-ops.sh latest
+```
+
+**VPS destroyed (new machine):**
+
+1. New Ubuntu VPS + unrestricted SSH key
+2. Secrets on `meti-booking`: `RECOVERY_HOST`, `RECOVERY_USER`, `RECOVERY_SSH_KEY`, `BACKUP_ENCRYPTION_KEY`, `OPS_REPO_TOKEN`
+3. Actions → **Rebuild Production** → Confirm `REBUILD`
+4. Point `meti-pilates.com` A record at the new IP
+5. `./deploy/setup-cicd.sh` and update `PRODUCTION_HOST`
+
+Do not `--force-reset` or cancel upcoming bookings. Do not commit plaintext `.env` or `data.db`.
 
 ## Demo
 

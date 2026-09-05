@@ -21,11 +21,11 @@ The public repo must not keep those files in plaintext. Encrypted copies go to t
 
 GitHub → **Actions → Restore Production** → backup `latest` → confirm `RESTORE`
 
-Or on the server, after downloading `latest.db.enc` from the private repo:
+Or on the server:
 
 ```bash
 cd ~/meti-booking
-CONFIRM=RESTORE ./deploy/restore-studio-data.sh /tmp/meti-restore.db.enc
+CONFIRM=RESTORE ./deploy/restore-from-ops.sh latest
 ```
 
 The restore script decrypts with `BACKUP_ENCRYPTION_KEY`, saves the current database first, then replaces `data.db`.

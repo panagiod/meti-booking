@@ -56,7 +56,7 @@ fi
 # Cron (idempotent — rewrites /etc/cron.d/meti-booking)
 echo "==> Installing cron jobs..."
 ./deploy/setup-cron.sh || true
-chmod +x deploy/backup-studio-data.sh deploy/restore-studio-data.sh deploy/ensure-backup-key.sh deploy/ci-deploy-wrapper.sh deploy/write-ops-inventory.sh deploy/bootstrap-from-ops.sh deploy/setup-ops-repo.sh
+chmod +x deploy/backup-studio-data.sh deploy/restore-studio-data.sh deploy/restore-from-ops.sh deploy/publish-ops-from-server.sh deploy/ensure-backup-key.sh deploy/ci-deploy-wrapper.sh deploy/write-ops-inventory.sh deploy/bootstrap-from-ops.sh deploy/setup-ops-repo.sh
 ./deploy/ensure-backup-key.sh || true
 
 # Wait for app after deploy-lite restart
