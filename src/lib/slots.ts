@@ -1,6 +1,11 @@
-import { addDays, format, startOfDay, isSameDay, getDay, isWithinInterval } from "date-fns";
+import { addDays, format, startOfDay, getDay } from "date-fns";
 import { enUS } from "date-fns/locale";
-import { localToUTCDate, studioLocalMinutesFromUtc } from "@/lib/timezone";
+import {
+  localToUTCDate,
+  studioDateStrFromUtc,
+  studioDayBoundsUTC,
+  studioLocalMinutesFromUtc,
+} from "@/lib/timezone";
 import { siteConfig } from "@/lib/site-config";
 
 export interface Schedule {
@@ -28,7 +33,7 @@ export interface Service {
 export interface BlockedTime {
   startDate: Date;
   endDate: Date;
-  isAllDay: boolean;
+  isAllDay?: boolean;
 }
 
 export interface TimeSlot {
@@ -71,33 +76,37 @@ export function countBookingsAtSlotTime(
   ).length;
 }
 
+function asDate(value: Date | string): Date {
+  return value instanceof Date ? value : new Date(value);
+}
+
+/** True when an admin all-day block overlaps this studio calendar date. */
+export function isStudioDateBlocked(dateStr: string, blockedTimes: BlockedTime[]): boolean {
+  const { start, end } = studioDayBoundsUTC(dateStr);
+  return blockedTimes.some((bt) => {
+    if (bt.isAllDay === false) return false;
+    const btStart = asDate(bt.startDate);
+    const btEnd = asDate(bt.endDate);
+    return btStart <= end && btEnd >= start;
+  });
+}
+
 function isSlotBlocked(
-  date: Date,
+  dateStr: string,
   slotStartMinutes: number,
   slotEndMinutes: number,
   blockedTimes: BlockedTime[]
 ): boolean {
-  const slotDate = startOfDay(date);
-  
+  const { start, end } = studioDayBoundsUTC(dateStr);
   return blockedTimes.some((bt) => {
-    const btStart = new Date(bt.startDate);
-    const btEnd = new Date(bt.endDate);
-    
-    if (bt.isAllDay) {
-      // All-day block: check if date falls within range
-      return isWithinInterval(slotDate, { start: startOfDay(btStart), end: startOfDay(btEnd) });
-    } else {
-      // Time-specific block: check for overlap
-      const btStartMinutes = btStart.getHours() * 60 + btStart.getMinutes();
-      const btEndMinutes = btEnd.getHours() * 60 + btEnd.getMinutes();
-      
-      // Check if same day and overlapping
-      if (isSameDay(slotDate, btStart) || isSameDay(slotDate, btEnd)) {
-        return slotStartMinutes < btEndMinutes && slotEndMinutes > btStartMinutes;
-      }
-      
-      return false;
-    }
+    const btStart = asDate(bt.startDate);
+    const btEnd = asDate(bt.endDate);
+    if (btStart > end || btEnd < start) return false;
+    if (bt.isAllDay !== false) return true;
+    if (studioDateStrFromUtc(btStart) !== studioDateStrFromUtc(btEnd)) return true;
+    const blockStart = studioLocalMinutesFromUtc(btStart);
+    const blockEnd = studioLocalMinutesFromUtc(btEnd);
+    return slotStartMinutes < blockEnd && slotEndMinutes > blockStart;
   });
 }
 
@@ -116,6 +125,7 @@ export function generateAvailableSlots(
   const lunchS = schedule.lunchStart ? timeToMinutes(schedule.lunchStart) : null;
   const lunchE = schedule.lunchEnd ? timeToMinutes(schedule.lunchEnd) : null;
   const gap = schedule.gapMinutes;
+  const dateStr = slotDate ? studioDateStrFromUtc(slotDate) : null;
 
   let current = start;
 
@@ -136,17 +146,14 @@ export function generateAvailableSlots(
     const booked = countBookingsAtSlotTime(current, existingAppointments);
     const remaining = Math.max(slotCapacity - booked, 0);
 
-    // Check if slot conflicts with blocked times
-    const hasBlockedConflict = slotDate
-      ? isSlotBlocked(slotDate, current, current + serviceDuration, blockedTimes)
+    const hasBlockedConflict = dateStr
+      ? isSlotBlocked(dateStr, current, current + serviceDuration, blockedTimes)
       : false;
 
     // Minimum lead time: hide slots that start before minStartTime
     const isTooSoon = (() => {
-      if (!slotDate || !minStartTime) return false;
-      const y = slotDate.getFullYear();
-      const m = slotDate.getMonth() + 1;
-      const d = slotDate.getDate();
+      if (!dateStr || !minStartTime) return false;
+      const [y, m, d] = dateStr.split("-").map(Number);
       const slotStart = localToUTCDate(y, m, d, Math.floor(current / 60), current % 60);
       return slotStart.getTime() < minStartTime.getTime();
     })();
@@ -156,7 +163,7 @@ export function generateAvailableSlots(
       available: remaining > 0 && !hasBlockedConflict && !isTooSoon,
       booked,
       capacity: slotCapacity,
-      remaining,
+      remaining: hasBlockedConflict ? 0 : remaining,
     });
 
     current += serviceDuration + gap;
@@ -183,13 +190,7 @@ export function getAvailableDates(
     // Find schedule for this day (0=Sun, 1=Mon, etc.)
     const daySchedule = schedules.find((s) => s.dayOfWeek === dayOfWeek);
 
-    // Check if entire day is blocked
-    const isDayBlocked = blockedTimes.some((bt) => {
-      if (!bt.isAllDay) return false;
-      const btStart = startOfDay(new Date(bt.startDate));
-      const btEnd = startOfDay(new Date(bt.endDate));
-      return isWithinInterval(date, { start: btStart, end: btEnd });
-    });
+    const isDayBlocked = isStudioDateBlocked(format(date, "yyyy-MM-dd"), blockedTimes);
 
     if (daySchedule && !isDayBlocked) {
       const slots = generateAvailableSlots(

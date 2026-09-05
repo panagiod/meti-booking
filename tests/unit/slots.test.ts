@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { generateAvailableSlots } from "@/lib/slots";
+import { generateAvailableSlots, isStudioDateBlocked } from "@/lib/slots";
 import type { Schedule } from "@/lib/slots";
-import { localToUTCDate } from "@/lib/timezone";
+import { localToUTCDate, parseStudioDateInput } from "@/lib/timezone";
 
 const baseSchedule: Schedule = {
   dayOfWeek: 1,
@@ -116,16 +116,45 @@ describe("lib/slots — generateAvailableSlots", () => {
     expect(slots.find((s) => s.time === "11:00")?.available).toBe(true);
   });
 
+  it("blocks a Cyprus all-day admin closure so no slot stays open", () => {
+    const start = parseStudioDateInput("2026-09-12", false);
+    const end = parseStudioDateInput("2026-09-12", true);
+    expect(start && end).toBeTruthy();
+    expect(isStudioDateBlocked("2026-09-12", [{ startDate: start!, endDate: end!, isAllDay: true }])).toBe(
+      true
+    );
+    expect(isStudioDateBlocked("2026-09-10", [{ startDate: start!, endDate: end!, isAllDay: true }])).toBe(
+      false
+    );
+
+    const slots = generateAvailableSlots(
+      {
+        dayOfWeek: 6,
+        startTime: "08:00",
+        endTime: "13:30",
+        lunchStart: "10:15",
+        lunchEnd: "10:30",
+        gapMinutes: 0,
+      },
+      45,
+      [],
+      [{ startDate: start!, endDate: end!, isAllDay: true }],
+      new Date("2026-09-12T12:00:00")
+    );
+    expect(slots.length).toBeGreaterThan(0);
+    expect(slots.every((slot) => !slot.available && slot.remaining === 0)).toBe(true);
+  });
+
   it("hour-range block marks only overlapping slots as unavailable", () => {
-    const day = new Date(2026, 7, 17, 12, 0, 0);
+    const day = new Date("2026-08-17T12:00:00Z");
     const slots = generateAvailableSlots(
       baseSchedule,
       60,
       [],
       [
         {
-          startDate: new Date(2026, 7, 17, 9, 30, 0),
-          endDate: new Date(2026, 7, 17, 10, 30, 0),
+          startDate: localToUTCDate(2026, 8, 17, 9, 30),
+          endDate: localToUTCDate(2026, 8, 17, 10, 30),
           isAllDay: false,
         },
       ],

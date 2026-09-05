@@ -126,7 +126,9 @@ export default function BookPage() {
   const mergedDates = useMemo(() => {
     return availableDates.map((day) => {
       const real = apiSlots[day.dateStr];
-      if (!real) return day;
+      if (!real) {
+        return { ...day, slots: [], hasAvailability: false };
+      }
       return { ...day, slots: real.slots, hasAvailability: real.hasAvailability };
     });
   }, [availableDates, apiSlots]);
@@ -148,6 +150,16 @@ export default function BookPage() {
     setSelectedTime(null);
     setStep("time");
   }, [didAutoOpen, step, nextOpenDay]);
+
+  useEffect(() => {
+    if (!selectedDate) return;
+    const merged = mergedDates.find((day) => day.dateStr === selectedDate.dateStr);
+    if (merged && !merged.hasAvailability) {
+      setSelectedDate(null);
+      setSelectedTime(null);
+      setStep("date");
+    }
+  }, [mergedDates, selectedDate]);
 
   const handleDateSelect = (date: DaySlots) => {
     setSelectedDate(date);

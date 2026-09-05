@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { generateAvailableSlots, type TimeSlot } from "@/lib/slots";
+import { generateAvailableSlots, isStudioDateBlocked, type TimeSlot } from "@/lib/slots";
 import { getDayOfWeekForStudioDate, studioDayBoundsUTC } from "@/lib/timezone";
 import { siteConfig } from "@/lib/site-config";
 import { resolveBookingLeadHours } from "@/lib/booking-config";
@@ -125,6 +125,11 @@ export async function getSlotsForDates(
     const dayBlocked = blockedTimes.filter(
       (bt: BlockedSlot) => bt.startDate <= endOfDay && bt.endDate >= startOfDay
     );
+
+    if (isStudioDateBlocked(date, dayBlocked)) {
+      result[date] = [];
+      continue;
+    }
 
     const scheduleData = {
       dayOfWeek: daySchedule.dayOfWeek,

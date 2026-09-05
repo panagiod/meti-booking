@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { generateAvailableSlots } from "@/lib/slots";
+import { generateAvailableSlots, isStudioDateBlocked } from "@/lib/slots";
 import { resolveBookingLeadHours } from "@/lib/booking-config";
 import { siteConfig } from "@/lib/site-config";
 import {
@@ -92,6 +92,10 @@ export async function validateBookableSlot(params: {
       isAllDay: bt.isAllDay,
     })
   );
+
+  if (isStudioDateBlocked(dateStr, blockedTimes)) {
+    throw new SlotBookingError("This date is blocked and cannot be booked", "SLOT_UNAVAILABLE");
+  }
 
   const leadHours = resolveBookingLeadHours(instructorProfile.bookingLeadHours);
   const minStartTime =
