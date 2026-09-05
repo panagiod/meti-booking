@@ -50,15 +50,24 @@ Every push to `main` runs `./deploy/deploy-lite.sh` via GitHub Actions — see [
 
 ## Backup
 
+The live SQLite file (`/var/lib/meti-booking/data.db`) holds the studio schedule, blocked days, and customer bookings.
+
+- **Every night at 02:00 UTC** the server writes an encrypted local copy.
+- **GitHub Actions** also saves that encrypted copy to the `backups` branch (the repo is public, so the file is encrypted).
+- Manual backup: `./deploy/backup-studio-data.sh`
+
+Restore (this replaces the live database):
+
 ```bash
-./deploy/backup-db-lite.sh
+cd ~/meti-booking
+git fetch origin backups
+git show origin/backups:backups/latest.db.enc > /tmp/meti-restore.db.enc
+CONFIRM=RESTORE ./deploy/restore-studio-data.sh /tmp/meti-restore.db.enc
 ```
 
-Add to crontab:
+Keep `BACKUP_ENCRYPTION_KEY` from `.env` in a password manager. Without it, GitHub backups cannot be decrypted.
 
-```cron
-0 4 * * * /root/meti-booking/deploy/backup-db-lite.sh >> /var/log/meti-booking/backup.log 2>&1
-```
+Full notes: [BACKUP.md](./BACKUP.md)
 
 ## Switching from Docker deploy
 

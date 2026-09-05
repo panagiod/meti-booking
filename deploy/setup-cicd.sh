@@ -59,7 +59,17 @@ echo "----------------------------------------------"
 cat "$KEY"
 echo "----------------------------------------------"
 echo ""
+if [[ -f "$ROOT/.env" ]] && grep -q '^BACKUP_ENCRYPTION_KEY=' "$ROOT/.env"; then
+  echo "BACKUP_ENCRYPTION_KEY"
+  echo "(keep this in a password manager — needed to restore backups if the server is lost)"
+  echo "----------------------------------------------"
+  grep '^BACKUP_ENCRYPTION_KEY=' "$ROOT/.env" | cut -d= -f2-
+  echo "----------------------------------------------"
+  echo ""
+fi
+
 echo "After adding secrets, push to main or run:"
 echo "  GitHub → Actions → Deploy Production → Run workflow"
 echo ""
+echo "Daily encrypted backups are saved to the GitHub backups branch."
 echo "Deploy logs on this server: /var/log/meti-booking/deploy.log"

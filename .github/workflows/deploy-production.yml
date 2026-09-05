@@ -57,3 +57,9 @@ jobs:
         run: |
           echo "Deployed commit ${{ github.sha }} to production."
           echo "Site: https://meti-pilates.com"
+
+  backup:
+    name: Backup after deploy
+    needs: deploy
+    uses: ./.github/workflows/backup-production.yml
+    secrets: inherit

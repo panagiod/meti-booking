@@ -138,11 +138,7 @@ git pull origin main
 
 ### Recommended backup cron
 
-```cron
-0 4 * * * /home/deploy/meti-booking/deploy/backup-db.sh >> /home/deploy/backup.log 2>&1
-```
-
-Keeps last 14 backups in `deploy/backups/`.
+Lite / production SQLite backups are installed by `deploy/setup-cron.sh` and also copied encrypted to the GitHub `backups` branch. See [deploy/BACKUP.md](../deploy/BACKUP.md).
 
 ### Docker files
 

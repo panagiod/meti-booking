@@ -53,11 +53,11 @@ else
   ./deploy/deploy.sh
 fi
 
-# Cron (idempotent)
-if [[ ! -f /etc/cron.d/meti-booking ]]; then
-  echo "==> Installing cron jobs..."
-  ./deploy/setup-cron.sh
-fi
+# Cron (idempotent — rewrites /etc/cron.d/meti-booking)
+echo "==> Installing cron jobs..."
+./deploy/setup-cron.sh || true
+chmod +x deploy/backup-studio-data.sh deploy/restore-studio-data.sh deploy/ensure-backup-key.sh deploy/ci-deploy-wrapper.sh
+./deploy/ensure-backup-key.sh || true
 
 # Wait for app after deploy-lite restart
 echo "==> Waiting for app..."

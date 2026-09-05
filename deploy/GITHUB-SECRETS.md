@@ -29,6 +29,8 @@ Push to `main` or: **Actions → Deploy Production → Run workflow**
 
 ---
 
+Keep `BACKUP_ENCRYPTION_KEY` from the server `.env` in a password manager. Daily backups go to the GitHub `backups` branch encrypted with that key.
+
 After this, **every push deploys automatically** — no more manual `git pull` or `./deploy/deploy-lite.sh`.
 
 Deploy logs on server: `/var/log/meti-booking/deploy.log`

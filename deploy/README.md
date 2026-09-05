@@ -61,6 +61,8 @@ Files:
 | `deploy.sh` | Build + migrate + start |
 | `setup-cron.sh` | Daily booking maintenance |
 | `backup-db.sh` | Postgres backups |
+| `backup-studio-data.sh` | Encrypted SQLite backup (schedule + customers) |
+| `restore-studio-data.sh` | Restore an encrypted SQLite backup |
 
 ## Estimated monthly cost
 

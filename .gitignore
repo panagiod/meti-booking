@@ -18,6 +18,8 @@
 /out/
 
 /deploy/backups/*.sql.gz
+/deploy/backups/*.db
+/deploy/backups/*.enc
 /build
 
 # misc

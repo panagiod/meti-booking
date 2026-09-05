@@ -38,6 +38,9 @@ CRON_SECRET=${CRON_SECRET}
 
 # Cleanup old cancelled appointments (03:00 UTC)
 0 3 * * * root curl -fsS -H "Authorization: Bearer \${CRON_SECRET}" ${BASE_URL}/api/cron/cleanup-cancelled >/dev/null 2>&1
+
+# Encrypted local backup of schedule + customers (02:00 UTC = 05:00 Nicosia in summer)
+0 2 * * * root ${ROOT}/deploy/backup-studio-data.sh >> /var/log/meti-booking/backup.log 2>&1
 EOF
 
 sudo chmod 644 "$CRON_FILE"

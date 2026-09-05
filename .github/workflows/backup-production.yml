@@ -1,0 +1,104 @@
+name: Backup Production
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+  workflow_call:
+
+concurrency:
+  group: production-backup
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    name: Save encrypted studio database
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Verify GitHub secrets
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+        run: |
+          missing=0
+          if [ -z "$PRODUCTION_HOST" ]; then echo "::error::Missing secret PRODUCTION_HOST"; missing=1; fi
+          if [ -z "$PRODUCTION_USER" ]; then echo "::error::Missing secret PRODUCTION_USER"; missing=1; fi
+          if [ -z "$PRODUCTION_SSH_KEY" ]; then echo "::error::Missing secret PRODUCTION_SSH_KEY"; missing=1; fi
+          if [ "$missing" -eq 1 ]; then exit 1; fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Export encrypted backup from the VPS
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+        run: |
+          mkdir -p "$HOME/.ssh"
+          install -m 600 /dev/null "$HOME/.ssh/backup_key"
+          printf '%s\n' "$PRODUCTION_SSH_KEY" > "$HOME/.ssh/backup_key"
+          ssh-keyscan -H "$PRODUCTION_HOST" >> "$HOME/.ssh/known_hosts"
+          ssh -i "$HOME/.ssh/backup_key" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            "${PRODUCTION_USER}@${PRODUCTION_HOST}" METI_BACKUP > "$RUNNER_TEMP/backup.txt"
+          test -s "$RUNNER_TEMP/backup.txt"
+
+          awk '/^METI_BACKUP_BEGIN$/{p=1;next} /^METI_BACKUP_END$/{p=0} p' \
+            "$RUNNER_TEMP/backup.txt" > "$RUNNER_TEMP/backup.b64"
+          test -s "$RUNNER_TEMP/backup.b64"
+          base64 -d "$RUNNER_TEMP/backup.b64" > "$RUNNER_TEMP/backup.db.enc"
+          test -s "$RUNNER_TEMP/backup.db.enc"
+
+          grep '^METI_BACKUP_' "$RUNNER_TEMP/backup.txt" | grep -v BEGIN | grep -v END \
+            > "$RUNNER_TEMP/backup.meta" || true
+          cat "$RUNNER_TEMP/backup.meta"
+
+      - name: Publish to backups branch
+        env:
+          GIT_AUTHOR_NAME: meti-backup
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: meti-backup
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          DAY="$(grep '^METI_BACKUP_DAY=' "$RUNNER_TEMP/backup.meta" | cut -d= -f2 || date -u +%Y-%m-%d)"
+          FINGERPRINT="$(grep '^METI_BACKUP_FINGERPRINT=' "$RUNNER_TEMP/backup.meta" | cut -d= -f2 || true)"
+          BYTES="$(wc -c < "$RUNNER_TEMP/backup.db.enc" | tr -d ' ')"
+          if [ "${BYTES:-0}" -lt 64 ]; then
+            echo "::error::Backup file is too small"
+            exit 1
+          fi
+
+          cp .github/scripts/write-backup-readme.py "$RUNNER_TEMP/write-backup-readme.py"
+          cp .github/scripts/prune-backups.py "$RUNNER_TEMP/prune-backups.py"
+
+          if git ls-remote --exit-code --heads origin backups >/dev/null 2>&1; then
+            git fetch origin backups
+            git checkout -B backups origin/backups
+          else
+            git checkout --orphan backups
+            git rm -rf --ignore-unmatch . >/dev/null 2>&1 || true
+          fi
+
+          mkdir -p backups
+          cp "$RUNNER_TEMP/backup.db.enc" "backups/${DAY}.db.enc"
+          cp "$RUNNER_TEMP/backup.db.enc" backups/latest.db.enc
+          python3 "$RUNNER_TEMP/write-backup-readme.py" "$DAY" "${FINGERPRINT:-unknown}"
+          python3 "$RUNNER_TEMP/prune-backups.py"
+
+          git config user.name meti-backup
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add backups
+          if git diff --staged --quiet; then
+            echo "No backup changes"
+            exit 0
+          fi
+          git commit -m "backup: ${DAY} studio database"
+          git push origin backups

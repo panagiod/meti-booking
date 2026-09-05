@@ -23,6 +23,7 @@ fi
 BETTER_AUTH_SECRET="$(openssl rand -base64 32)"
 CRON_SECRET="$(openssl rand -hex 24)"
 ENCRYPTION_KEY="$(openssl rand -base64 32)"
+BACKUP_ENCRYPTION_KEY="$(openssl rand -base64 32)"
 BASE_URL="https://${DOMAIN}"
 
 cat > "$OUT" <<EOF
@@ -44,6 +45,7 @@ APP_URL=${BASE_URL}
 
 CRON_SECRET=${CRON_SECRET}
 ENCRYPTION_KEY=${ENCRYPTION_KEY}
+BACKUP_ENCRYPTION_KEY=${BACKUP_ENCRYPTION_KEY}
 
 PAYMENTS_ENABLED=0
 
