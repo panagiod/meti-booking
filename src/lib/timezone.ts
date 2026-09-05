@@ -173,6 +173,15 @@ export function formatStudioTime(utc: Date): string {
   });
 }
 
+export function formatStudioDateTime(utc: Date): string {
+  return `${formatStudioDate(utc, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })} · ${formatStudioTime(utc)}`;
+}
+
 export function studioDateStrFromUtc(utc: Date): string {
   const local = utcToStudioLocal(utc);
   return `${String(local.year).padStart(4, "0")}-${String(local.month).padStart(2, "0")}-${String(local.day).padStart(2, "0")}`;

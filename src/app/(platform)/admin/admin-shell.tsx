@@ -27,7 +27,7 @@ const navigation = [
     icon: LayoutDashboard,
   },
   {
-    name: "Users",
+    name: "Clients",
     href: "/admin/users",
     icon: Users,
   },
