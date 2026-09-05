@@ -39,10 +39,20 @@ if [[ -z "${BACKUP_ENCRYPTION_KEY:-}" ]]; then
 fi
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH:-}"
-SQLITE3="$(command -v sqlite3 || true)"
-if [[ -z "$SQLITE3" && -x /usr/bin/sqlite3 ]]; then
-  SQLITE3=/usr/bin/sqlite3
-fi
+
+sqlite_eval() {
+  local file="$1"
+  local sql="$2"
+  python3 -c '
+import sqlite3, sys
+con = sqlite3.connect(sys.argv[1])
+try:
+    row = con.execute(sys.argv[2]).fetchone()
+    print("" if row is None else row[0])
+except sqlite3.Error:
+    print("missing")
+' "$file" "$sql"
+}
 
 TMP_DB="$(mktemp)"
 trap 'rm -f "$TMP_DB"' EXIT
@@ -55,17 +65,7 @@ if [[ "$(head -c 15 "$TMP_DB")" != "SQLite format 3" ]]; then
   exit 1
 fi
 
-if [[ -z "$SQLITE3" ]]; then
-  echo "ERROR: sqlite3 is not installed; cannot check tables" >&2
-  exit 1
-fi
-
-if ! "$SQLITE3" "$TMP_DB" "SELECT COUNT(*) FROM sqlite_master;" >/dev/null; then
-  echo "ERROR: decrypted file is not a valid SQLite database" >&2
-  exit 1
-fi
-
-integrity="$("$SQLITE3" "$TMP_DB" "PRAGMA integrity_check;")"
+integrity="$(sqlite_eval "$TMP_DB" "PRAGMA integrity_check")"
 if [[ "$integrity" != "ok" ]]; then
   echo "ERROR: SQLite integrity_check failed: ${integrity}" >&2
   exit 1
@@ -74,7 +74,7 @@ fi
 count_table() {
   local file="$1"
   local table="$2"
-  "$SQLITE3" "$file" "SELECT COUNT(*) FROM \"${table}\";" 2>/dev/null || echo "missing"
+  sqlite_eval "$file" "SELECT COUNT(*) FROM \"${table}\""
 }
 
 echo "Decrypted backup is a valid SQLite database (integrity_check=ok)"

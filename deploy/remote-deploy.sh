@@ -17,6 +17,7 @@ echo "Commit: $(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
 echo "=========================================="
 
 chmod +x deploy/*.sh
+command -v sqlite3 >/dev/null 2>&1 || apt-get install -y sqlite3 || true
 
 # --- Bootstrap (first deploy / fresh server) ---
 if ! command -v node >/dev/null 2>&1 || ! command -v caddy >/dev/null 2>&1; then
