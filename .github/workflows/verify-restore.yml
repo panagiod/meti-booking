@@ -1,0 +1,42 @@
+name: Verify Restore
+
+on:
+  workflow_dispatch:
+    inputs:
+      backup_day:
+        description: "latest or YYYY-MM-DD"
+        required: true
+        default: latest
+
+concurrency:
+  group: production-restore
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Decrypt and check backup without replacing live data
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Verify secrets
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+        run: |
+          missing=0
+          if [ -z "$PRODUCTION_HOST" ]; then echo "::error::Missing PRODUCTION_HOST"; missing=1; fi
+          if [ -z "$PRODUCTION_USER" ]; then echo "::error::Missing PRODUCTION_USER"; missing=1; fi
+          if [ -z "$PRODUCTION_SSH_KEY" ]; then echo "::error::Missing PRODUCTION_SSH_KEY"; missing=1; fi
+          if [ "$missing" -eq 1 ]; then exit 1; fi
+
+      - name: Verify restore from the private ops repo
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          port: 22
+          command_timeout: 15m
+          script: METI_RESTORE_VERIFY ${{ inputs.backup_day }}

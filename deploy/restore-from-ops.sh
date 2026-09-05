@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Pull an encrypted backup from the private ops repo and restore this VPS.
 #   CONFIRM=RESTORE ./deploy/restore-from-ops.sh [latest|YYYY-MM-DD]
+#   CONFIRM=VERIFY  ./deploy/restore-from-ops.sh [latest|YYYY-MM-DD]  # decrypt + check only
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -8,13 +9,15 @@ cd "$ROOT"
 
 DAY="${1:-latest}"
 
-if [[ "${CONFIRM:-}" != "RESTORE" ]]; then
-  echo "Refusing to restore. Re-run with CONFIRM=RESTORE" >&2
+if [[ "${CONFIRM:-}" != "RESTORE" && "${CONFIRM:-}" != "VERIFY" ]]; then
+  echo "Refusing to restore. Re-run with CONFIRM=RESTORE or CONFIRM=VERIFY" >&2
   exit 1
 fi
 
 # shellcheck disable=SC1091
 [[ -f .env ]] && set -a && source .env && set +a
+# shellcheck disable=SC1091
+source "${ROOT}/deploy/backup-crypto.sh"
 
 OPS_REPO="${OPS_REPO:-panagiod/meti-studio-ops}"
 
@@ -44,5 +47,21 @@ if [[ ! -s "$ENC" ]]; then
   exit 1
 fi
 
-CONFIRM=RESTORE "${ROOT}/deploy/restore-studio-data.sh" "$ENC"
-echo "Restored ${DAY} from ${OPS_REPO}"
+if [[ "${CONFIRM}" == "VERIFY" && -s "$WORK/ops/secrets/env.enc" ]]; then
+  TMP_ENV="$(mktemp)"
+  meti_decrypt_file "$WORK/ops/secrets/env.enc" "$TMP_ENV" "${BACKUP_ENCRYPTION_KEY:?}"
+  if ! grep -qE '^DATABASE_URL=' "$TMP_ENV" || ! grep -qE '^BACKUP_ENCRYPTION_KEY=' "$TMP_ENV"; then
+    rm -f "$TMP_ENV"
+    echo "ERROR: secrets/env.enc decrypted but is missing expected keys" >&2
+    exit 1
+  fi
+  rm -f "$TMP_ENV"
+  echo "secrets/env.enc decrypts and contains expected keys (values not printed)"
+fi
+
+CONFIRM="${CONFIRM}" "${ROOT}/deploy/restore-studio-data.sh" "$ENC"
+if [[ "${CONFIRM}" == "VERIFY" ]]; then
+  echo "Verified ${DAY} from ${OPS_REPO} without replacing the live database"
+else
+  echo "Restored ${DAY} from ${OPS_REPO}"
+fi

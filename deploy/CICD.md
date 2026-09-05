@@ -82,6 +82,8 @@ Watch the workflow; site should update in ~10–15 minutes (Docker rebuild).
 
 **Uptime:** Actions → **Uptime** curls the live site every 15 minutes. See [OPS.md](./OPS.md).
 
+**Backup test:** Actions → **Backup Production**, then **Verify Restore**. That does not replace the live database. See [OPS.md](./OPS.md).
+
 ---
 
 ## Security

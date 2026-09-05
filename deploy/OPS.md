@@ -70,6 +70,13 @@ After that, `meti-studio-ops` contains:
 - `secrets/env.enc` — encrypted production `.env`
 - `inventory.md` — host and paths, no passwords
 
+## Test backup and restore (does not replace live data)
+
+1. **Actions → Backup Production → Run workflow**
+2. **Actions → Verify Restore → Run workflow** (backup: `latest`)
+
+That pulls `latest.db.enc` and `secrets/env.enc`, decrypts them, and checks the database. The live site stays up. Do **not** run **Restore Production** unless the live database is actually lost.
+
 ## Restore on the same machine
 
 The live VPS already has `BACKUP_ENCRYPTION_KEY` and `OPS_REPO_TOKEN` in `.env`. It pulls the encrypted file from `meti-studio-ops` itself.

@@ -19,6 +19,15 @@ if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_BACKUP" || "${SSH_ORIGINAL_COMMAND:-}
   exit 0
 fi
 
+if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_RESTORE_VERIFY" || "${SSH_ORIGINAL_COMMAND:-}" == *METI_RESTORE_VERIFY* ]]; then
+  day="latest"
+  if [[ "${SSH_ORIGINAL_COMMAND}" =~ METI_RESTORE_VERIFY[[:space:]]+([0-9]{4}-[0-9]{2}-[0-9]{2}|latest) ]]; then
+    day="${BASH_REMATCH[1]}"
+  fi
+  CONFIRM=VERIFY "$REPO/deploy/restore-from-ops.sh" "$day"
+  exit 0
+fi
+
 if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_RESTORE" || "${SSH_ORIGINAL_COMMAND:-}" == *METI_RESTORE* ]]; then
   day="latest"
   if [[ "${SSH_ORIGINAL_COMMAND}" =~ METI_RESTORE[[:space:]]+([0-9]{4}-[0-9]{2}-[0-9]{2}|latest) ]]; then

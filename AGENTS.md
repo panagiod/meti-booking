@@ -64,6 +64,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 Full runbook: **[deploy/OPS.md](deploy/OPS.md)**. Private vault: `panagiod/meti-studio-ops`.
 
+**Test without replacing live data:** Actions → **Backup Production**, then **Verify Restore**. That decrypts the backup and checks it. Do not run **Restore Production** unless the live database is lost.
+
 **Same VPS (database wiped or bad deploy):**
 
 1. GitHub → `panagiod/meti-booking` → Actions → **Restore Production**
