@@ -157,8 +157,12 @@ export function studioLocalMinutesFromUtc(utc: Date): number {
   return local.hour * 60 + local.minute;
 }
 
-export function formatStudioDate(utc: Date, options?: Intl.DateTimeFormatOptions): string {
-  return utc.toLocaleDateString("en-GB", {
+export function formatStudioDate(
+  utc: Date,
+  options?: Intl.DateTimeFormatOptions,
+  locale: "en" | "el" = "en"
+): string {
+  return utc.toLocaleDateString(locale === "el" ? "el-GR" : "en-GB", {
     timeZone: STUDIO_TIMEZONE,
     ...options,
   });
@@ -173,13 +177,17 @@ export function formatStudioTime(utc: Date): string {
   });
 }
 
-export function formatStudioDateTime(utc: Date): string {
-  return `${formatStudioDate(utc, {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })} · ${formatStudioTime(utc)}`;
+export function formatStudioDateTime(utc: Date, locale: "en" | "el" = "en"): string {
+  return `${formatStudioDate(
+    utc,
+    {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    },
+    locale
+  )} · ${formatStudioTime(utc)}`;
 }
 
 export function studioDateStrFromUtc(utc: Date): string {

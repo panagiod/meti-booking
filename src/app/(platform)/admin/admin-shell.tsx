@@ -20,28 +20,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Logo } from "@/components/ui/logo";
-
-const navigation = [
-  {
-    label: "Studio",
-    items: [
-      { name: "Overview", href: "/admin", icon: LayoutDashboard },
-      { name: "Bookings", href: "/admin/bookings", icon: ClipboardList },
-      { name: "Clients", href: "/admin/users", icon: Users },
-    ],
-  },
-  {
-    label: "Calendar",
-    items: [
-      { name: "Hours", href: "/admin/schedule", icon: Clock },
-      { name: "Closures", href: "/admin/closures", icon: Ban },
-    ],
-  },
-  {
-    label: "Site",
-    items: [{ name: "Website", href: "/admin/content", icon: LayoutTemplate }],
-  },
-];
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
+import { useTranslations } from "@/components/providers/locale-provider";
 
 function isNavActive(pathname: string, href: string) {
   if (href === "/admin") return pathname === "/admin";
@@ -60,7 +40,30 @@ interface AdminShellProps {
 export default function AdminShell({ children, user }: AdminShellProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const navigation = [
+    {
+      label: t.admin.navStudio,
+      items: [
+        { name: t.admin.navOverview, href: "/admin", icon: LayoutDashboard },
+        { name: t.admin.navBookings, href: "/admin/bookings", icon: ClipboardList },
+        { name: t.admin.navClients, href: "/admin/users", icon: Users },
+      ],
+    },
+    {
+      label: t.admin.navCalendar,
+      items: [
+        { name: t.admin.navHours, href: "/admin/schedule", icon: Clock },
+        { name: t.admin.navClosures, href: "/admin/closures", icon: Ban },
+      ],
+    },
+    {
+      label: t.admin.navSite,
+      items: [{ name: t.admin.navWebsite, href: "/admin/content", icon: LayoutTemplate }],
+    },
+  ];
 
   const handleSignOut = async () => {
     await authClient.signOut();
@@ -98,7 +101,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
           <div className="px-4 py-3 border-b border-white/10">
             <div className="flex items-center gap-2 text-sm">
               <Shield className="w-4 h-4 text-[var(--accent)]" />
-              <span className="text-white/90">Studio admin</span>
+              <span className="text-white/90">{t.admin.studioAdmin}</span>
             </div>
           </div>
 
@@ -157,7 +160,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
                 <p className="text-sm font-medium text-white truncate">
                   {user.name}
                 </p>
-                <p className="text-xs text-white/50 truncate">Admin</p>
+                <p className="text-xs text-white/50 truncate">{t.admin.roleAdmin}</p>
               </div>
             </div>
             <Button
@@ -166,7 +169,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
               onClick={handleSignOut}
             >
               <LogOut className="w-4 h-4 mr-2" />
-              Sign out
+              {t.admin.signOut}
             </Button>
           </div>
         </div>
@@ -183,6 +186,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
             </button>
             <div className="flex-1 lg:flex-none" />
             <div className="flex items-center gap-4">
+              <LanguageSwitcher className="border-[var(--border)]" />
               <ThemeToggle />
             </div>
           </div>

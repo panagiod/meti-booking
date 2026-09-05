@@ -10,6 +10,13 @@ import { generateAvailableSlots } from "@/lib/slots";
 import { siteConfig } from "@/lib/site-config";
 import type { StudioDaySchedule } from "@/lib/studio-schedule";
 import {
+  formatMessage,
+  useLocale,
+  useTranslations,
+} from "@/components/providers/locale-provider";
+import { getDateFnsLocale } from "@/lib/date-locale";
+import type { Messages } from "@/i18n";
+import {
   addStudioDays,
   formatStudioTime,
   getDayOfWeekForStudioDate,
@@ -45,9 +52,20 @@ interface AdminWeekBoardProps {
   onCancel?: (bookingId: string) => void;
 }
 
-function dateLabel(dateStr: string, pattern: string) {
+function dateLabel(dateStr: string, pattern: string, locale: ReturnType<typeof getDateFnsLocale>) {
   const [year, month, day] = dateStr.split("-").map(Number);
-  return format(new Date(year, month - 1, day, 12, 0, 0), pattern);
+  return format(new Date(year, month - 1, day, 12, 0, 0), pattern, { locale });
+}
+
+function statusLabel(status: string, t: Messages["admin"]) {
+  const value = status.trim().toUpperCase();
+  if (value === "CONFIRMED") return t.statusConfirmed;
+  if (value === "PENDING") return t.statusPending;
+  if (value === "IN_PROGRESS") return t.statusInProgress;
+  if (value === "COMPLETED") return t.statusCompleted;
+  if (value === "CANCELLED") return t.statusCancelled;
+  if (value === "NO_SHOW") return t.statusNoShow;
+  return status.toLowerCase();
 }
 
 export function AdminWeekBoard({
@@ -60,6 +78,9 @@ export function AdminWeekBoard({
   onWeekChange,
   onCancel,
 }: AdminWeekBoardProps) {
+  const t = useTranslations();
+  const { locale } = useLocale();
+  const dateLocale = getDateFnsLocale(locale);
   const [weekStartStr, setWeekStartStr] = useState(() => studioWeekStartDateStr());
   const thisWeekStart = studioWeekStartDateStr();
   const canGoBack = weekStartStr > thisWeekStart;
@@ -97,10 +118,8 @@ export function AdminWeekBoard({
     <Card>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between space-y-0">
         <div>
-          <CardTitle className="text-lg">Week schedule</CardTitle>
-          <p className="text-sm text-[var(--text-muted)] mt-1">
-            Open slots and bookings in Nicosia, Cyprus
-          </p>
+          <CardTitle className="text-lg">{t.admin.weekSchedule}</CardTitle>
+          <p className="text-sm text-[var(--text-muted)] mt-1">{t.admin.weekScheduleSub}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -108,7 +127,7 @@ export function AdminWeekBoard({
             size="sm"
             onClick={() => setWeekStartStr((prev) => addStudioDays(prev, -7))}
             disabled={!canGoBack}
-            aria-label="Previous week"
+            aria-label={t.admin.previousWeek}
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -117,13 +136,13 @@ export function AdminWeekBoard({
             size="sm"
             onClick={() => setWeekStartStr(studioWeekStartDateStr())}
           >
-            Today
+            {t.admin.today}
           </Button>
           <Button
             variant="secondary"
             size="sm"
             onClick={() => setWeekStartStr((prev) => addStudioDays(prev, 7))}
-            aria-label="Next week"
+            aria-label={t.admin.nextWeek}
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -132,11 +151,11 @@ export function AdminWeekBoard({
       <CardContent className={cn("space-y-4", isLoadingBookings && "opacity-60")}>
         <p className="text-sm font-medium text-[var(--text-primary)]">
           {days.length > 0
-            ? `${dateLabel(days[0], "d MMM")} – ${dateLabel(days[days.length - 1], "d MMM yyyy")}`
-            : dateLabel(weekStartStr, "d MMM yyyy")}
+            ? `${dateLabel(days[0], "d MMM", dateLocale)} – ${dateLabel(days[days.length - 1], "d MMM yyyy", dateLocale)}`
+            : dateLabel(weekStartStr, "d MMM yyyy", dateLocale)}
         </p>
         {days.length === 0 ? (
-          <p className="text-sm italic text-[var(--text-muted)]">No upcoming days in this week.</p>
+          <p className="text-sm italic text-[var(--text-muted)]">{t.admin.noUpcomingDays}</p>
         ) : null}
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {days.map((dateStr) => {
@@ -165,19 +184,23 @@ export function AdminWeekBoard({
             return (
               <div key={dateStr} className="rounded-xl border border-[var(--border)] p-3">
                 <div className="mb-3 flex items-baseline justify-between gap-2">
-                  <p className="font-medium text-[var(--text-primary)]">{dateLabel(dateStr, "EEE d MMM")}</p>
+                  <p className="font-medium text-[var(--text-primary)]">
+                    {dateLabel(dateStr, "EEE d MMM", dateLocale)}
+                  </p>
                   <p className="text-xs text-[var(--text-muted)]">
                     {holiday
-                      ? "Holiday"
+                      ? t.admin.holiday
                       : daySchedule
                         ? `${daySchedule.startTime}–${daySchedule.endTime}`
-                        : "Closed"}
+                        : t.admin.closed}
                   </p>
                 </div>
                 {holiday ? (
                   <div className="space-y-2">
                     <p className="text-sm italic text-[var(--text-muted)]">
-                      {holiday.name} — closed
+                      {formatMessage(t.admin.holidayClosed, {
+                        name: locale === "el" ? holiday.nameEl : holiday.name,
+                      })}
                     </p>
                     {dayBookings.length > 0 && (
                       <ul className="space-y-2">
@@ -189,7 +212,7 @@ export function AdminWeekBoard({
                   </div>
                 ) : !daySchedule ? (
                   dayBookings.length === 0 ? (
-                    <p className="text-sm italic text-[var(--text-muted)]">Studio closed</p>
+                    <p className="text-sm italic text-[var(--text-muted)]">{t.admin.studioClosed}</p>
                   ) : (
                     <ul className="space-y-2">
                       {dayBookings.map((booking) => (
@@ -198,7 +221,7 @@ export function AdminWeekBoard({
                     </ul>
                   )
                 ) : slots.length === 0 ? (
-                  <p className="text-sm italic text-[var(--text-muted)]">No slots this day</p>
+                  <p className="text-sm italic text-[var(--text-muted)]">{t.admin.noSlotsThisDay}</p>
                 ) : (
                   <ul className="space-y-2">
                     {slots.map((slot) => {
@@ -221,7 +244,7 @@ export function AdminWeekBoard({
                             </span>
                           </div>
                           {slotBookings.length === 0 ? (
-                            <p className="mt-1 text-xs text-[var(--text-muted)]">Open</p>
+                            <p className="mt-1 text-xs text-[var(--text-muted)]">{t.admin.open}</p>
                           ) : (
                             <ul className="mt-1 space-y-1">
                               {slotBookings.map((booking) => (
@@ -252,12 +275,13 @@ function BookingRow({
   onCancel?: (bookingId: string) => void;
   showTime?: boolean;
 }) {
+  const t = useTranslations();
   return (
     <li className="flex items-center justify-between gap-2 text-xs">
       <span className="truncate text-[var(--text-primary)]">
         {showTime ? `${formatStudioTime(new Date(booking.scheduledAt))} ` : ""}
         {booking.clientName}
-        <span className="text-[var(--text-muted)]"> · {booking.status.toLowerCase()}</span>
+        <span className="text-[var(--text-muted)]"> · {statusLabel(booking.status, t.admin)}</span>
       </span>
       {onCancel && booking.status !== "COMPLETED" && booking.status !== "CANCELLED" && (
         <button
@@ -265,7 +289,7 @@ function BookingRow({
           className="shrink-0 text-[var(--primary)] underline-offset-2 hover:underline"
           onClick={() => onCancel(booking.id)}
         >
-          Free
+          {t.admin.freeSlot}
         </button>
       )}
     </li>

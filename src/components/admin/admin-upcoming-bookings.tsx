@@ -8,6 +8,11 @@ import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { formatStudioDateTime } from "@/lib/timezone";
 import { CalendarPlus, XCircle } from "lucide-react";
+import {
+  formatMessage,
+  useLocale,
+  useTranslations,
+} from "@/components/providers/locale-provider";
 
 export interface AdminStudioBooking {
   id: string;
@@ -21,6 +26,8 @@ export interface AdminStudioBooking {
 }
 
 export function AdminUpcomingBookings() {
+  const t = useTranslations();
+  const { locale } = useLocale();
   const dialog = useDialog();
   const [bookings, setBookings] = useState<AdminStudioBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,8 +54,11 @@ export function AdminUpcomingBookings() {
 
   const cancelBooking = async (booking: AdminStudioBooking) => {
     const confirmed = await dialog.showConfirm(
-      "Cancel booking",
-      `Free the ${formatStudioDateTime(new Date(booking.scheduledAt))} slot for ${booking.clientName}?`,
+      t.admin.cancelBookingTitle,
+      formatMessage(t.admin.cancelBookingBody, {
+        when: formatStudioDateTime(new Date(booking.scheduledAt), locale),
+        name: booking.clientName,
+      }),
       "warning"
     );
     if (!confirmed) return;
@@ -58,15 +68,19 @@ export function AdminUpcomingBookings() {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason: "Cancelled by admin" }),
+        body: JSON.stringify({ reason: t.admin.cancelReasonAdmin }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Could not cancel booking");
+        throw new Error(data.error || t.admin.couldNotCancel);
       }
       await load();
     } catch (error) {
-      dialog.showAlert("Error", error instanceof Error ? error.message : "Could not cancel booking", "error");
+      dialog.showAlert(
+        t.common.error,
+        error instanceof Error ? error.message : t.admin.couldNotCancel,
+        "error"
+      );
     } finally {
       setCancellingBookingId(null);
     }
@@ -74,10 +88,10 @@ export function AdminUpcomingBookings() {
 
   const freeAllSlots = async () => {
     const confirmed = await dialog.showConfirm(
-      "Free all upcoming slots",
+      t.admin.freeAllTitle,
       bookings.length === 1
-        ? "Cancel the 1 upcoming booking and make that slot available again?"
-        : `Cancel ${bookings.length} upcoming bookings and make those slots available again?`,
+        ? t.admin.freeAllBodyOne
+        : formatMessage(t.admin.freeAllBodyMany, { count: bookings.length }),
       "warning"
     );
     if (!confirmed) return;
@@ -91,17 +105,23 @@ export function AdminUpcomingBookings() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Could not free slots");
+        throw new Error(data.error || t.admin.couldNotFree);
       }
       const data = await res.json();
       await load();
       dialog.showAlert(
-        "Slots freed",
-        `${data.cancelled} booking${data.cancelled === 1 ? "" : "s"} cancelled.`,
+        t.admin.slotsFreed,
+        data.cancelled === 1
+          ? t.admin.slotsFreedBodyOne
+          : formatMessage(t.admin.slotsFreedBody, { count: data.cancelled }),
         "success"
       );
     } catch (error) {
-      dialog.showAlert("Error", error instanceof Error ? error.message : "Could not free slots", "error");
+      dialog.showAlert(
+        t.common.error,
+        error instanceof Error ? error.message : t.admin.couldNotFree,
+        "error"
+      );
     } finally {
       setIsFreeingSlots(false);
     }
@@ -112,16 +132,20 @@ export function AdminUpcomingBookings() {
       <Card>
         <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between space-y-0">
           <div>
-            <CardTitle className="text-lg">Upcoming bookings</CardTitle>
+            <CardTitle className="text-lg">{t.admin.upcomingBookings}</CardTitle>
             <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {isLoading ? "Loading…" : `${bookings.length} holding a reformer place`}
+              {isLoading
+                ? t.admin.loading
+                : bookings.length === 1
+                  ? t.admin.holdingPlacesOne
+                  : formatMessage(t.admin.holdingPlaces, { count: bookings.length })}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button asChild variant="secondary" size="sm">
               <Link href="/book">
                 <CalendarPlus className="w-4 h-4 mr-2" />
-                Book for a client
+                {t.admin.bookForClient}
               </Link>
             </Button>
             <Button
@@ -131,16 +155,16 @@ export function AdminUpcomingBookings() {
               onClick={freeAllSlots}
             >
               <XCircle className="w-4 h-4 mr-2" />
-              {isFreeingSlots ? "Freeing…" : "Free all upcoming"}
+              {isFreeingSlots ? t.admin.freeing : t.admin.freeAllUpcoming}
             </Button>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-[var(--text-muted)]">
-            Cancel a session to release that reformer slot on the public calendar.
+            {t.admin.cancelHint}
           </p>
           {bookings.length === 0 && !isLoading ? (
-            <p className="text-sm italic text-[var(--text-muted)]">No upcoming bookings holding slots.</p>
+            <p className="text-sm italic text-[var(--text-muted)]">{t.admin.noUpcoming}</p>
           ) : (
             <ul className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)]">
               {bookings.map((booking) => (
@@ -150,11 +174,11 @@ export function AdminUpcomingBookings() {
                 >
                   <div>
                     <p className="font-medium text-[var(--text-primary)]">
-                      {formatStudioDateTime(new Date(booking.scheduledAt))}
+                      {formatStudioDateTime(new Date(booking.scheduledAt), locale)}
                     </p>
                     <p className="text-sm text-[var(--text-muted)]">
                       {booking.serviceName} · {booking.clientName} · {booking.clientEmail}
-                      {booking.isTestBooking ? " · test" : ""}
+                      {booking.isTestBooking ? ` · ${t.admin.testBooking}` : ""}
                     </p>
                   </div>
                   <Button
@@ -163,7 +187,7 @@ export function AdminUpcomingBookings() {
                     disabled={cancellingBookingId === booking.id}
                     onClick={() => cancelBooking(booking)}
                   >
-                    {cancellingBookingId === booking.id ? "Cancelling…" : "Cancel & free slot"}
+                    {cancellingBookingId === booking.id ? t.admin.cancelling : t.admin.cancelFreeSlot}
                   </Button>
                 </li>
               ))}

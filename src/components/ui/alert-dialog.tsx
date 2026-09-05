@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckCircle, XCircle, AlertTriangle, Info } from "lucide-react";
 import { useDialog } from "@/hooks/use-dialog";
+import { useTranslations } from "@/components/providers/locale-provider";
 
 const icons = {
   success: CheckCircle,
@@ -32,6 +33,7 @@ interface AlertDialogProps {
 }
 
 export function AlertDialog({ state }: AlertDialogProps) {
+  const t = useTranslations();
   const { open, title, message, type, variant, onConfirm, close, inputValue, setInputValue } = state;
   const Icon = icons[variant];
 
@@ -67,11 +69,11 @@ export function AlertDialog({ state }: AlertDialogProps) {
         <DialogFooter>
           {type === "confirm" || type === "prompt" ? (
             <Button variant="secondary" onClick={close}>
-              Cancel
+              {t.common.cancel}
             </Button>
           ) : null}
           <Button onClick={onConfirm}>
-            {type === "confirm" ? "Accept" : type === "prompt" ? "Accept" : "Got it"}
+            {type === "confirm" || type === "prompt" ? t.common.confirm : t.common.dismiss}
           </Button>
         </DialogFooter>
       </DialogContent>

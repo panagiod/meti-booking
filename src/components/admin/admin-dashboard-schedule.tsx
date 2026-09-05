@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AdminWeekBoard } from "@/components/admin/admin-week-board";
 import type { StudioDaySchedule } from "@/lib/studio-schedule";
+import { useTranslations } from "@/components/providers/locale-provider";
 
 interface StudioBooking {
   id: string;
@@ -22,6 +23,7 @@ interface StudioPreview {
 }
 
 export function AdminDashboardSchedule() {
+  const t = useTranslations();
   const [studio, setStudio] = useState<StudioPreview | null>(null);
   const [bookings, setBookings] = useState<StudioBooking[]>([]);
   const [isLoadingBookings, setIsLoadingBookings] = useState(false);
@@ -69,20 +71,20 @@ export function AdminDashboardSchedule() {
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-          This week
+          {t.admin.thisWeek}
         </h2>
         <div className="flex items-center gap-3">
           <Link
             href="/admin/bookings"
             className="text-sm text-[var(--primary)] hover:underline flex items-center gap-1"
           >
-            Open bookings <ArrowRight className="w-4 h-4" />
+            {t.admin.openBookings} <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
             href="/admin/schedule"
             className="text-sm text-[var(--text-muted)] hover:text-[var(--primary)] hover:underline"
           >
-            Edit hours
+            {t.admin.editHours}
           </Link>
         </div>
       </div>

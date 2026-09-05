@@ -22,12 +22,29 @@ import {
 import { formatStudioDate, formatStudioDateTime } from "@/lib/timezone";
 import { formatStudioPhone, isPublicPhone, studioTelHref } from "@/lib/site-config";
 import { CalendarDays, Mail, Phone, Search, Users } from "lucide-react";
+import {
+  formatMessage,
+  useLocale,
+  useTranslations,
+} from "@/components/providers/locale-provider";
+import type { Messages } from "@/i18n";
 
-function roleLabel(role: string): string {
+function roleLabel(role: string, t: Messages["admin"]): string {
   const normalized = normalizeAdminUserRole(role);
-  if (normalized === "admin") return "Admin";
-  if (normalized === "instructor") return "Instructor";
-  return "Client";
+  if (normalized === "admin") return t.roleAdmin;
+  if (normalized === "instructor") return t.roleInstructor;
+  return t.roleClient;
+}
+
+function statusLabels(t: Messages["admin"]): Partial<Record<string, string>> {
+  return {
+    CONFIRMED: t.statusConfirmed,
+    PENDING: t.statusPending,
+    IN_PROGRESS: t.statusInProgress,
+    COMPLETED: t.statusCompleted,
+    CANCELLED: t.statusCancelled,
+    NO_SHOW: t.statusNoShow,
+  };
 }
 
 function roleBadgeVariant(role: string): "default" | "secondary" | "outline" {
@@ -47,25 +64,35 @@ function statusBadgeVariant(
   return "outline";
 }
 
-function AppointmentRow({ appointment }: { appointment: AdminUserAppointment }) {
+function AppointmentRow({
+  appointment,
+  t,
+  locale,
+}: {
+  appointment: AdminUserAppointment;
+  t: Messages["admin"];
+  locale: "en" | "el";
+}) {
   return (
     <li className="flex flex-wrap items-center justify-between gap-2 py-1.5 text-sm">
       <div>
         <p className="font-medium text-[var(--text-primary)]">
-          {formatStudioDateTime(new Date(appointment.scheduledAt))}
+          {formatStudioDateTime(new Date(appointment.scheduledAt), locale)}
         </p>
         <p className="text-xs text-[var(--text-muted)]">
-          {appointment.serviceName} · {appointment.durationMin} min
+          {appointment.serviceName} · {formatMessage(t.minutes, { count: appointment.durationMin })}
         </p>
       </div>
       <Badge variant={statusBadgeVariant(appointment.status)}>
-        {appointmentStatusLabel(appointment.status)}
+        {appointmentStatusLabel(appointment.status, statusLabels(t))}
       </Badge>
     </li>
   );
 }
 
 export default function UsersPage() {
+  const t = useTranslations();
+  const { locale } = useLocale();
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [bookingFilter, setBookingFilter] = useState<AdminUserBookingFilter>("all");
@@ -94,23 +121,21 @@ export default function UsersPage() {
     [users, roleFilter, searchQuery, bookingFilter]
   );
 
-  if (isLoading) return <LoadingPage />;
+  if (isLoading) return <LoadingPage label={t.admin.loading} />;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          Clients
+          {t.admin.clientsTitle}
         </h1>
-        <p className="text-[var(--text-muted)] mt-1">
-          Who booked, and which dates they have
-        </p>
+        <p className="text-[var(--text-muted)] mt-1">{t.admin.clientsSub}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
-            <p className="text-sm text-[var(--text-muted)]">People</p>
+            <p className="text-sm text-[var(--text-muted)]">{t.admin.people}</p>
             <p className="text-2xl font-heading font-bold text-[var(--text-primary)]">
               {totals.total}
             </p>
@@ -118,7 +143,7 @@ export default function UsersPage() {
         </Card>
         <Card>
           <CardContent className="p-6">
-            <p className="text-sm text-[var(--text-muted)]">Clients</p>
+            <p className="text-sm text-[var(--text-muted)]">{t.admin.clients}</p>
             <p className="text-2xl font-heading font-bold text-[var(--accent)]">
               {totals.clients}
             </p>
@@ -126,7 +151,7 @@ export default function UsersPage() {
         </Card>
         <Card>
           <CardContent className="p-6">
-            <p className="text-sm text-[var(--text-muted)]">Upcoming sessions</p>
+            <p className="text-sm text-[var(--text-muted)]">{t.admin.upcomingSessions}</p>
             <p className="text-2xl font-heading font-bold text-[var(--success)]">
               {upcomingCount}
             </p>
@@ -134,7 +159,7 @@ export default function UsersPage() {
         </Card>
         <Card>
           <CardContent className="p-6">
-            <p className="text-sm text-[var(--text-muted)]">Admins</p>
+            <p className="text-sm text-[var(--text-muted)]">{t.admin.admins}</p>
             <p className="text-2xl font-heading font-bold text-[var(--text-primary)]">
               {totals.admins}
             </p>
@@ -148,7 +173,7 @@ export default function UsersPage() {
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
               <Input
-                placeholder="Search name, email, or phone..."
+                placeholder={t.admin.searchPeople}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -160,21 +185,21 @@ export default function UsersPage() {
                 size="sm"
                 onClick={() => setRoleFilter("all")}
               >
-                All
+                {t.admin.filterAll}
               </Button>
               <Button
                 variant={roleFilter === "client" ? "default" : "secondary"}
                 size="sm"
                 onClick={() => setRoleFilter("client")}
               >
-                Clients
+                {t.admin.filterClients}
               </Button>
               <Button
                 variant={roleFilter === "admin" ? "default" : "secondary"}
                 size="sm"
                 onClick={() => setRoleFilter("admin")}
               >
-                Admins
+                {t.admin.filterAdmins}
               </Button>
             </div>
           </div>
@@ -184,21 +209,21 @@ export default function UsersPage() {
               size="sm"
               onClick={() => setBookingFilter("all")}
             >
-              All bookings
+              {t.admin.filterAllBookings}
             </Button>
             <Button
               variant={bookingFilter === "upcoming" ? "default" : "secondary"}
               size="sm"
               onClick={() => setBookingFilter("upcoming")}
             >
-              Has upcoming
+              {t.admin.filterHasUpcoming}
             </Button>
             <Button
               variant={bookingFilter === "none" ? "default" : "secondary"}
               size="sm"
               onClick={() => setBookingFilter("none")}
             >
-              No upcoming
+              {t.admin.filterNoUpcoming}
             </Button>
           </div>
         </CardContent>
@@ -207,18 +232,19 @@ export default function UsersPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
-            {visibleUsers.length} {visibleUsers.length === 1 ? "person" : "people"}
+            {formatMessage(
+              visibleUsers.length === 1 ? t.admin.personCount : t.admin.peopleCount,
+              { count: visibleUsers.length }
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {visibleUsers.length === 0 ? (
             <EmptyState
               icon={Users}
-              title={users.length === 0 ? "No clients yet" : "No matching people"}
+              title={users.length === 0 ? t.admin.noClientsYet : t.admin.noMatchingPeople}
               description={
-                users.length === 0
-                  ? "When someone signs up or books a session, they will appear here with their dates."
-                  : "Try a different search or filter. Totals above stay the same."
+                users.length === 0 ? t.admin.noClientsYetSub : t.admin.noMatchingPeopleSub
               }
             />
           ) : (
@@ -241,10 +267,10 @@ export default function UsersPage() {
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
                             <h3 className="font-medium text-[var(--text-primary)]">
-                              {user.name || "Unnamed client"}
+                              {user.name || t.admin.unnamedClient}
                             </h3>
                             <Badge variant={roleBadgeVariant(user.role)}>
-                              {roleLabel(user.role)}
+                              {roleLabel(user.role, t.admin)}
                             </Badge>
                           </div>
                           <div className="mt-1 flex flex-col gap-1 text-sm text-[var(--text-muted)] sm:flex-row sm:flex-wrap sm:gap-x-4">
@@ -267,7 +293,9 @@ export default function UsersPage() {
                           </div>
                           {user.joinDate ? (
                             <p className="mt-1 text-xs text-[var(--text-muted)]">
-                              Joined {formatStudioDate(new Date(user.joinDate))}
+                              {formatMessage(t.admin.joined, {
+                                date: formatStudioDate(new Date(user.joinDate), undefined, locale),
+                              })}
                             </p>
                           ) : null}
                         </div>
@@ -276,20 +304,20 @@ export default function UsersPage() {
                       <div className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm lg:min-w-[16rem]">
                         {next ? (
                           <>
-                            <p className="text-xs text-[var(--text-muted)]">Next session</p>
+                            <p className="text-xs text-[var(--text-muted)]">{t.admin.nextSession}</p>
                             <p className="font-medium text-[var(--text-primary)]">
-                              {formatStudioDateTime(new Date(next.scheduledAt))}
+                              {formatStudioDateTime(new Date(next.scheduledAt), locale)}
                             </p>
                           </>
                         ) : last ? (
                           <>
-                            <p className="text-xs text-[var(--text-muted)]">Last session</p>
+                            <p className="text-xs text-[var(--text-muted)]">{t.admin.lastSession}</p>
                             <p className="font-medium text-[var(--text-primary)]">
-                              {formatStudioDateTime(new Date(last.scheduledAt))}
+                              {formatStudioDateTime(new Date(last.scheduledAt), locale)}
                             </p>
                           </>
                         ) : (
-                          <p className="text-[var(--text-muted)]">No sessions yet</p>
+                          <p className="text-[var(--text-muted)]">{t.admin.noSessionsYet}</p>
                         )}
                       </div>
                     </div>
@@ -298,11 +326,16 @@ export default function UsersPage() {
                       <div>
                         <p className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                           <CalendarDays className="h-3.5 w-3.5" />
-                          Upcoming ({user.upcoming.length})
+                          {formatMessage(t.admin.upcomingCount, { count: user.upcoming.length })}
                         </p>
                         <ul className="divide-y divide-[var(--border)]">
                           {user.upcoming.map((appointment) => (
-                            <AppointmentRow key={appointment.id} appointment={appointment} />
+                            <AppointmentRow
+                              key={appointment.id}
+                              appointment={appointment}
+                              t={t.admin}
+                              locale={locale}
+                            />
                           ))}
                         </ul>
                       </div>
@@ -311,11 +344,16 @@ export default function UsersPage() {
                     {user.recent.length > 0 ? (
                       <div>
                         <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
-                          Recent history
+                          {t.admin.recentHistory}
                         </p>
                         <ul className="divide-y divide-[var(--border)]">
                           {user.recent.map((appointment) => (
-                            <AppointmentRow key={appointment.id} appointment={appointment} />
+                            <AppointmentRow
+                              key={appointment.id}
+                              appointment={appointment}
+                              t={t.admin}
+                              locale={locale}
+                            />
                           ))}
                         </ul>
                       </div>

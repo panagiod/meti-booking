@@ -10,6 +10,8 @@ import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
 import { upcomingCyprusHolidays } from "@/lib/cyprus-holidays";
 import { Ban, Trash2 } from "lucide-react";
+import { useLocale, useTranslations } from "@/components/providers/locale-provider";
+import { getDateFnsLocale } from "@/lib/date-locale";
 
 interface BlockedTime {
   id: string;
@@ -19,6 +21,9 @@ interface BlockedTime {
 }
 
 export default function AdminClosuresPage() {
+  const t = useTranslations();
+  const { locale } = useLocale();
+  const dateLocale = getDateFnsLocale(locale);
   const dialog = useDialog();
   const { showAlert } = dialog;
   const [isLoading, setIsLoading] = useState(true);
@@ -38,11 +43,11 @@ export default function AdminClosuresPage() {
       const data = await res.json();
       setBlockedTimes(data.studio.blockedTimes || []);
     } catch {
-      showAlert("Error", "Could not load closures", "error");
+      showAlert(t.common.error, t.admin.loadClosuresError, "error");
     } finally {
       setIsLoading(false);
     }
-  }, [showAlert]);
+  }, [showAlert, t.admin.loadClosuresError, t.common.error]);
 
   useEffect(() => {
     void load();
@@ -50,7 +55,7 @@ export default function AdminClosuresPage() {
 
   const addBlock = async () => {
     if (!blockTitle || !blockStart || !blockEnd) {
-      dialog.showAlert("Missing fields", "Fill in title and dates", "warning");
+      dialog.showAlert(t.admin.missingFields, t.admin.fillTitleDates, "warning");
       return;
     }
     setIsBlocking(true);
@@ -68,7 +73,7 @@ export default function AdminClosuresPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        dialog.showAlert("Error", data.error || "Could not add block", "error");
+        dialog.showAlert(t.common.error, data.error || t.admin.couldNotAddBlock, "error");
         return;
       }
       setBlockedTimes((prev) =>
@@ -79,9 +84,9 @@ export default function AdminClosuresPage() {
       setBlockTitle("");
       setBlockStart("");
       setBlockEnd("");
-      dialog.showAlert("Blocked", "Dates blocked from booking", "success");
+      dialog.showAlert(t.admin.blocked, t.admin.datesBlocked, "success");
     } catch {
-      dialog.showAlert("Error", "Connection error", "error");
+      dialog.showAlert(t.common.error, t.admin.connectionError, "error");
     } finally {
       setIsBlocking(false);
     }
@@ -94,32 +99,30 @@ export default function AdminClosuresPage() {
         credentials: "include",
       });
       if (!res.ok) {
-        dialog.showAlert("Error", "Could not remove block", "error");
+        dialog.showAlert(t.common.error, t.admin.couldNotRemoveBlock, "error");
         return;
       }
       setBlockedTimes((prev) => prev.filter((item) => item.id !== id));
     } catch {
-      dialog.showAlert("Error", "Connection error", "error");
+      dialog.showAlert(t.common.error, t.admin.connectionError, "error");
     }
   };
 
-  if (isLoading) return <LoadingPage label="Loading closures" />;
+  if (isLoading) return <LoadingPage label={t.admin.loadingClosures} />;
 
   return (
     <>
       <div className="space-y-6 max-w-3xl">
         <div>
           <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-            Closures
+            {t.admin.closuresTitle}
           </h1>
-          <p className="mt-1 text-[var(--text-muted)]">
-            Cyprus holidays are closed automatically. Add extra days off here.
-          </p>
+          <p className="mt-1 text-[var(--text-muted)]">{t.admin.closuresSub}</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">Cyprus public holidays</CardTitle>
+            <CardTitle className="text-lg">{t.admin.publicHolidays}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)]">
@@ -128,9 +131,13 @@ export default function AdminClosuresPage() {
                   key={holiday.date}
                   className="flex items-center justify-between gap-3 p-3 text-sm"
                 >
-                  <span className="font-medium text-[var(--text-primary)]">{holiday.name}</span>
+                  <span className="font-medium text-[var(--text-primary)]">
+                    {locale === "el" ? holiday.nameEl : holiday.name}
+                  </span>
                   <span className="text-[var(--text-muted)]">
-                    {format(new Date(`${holiday.date}T12:00:00`), "EEE d MMM yyyy")}
+                    {format(new Date(`${holiday.date}T12:00:00`), "EEE d MMM yyyy", {
+                      locale: dateLocale,
+                    })}
                   </span>
                 </li>
               ))}
@@ -142,24 +149,24 @@ export default function AdminClosuresPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
               <Ban className="w-5 h-5" />
-              Extra studio closures
+              {t.admin.extraClosures}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-[var(--text-muted)]">
-              Vacations or extra days off. Blocked days will not appear on the public calendar.
-            </p>
+            <p className="text-sm text-[var(--text-muted)]">{t.admin.extraClosuresSub}</p>
             <div className="grid sm:grid-cols-4 gap-3">
               <div className="sm:col-span-2">
-                <label className="block text-xs text-[var(--text-muted)] mb-1">Title</label>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">
+                  {t.admin.blockTitle}
+                </label>
                 <Input
-                  placeholder="e.g. Studio holiday"
+                  placeholder={t.admin.blockTitlePlaceholder}
                   value={blockTitle}
                   onChange={(e) => setBlockTitle(e.target.value)}
                 />
               </div>
               <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">From</label>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">{t.admin.from}</label>
                 <Input
                   type="date"
                   value={blockStart}
@@ -167,7 +174,7 @@ export default function AdminClosuresPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-[var(--text-muted)] mb-1">To</label>
+                <label className="block text-xs text-[var(--text-muted)] mb-1">{t.admin.to}</label>
                 <Input
                   type="date"
                   value={blockEnd}
@@ -177,7 +184,7 @@ export default function AdminClosuresPage() {
             </div>
             <Button onClick={addBlock} disabled={isBlocking} variant="secondary">
               <Ban className="w-4 h-4 mr-2" />
-              {isBlocking ? "Adding…" : "Block dates"}
+              {isBlocking ? t.admin.adding : t.admin.blockDates}
             </Button>
 
             {blockedTimes.length > 0 ? (
@@ -190,9 +197,9 @@ export default function AdminClosuresPage() {
                     <div>
                       <p className="font-medium text-[var(--text-primary)]">{block.title}</p>
                       <p className="text-[var(--text-muted)]">
-                        {format(new Date(block.startDate), "MMM d, yyyy")}
+                        {format(new Date(block.startDate), "d MMM yyyy", { locale: dateLocale })}
                         {" – "}
-                        {format(new Date(block.endDate), "MMM d, yyyy")}
+                        {format(new Date(block.endDate), "d MMM yyyy", { locale: dateLocale })}
                       </p>
                     </div>
                     <Button
@@ -207,7 +214,7 @@ export default function AdminClosuresPage() {
                 ))}
               </ul>
             ) : (
-              <p className="text-sm italic text-[var(--text-muted)]">No extra closures</p>
+              <p className="text-sm italic text-[var(--text-muted)]">{t.admin.noExtraClosures}</p>
             )}
           </CardContent>
         </Card>

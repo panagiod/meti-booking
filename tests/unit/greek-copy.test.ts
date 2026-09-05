@@ -15,6 +15,16 @@ describe("Greek studio copy", () => {
     expect(el.dashboard.statusCancelled).toBe("Ακυρωμένη");
   });
 
+  it("translates the admin dashboard into formal Greek", () => {
+    expect(el.admin.overviewTitle).toBe("Επισκόπηση στούντιο");
+    expect(el.admin.navBookings).toBe("Κρατήσεις");
+    expect(el.admin.navClients).toBe("Πελάτες");
+    expect(el.admin.signOut).toBe("Αποσύνδεση");
+    expect(el.admin.statusConfirmed).toBe("Επιβεβαιωμένη");
+    expect(el.common.confirm).toBe("Επιβεβαίωση");
+    expect(el.admin.weekScheduleSub).not.toMatch(/Nicosia/i);
+  });
+
   it("uses natural studio phrasing instead of English calques", () => {
     const joined = JSON.stringify(el);
     expect(joined).not.toContain("το μάθημα πληρώνεται");

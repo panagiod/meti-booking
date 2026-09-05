@@ -103,15 +103,20 @@ export function countUpcomingSessions(users: AdminUserListItem[]): number {
   return users.reduce((sum, user) => sum + user.upcoming.length, 0);
 }
 
-export function appointmentStatusLabel(status: string): string {
+export function appointmentStatusLabel(
+  status: string,
+  labels?: Partial<Record<string, string>>
+): string {
   const value = status.trim().toUpperCase();
-  if (value === "CONFIRMED") return "Confirmed";
-  if (value === "PENDING") return "Pending";
-  if (value === "IN_PROGRESS") return "In session";
-  if (value === "COMPLETED") return "Done";
-  if (value === "CANCELLED") return "Cancelled";
-  if (value === "NO_SHOW") return "No-show";
-  return status;
+  const defaults: Record<string, string> = {
+    CONFIRMED: "Confirmed",
+    PENDING: "Pending",
+    IN_PROGRESS: "In session",
+    COMPLETED: "Done",
+    CANCELLED: "Cancelled",
+    NO_SHOW: "No-show",
+  };
+  return labels?.[value] ?? defaults[value] ?? status;
 }
 
 export function filterAdminUsers(

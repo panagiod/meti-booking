@@ -11,6 +11,11 @@ import { useDialog } from "@/hooks/use-dialog";
 import { cn } from "@/lib/utils";
 import type { StudioContentData, StudioLocaleContent } from "@/lib/studio-content-types";
 import { Save, Upload, ImageIcon, Type, Globe } from "lucide-react";
+import {
+  formatMessage,
+  useTranslations,
+} from "@/components/providers/locale-provider";
+import type { Messages } from "@/i18n";
 
 type Tab = "en" | "el" | "media";
 
@@ -42,10 +47,12 @@ function LocaleFields({
   localeLabel,
   content,
   onChange,
+  t,
 }: {
   localeLabel: string;
   content: StudioLocaleContent;
   onChange: (next: StudioLocaleContent) => void;
+  t: Messages["admin"];
 }) {
   const update = <K extends keyof StudioLocaleContent>(
     section: K,
@@ -62,17 +69,17 @@ function LocaleFields({
     <div className="space-y-6">
       <div>
         <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          SEO & browser tab ({localeLabel})
+          {formatMessage(t.seoTab, { locale: localeLabel })}
         </h3>
         <div className="space-y-3">
           <TextArea
-            label="Page title"
+            label={t.pageTitle}
             value={content.meta.title}
             onChange={(v) => update("meta", "title", v)}
             rows={2}
           />
           <TextArea
-            label="Meta description"
+            label={t.metaDescription}
             value={content.meta.description}
             onChange={(v) => update("meta", "description", v)}
             rows={3}
@@ -82,35 +89,35 @@ function LocaleFields({
 
       <div>
         <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          Homepage hero ({localeLabel})
+          {formatMessage(t.heroSection, { locale: localeLabel })}
         </h3>
         <div className="space-y-3">
           <TextArea
-            label="Eyebrow"
+            label={t.eyebrow}
             value={content.hero.eyebrow}
             onChange={(v) => update("hero", "eyebrow", v)}
             rows={1}
           />
           <TextArea
-            label="Headline"
+            label={t.headline}
             value={content.hero.title}
             onChange={(v) => update("hero", "title", v)}
             rows={2}
           />
           <TextArea
-            label="Description"
+            label={t.description}
             value={content.hero.description}
             onChange={(v) => update("hero", "description", v)}
             rows={4}
           />
           <TextArea
-            label="Book button"
+            label={t.bookButton}
             value={content.hero.bookSession}
             onChange={(v) => update("hero", "bookSession", v)}
             rows={1}
           />
           <TextArea
-            label="Hero image alt text"
+            label={t.heroImageAlt}
             value={content.hero.imageAlt}
             onChange={(v) => update("hero", "imageAlt", v)}
             rows={2}
@@ -120,65 +127,65 @@ function LocaleFields({
 
       <div>
         <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          About section ({localeLabel})
+          {formatMessage(t.aboutSection, { locale: localeLabel })}
         </h3>
         <div className="space-y-3">
           <TextArea
-            label="Section title"
+            label={t.sectionTitle}
             value={content.about.title}
             onChange={(v) => update("about", "title", v)}
             rows={2}
           />
           <TextArea
-            label="Introduction"
+            label={t.introduction}
             value={content.about.intro}
             onChange={(v) => update("about", "intro", v)}
             rows={5}
           />
           <TextArea
-            label="Certifications intro"
+            label={t.certificationsIntro}
             value={content.about.certificationsIntro}
             onChange={(v) => update("about", "certificationsIntro", v)}
             rows={3}
           />
           <TextArea
-            label="Specialization paragraph"
+            label={t.specialization}
             value={content.about.specialization}
             onChange={(v) => update("about", "specialization", v)}
             rows={3}
           />
           <TextArea
-            label="Philosophy title"
+            label={t.philosophyTitle}
             value={content.about.philosophyTitle}
             onChange={(v) => update("about", "philosophyTitle", v)}
             rows={2}
           />
           <TextArea
-            label="Philosophy paragraph 1"
+            label={t.philosophy1}
             value={content.about.philosophyParagraph1}
             onChange={(v) => update("about", "philosophyParagraph1", v)}
             rows={4}
           />
           <TextArea
-            label="Philosophy paragraph 2"
+            label={t.philosophy2}
             value={content.about.philosophyParagraph2}
             onChange={(v) => update("about", "philosophyParagraph2", v)}
             rows={4}
           />
           <TextArea
-            label="Program intro"
+            label={t.programIntro}
             value={content.about.programIntro}
             onChange={(v) => update("about", "programIntro", v)}
             rows={2}
           />
           <TextArea
-            label="Closing title"
+            label={t.closingTitle}
             value={content.about.closingTitle}
             onChange={(v) => update("about", "closingTitle", v)}
             rows={2}
           />
           <TextArea
-            label="Closing text"
+            label={t.closingText}
             value={content.about.closingText}
             onChange={(v) => update("about", "closingText", v)}
             rows={3}
@@ -187,9 +194,9 @@ function LocaleFields({
       </div>
 
       <div>
-        <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">Hours line</h3>
+        <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">{t.hoursLine}</h3>
         <TextArea
-          label="Displayed under hero & footer"
+          label={t.hoursLineHint}
           value={content.common.hours}
           onChange={(v) => update("common", "hours", v)}
           rows={1}
@@ -212,6 +219,7 @@ function ImageUploadCard({
   currentUrl: string;
   onUploaded: (url: string, savedContent: StudioContentData) => void;
 }) {
+  const t = useTranslations();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const dialog = useDialog();
@@ -231,13 +239,13 @@ function ImageUploadCard({
       });
       const data = await res.json();
       if (!res.ok) {
-        dialog.showAlert("Upload failed", data.error || "Could not upload image", "error");
+        dialog.showAlert(t.admin.uploadFailed, data.error || t.admin.uploadFailed, "error");
         return;
       }
       onUploaded(data.url, data.content);
-      dialog.showAlert("Saved", `${title} image updated and saved`, "success");
+      dialog.showAlert(t.admin.saved, formatMessage(t.admin.imageUpdated, { title }), "success");
     } catch {
-      dialog.showAlert("Upload failed", "Connection error", "error");
+      dialog.showAlert(t.admin.uploadFailed, t.admin.connectionError, "error");
     } finally {
       setUploading(false);
     }
@@ -271,7 +279,7 @@ function ImageUploadCard({
           onClick={() => inputRef.current?.click()}
         >
           <Upload className="mr-2 h-4 w-4" />
-          {uploading ? "Uploading…" : "Replace image"}
+          {uploading ? t.admin.uploading : t.admin.replaceImage}
         </Button>
       </CardContent>
       <AlertDialog state={dialog} />
@@ -280,6 +288,7 @@ function ImageUploadCard({
 }
 
 export default function AdminContentPage() {
+  const t = useTranslations();
   const dialog = useDialog();
   const { showAlert } = dialog;
   const [tab, setTab] = useState<Tab>("en");
@@ -299,11 +308,11 @@ export default function AdminContentPage() {
       setContent(data.content);
       setHasChanges(false);
     } catch {
-      showAlert("Error", "Could not load website content", "error");
+      showAlert(t.common.error, t.admin.loadWebsiteError, "error");
     } finally {
       setIsLoading(false);
     }
-  }, [showAlert]);
+  }, [showAlert, t.admin.loadWebsiteError, t.common.error]);
 
   useEffect(() => {
     loadContent();
@@ -341,27 +350,27 @@ export default function AdminContentPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        dialog.showAlert("Error", data.error || "Could not save", "error");
+        dialog.showAlert(t.common.error, data.error || t.admin.couldNotSave, "error");
         return;
       }
       setContent(data.content);
       setHasChanges(false);
-      dialog.showAlert("Saved", "Website content updated", "success");
+      dialog.showAlert(t.admin.saved, t.admin.websiteUpdated, "success");
     } catch {
-      dialog.showAlert("Error", "Connection error", "error");
+      dialog.showAlert(t.common.error, t.admin.connectionError, "error");
     } finally {
       setIsSaving(false);
     }
   };
 
   if (isLoading || !content) {
-    return <LoadingPage label="Loading website content" />;
+    return <LoadingPage label={t.admin.loadingWebsite} />;
   }
 
   const tabs: { id: Tab; label: string; icon: typeof Globe }[] = [
-    { id: "en", label: "English", icon: Type },
-    { id: "el", label: "Greek (ΕΛ)", icon: Type },
-    { id: "media", label: "Images & contact", icon: ImageIcon },
+    { id: "en", label: t.admin.tabEnglish, icon: Type },
+    { id: "el", label: t.admin.tabGreek, icon: Type },
+    { id: "media", label: t.admin.tabMedia, icon: ImageIcon },
   ];
 
   return (
@@ -370,15 +379,13 @@ export default function AdminContentPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-              Website content
+              {t.admin.websiteTitle}
             </h1>
-            <p className="mt-1 text-[var(--text-muted)]">
-              Edit homepage text, images, and contact details shown to customers
-            </p>
+            <p className="mt-1 text-[var(--text-muted)]">{t.admin.websiteSub}</p>
           </div>
           <Button onClick={save} disabled={!hasChanges || isSaving}>
             <Save className="mr-2 h-4 w-4" />
-            {isSaving ? "Saving…" : "Save changes"}
+            {isSaving ? t.admin.saving : t.admin.saveChanges}
           </Button>
         </div>
 
@@ -405,9 +412,10 @@ export default function AdminContentPage() {
           <Card>
             <CardContent className="p-6">
               <LocaleFields
-                localeLabel="English"
+                localeLabel={t.admin.tabEnglish}
                 content={content.contentEn}
                 onChange={(contentEn) => updateContent({ contentEn })}
+                t={t.admin}
               />
             </CardContent>
           </Card>
@@ -417,9 +425,10 @@ export default function AdminContentPage() {
           <Card>
             <CardContent className="p-6">
               <LocaleFields
-                localeLabel="Ελληνικά"
+                localeLabel={t.admin.tabGreek}
                 content={content.contentEl}
                 onChange={(contentEl) => updateContent({ contentEl })}
+                t={t.admin}
               />
             </CardContent>
           </Card>
@@ -429,15 +438,13 @@ export default function AdminContentPage() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Studio details</CardTitle>
-                <CardDescription>
-                  Shown on the homepage, footer, and Google listing. Phone: +357 95 519786
-                </CardDescription>
+                <CardTitle>{t.admin.studioDetails}</CardTitle>
+                <CardDescription>{t.admin.studioDetailsSub}</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
-                    Studio name
+                    {t.admin.studioName}
                   </label>
                   <Input
                     value={content.name}
@@ -446,7 +453,7 @@ export default function AdminContentPage() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
-                    Address / location (English)
+                    {t.admin.addressEn}
                   </label>
                   <Input
                     value={content.location}
@@ -455,7 +462,7 @@ export default function AdminContentPage() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
-                    Address / location (Greek)
+                    {t.admin.addressEl}
                   </label>
                   <Input
                     value={content.locationEl}
@@ -464,7 +471,7 @@ export default function AdminContentPage() {
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
-                    Phone
+                    {t.admin.phone}
                   </label>
                   <Input
                     value={content.phone}
@@ -473,7 +480,7 @@ export default function AdminContentPage() {
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
-                    Email
+                    {t.admin.email}
                   </label>
                   <Input
                     type="email"
@@ -483,7 +490,7 @@ export default function AdminContentPage() {
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
-                    Price from (€)
+                    {t.admin.priceFrom}
                   </label>
                   <Input
                     type="number"
@@ -499,15 +506,15 @@ export default function AdminContentPage() {
 
             <div className="grid gap-6 lg:grid-cols-2">
               <ImageUploadCard
-                title="Hero image"
-                description="Upload a photo of your studio. The current picture is a placeholder (JPEG, PNG, or WebP, max 5MB)"
+                title={t.admin.heroImage}
+                description={t.admin.heroImageHint}
                 imageKey="hero"
                 currentUrl={content.heroImage}
                 onUploaded={(_url, savedContent) => applyPersistedContent(savedContent)}
               />
               <ImageUploadCard
-                title="Reformer image"
-                description="Second studio photo — use a real room or reformer shot, not a stock placeholder"
+                title={t.admin.reformerImage}
+                description={t.admin.reformerImageHint}
                 imageKey="reformer"
                 currentUrl={content.reformerImage}
                 onUploaded={(_url, savedContent) => applyPersistedContent(savedContent)}

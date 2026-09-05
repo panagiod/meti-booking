@@ -15,10 +15,29 @@ import {
   STUDIO_AFTERNOON_END,
   STUDIO_DEFAULT_GAP_MINUTES,
   countSlotsPerDay,
-  formatActiveDaysSummary,
+  formatScheduleHoursForLocale,
   weeklyScheduleTemplate,
   type StudioDaySchedule,
 } from "@/lib/studio-schedule";
+import {
+  formatMessage,
+  useLocale,
+  useTranslations,
+} from "@/components/providers/locale-provider";
+import type { Messages } from "@/i18n";
+import { getDateFnsLocale } from "@/lib/date-locale";
+
+function weekdayName(t: Messages["admin"], dayOfWeek: number) {
+  return [
+    t.weekdaySunday,
+    t.weekdayMonday,
+    t.weekdayTuesday,
+    t.weekdayWednesday,
+    t.weekdayThursday,
+    t.weekdayFriday,
+    t.weekdaySaturday,
+  ][dayOfWeek];
+}
 import { AdminWeekBoard } from "@/components/admin/admin-week-board";
 import { siteConfig } from "@/lib/site-config";
 import {
@@ -60,6 +79,8 @@ interface StudioData {
 }
 
 export default function AdminSchedulePage() {
+  const t = useTranslations();
+  const { locale } = useLocale();
   const dialog = useDialog();
   const { showAlert } = dialog;
   const [isLoading, setIsLoading] = useState(true);
@@ -116,11 +137,11 @@ export default function AdminSchedulePage() {
       setBlockedTimes(data.studio.blockedTimes);
       setHasChanges(false);
     } catch {
-      showAlert("Error", "Could not load studio calendar", "error");
+      showAlert(t.common.error, t.admin.loadCalendarError, "error");
     } finally {
       setIsLoading(false);
     }
-  }, [showAlert]);
+  }, [showAlert, t.admin.loadCalendarError, t.common.error]);
 
   useEffect(() => {
     loadStudio();
@@ -131,7 +152,10 @@ export default function AdminSchedulePage() {
     [schedule]
   );
 
-  const summary = useMemo(() => formatActiveDaysSummary(schedule), [schedule]);
+  const summary = useMemo(
+    () => formatScheduleHoursForLocale(schedule, locale),
+    [schedule, locale]
+  );
 
   const slotsPreview = useMemo(() => {
     const active = schedule.find((d) => d.isActive);
@@ -146,8 +170,13 @@ export default function AdminSchedulePage() {
 
   const cancelBooking = async (booking: StudioBooking) => {
     const confirmed = await dialog.showConfirm(
-      "Cancel booking",
-      `Free the ${format(new Date(booking.scheduledAt), "d MMM yyyy HH:mm")} slot for ${booking.clientName}?`,
+      t.admin.cancelBookingTitle,
+      formatMessage(t.admin.cancelBookingBody, {
+        when: format(new Date(booking.scheduledAt), "d MMM yyyy HH:mm", {
+          locale: getDateFnsLocale(locale),
+        }),
+        name: booking.clientName,
+      }),
       "warning"
     );
     if (!confirmed) return;
@@ -157,15 +186,19 @@ export default function AdminSchedulePage() {
         method: "PATCH",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reason: "Cancelled by admin" }),
+        body: JSON.stringify({ reason: t.admin.cancelReasonAdmin }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Could not cancel booking");
+        throw new Error(data.error || t.admin.couldNotCancel);
       }
       await refreshBookings();
     } catch (error) {
-      dialog.showAlert("Error", error instanceof Error ? error.message : "Could not cancel booking", "error");
+      dialog.showAlert(
+        t.common.error,
+        error instanceof Error ? error.message : t.admin.couldNotCancel,
+        "error"
+      );
     } finally {
       setCancellingBookingId(null);
     }
@@ -219,27 +252,27 @@ export default function AdminSchedulePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        dialog.showAlert("Error", data.error || "Could not save schedule", "error");
+        dialog.showAlert(t.common.error, data.error || t.admin.saveScheduleError, "error");
         return;
       }
       setSchedule(data.schedules);
       setHasChanges(false);
-      dialog.showAlert("Saved", "Studio calendar updated", "success");
+      dialog.showAlert(t.admin.saved, t.admin.calendarUpdated, "success");
     } catch {
-      dialog.showAlert("Error", "Connection error", "error");
+      dialog.showAlert(t.common.error, t.admin.connectionError, "error");
     } finally {
       setIsSaving(false);
     }
   };
 
   if (isLoading) {
-    return <LoadingPage label="Loading studio calendar" />;
+    return <LoadingPage label={t.admin.loadingCalendar} />;
   }
 
   if (!studio) {
     return (
       <div className="text-center py-16 text-[var(--text-muted)]">
-        No studio instructor configured. Run <code>pnpm demo:setup</code>.
+        {t.admin.noStudioConfigured}
       </div>
     );
   }
@@ -249,13 +282,12 @@ export default function AdminSchedulePage() {
       <div className="space-y-8 max-w-6xl">
         <div>
           <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-            Hours
+            {t.admin.hoursTitle}
           </h1>
           <p className="text-[var(--text-muted)] mt-1">
-            Set the weekly days and times clients can book at {studio.name}.
-            Block holidays or extra days off under{" "}
+            {formatMessage(t.admin.hoursSub, { name: studio.name })}{" "}
             <Link href="/admin/closures" className="text-[var(--primary)] hover:underline">
-              Closures
+              {t.admin.closuresLink}
             </Link>
             .
           </p>
@@ -267,10 +299,12 @@ export default function AdminSchedulePage() {
             <CardContent className="p-5 flex items-start gap-3">
               <Calendar className="w-5 h-5 text-[var(--primary)] mt-0.5" />
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Open days</p>
+                <p className="text-sm text-[var(--text-muted)]">{t.admin.openDays}</p>
                 <p className="font-semibold text-[var(--text-primary)]">{summary}</p>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                  {activeCount} day{activeCount === 1 ? "" : "s"} open for booking
+                  {activeCount === 1
+                    ? t.admin.daysOpenOne
+                    : formatMessage(t.admin.daysOpen, { count: activeCount })}
                 </p>
               </div>
             </CardContent>
@@ -279,12 +313,17 @@ export default function AdminSchedulePage() {
             <CardContent className="p-5 flex items-start gap-3">
               <Clock className="w-5 h-5 text-[var(--primary)] mt-0.5" />
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Sessions per day</p>
+                <p className="text-sm text-[var(--text-muted)]">{t.admin.sessionsPerDay}</p>
                 <p className="font-semibold text-[var(--text-primary)]">
-                  {slotsPreview?.perDay ?? "—"} time slots
+                  {slotsPreview
+                    ? formatMessage(t.admin.timeSlots, { count: slotsPreview.perDay })
+                    : "—"}
                 </p>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                  {studio.serviceDurationMin} min · {STUDIO_DEFAULT_GAP_MINUTES} min gap
+                  {formatMessage(t.admin.sessionGap, {
+                    duration: studio.serviceDurationMin,
+                    gap: STUDIO_DEFAULT_GAP_MINUTES,
+                  })}
                 </p>
               </div>
             </CardContent>
@@ -293,12 +332,12 @@ export default function AdminSchedulePage() {
             <CardContent className="p-5 flex items-start gap-3">
               <Users className="w-5 h-5 text-[var(--primary)] mt-0.5" />
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Capacity</p>
+                <p className="text-sm text-[var(--text-muted)]">{t.admin.capacity}</p>
                 <p className="font-semibold text-[var(--text-primary)]">
-                  {studio.slotCapacity} per slot
+                  {formatMessage(t.admin.perSlot, { count: studio.slotCapacity })}
                 </p>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
-                  Instructor: {studio.instructorName}
+                  {formatMessage(t.admin.instructor, { name: studio.instructorName })}
                 </p>
               </div>
             </CardContent>
@@ -323,9 +362,7 @@ export default function AdminSchedulePage() {
           <CardContent className="p-4 flex gap-3 text-sm text-[var(--text-primary)]">
             <Info className="w-5 h-5 shrink-0 text-[var(--primary)]" />
             <p>
-              Toggle the days you want open each week (e.g. Monday, Wednesday, Saturday).
-              Set start and end times per day. Changes apply immediately on the public
-              booking calendar after you save.
+              {t.admin.hoursHint}
             </p>
           </CardContent>
         </Card>
@@ -334,11 +371,11 @@ export default function AdminSchedulePage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <h2 className="font-heading text-xl font-semibold text-[var(--text-primary)]">
-              Weekly hours
+              {t.admin.weeklyHours}
             </h2>
             <Button onClick={saveSchedule} disabled={!hasChanges || isSaving || activeCount === 0}>
               <Save className="w-4 h-4 mr-2" />
-              {isSaving ? "Saving…" : "Save schedule"}
+              {isSaving ? t.admin.saving : t.admin.saveSchedule}
             </Button>
           </div>
 
@@ -359,7 +396,9 @@ export default function AdminSchedulePage() {
                           "w-12 h-6 rounded-full transition-colors relative shrink-0",
                           day.isActive ? "bg-[var(--success)]" : "bg-[var(--border)]"
                         )}
-                        aria-label={`Toggle ${day.dayName}`}
+                        aria-label={formatMessage(t.admin.toggleDay, {
+                          day: weekdayName(t.admin, day.dayOfWeek),
+                        })}
                       >
                         <span
                           className={cn(
@@ -369,7 +408,7 @@ export default function AdminSchedulePage() {
                         />
                       </button>
                       <span className="font-medium text-[var(--text-primary)]">
-                        {day.dayName}
+                        {weekdayName(t.admin, day.dayOfWeek)}
                       </span>
                     </div>
 
@@ -378,7 +417,7 @@ export default function AdminSchedulePage() {
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           <div>
                             <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              Start
+                              {t.admin.start}
                             </label>
                             <Input
                               type="time"
@@ -391,7 +430,7 @@ export default function AdminSchedulePage() {
                           </div>
                           <div>
                             <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              End
+                              {t.admin.end}
                             </label>
                             <Input
                               type="time"
@@ -404,7 +443,7 @@ export default function AdminSchedulePage() {
                           </div>
                           <div>
                             <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              Gap (min)
+                              {t.admin.gapMin}
                             </label>
                             <Input
                               type="number"
@@ -421,13 +460,15 @@ export default function AdminSchedulePage() {
                           </div>
                           <div className="flex items-end gap-2 text-sm text-[var(--text-muted)] pb-2">
                             <Clock className="w-4 h-4" />
-                            {countSlotsPerDay(day, studio.serviceDurationMin)} slots
+                            {formatMessage(t.admin.slotsCount, {
+                              count: countSlotsPerDay(day, studio.serviceDurationMin),
+                            })}
                           </div>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           <div>
                             <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              Lunch start (optional)
+                              {t.admin.lunchStart}
                             </label>
                             <Input
                               type="time"
@@ -440,7 +481,7 @@ export default function AdminSchedulePage() {
                           </div>
                           <div>
                             <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              Lunch end (optional)
+                              {t.admin.lunchEnd}
                             </label>
                             <Input
                               type="time"
@@ -455,7 +496,7 @@ export default function AdminSchedulePage() {
                       </div>
                     ) : (
                       <p className="text-sm text-[var(--text-muted)] italic flex-1">
-                        Closed — not bookable
+                        {t.admin.closedNotBookable}
                       </p>
                     )}
                   </div>

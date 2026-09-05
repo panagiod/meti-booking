@@ -6,38 +6,13 @@ import { useAdminDashboard } from "@/lib/hooks";
 import { Users, Calendar, TrendingUp, ArrowRight, ClipboardList, Clock, Ban } from "lucide-react";
 import Link from "next/link";
 import { AdminDashboardSchedule } from "@/components/admin/admin-dashboard-schedule";
-
-const shortcuts = [
-  {
-    href: "/admin/bookings",
-    title: "Bookings",
-    description: "Who is coming and free a slot",
-    icon: ClipboardList,
-  },
-  {
-    href: "/admin/users",
-    title: "Clients",
-    description: "Names, phone, and session dates",
-    icon: Users,
-  },
-  {
-    href: "/admin/schedule",
-    title: "Hours",
-    description: "Weekly open days and times",
-    icon: Clock,
-  },
-  {
-    href: "/admin/closures",
-    title: "Closures",
-    description: "Holidays and extra days off",
-    icon: Ban,
-  },
-];
+import { useTranslations } from "@/components/providers/locale-provider";
 
 export default function AdminDashboard() {
+  const t = useTranslations();
   const { data, isLoading } = useAdminDashboard();
 
-  if (isLoading) return <LoadingPage />;
+  if (isLoading) return <LoadingPage label={t.admin.loading} />;
 
   const stats = data?.stats || {
     totalUsers: 0,
@@ -46,13 +21,40 @@ export default function AdminDashboard() {
     upcomingAppointments: 0,
   };
 
+  const shortcuts = [
+    {
+      href: "/admin/bookings",
+      title: t.admin.shortcutBookings,
+      description: t.admin.shortcutBookingsSub,
+      icon: ClipboardList,
+    },
+    {
+      href: "/admin/users",
+      title: t.admin.shortcutClients,
+      description: t.admin.shortcutClientsSub,
+      icon: Users,
+    },
+    {
+      href: "/admin/schedule",
+      title: t.admin.shortcutHours,
+      description: t.admin.shortcutHoursSub,
+      icon: Clock,
+    },
+    {
+      href: "/admin/closures",
+      title: t.admin.shortcutClosures,
+      description: t.admin.shortcutClosuresSub,
+      icon: Ban,
+    },
+  ];
+
   return (
     <div className="space-y-8">
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          Studio overview
+          {t.admin.overviewTitle}
         </h1>
-        <p className="text-[var(--text-muted)] mt-1">This week’s schedule and today’s sessions</p>
+        <p className="text-[var(--text-muted)] mt-1">{t.admin.overviewSub}</p>
       </div>
 
       <Link href="/book">
@@ -64,11 +66,9 @@ export default function AdminDashboard() {
               </div>
               <div className="flex-1">
                 <h3 className="font-heading font-semibold text-[var(--text-primary)] mb-1">
-                  Book a session
+                  {t.admin.bookForClientTitle}
                 </h3>
-                <p className="text-sm text-[var(--text-muted)]">
-                  Open the public calendar to book for a client
-                </p>
+                <p className="text-sm text-[var(--text-muted)]">{t.admin.bookForClientSub}</p>
               </div>
               <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all" />
             </div>
@@ -102,7 +102,7 @@ export default function AdminDashboard() {
                 <Calendar className="w-5 h-5 text-[var(--accent)]" />
               </div>
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Sessions today</p>
+                <p className="text-sm text-[var(--text-muted)]">{t.admin.sessionsToday}</p>
                 <p className="text-xl font-heading font-bold text-[var(--text-primary)]">
                   {stats.todayAppointments}
                 </p>
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
                 <TrendingUp className="w-5 h-5 text-[var(--success)]" />
               </div>
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Completed today</p>
+                <p className="text-sm text-[var(--text-muted)]">{t.admin.completedToday}</p>
                 <p className="text-xl font-heading font-bold text-[var(--text-primary)]">
                   {stats.completedToday}
                 </p>
@@ -134,7 +134,7 @@ export default function AdminDashboard() {
                 <ClipboardList className="w-5 h-5 text-[var(--primary)]" />
               </div>
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Upcoming</p>
+                <p className="text-sm text-[var(--text-muted)]">{t.admin.upcoming}</p>
                 <p className="text-xl font-heading font-bold text-[var(--text-primary)]">
                   {stats.upcomingAppointments}
                 </p>
@@ -150,7 +150,7 @@ export default function AdminDashboard() {
                 <Users className="w-5 h-5 text-[var(--primary)]" />
               </div>
               <div>
-                <p className="text-sm text-[var(--text-muted)]">Clients</p>
+                <p className="text-sm text-[var(--text-muted)]">{t.admin.clients}</p>
                 <p className="text-xl font-heading font-bold text-[var(--text-primary)]">
                   {stats.totalUsers}
                 </p>
