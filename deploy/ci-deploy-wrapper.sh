@@ -12,9 +12,22 @@ fi
 
 cd "$REPO"
 
-# Backup jobs must not deploy. `ssh host METI_BACKUP` sets SSH_ORIGINAL_COMMAND.
+# Backup / restore jobs must not deploy. `ssh host METI_BACKUP` sets SSH_ORIGINAL_COMMAND.
 if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_BACKUP" ]]; then
   exec "$REPO/deploy/backup-studio-data.sh" --stdout
+fi
+
+if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_RESTORE" ]]; then
+  tmp="$(mktemp)"
+  cleanup_restore() { rm -f "$tmp"; }
+  trap cleanup_restore EXIT
+  base64 -d >"$tmp"
+  if [[ ! -s "$tmp" ]]; then
+    echo "ERROR: empty restore payload" >&2
+    exit 1
+  fi
+  CONFIRM=RESTORE "$REPO/deploy/restore-studio-data.sh" "$tmp"
+  exit 0
 fi
 
 git fetch origin main

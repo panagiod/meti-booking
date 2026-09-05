@@ -68,8 +68,12 @@ if [[ -f "$ROOT/.env" ]] && grep -q '^BACKUP_ENCRYPTION_KEY=' "$ROOT/.env"; then
   echo ""
 fi
 
+echo "Also add these so backups stay in the private ops repo (see deploy/OPS.md):"
+echo "  OPS_REPO=panagiod/meti-studio-ops"
+echo "  OPS_REPO_TOKEN=<fine-grained PAT with Contents write on that private repo>"
+echo ""
 echo "After adding secrets, push to main or run:"
 echo "  GitHub → Actions → Deploy Production → Run workflow"
 echo ""
-echo "Daily encrypted backups are saved to the GitHub backups branch."
+echo "Daily encrypted backups are saved to the private meti-studio-ops repo."
 echo "Deploy logs on this server: /var/log/meti-booking/deploy.log"

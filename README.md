@@ -55,6 +55,8 @@ Open [http://localhost:3000](http://localhost:3000) → **Book**.
 
 See [docs/ADMIN.md](docs/ADMIN.md) for details.
 
+Production backups and restore live in a **private** ops repo. Setup: [deploy/OPS.md](deploy/OPS.md).
+
 ---
 
 ## Scripts

@@ -4,7 +4,9 @@ MeTi Pilates stores the schedule, blocked dates, and customer bookings in one SQ
 
 `/var/lib/meti-booking/data.db`
 
-This repo is public, so backups copied to GitHub are **encrypted**.
+The public repo must not keep those files in plaintext. Encrypted copies go to the **private** ops repo.
+
+**Setup and disaster recovery:** [OPS.md](./OPS.md)
 
 ## What runs automatically
 
@@ -13,35 +15,26 @@ This repo is public, so backups copied to GitHub are **encrypted**.
    - encrypted files in `/var/lib/meti-booking/backups/`
    - last 7 raw copies on the server only
 2. **GitHub Actions, every night and after each deploy**  
-   Pulls the encrypted file over the restricted deploy SSH key and commits it to the `backups` branch.
+   Pulls the encrypted database and `.env` over the restricted deploy SSH key and commits them to `panagiod/meti-studio-ops`.
 
-## Restore the website schedule and customers
+## Restore the live database (same VPS)
 
-On the production server:
+GitHub → **Actions → Restore Production** → backup `latest` → confirm `RESTORE`
+
+Or on the server, after downloading `latest.db.enc` from the private repo:
 
 ```bash
 cd ~/meti-booking
-git fetch origin backups
-git show origin/backups:backups/latest.db.enc > /tmp/meti-restore.db.enc
 CONFIRM=RESTORE ./deploy/restore-studio-data.sh /tmp/meti-restore.db.enc
 ```
 
-To restore a specific day, use `backups/YYYY-MM-DD.db.enc` instead of `latest.db.enc`.
-
-The restore script:
-
-- decrypts with `BACKUP_ENCRYPTION_KEY`
-- saves the current database first
-- stops `meti-booking`, replaces `data.db`, starts the app again
+The restore script decrypts with `BACKUP_ENCRYPTION_KEY`, saves the current database first, then replaces `data.db`.
 
 ## If the server is gone
 
-1. Recreate the VPS and deploy from `main`.
-2. Copy `BACKUP_ENCRYPTION_KEY` into `.env`.
-3. Download `backups/latest.db.enc` from the GitHub `backups` branch.
-4. Run `CONFIRM=RESTORE ./deploy/restore-studio-data.sh /path/to/latest.db.enc`.
+Use **Actions → Rebuild Production** on a new VPS, or run `CONFIRM=REBUILD ./deploy/bootstrap-from-ops.sh latest`. Full steps are in [OPS.md](./OPS.md).
 
-Store `BACKUP_ENCRYPTION_KEY` in a password manager. The GitHub files are useless without it.
+Store `BACKUP_ENCRYPTION_KEY` in a password manager and as the GitHub secret of the same name.
 
 ## Manual backup
 

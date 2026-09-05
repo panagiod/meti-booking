@@ -6,8 +6,8 @@ fingerprint = sys.argv[2]
 Path("backups").mkdir(exist_ok=True)
 Path("backups/README.md").write_text(
     "# MeTi Pilates encrypted backups\n\n"
-    "These files restore the live SQLite database (schedule, blocked days, and customer bookings).\n"
-    "The GitHub repo is public, so every file is encrypted.\n\n"
+    "Fallback copies only. Prefer the private `meti-studio-ops` repo once OPS_REPO_TOKEN is set.\n"
+    "The GitHub app repo is public, so every file is encrypted.\n\n"
     "Restore on the server:\n\n"
     "```bash\n"
     "cd ~/meti-booking\n"

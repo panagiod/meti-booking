@@ -33,6 +33,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Schema changes: `pnpm db:migrate` + update `demo-setup.ts`
 - After seed changes: `pnpm demo:setup`
 - Production: set `ENCRYPTION_KEY`, `STUDIO_TIMEZONE`, `CRON_SECRET`
+- **Private ops repo:** encrypted DB + `.env` backups, restore/rebuild Actions — [deploy/OPS.md](deploy/OPS.md)
 - **Hetzner VPS:** `SELF_HOSTED=1`, use `./deploy/deploy.sh` — see [docs/HOSTING.md](docs/HOSTING.md)
 - **Vercel:** `BLOB_READ_WRITE_TOKEN` for admin uploads
 

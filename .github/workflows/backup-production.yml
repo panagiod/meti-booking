@@ -57,11 +57,39 @@ jobs:
           base64 -d "$RUNNER_TEMP/backup.b64" > "$RUNNER_TEMP/backup.db.enc"
           test -s "$RUNNER_TEMP/backup.db.enc"
 
+          awk '/^METI_ENV_BEGIN$/{p=1;next} /^METI_ENV_END$/{p=0} p' \
+            "$RUNNER_TEMP/backup.txt" > "$RUNNER_TEMP/env.b64" || true
+          if [ -s "$RUNNER_TEMP/env.b64" ]; then
+            base64 -d "$RUNNER_TEMP/env.b64" > "$RUNNER_TEMP/backup.env.enc"
+          fi
+
+          awk '/^METI_INVENTORY_BEGIN$/{p=1;next} /^METI_INVENTORY_END$/{p=0} p' \
+            "$RUNNER_TEMP/backup.txt" > "$RUNNER_TEMP/backup.inventory" || true
+
           grep '^METI_BACKUP_' "$RUNNER_TEMP/backup.txt" | grep -v BEGIN | grep -v END \
             > "$RUNNER_TEMP/backup.meta" || true
           cat "$RUNNER_TEMP/backup.meta"
 
-      - name: Publish to backups branch
+      - name: Publish to private ops repo
+        id: ops
+        env:
+          OPS_REPO: ${{ secrets.OPS_REPO }}
+          OPS_REPO_TOKEN: ${{ secrets.OPS_REPO_TOKEN }}
+        run: |
+          if [ -z "$OPS_REPO_TOKEN" ]; then
+            echo "published=0" >> "$GITHUB_OUTPUT"
+            echo "::warning::OPS_REPO_TOKEN is not set. Create private repo panagiod/meti-studio-ops and add the token. See deploy/OPS.md."
+            exit 0
+          fi
+          export OPS_REPO="${OPS_REPO:-panagiod/meti-studio-ops}"
+          export DAY="$(grep '^METI_BACKUP_DAY=' "$RUNNER_TEMP/backup.meta" | cut -d= -f2 || date -u +%Y-%m-%d)"
+          export FINGERPRINT="$(grep '^METI_BACKUP_FINGERPRINT=' "$RUNNER_TEMP/backup.meta" | cut -d= -f2 || true)"
+          chmod +x .github/scripts/publish-ops-backup.sh
+          .github/scripts/publish-ops-backup.sh
+          echo "published=1" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to public backups branch (fallback only)
+        if: steps.ops.outputs.published != '1'
         env:
           GIT_AUTHOR_NAME: meti-backup
           GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com

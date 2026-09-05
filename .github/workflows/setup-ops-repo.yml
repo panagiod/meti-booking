@@ -1,0 +1,27 @@
+name: Setup Ops Repo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    name: Create or initialize the private ops repo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize private repo
+        env:
+          OPS_REPO: ${{ secrets.OPS_REPO }}
+          OPS_REPO_TOKEN: ${{ secrets.OPS_REPO_TOKEN }}
+        run: |
+          if [ -z "$OPS_REPO_TOKEN" ]; then
+            echo "::error::Add OPS_REPO_TOKEN first. See deploy/OPS.md"
+            exit 1
+          fi
+          export OPS_REPO="${OPS_REPO:-panagiod/meti-studio-ops}"
+          chmod +x deploy/setup-ops-repo.sh
+          ./deploy/setup-ops-repo.sh

@@ -29,7 +29,7 @@ Push to `main` or: **Actions → Deploy Production → Run workflow**
 
 ---
 
-Keep `BACKUP_ENCRYPTION_KEY` from the server `.env` in a password manager. Daily backups go to the GitHub `backups` branch encrypted with that key.
+Keep `BACKUP_ENCRYPTION_KEY` from the server `.env` in a password manager and as a GitHub secret. Encrypted backups go to the private `meti-studio-ops` repo — see [OPS.md](./OPS.md).
 
 After this, **every push deploys automatically** — no more manual `git pull` or `./deploy/deploy-lite.sh`.
 

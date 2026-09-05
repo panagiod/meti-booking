@@ -26,7 +26,7 @@ Hetzner VPS — ci-deploy-wrapper.sh
 - **`.env` stays on the server** — never committed; `git reset --hard` does not delete it.
 - **Deploy logs:** `/var/log/meti-booking/deploy.log` on the VPS.
 - **Manual deploy:** GitHub → Actions → **Deploy Production** → **Run workflow**.
-- **Daily backup:** encrypted SQLite copy on the `backups` branch — see [BACKUP.md](./BACKUP.md).
+- **Daily backup:** encrypted SQLite + `.env` in the private `meti-studio-ops` repo — see [OPS.md](./OPS.md).
 
 ---
 
