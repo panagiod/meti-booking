@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/generated/prisma/client";
 import { isStudioAdminEmail } from "@/lib/studio-admins";
 import {
   DELETED_ACCOUNT_NAME,
@@ -6,6 +7,15 @@ import {
   deletedEmailFor,
   OPEN_BOOKING_STATUSES,
 } from "@/lib/account-privacy";
+
+type ExportedBooking = {
+  id: string;
+  scheduledAt: Date;
+  durationMin: number;
+  status: string;
+  totalCents: number;
+  service: { name: string };
+};
 
 export async function exportClientAccount(userId: string) {
   const user = await prisma.user.findUnique({
@@ -40,7 +50,7 @@ export async function exportClientAccount(userId: string) {
       phone: user.client?.phone ?? null,
       createdAt: user.createdAt.toISOString(),
     },
-    bookings: user.appointments.map((appointment) => ({
+    bookings: user.appointments.map((appointment: ExportedBooking) => ({
       id: appointment.id,
       service: appointment.service.name,
       scheduledAt: appointment.scheduledAt.toISOString(),
@@ -81,7 +91,7 @@ export async function eraseClientAccount(userId: string) {
     };
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.session.deleteMany({ where: { userId } });
     await tx.account.deleteMany({ where: { userId } });
     await tx.clientProfile.updateMany({ where: { userId }, data: { phone: null } });
