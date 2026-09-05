@@ -98,7 +98,7 @@ export function CalendarPicker({
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <h3 className="font-display text-xl capitalize text-[var(--studio-ink)]">
+          <h3 className="font-display text-xl text-[var(--studio-ink)]">
             {format(currentMonth, "MMMM yyyy", { locale: dateFnsLocale })}
           </h3>
           <button

@@ -56,10 +56,17 @@ function readStoredLocale(): Locale {
   return detectBrowserLocale();
 }
 
+function applyDocumentLocale(locale: Locale) {
+  const root = document.documentElement;
+  root.lang = locale;
+  root.dir = "ltr";
+  root.classList.toggle("locale-el", locale === "el");
+}
+
 function persistLocale(locale: Locale) {
   document.cookie = `${LOCALE_COOKIE}=${locale};path=/;max-age=31536000;SameSite=Lax`;
   localStorage.setItem(LOCALE_COOKIE, locale);
-  document.documentElement.lang = locale;
+  applyDocumentLocale(locale);
 }
 
 const defaultContent = buildDefaultStudioContent();
@@ -98,7 +105,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const stored = readStoredLocale();
     setLocaleState(stored);
-    document.documentElement.lang = stored;
+    applyDocumentLocale(stored);
     setReady(true);
     loadStudioContent();
   }, [loadStudioContent]);

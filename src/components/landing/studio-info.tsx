@@ -75,13 +75,13 @@ export function StudioInfo() {
         </h2>
         <p className="mt-3 max-w-xl text-base text-[var(--studio-muted)]">{t.visit.subtitle}</p>
 
-        <dl className="mt-10 grid gap-6 sm:grid-cols-2">
+        <dl className="mt-10 grid min-w-0 gap-6 sm:grid-cols-2">
           <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-5">
             <dt className="flex items-center gap-2 text-sm font-medium text-[var(--studio-ink)]">
               <Clock className="h-4 w-4" />
               {t.visit.hours}
             </dt>
-            <dd className="mt-2 text-sm leading-relaxed text-[var(--studio-muted)]">{hours}</dd>
+            <dd className="mt-2 break-words text-sm leading-relaxed text-[var(--studio-muted)]">{hours}</dd>
           </div>
           <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-5">
             <dt className="flex items-center gap-2 text-sm font-medium text-[var(--studio-ink)]">
