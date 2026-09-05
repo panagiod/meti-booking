@@ -430,7 +430,9 @@ export default function AdminContentPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Studio details</CardTitle>
-                <CardDescription>Shown in the header, footer, and contact links</CardDescription>
+                <CardDescription>
+                  Shown on the homepage, footer, and Google listing. Phone: +357 95 519786
+                </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">
@@ -489,14 +491,14 @@ export default function AdminContentPage() {
             <div className="grid gap-6 lg:grid-cols-2">
               <ImageUploadCard
                 title="Hero image"
-                description="Large image on the homepage (JPEG, PNG, or WebP, max 5MB)"
+                description="Upload a photo of your studio. The current picture is a placeholder (JPEG, PNG, or WebP, max 5MB)"
                 imageKey="hero"
                 currentUrl={content.heroImage}
                 onUploaded={(_url, savedContent) => applyPersistedContent(savedContent)}
               />
               <ImageUploadCard
                 title="Reformer image"
-                description="Secondary studio photo (used if session cards are shown)"
+                description="Second studio photo — use a real room or reformer shot, not a stock placeholder"
                 imageKey="reformer"
                 currentUrl={content.reformerImage}
                 onUploaded={(_url, savedContent) => applyPersistedContent(savedContent)}

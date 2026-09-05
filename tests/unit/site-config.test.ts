@@ -1,5 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { getSiteUrl, getStudioNotificationEmail, getStudioNotificationEmails, isPublicPhone, sanitizeStudioPhone } from "@/lib/site-config";
+import {
+  formatStudioPhone,
+  getSiteUrl,
+  getStudioNotificationEmail,
+  getStudioNotificationEmails,
+  isPublicPhone,
+  sanitizeStudioPhone,
+  siteConfig,
+  studioTelHref,
+} from "@/lib/site-config";
 
 describe("getSiteUrl", () => {
   afterEach(() => {
@@ -70,5 +79,12 @@ describe("studio phone", () => {
   it("keeps a real number", () => {
     expect(isPublicPhone("+357 25 123456")).toBe(true);
     expect(sanitizeStudioPhone(" +357 25 123456 ")).toBe("+357 25 123456");
+  });
+
+  it("publishes the Cyprus studio mobile", () => {
+    expect(siteConfig.phone).toBe("+35795519786");
+    expect(isPublicPhone(siteConfig.phone)).toBe(true);
+    expect(formatStudioPhone(siteConfig.phone)).toBe("+357 95 519786");
+    expect(studioTelHref(siteConfig.phone)).toBe("tel:+35795519786");
   });
 });

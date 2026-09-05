@@ -2,8 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { siteConfig } from "@/lib/site-config";
-import { useTranslations, useStudioBranding } from "@/components/providers/locale-provider";
+import {
+  formatStudioPhone,
+  isPublicPhone,
+  siteConfig,
+  studioTelHref,
+} from "@/lib/site-config";
+import {
+  formatMessage,
+  useTranslations,
+  useStudioBranding,
+} from "@/components/providers/locale-provider";
 
 export function Hero() {
   const t = useTranslations();
@@ -37,13 +46,25 @@ export function Hero() {
             </p>
             {session && (
               <p className="mt-4 text-sm text-[var(--studio-ink)]">
-                {t.sessions.types.reformer.duration} · {t.sessions.fromPrice} €{studio.sessionPriceFrom}
+                {formatMessage(t.hero.priceLine, { price: studio.sessionPriceFrom })}
+                <span className="mx-2 text-[var(--studio-line)]">·</span>
+                {formatMessage(t.hero.classSize, { count: siteConfig.slotCapacity })}
+                <span className="mx-2 text-[var(--studio-line)]">·</span>
+                {t.hero.payAtStudio}
               </p>
             )}
-            <div className="mt-8 sm:mt-10">
+            <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:items-center">
               <Link href="/book" className="studio-btn studio-btn-primary w-full sm:w-auto">
                 {t.hero.bookSession}
               </Link>
+              {isPublicPhone(studio.phone) ? (
+                <a
+                  href={studioTelHref(studio.phone)}
+                  className="studio-btn studio-btn-ghost w-full text-center sm:w-auto"
+                >
+                  {formatStudioPhone(studio.phone)}
+                </a>
+              ) : null}
             </div>
             <p className="mt-8 text-sm leading-relaxed break-words text-[var(--studio-muted)] sm:mt-12">
               {studio.location}

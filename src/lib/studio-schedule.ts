@@ -205,29 +205,33 @@ export function formatScheduleHoursForLocale(
   }
 
   const dayAbbrev = locale === "el" ? DAY_ABBREV_EL : DAY_ABBREV_EN;
-  const days = active.map((d) => dayAbbrev[d.dayOfWeek]).join(", ");
+  const groups: Array<{ startTime: string; endTime: string; days: number[] }> = [];
 
-  const sameHours = active.every(
-    (d) => d.startTime === active[0].startTime && d.endTime === active[0].endTime
-  );
-
-  if (sameHours) {
-    const timeRange =
-      locale === "el"
-        ? `${active[0].startTime}–${active[0].endTime}`
-        : `${formatTime12(active[0].startTime)}–${formatTime12(active[0].endTime)}`;
-    return `${days} · ${timeRange}`;
+  for (const day of active) {
+    const existing = groups.find(
+      (group) => group.startTime === day.startTime && group.endTime === day.endTime
+    );
+    if (existing) {
+      existing.days.push(day.dayOfWeek);
+    } else {
+      groups.push({
+        startTime: day.startTime,
+        endTime: day.endTime,
+        days: [day.dayOfWeek],
+      });
+    }
   }
 
-  return active
-    .map((d) => {
+  return groups
+    .map((group) => {
+      const days = group.days.map((dow) => dayAbbrev[dow]).join(", ");
       const timeRange =
         locale === "el"
-          ? `${d.startTime}–${d.endTime}`
-          : `${formatTime12(d.startTime)}–${formatTime12(d.endTime)}`;
-      return `${dayAbbrev[d.dayOfWeek]} ${timeRange}`;
+          ? `${group.startTime}–${group.endTime}`
+          : `${formatTime12(group.startTime)}–${formatTime12(group.endTime)}`;
+      return `${days} ${timeRange}`;
     })
-    .join(locale === "el" ? " · " : " · ");
+    .join(" · ");
 }
 
 /** Demo seed rows: Tue/Thu 15:45–18:00 slots, Sat morning with 10:15–10:30 break */

@@ -51,7 +51,7 @@ export function normalizeStudioContent(data: unknown): StudioContentData {
   return studioContentSchema.parse({
     ...defaults,
     ...raw,
-    phone: sanitizeStudioPhone(raw.phone ?? defaults.phone),
+    phone: sanitizeStudioPhone(raw.phone) || defaults.phone,
     contentEn: mergeLocaleContent("en", raw.contentEn),
     contentEl: mergeLocaleContent("el", raw.contentEl),
   });

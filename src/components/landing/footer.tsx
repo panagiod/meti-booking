@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations, useStudioBranding } from "@/components/providers/locale-provider";
+import { formatStudioPhone, isPublicPhone, studioTelHref } from "@/lib/site-config";
 
 export function Footer() {
   const t = useTranslations();
@@ -31,6 +32,14 @@ export function Footer() {
           <Link href="/cookies" className="transition hover:text-[var(--studio-ink)]">
             {t.footer.cookies}
           </Link>
+          {isPublicPhone(studio.phone) ? (
+            <a
+              href={studioTelHref(studio.phone)}
+              className="transition hover:text-[var(--studio-ink)]"
+            >
+              {formatStudioPhone(studio.phone)}
+            </a>
+          ) : null}
           <Link href={`mailto:${studio.email}`} className="transition hover:text-[var(--studio-ink)]">
             {t.footer.contact}
           </Link>

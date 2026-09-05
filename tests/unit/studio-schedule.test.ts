@@ -97,10 +97,10 @@ describe("studio-schedule", () => {
     });
 
     expect(formatScheduleHoursForLocale(schedule, "en")).toBe(
-      "Tue 3:45pm–6:45pm · Thu 3:45pm–6:45pm · Sat 8am–1:30pm"
+      "Tue, Thu 3:45pm–6:45pm · Sat 8am–1:30pm"
     );
     expect(formatScheduleHoursForLocale(schedule, "el")).toBe(
-      "Τρί 15:45–18:45 · Πέμ 15:45–18:45 · Σάβ 08:00–13:30"
+      "Τρί, Πέμ 15:45–18:45 · Σάβ 08:00–13:30"
     );
   });
 });

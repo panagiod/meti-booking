@@ -22,7 +22,42 @@ const en: Messages = {
       "Physiotherapy-based reformer pilates in small groups — personalized care, safe movement, and lasting results.",
     bookSession: "Book reformer",
     viewSessions: "View details",
-    imageAlt: "Pilates reformer session in a bright minimalist studio",
+    imageAlt: "Reformer pilates — book a session in Limassol",
+    priceLine: "€{price} · 45 min",
+    payAtStudio: "Pay at the studio",
+    classSize: "Up to {count} people",
+  },
+  visit: {
+    title: "Visit the studio",
+    subtitle: "Agios Ioannis Pitsilias, Limassol. Book online or call.",
+    hours: "Hours",
+    price: "Price",
+    priceDetail: "€{price} · 45 minutes · pay at the studio",
+    classSize: "Class size",
+    classSizeDetail: "Small groups, up to {count} people",
+    address: "Address",
+    directions: "Open in Google Maps",
+    phone: "Phone",
+    email: "Email",
+    book: "Book a time",
+  },
+  how: {
+    title: "How to book",
+    subtitle: "Reserve a reformer place on your phone in under a minute.",
+    steps: [
+      {
+        title: "Pick a day",
+        description: "Classes are Tuesday, Thursday, and Saturday. The next open day is highlighted.",
+      },
+      {
+        title: "Choose a time",
+        description: "Each slot has up to 3 places. Full times stay visible so you can pick another.",
+      },
+      {
+        title: "Confirm",
+        description: "Leave your name and email. Payment is at the studio — no card needed online.",
+      },
+    ],
   },
   about: {
     title: "About us | Meropi Tirri",

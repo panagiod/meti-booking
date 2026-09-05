@@ -25,6 +25,28 @@ export type Messages = {
     bookSession: string;
     viewSessions: string;
     imageAlt: string;
+    priceLine: string;
+    payAtStudio: string;
+    classSize: string;
+  };
+  visit: {
+    title: string;
+    subtitle: string;
+    hours: string;
+    price: string;
+    priceDetail: string;
+    classSize: string;
+    classSizeDetail: string;
+    address: string;
+    directions: string;
+    phone: string;
+    email: string;
+    book: string;
+  };
+  how: {
+    title: string;
+    subtitle: string;
+    steps: Array<{ title: string; description: string }>;
   };
   about: {
     title: string;

@@ -21,8 +21,7 @@ export const siteConfig = {
   currency: "EUR",
   deliveryMode: "in-person" as const,
   location: "60A Christoforou Giatrou, Agios Ioannis Pitsilias, 4071 Limassol",
-  /** Public phone — leave empty until a real studio number is confirmed. */
-  phone: "",
+  phone: "+35795519786",
   email: "tyrri_meropi@hotmail.com",
   hours: "Tue, Thu, Sat · see booking calendar",
   images: {
@@ -110,4 +109,21 @@ export function isPublicPhone(phone: string | null | undefined): boolean {
 
 export function sanitizeStudioPhone(phone: string | null | undefined): string {
   return isPublicPhone(phone) ? phone!.trim() : "";
+}
+
+/** Display form for the studio mobile, e.g. +357 95 519786. */
+export function formatStudioPhone(phone: string | null | undefined): string {
+  const trimmed = phone?.trim() ?? "";
+  const digits = trimmed.replace(/\D/g, "");
+  if (digits === "35795519786") return "+357 95 519786";
+  return trimmed;
+}
+
+export function studioTelHref(phone: string | null | undefined): string {
+  const digits = (phone ?? "").replace(/\D/g, "");
+  return digits ? `tel:+${digits}` : "";
+}
+
+export function studioMapsUrl(location: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
 }

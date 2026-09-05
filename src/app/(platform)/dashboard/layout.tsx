@@ -15,12 +15,12 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Logo } from "@/components/ui/logo";
 import { LoadingPage } from "@/components/ui/loading";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { useTranslations } from "@/components/providers/locale-provider";
 import { loginUrl } from "@/lib/auth-redirect";
+import { isStudioAdminEmail } from "@/lib/studio-admins";
 
 const navigation = [
   {
@@ -70,6 +70,7 @@ export default function DashboardLayout({
           }
           setUser(data.user);
           let role = (data.user as { role?: string }).role;
+          const email = (data.user as { email?: string }).email;
           if (role !== "ADMIN") {
             try {
               const claim = await fetch("/api/admin/claim", {
@@ -85,7 +86,7 @@ export default function DashboardLayout({
             }
           }
           const viewingBookings = pathname.startsWith("/dashboard/appointments");
-          if (role === "ADMIN" && !viewingBookings) {
+          if ((role === "ADMIN" || isStudioAdminEmail(email)) && !viewingBookings) {
             router.replace("/admin");
             return;
           }
@@ -232,7 +233,6 @@ export default function DashboardLayout({
 
             <div className="flex items-center gap-4">
               <LanguageSwitcher className="border-[var(--border)]" />
-              <ThemeToggle />
             </div>
           </div>
         </header>

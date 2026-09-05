@@ -8,6 +8,7 @@ import { RedirectLoading } from "@/components/ui/redirect-loading";
 import { useCheckoutStore } from "@/lib/checkout-store";
 import { clearPendingBooking, peekPendingBooking } from "@/lib/booking-utils";
 import { homePathForRole, isSafeAuthNext, loginUrl } from "@/lib/auth-redirect";
+import { isStudioAdminEmail } from "@/lib/studio-admins";
 
 function RedirectContent() {
   const router = useRouter();
@@ -63,7 +64,7 @@ function RedirectContent() {
           return;
         }
 
-        if (role === "ADMIN") {
+        if (role === "ADMIN" || isStudioAdminEmail(user.email)) {
           router.replace("/admin");
           return;
         }

@@ -6,7 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { LocaleProvider } from "@/components/providers/locale-provider";
-import { getSiteUrl } from "@/lib/site-config";
+import { getSiteUrl, siteConfig } from "@/lib/site-config";
 import "./globals.css";
 import "@/styles/studio.css";
 
@@ -93,13 +93,39 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "WebApplication",
+              "@type": ["LocalBusiness", "ExerciseGym"],
               name: "Meropi Tirri",
+              alternateName: "MeTi Pilates",
               description:
-                "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups.",
+                "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups in Limassol.",
               url: siteUrl,
-              applicationCategory: "BusinessApplication",
-              operatingSystem: "Web",
+              telephone: siteConfig.phone,
+              email: siteConfig.email,
+              image: `${siteUrl}/images/hero.jpg`,
+              priceRange: "€10",
+              currenciesAccepted: "EUR",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "60A Christoforou Giatrou",
+                addressLocality: "Agios Ioannis Pitsilias",
+                postalCode: "4071",
+                addressRegion: "Limassol",
+                addressCountry: "CY",
+              },
+              openingHoursSpecification: [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: ["Tuesday", "Thursday"],
+                  opens: "15:45",
+                  closes: "18:45",
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: "Saturday",
+                  opens: "08:00",
+                  closes: "13:30",
+                },
+              ],
             }),
           }}
         />

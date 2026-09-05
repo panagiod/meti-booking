@@ -8,6 +8,7 @@ import { LoadingPage } from "@/components/ui/loading";
 import { Calendar, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { loginUrl } from "@/lib/auth-redirect";
+import { isStudioAdminEmail } from "@/lib/studio-admins";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export default function DashboardPage() {
           return;
         }
         let role = (data.user as { role?: string }).role;
+        const email = (data.user as { email?: string }).email;
         if (role !== "ADMIN") {
           try {
             const claim = await fetch("/api/admin/claim", {
@@ -34,10 +36,10 @@ export default function DashboardPage() {
               if (body.role) role = body.role;
             }
           } catch {
-            // Stay on the client dashboard
+            // Stay on the client dashboard unless this is a studio owner email
           }
         }
-        if (role === "ADMIN") {
+        if (role === "ADMIN" || isStudioAdminEmail(email)) {
           router.replace("/admin");
           return;
         }
