@@ -66,4 +66,4 @@ jobs:
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run backup-production.yml --ref main
+        run: gh workflow run backup-production.yml --repo "${{ github.repository }}" --ref main

@@ -44,8 +44,8 @@ jobs:
           PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
         run: |
           mkdir -p "$HOME/.ssh"
-          install -m 600 /dev/null "$HOME/.ssh/backup_key"
-          printf '%s\n' "$PRODUCTION_SSH_KEY" > "$HOME/.ssh/backup_key"
+          chmod +x .github/scripts/write-ssh-key.sh
+          .github/scripts/write-ssh-key.sh "$HOME/.ssh/backup_key"
           ssh-keyscan -H "$PRODUCTION_HOST" >> "$HOME/.ssh/known_hosts"
           ssh -i "$HOME/.ssh/backup_key" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
             "${PRODUCTION_USER}@${PRODUCTION_HOST}" METI_BACKUP > "$RUNNER_TEMP/backup.txt"
