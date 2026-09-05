@@ -11,6 +11,15 @@ import {
   studioTelHref,
 } from "@/lib/site-config";
 
+describe("search listing", () => {
+  it("uses a studio sitename and reformer title for Google", () => {
+    expect(siteConfig.siteName).toBe("MeTi Pilates");
+    expect(siteConfig.seoTitle).toBe(
+      "MeTi Reformer Studio | Clinical Pilates in Limassol"
+    );
+  });
+});
+
 describe("getSiteUrl", () => {
   afterEach(() => {
     vi.unstubAllEnvs();

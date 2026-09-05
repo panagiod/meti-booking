@@ -3,9 +3,12 @@
  */
 export const siteConfig = {
   name: "Meropi Tirri",
+  /** Short name Google shows next to the favicon in search. */
+  siteName: "MeTi Pilates",
   /** Public production URL (override with NEXT_PUBLIC_SITE_URL / APP_URL). */
   siteUrl: "https://meti-pilates.com",
-  tagline: "Clinical Pilates & Reformer studio",
+  tagline: "Reformer studio in Limassol",
+  seoTitle: "MeTi Reformer Studio | Clinical Pilates in Limassol",
   description:
     "Physiotherapy-based reformer pilates in small groups — personalized care, safe movement, and lasting results.",
   studioCategorySlug: "pilates",

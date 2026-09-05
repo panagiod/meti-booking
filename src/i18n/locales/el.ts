@@ -2,7 +2,7 @@ import type { Messages } from "../types";
 
 const el: Messages = {
   meta: {
-    title: "Μερόπη Τίρρη — Clinical Pilates & Reformer",
+    title: "MeTi Reformer Studio | Clinical Pilates στη Λεμεσό",
     description:
       "Φυσιοθεραπεύτρια και εκπαιδεύτρια Clinical Pilates. Μαθήματα reformer σε μικρά τμήματα — εξατομικευμένη φροντίδα και ασφαλής κίνηση. Κλείστε online.",
   },

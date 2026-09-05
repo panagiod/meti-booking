@@ -40,11 +40,11 @@ export async function generateMetadata({
   const post = await getBlogPost(slug);
 
   if (!post) {
-    return { title: "Post not found | Meti" };
+    return { title: "Post not found" };
   }
 
   return {
-    title: `${post.title} | Meti`,
+    title: post.title,
     description: post.excerpt || post.title,
     openGraph: {
       title: post.title,

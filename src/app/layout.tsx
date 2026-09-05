@@ -41,7 +41,11 @@ const jetbrainsMono = JetBrains_Mono({
 const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
-  title: "Meropi Tirri — Clinical Pilates & Reformer",
+  applicationName: siteConfig.siteName,
+  title: {
+    default: siteConfig.seoTitle,
+    template: `%s | ${siteConfig.siteName}`,
+  },
   description:
     "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results. Book online.",
   icons: {
@@ -54,10 +58,10 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.json",
   openGraph: {
-    title: "Meropi Tirri — Clinical Pilates & Reformer",
+    title: siteConfig.seoTitle,
     description:
       "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results.",
-    siteName: "Meropi Tirri",
+    siteName: siteConfig.siteName,
     type: "website",
     url: siteUrl,
     images: [
@@ -65,13 +69,13 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "MeTi Pilates — Book Reformer Sessions Online",
+        alt: "MeTi Reformer Studio — Book sessions online",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Meropi Tirri — Clinical Pilates & Reformer",
+    title: siteConfig.seoTitle,
     description:
       "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results.",
     images: ["/og-image.png"],
@@ -102,43 +106,53 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": ["LocalBusiness", "ExerciseGym"],
-              name: "Meropi Tirri",
-              alternateName: "MeTi Pilates",
-              description:
-                "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups in Limassol.",
-              url: siteUrl,
-              telephone: siteConfig.phone,
-              email: siteConfig.email,
-              hasMap: siteConfig.mapsUrl,
-              geo: {
-                "@type": "GeoCoordinates",
-                latitude: siteConfig.mapsLat,
-                longitude: siteConfig.mapsLng,
-              },
-              image: `${siteUrl}/images/hero.jpg`,
-              priceRange: "€10",
-              currenciesAccepted: "EUR",
-              address: {
-                "@type": "PostalAddress",
-                streetAddress: "60A Christoforou Giatrou",
-                addressLocality: "Agios Ioannis Pitsilias",
-                postalCode: "4071",
-                addressRegion: "Limassol",
-                addressCountry: "CY",
-              },
-              openingHoursSpecification: [
+              "@graph": [
                 {
-                  "@type": "OpeningHoursSpecification",
-                  dayOfWeek: ["Tuesday", "Thursday"],
-                  opens: "15:45",
-                  closes: "18:45",
+                  "@type": "WebSite",
+                  name: siteConfig.siteName,
+                  alternateName: ["MeTi Reformer Studio", siteConfig.name],
+                  url: siteUrl,
                 },
                 {
-                  "@type": "OpeningHoursSpecification",
-                  dayOfWeek: "Saturday",
-                  opens: "08:00",
-                  closes: "13:30",
+                  "@type": ["LocalBusiness", "ExerciseGym"],
+                  name: siteConfig.siteName,
+                  alternateName: ["MeTi Reformer Studio", siteConfig.name],
+                  description:
+                    "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups in Limassol.",
+                  url: siteUrl,
+                  telephone: siteConfig.phone,
+                  email: siteConfig.email,
+                  hasMap: siteConfig.mapsUrl,
+                  geo: {
+                    "@type": "GeoCoordinates",
+                    latitude: siteConfig.mapsLat,
+                    longitude: siteConfig.mapsLng,
+                  },
+                  image: `${siteUrl}/images/hero.jpg`,
+                  priceRange: "€10",
+                  currenciesAccepted: "EUR",
+                  address: {
+                    "@type": "PostalAddress",
+                    streetAddress: "60A Christoforou Giatrou",
+                    addressLocality: "Agios Ioannis Pitsilias",
+                    postalCode: "4071",
+                    addressRegion: "Limassol",
+                    addressCountry: "CY",
+                  },
+                  openingHoursSpecification: [
+                    {
+                      "@type": "OpeningHoursSpecification",
+                      dayOfWeek: ["Tuesday", "Thursday"],
+                      opens: "15:45",
+                      closes: "18:45",
+                    },
+                    {
+                      "@type": "OpeningHoursSpecification",
+                      dayOfWeek: "Saturday",
+                      opens: "08:00",
+                      closes: "13:30",
+                    },
+                  ],
                 },
               ],
             }),

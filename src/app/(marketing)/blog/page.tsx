@@ -6,7 +6,7 @@ import { FileText } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Blog | MeTi Pilates",
+  title: "Blog",
   description:
     "Notes on reformer pilates, movement, and studio life at MeTi Pilates in Limassol.",
 };

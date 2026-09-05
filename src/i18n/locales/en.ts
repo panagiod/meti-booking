@@ -2,7 +2,7 @@ import type { Messages } from "../types";
 
 const en: Messages = {
   meta: {
-    title: "Meropi Tirri — Clinical Pilates & Reformer",
+    title: "MeTi Reformer Studio | Clinical Pilates in Limassol",
     description:
       "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results. Book online.",
   },
