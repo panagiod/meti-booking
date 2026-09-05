@@ -43,12 +43,8 @@ jobs:
           PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
           PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
         run: |
-          mkdir -p "$HOME/.ssh"
-          chmod +x .github/scripts/write-ssh-key.sh
-          .github/scripts/write-ssh-key.sh "$HOME/.ssh/backup_key"
-          ssh-keyscan -H "$PRODUCTION_HOST" >> "$HOME/.ssh/known_hosts"
-          ssh -i "$HOME/.ssh/backup_key" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
-            "${PRODUCTION_USER}@${PRODUCTION_HOST}" METI_BACKUP > "$RUNNER_TEMP/backup.txt"
+          python3 -m pip install --quiet paramiko
+          python3 .github/scripts/ssh-meti-cmd.py METI_BACKUP > "$RUNNER_TEMP/backup.txt"
           test -s "$RUNNER_TEMP/backup.txt"
 
           awk '/^METI_BACKUP_BEGIN$/{p=1;next} /^METI_BACKUP_END$/{p=0} p' \

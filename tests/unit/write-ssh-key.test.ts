@@ -7,9 +7,11 @@ import { describe, expect, it } from "vitest";
 const ROOT = process.cwd();
 const SCRIPT = join(ROOT, ".github/scripts/write-ssh-key.sh");
 
+const BODY = "A".repeat(80)
 const MULTILINE = [
   "-----BEGIN OPENSSH PRIVATE KEY-----",
-  "abc123",
+  BODY.slice(0, 70),
+  BODY.slice(70),
   "-----END OPENSSH PRIVATE KEY-----",
   "",
 ].join("\n");
