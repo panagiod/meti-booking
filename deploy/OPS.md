@@ -44,6 +44,21 @@ grep ^BACKUP_ENCRYPTION_KEY= .env
 
 Keep that key in a password manager as well. Encrypted files are useless without it.
 
+### 3b. Put the same token on the server
+
+GitHub can reach the VPS, but the saved `PRODUCTION_SSH_KEY` secret is not a full private key (only 513 characters). Backups therefore run **on the server** and push out. The server needs the same token:
+
+```bash
+ssh root@2.29.22.46
+cd ~/meti-booking
+printf '\nOPS_REPO=panagiod/meti-studio-ops\nOPS_REPO_TOKEN=' >> .env
+# paste the github_pat_ token, then Enter
+nano .env   # or use the editor you prefer, and save
+chmod 600 .env
+```
+
+The `OPS_REPO_TOKEN=` line must contain the same value as the GitHub secret.
+
 ### 4. Initialize and take the first backup
 
 1. **Actions → Setup Ops Repo → Run workflow**

@@ -14,7 +14,9 @@ cd "$REPO"
 
 # Backup / restore jobs must not deploy. `ssh host METI_BACKUP` sets SSH_ORIGINAL_COMMAND.
 if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_BACKUP" || "${SSH_ORIGINAL_COMMAND:-}" == *METI_BACKUP* ]]; then
-  exec "$REPO/deploy/backup-studio-data.sh" --stdout
+  "$REPO/deploy/backup-studio-data.sh"
+  "$REPO/deploy/publish-ops-from-server.sh"
+  exit 0
 fi
 
 if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_RESTORE" || "${SSH_ORIGINAL_COMMAND:-}" == *METI_RESTORE* ]]; then
