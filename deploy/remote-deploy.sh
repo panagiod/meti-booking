@@ -99,4 +99,15 @@ fi
 echo "==> Free leftover automated test bookings..."
 pnpm exec tsx scripts/cancel-test-bookings.ts || true
 
+PURGE_FLAG="${METI_DATA_DIR:-/var/lib/meti-booking}/purged-test-clients.flag"
+if [[ ! -f "$PURGE_FLAG" ]]; then
+  echo "==> One-time purge of test clients (keep ${KEEP_STUDIO_CLIENT_NAME:-Γεωργία Δημητρίου} + studio staff)..."
+  if CONFIRM=PURGE_TEST_CLIENTS pnpm exec tsx scripts/purge-test-clients.ts; then
+    date -u +%Y-%m-%dT%H:%M:%SZ >"$PURGE_FLAG"
+    echo "Test-client purge complete."
+  else
+    echo "WARNING: test-client purge did not run. Deploy continues. Studio staff and the named client were not deleted."
+  fi
+fi
+
 echo "Deploy finished: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
