@@ -92,26 +92,62 @@ if [[ "${CONFIRM}" == "VERIFY" ]]; then
   exit 0
 fi
 
-mkdir -p "$DATA_DIR"
+mkdir -p "${DATA_DIR}/backups"
+SAFETY=""
+RESTART=0
+
+if systemctl is-active --quiet meti-booking 2>/dev/null; then
+  echo "Stopping meti-booking so the live database is idle..."
+  systemctl stop meti-booking
+  RESTART=1
+fi
+
 if [[ -f "$DB" ]]; then
   SAFETY="${DATA_DIR}/backups/pre-restore-$(date -u +%Y%m%d-%H%M%S).db"
-  mkdir -p "${DATA_DIR}/backups"
   cp "$DB" "$SAFETY"
   echo "Saved current database to ${SAFETY}"
 fi
 
-if systemctl is-active --quiet meti-booking 2>/dev/null; then
-  systemctl stop meti-booking
-  RESTART=1
-else
-  RESTART=0
-fi
-
 cp "$TMP_DB" "$DB"
 chmod 600 "$DB"
+rm -f "${DB}-wal" "${DB}-shm"
+echo "Replaced ${DB} and removed WAL/SHM sidecars"
+
+rollback_live() {
+  if [[ -n "$SAFETY" && -f "$SAFETY" ]]; then
+    echo "Rolling back to ${SAFETY}"
+    cp "$SAFETY" "$DB"
+    chmod 600 "$DB"
+    rm -f "${DB}-wal" "${DB}-shm"
+  fi
+  if [[ "$RESTART" -eq 1 ]]; then
+    systemctl start meti-booking || true
+  fi
+}
 
 if [[ "$RESTART" -eq 1 ]]; then
-  systemctl start meti-booking
+  if ! systemctl start meti-booking; then
+    rollback_live
+    echo "ERROR: meti-booking failed to start after restore" >&2
+    exit 1
+  fi
+fi
+
+ok=0
+for _ in $(seq 1 30); do
+  code="$(curl -fsS -o /dev/null -w "%{http_code}" --max-time 3 http://127.0.0.1:3000/api/health 2>/dev/null || echo 000)"
+  if [[ "$code" == "200" ]]; then
+    ok=1
+    break
+  fi
+  sleep 1
+done
+
+if [[ "$ok" -ne 1 ]]; then
+  rollback_live
+  echo "ERROR: /api/health did not return 200 after restore" >&2
+  exit 1
 fi
 
 echo "Restored ${DB} from ${ENC_FILE}"
+echo "Health check passed on http://127.0.0.1:3000/api/health"

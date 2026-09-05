@@ -1,0 +1,60 @@
+name: Backup and Restore
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type RESTORE to back up, then replace the live database with that backup"
+        required: true
+
+concurrency:
+  group: production-restore
+  cancel-in-progress: false
+
+jobs:
+  dress-rehearsal:
+    name: Backup then restore latest
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+    steps:
+      - name: Confirm restore
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          if [ "$CONFIRM" != "RESTORE" ]; then
+            echo "::error::Type RESTORE to back up and replace the live database."
+            exit 1
+          fi
+
+      - name: Verify secrets
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+        run: |
+          missing=0
+          if [ -z "$PRODUCTION_HOST" ]; then echo "::error::Missing PRODUCTION_HOST"; missing=1; fi
+          if [ -z "$PRODUCTION_USER" ]; then echo "::error::Missing PRODUCTION_USER"; missing=1; fi
+          if [ -z "$PRODUCTION_SSH_KEY" ]; then echo "::error::Missing PRODUCTION_SSH_KEY"; missing=1; fi
+          if [ "$missing" -eq 1 ]; then exit 1; fi
+
+      - name: Backup production
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          port: 22
+          command_timeout: 15m
+          script: METI_BACKUP
+
+      - name: Restore that backup
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          port: 22
+          command_timeout: 15m
+          script: METI_RESTORE latest

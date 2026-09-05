@@ -75,7 +75,9 @@ After that, `meti-studio-ops` contains:
 1. **Actions → Backup Production → Run workflow**
 2. **Actions → Verify Restore → Run workflow** (backup: `latest`)
 
-That pulls `latest.db.enc` and `secrets/env.enc`, decrypts them, and checks the database. The live site stays up. Do **not** run **Restore Production** unless the live database is actually lost.
+That pulls `latest.db.enc` and `secrets/env.enc`, decrypts them, and checks the database. The live site stays up.
+
+To prove a live swap (brief downtime): **Actions → Backup and Restore** → type `RESTORE`. That backs up first, then replaces `data.db`, removes WAL files, and rolls back if `/api/health` fails.
 
 ## Restore on the same machine
 
