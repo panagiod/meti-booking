@@ -12,14 +12,14 @@ Run the reformer booking app locally in ~5 minutes.
 |---------|------|
 | Homepage + `/book` | ✅ |
 | Reformer-only · 3 per slot | ✅ |
-| Mon/Wed/Sat afternoons (default seed) | ✅ (admin can change) |
+| Tue/Thu/Sat (default seed) | ✅ (admin can change) |
 | 8-week booking horizon | ✅ |
 | EUR pricing | ✅ |
 | Asia/Nicosia timezone | ✅ |
 | 2h booking lead time | ✅ |
 | Server pricing on /book | ✅ |
-| EN + Greek (ΕΛ) + Greek fonts | ✅ |
-| Greek dates (nominative months) | ✅ e.g. Σεπτέμβριος |
+| Greek by default + optional EN | ✅ |
+| Greek dates (genitive with a day) | ✅ e.g. 3 Σεπτεμβρίου |
 | Admin calendar (`/admin/schedule`) | ✅ |
 | Admin website CMS (`/admin/content`) | ✅ |
 | Email/password login | ✅ |
@@ -83,7 +83,7 @@ Password: **`Demo1234!`** (local default; override with `DEMO_PASSWORD` env)
 
 ### Customer
 
-1. Homepage — switch to **ΕΛ**, note Greek fonts and month names on `/book`
+1. Homepage — opens in **ΕΛ**; optional **EN**. Note Greek fonts and dates on `/book`
 2. **Book** — open days from admin calendar; "X θέσεις" on slots
 3. Login as client → checkout (payment unavailable without MP)
 

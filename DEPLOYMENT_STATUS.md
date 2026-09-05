@@ -29,8 +29,8 @@ Tunnel: `cloudflared tunnel --url http://localhost:3000`
 - **Reformer-only** booking · **3 spots per slot** · **EUR (€10)**
 - **Mon, Wed, Sat · 2pm–5pm** (demo seed; admin-editable)
 - **8 weeks** booking horizon · **Asia/Nicosia** timezone
-- **EN | ΕΛ** with Greek fonts (Noto Sans + GFS Didot)
-- Greek calendar months in **nominative** form (Σεπτέμβριος, not Σεπτεμβρίου)
+- **Greek by default** (`ΕΛ`), optional English — cookie `meti-lang`
+- Greek dates: **3 Σεπτεμβρίου** (with a day), **Σεπτέμβριος 2026** (month only)
 - **Admin CMS** — edit text + images at `/admin/content`
 - **Admin calendar** — hours, lunch breaks, blocked dates at `/admin/schedule`
 - Local reformer images + MeTi OG/favicons

@@ -3,7 +3,7 @@
 **Reformer pilates studio booking** — [meti-booking](https://github.com/panagiod/meti-booking) stack (Next.js 16, Prisma, better-auth).
 
 Book **reformer sessions** online: pick a date, time, sign in, pay.  
-**English + Greek** (`EN | ΕΛ`).
+**Greek by default** (`ΕΛ`), with optional English (`EN`).
 
 > 📖 **Full reference:** [docs/PROJECT.md](docs/PROJECT.md) · **Admin:** [docs/ADMIN.md](docs/ADMIN.md) · **Hosting:** [docs/HOSTING.md](docs/HOSTING.md) · **Email:** [deploy/RESEND.md](deploy/RESEND.md)
 
@@ -22,7 +22,7 @@ Book **reformer sessions** online: pick a date, time, sign in, pay.
 | **Currency** | EUR (€) |
 | **Timezone** | Asia/Nicosia (Cyprus) |
 | **Booking lead time** | 2 hours minimum (`resolveBookingLeadHours`) |
-| **Languages** | EN + ΕΛ (Noto Sans / GFS Didot for Greek) |
+| **Languages** | Greek default (`meti-lang`); EN optional. Noto Sans / GFS Didot |
 | **Demo password** | `Demo1234!` (or `DEMO_PASSWORD` env) |
 | **Admin** | `admin@demo.meti-booking.local` |
 
@@ -101,9 +101,10 @@ src/
     studio-schedule.ts   # Calendar defaults
     timezone.ts          # Asia/Nicosia slot times
     booking-config.ts    # resolveBookingLeadHours() — 2h default
-    date-locale.ts       # Greek nominative month names
+    date-locale.ts       # Greek months (genitive with a day)
+    client-phone.ts      # Optional phone at checkout / profile
     proxy.ts             # Auth middleware (public routes)
-  i18n/locales/          # EN + EL copy (fallbacks)
+  i18n/locales/          # EN + EL copy (fallbacks; site opens in EL)
   components/landing/    # Hero, navbar, footer
 public/images/           # Default photos
 public/uploads/studio/   # Admin-uploaded images (local dev)

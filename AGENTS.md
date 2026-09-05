@@ -22,8 +22,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - **Public product:** MeTi Pilates — reformer-only studio booking
 - **Repo name:** `meti-booking` (legacy Meti advisory marketplace)
-- **Customer routes:** `/`, `/book`, `/login`, `/checkout`
+- **Customer routes:** `/`, `/book`, `/login`, `/checkout`, `/dashboard`
 - **Admin (MeTi):** `/admin`, `/admin/bookings`, `/admin/users`, `/admin/schedule`, `/admin/closures`, `/admin/content`
+- **Language:** Greek by default (`ΕΛ`). Cookie `meti-lang`. EN is optional.
 - **Currency:** EUR · **Timezone:** Asia/Nicosia · **Booking window:** 8 weeks
 - **Legacy:** `/services`, `/advisor/*`, LiveKit video
 
@@ -49,7 +50,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | **Schedule code defaults** | `src/lib/studio-schedule.ts`, `demo-setup.ts` |
 | Slot capacity / booking window | `src/lib/site-config.ts` |
 | Timezone / slot times | `src/lib/timezone.ts` |
-| Greek date formatting | `src/lib/date-locale.ts` |
+| Greek date formatting | `src/lib/date-locale.ts` (genitive with a day: 3 Σεπτεμβρίου) |
+| Phone at booking | `src/lib/client-phone.ts` |
 | Booking UI | `src/app/(marketing)/book/page.tsx` |
 | Slot logic + validation | `src/lib/slots.ts`, `src/lib/slot-booking.ts` |
 | Lead time / pricing | `src/lib/booking-config.ts`, `src/app/api/checkout/quote/route.ts` |
@@ -120,7 +122,9 @@ Close fixed audit issues: `./scripts/close-resolved-issues.sh`
 - Tue/Thu/Sat schedule — demo seed is **Tue/Thu 15:45–18:00, Sat 08:00–12:45**
 - COP currency — everything is **EUR**
 - Colombia timezone — use **Nicosia, Cyprus** (`Asia/Nicosia`) via `timezone.ts`
-- Greek genitive months — use **nominative** via `date-locale.ts`
+- Greek dates without a day — nominative month (`Σεπτέμβριος 2026`); **with a day use genitive** (`3 Σεπτεμβρίου`)
+- Site language defaults to **Greek** (`meti-lang`); do not assume English
+- Admin UI is translated — keys in `src/i18n/locales/{en,el}.ts` under `admin`
 - `bookingLeadHours` default is **2h** — use `resolveBookingLeadHours()`
 - Hardcoded fees — use **`GET /api/checkout/quote`**
 - `/api/advisors` needs auth — must be **public** for `/book`

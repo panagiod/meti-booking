@@ -12,7 +12,7 @@
 | **Product** | Online booking for one pilates studio — **reformer sessions only** |
 | **Brand** | **MeTi Pilates** |
 | **Customer site** | Homepage hero + `/book` + login + checkout |
-| **Languages** | English + Greek (`EN \| ΕΛ`); cookie `flow-locale` |
+| **Languages** | Greek by default (`ΕΛ`); optional English. Cookie `meti-lang` |
 | **Session** | **Reformer Session** — 45 min, **€10** |
 | **Currency** | **EUR** (`siteConfig.currency`) |
 | **Timezone** | **Asia/Nicosia** (`STUDIO_TIMEZONE`) |
@@ -23,7 +23,7 @@
 | **Admin calendar** | Hours `/admin/schedule` + closures `/admin/closures` |
 | **Admin CMS** | `/admin/content` — text, images, contact (DB-backed) |
 | **Greek typography** | Noto Sans (body) + GFS Didot (headlines) when `lang="el"` |
-| **Greek dates** | Nominative month names (Σεπτέμβριος) via `date-locale.ts` |
+| **Greek dates** | Day + month uses genitive (`3 Σεπτεμβρίου`); month-only uses nominative (`Σεπτέμβριος 2026`) |
 | **Security** | Admin server guard, proxy middleware, MP token encryption |
 | **Lead time** | **2 hours** minimum before first bookable slot (`booking-config.ts`) |
 | **Payments** | Mercado Pago in code — **not on demo**; server-side checkout quotes |
@@ -36,7 +36,7 @@
 ```
 /  →  Hero  →  /book  →  Date  →  Time  →  Confirm  →  /checkout  →  MP
                                                               ↑
-                                                    guest email (no login required)
+                                                    guest email + optional phone (no login required)
 ```
 
 - Reformer auto-selected (no session picker).
@@ -182,23 +182,23 @@ Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
 
 | Piece | Detail |
 |-------|--------|
-| Locales | `en`, `el` |
-| Cookie | `flow-locale` |
+| Locales | `en`, `el` — **default `el`** |
+| Cookie | `meti-lang` (older `flow-locale` / `meti-locale` values are ignored) |
 | Provider | `LocaleProvider` in root layout |
 | Hooks | `useTranslations()`, `useStudioBranding()`, `useLocale()` |
 | Greek fonts | `html[lang="el"]` → Noto Sans body, GFS Didot display |
-| Greek dates | Nominative months (Σεπτέμβριος) — `src/lib/date-locale.ts` |
-| Auto-detect | `navigator.language` starting with `el` → Greek |
+| Greek dates | `3 Σεπτεμβρίου 2026` (genitive); calendar header `Σεπτέμβριος 2026` |
+| First visit | Opens in Greek. `EN` is only used after the visitor taps it |
 
-**Customer pages translated:** homepage, `/book`, auth, checkout, client dashboard nav.  
-**Admin/advisor dashboards:** English only.
+**Translated:** homepage, `/book`, auth, checkout, client dashboard, admin dashboard (sidebar + studio pages).  
+**Still English only:** FAQ, privacy, terms, transactional emails, leftover marketplace pages (`/admin/blog`, invoices, config), advisor dashboard.
 
 ---
 
 ## Slot capacity & schedule
 
 1. `siteConfig.slotCapacity = 3`
-2. Demo seed: **Mon/Wed/Sat 14:00–17:00**, gap 10 min → **3 slots/day**
+2. Demo seed: **Tue/Thu 15:45–18:45**, **Sat 08:00–13:30** (see `studio-schedule.ts`)
 3. `GET /api/slots` — counts appointments, applies blocked times (read-only)
 4. `POST /api/appointments` — serializable transaction, 409 when full
 5. All slot times interpreted in **Asia/Nicosia**
@@ -332,7 +332,8 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 | Permanent hosting | #10 |
 | Guest checkout | ✅ Done (`guest-user.ts`, checkout email form) |
 | Batch slots API | ✅ Done (`GET /api/slots/batch`) |
-| Admin/advisor UI Greek | Not translated |
+| Admin UI Greek | ✅ Studio admin pages (`admin` keys in `el.ts`) |
+| Advisor UI Greek | Not translated (legacy) |
 | Timezone Asia/Nicosia | ✅ Done |
 | Server slot validation | ✅ Done |
 | Booking lead time (2h) | ✅ Done (`booking-config.ts`) |
@@ -340,7 +341,7 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 | MP token encryption | ✅ Done |
 | Admin route guard | ✅ Done |
 | EUR currency | ✅ Done |
-| Greek nominative months | ✅ Done |
+| Greek dates | ✅ Genitive with a day; nominative for month-year |
 | OG image | ✅ Done |
 | Admin CMS | ✅ `/admin/content` |
 | Admin calendar | ✅ `/admin/schedule` (hours) + `/admin/closures` |

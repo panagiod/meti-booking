@@ -128,12 +128,12 @@ User requested **Stripe or Revolut** with Apple Pay / Google Pay:
 
 ## Internationalization
 
-- Locales: `en`, `el` in `src/i18n/`
-- Cookie: `flow-locale`
+- Locales: `en`, `el` in `src/i18n/` — site opens in **Greek**
+- Cookie: `meti-lang`
 - Provider: root layout (`LocaleProvider`)
-- Customer pages translated; admin/advisor dashboards mostly English
-- **Greek dates:** nominative month names (Σεπτέμβριος, Οκτώβριος) — see `src/lib/date-locale.ts`
-- Greek genitive forms from `Intl`/`date-fns` default locale are **not** used on customer pages
+- Customer site, client dashboard, and studio admin are translated
+- **Greek dates:** day + month is genitive (`3 Σεπτεμβρίου`); month-only is nominative — `src/lib/date-locale.ts`
+- FAQ, privacy, terms, and emails are still English
 
 ---
 
@@ -155,7 +155,7 @@ User requested **Stripe or Revolut** with Apple Pay / Google Pay:
 | Images | ✅ | Local `/public/images/` |
 | Email login | ✅ | Demo accounts |
 | Greek UI | ✅ | EN \| ΕΛ switcher |
-| Greek dates | ✅ | Nominative months on `/book` |
+| Greek dates | ✅ | Genitive with a day on `/book` |
 | Reformer booking | ✅ | `/book` only |
 | 3-slot capacity | ✅ | `siteConfig.slotCapacity` |
 | EUR pricing | ✅ | `siteConfig.currency` |
