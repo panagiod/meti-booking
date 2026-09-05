@@ -6,6 +6,7 @@ import {
   studioDayBoundsUTC,
   studioLocalMinutesFromUtc,
 } from "@/lib/timezone";
+import { isCyprusPublicHoliday } from "@/lib/cyprus-holidays";
 import { siteConfig } from "@/lib/site-config";
 
 export interface Schedule {
@@ -80,8 +81,9 @@ function asDate(value: Date | string): Date {
   return value instanceof Date ? value : new Date(value);
 }
 
-/** True when an admin all-day block overlaps this studio calendar date. */
+/** True when a Cyprus public holiday or admin all-day block overlaps this studio calendar date. */
 export function isStudioDateBlocked(dateStr: string, blockedTimes: BlockedTime[]): boolean {
+  if (isCyprusPublicHoliday(dateStr)) return true;
   const { start, end } = studioDayBoundsUTC(dateStr);
   return blockedTimes.some((bt) => {
     if (bt.isAllDay === false) return false;
@@ -97,6 +99,7 @@ function isSlotBlocked(
   slotEndMinutes: number,
   blockedTimes: BlockedTime[]
 ): boolean {
+  if (isCyprusPublicHoliday(dateStr)) return true;
   const { start, end } = studioDayBoundsUTC(dateStr);
   return blockedTimes.some((bt) => {
     const btStart = asDate(bt.startDate);

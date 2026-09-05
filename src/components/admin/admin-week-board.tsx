@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCyprusHoliday } from "@/lib/cyprus-holidays";
 import { generateAvailableSlots } from "@/lib/slots";
 import { siteConfig } from "@/lib/site-config";
 import type { StudioDaySchedule } from "@/lib/studio-schedule";
@@ -127,6 +128,7 @@ export function AdminWeekBoard({
         </p>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {days.map((dateStr) => {
+            const holiday = getCyprusHoliday(dateStr);
             const daySchedule = scheduleByDay.get(getDayOfWeekForStudioDate(dateStr));
             const dayBookings = bookings.filter(
               (booking) => studioDateStrFromUtc(new Date(booking.scheduledAt)) === dateStr
@@ -153,10 +155,27 @@ export function AdminWeekBoard({
                 <div className="mb-3 flex items-baseline justify-between gap-2">
                   <p className="font-medium text-[var(--text-primary)]">{dateLabel(dateStr, "EEE d MMM")}</p>
                   <p className="text-xs text-[var(--text-muted)]">
-                    {daySchedule ? `${daySchedule.startTime}–${daySchedule.endTime}` : "Closed"}
+                    {holiday
+                      ? "Holiday"
+                      : daySchedule
+                        ? `${daySchedule.startTime}–${daySchedule.endTime}`
+                        : "Closed"}
                   </p>
                 </div>
-                {!daySchedule ? (
+                {holiday ? (
+                  <div className="space-y-2">
+                    <p className="text-sm italic text-[var(--text-muted)]">
+                      {holiday.name} — closed
+                    </p>
+                    {dayBookings.length > 0 && (
+                      <ul className="space-y-2">
+                        {dayBookings.map((booking) => (
+                          <BookingRow key={booking.id} booking={booking} onCancel={onCancel} showTime />
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ) : !daySchedule ? (
                   dayBookings.length === 0 ? (
                     <p className="text-sm italic text-[var(--text-muted)]">Studio closed</p>
                   ) : (

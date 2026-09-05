@@ -19,6 +19,7 @@ import {
   type StudioDaySchedule,
 } from "@/lib/studio-schedule";
 import { AdminWeekBoard } from "@/components/admin/admin-week-board";
+import { upcomingCyprusHolidays } from "@/lib/cyprus-holidays";
 import { siteConfig } from "@/lib/site-config";
 import {
   Calendar,
@@ -626,9 +627,25 @@ export default function AdminSchedulePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-[var(--text-muted)]">
-              Block holidays, vacations, or studio closures. Blocked days won&apos;t appear on the
-              public booking calendar.
+              Cyprus public holidays are blocked automatically. Use this for vacations or extra
+              studio closures. Blocked days won&apos;t appear on the public booking calendar.
             </p>
+
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
+                Cyprus public holidays
+              </p>
+              <ul className="mt-2 divide-y divide-[var(--border)]">
+                {upcomingCyprusHolidays().map((holiday) => (
+                  <li key={holiday.date} className="flex items-center justify-between gap-3 py-2 text-sm">
+                    <span className="font-medium text-[var(--text-primary)]">{holiday.name}</span>
+                    <span className="text-[var(--text-muted)]">
+                      {format(new Date(`${holiday.date}T12:00:00`), "EEE d MMM yyyy")}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             <div className="grid sm:grid-cols-4 gap-3">
               <div className="sm:col-span-2">

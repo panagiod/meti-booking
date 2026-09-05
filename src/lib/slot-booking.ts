@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { isCyprusPublicHoliday } from "@/lib/cyprus-holidays";
 import { generateAvailableSlots, isStudioDateBlocked } from "@/lib/slots";
 import { resolveBookingLeadHours } from "@/lib/booking-config";
 import { siteConfig } from "@/lib/site-config";
@@ -92,6 +93,13 @@ export async function validateBookableSlot(params: {
       isAllDay: bt.isAllDay,
     })
   );
+
+  if (isCyprusPublicHoliday(dateStr)) {
+    throw new SlotBookingError(
+      "This date is a Cyprus public holiday and cannot be booked",
+      "SLOT_UNAVAILABLE"
+    );
+  }
 
   if (isStudioDateBlocked(dateStr, blockedTimes)) {
     throw new SlotBookingError("This date is blocked and cannot be booked", "SLOT_UNAVAILABLE");
