@@ -44,8 +44,8 @@ jobs:
           PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
         run: |
           npm install --silent --no-fund --no-audit --prefix "$RUNNER_TEMP/sshmod" ssh2
-          NODE_PATH="$RUNNER_TEMP/sshmod/node_modules" node .github/scripts/ssh-meti-cmd.mjs METI_BACKUP \
-            > "$RUNNER_TEMP/backup.txt"
+          cp .github/scripts/ssh-meti-cmd.cjs "$RUNNER_TEMP/sshmod/ssh-meti-cmd.cjs"
+          node "$RUNNER_TEMP/sshmod/ssh-meti-cmd.cjs" METI_BACKUP > "$RUNNER_TEMP/backup.txt"
           test -s "$RUNNER_TEMP/backup.txt"
 
           awk '/^METI_BACKUP_BEGIN$/{p=1;next} /^METI_BACKUP_END$/{p=0} p' \
