@@ -21,6 +21,7 @@ export const siteConfig = {
   currency: "EUR",
   deliveryMode: "in-person" as const,
   location: "60A Christoforou Giatrou, Agios Ioannis Pitsilias, 4071 Limassol",
+  mapsUrl: "https://maps.app.goo.gl/r2C9X5e88pgco3hT7?g_st=ac",
   phone: "+35795519786",
   email: "tyrri_meropi@hotmail.com",
   hours: "Tue, Thu, Sat · see booking calendar",
@@ -124,6 +125,6 @@ export function studioTelHref(phone: string | null | undefined): string {
   return digits ? `tel:+${digits}` : "";
 }
 
-export function studioMapsUrl(location: string): string {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+export function studioMapsUrl(): string {
+  return siteConfig.mapsUrl;
 }

@@ -65,7 +65,7 @@ export function StudioInfo() {
   }, [locale, t.common.hours]);
 
   const phone = studio.phone;
-  const mapsUrl = studioMapsUrl(studio.location);
+  const mapsUrl = studioMapsUrl();
 
   return (
     <section id="visit" className="border-t border-[var(--studio-line)]">

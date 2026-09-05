@@ -101,6 +101,7 @@ export default function RootLayout({
               url: siteUrl,
               telephone: siteConfig.phone,
               email: siteConfig.email,
+              hasMap: siteConfig.mapsUrl,
               image: `${siteUrl}/images/hero.jpg`,
               priceRange: "€10",
               currenciesAccepted: "EUR",
