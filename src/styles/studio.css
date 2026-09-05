@@ -27,32 +27,30 @@ html.locale-el {
   direction: ltr;
 }
 
-/* Noto for Greek — Didot is too wide and clips accented capitals on phones. */
+/* Same pairing as English: sans body + serif titles. Noto + Didot for Greek. */
 html[lang="el"] .studio,
 html[lang="el"] .studio-booking,
 html.locale-el .studio,
 html.locale-el .studio-booking {
   --studio-font-body: var(--font-noto-sans), "Noto Sans", system-ui, sans-serif;
-  --studio-font-display: var(--font-noto-sans), "Noto Sans", system-ui, sans-serif;
+  --studio-font-display: var(--font-gfs-didot), "GFS Didot", Georgia, serif;
   overflow-wrap: anywhere;
   word-break: break-word;
-  line-height: 1.5;
 }
 
-.studio .font-display {
+.studio .font-display,
+.studio-booking .font-display {
   font-family: var(--studio-font-display);
   font-weight: 500;
   letter-spacing: -0.03em;
 }
 
+/* Didot only ships regular. Weight 500 would faux-bold Greek titles. */
 html[lang="el"] .studio .font-display,
 html[lang="el"] .studio-booking .font-display,
 html.locale-el .studio .font-display,
 html.locale-el .studio-booking .font-display {
-  font-family: var(--studio-font-display);
-  font-weight: 600;
-  letter-spacing: 0;
-  line-height: 1.25;
+  font-weight: 400;
 }
 
 html[lang="el"] .studio-btn,
@@ -60,7 +58,6 @@ html.locale-el .studio-btn {
   white-space: normal;
   max-width: 100%;
   text-align: center;
-  line-height: 1.3;
 }
 
 html[lang="el"] .capitalize,
@@ -118,11 +115,6 @@ html.locale-el .capitalize {
   font-family: var(--studio-font-body);
   overflow-x: clip;
   max-width: 100%;
-}
-
-.studio-booking .font-display {
-  font-family: var(--studio-font-display);
-  font-weight: 500;
 }
 
 @media (max-width: 640px) {
