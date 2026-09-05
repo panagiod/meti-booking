@@ -8,6 +8,26 @@ import sharp from "sharp";
 
 const root = join(__dirname, "..");
 const iconSvg = readFileSync(join(root, "public/icon.svg"));
+const wordmarkSvg = readFileSync(join(root, "public/logo-wordmark.svg"));
+writeFileSync(join(root, "src/app/icon.svg"), iconSvg);
+writeFileSync(join(root, "public/logo.svg"), iconSvg);
+
+function pngToIco(png: Buffer, size: number): Buffer {
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(1, 4);
+
+  const entry = Buffer.alloc(16);
+  entry.writeUInt8(size >= 256 ? 0 : size, 0);
+  entry.writeUInt8(size >= 256 ? 0 : size, 1);
+  entry.writeUInt16LE(1, 4);
+  entry.writeUInt16LE(32, 6);
+  entry.writeUInt32LE(png.length, 8);
+  entry.writeUInt32LE(22, 12);
+
+  return Buffer.concat([header, entry, png]);
+}
 
 async function main() {
   const sizes: Array<[string, number]> = [
@@ -22,6 +42,16 @@ async function main() {
     await sharp(iconSvg).resize(size, size).png().toFile(join(root, file));
     console.log(`✓ ${file}`);
   }
+
+  const faviconPng = await sharp(iconSvg).resize(32, 32).png().toBuffer();
+  writeFileSync(join(root, "src/app/favicon.ico"), pngToIco(faviconPng, 32));
+  console.log("✓ src/app/favicon.ico");
+
+  await sharp(wordmarkSvg)
+    .flatten({ background: "#fdfcfa" })
+    .png()
+    .toFile(join(root, "public/logo-wordmark.png"));
+  console.log("✓ public/logo-wordmark.png");
 
   // Static OG fallback — composite hero + dark overlay + title band
   const hero = sharp(join(root, "public/images/hero.jpg")).resize(1200, 630, {

@@ -82,27 +82,27 @@
    ============================================ */
 
 .dark {
-  --primary: #ff7a47;
-  --primary-hover: #ff8f63;
-  --primary-light: rgba(255, 107, 53, 0.16);
-  --primary-dark: #cc5229;
+  --primary: #c4cfc4;
+  --primary-hover: #d8e0d8;
+  --primary-light: rgba(92, 107, 92, 0.22);
+  --primary-dark: #9aab9a;
 
-  --secondary: #12121f;
-  --secondary-light: #1e1e33;
-  --secondary-dark: #0a0a12;
+  --secondary: #1c1b19;
+  --secondary-light: #2a2926;
+  --secondary-dark: #121110;
 
-  --accent: #00e0b4;
-  --accent-hover: #2ce6c4;
-  --accent-light: rgba(0, 212, 170, 0.14);
-  --accent-dark: #00a88a;
+  --accent: #c4b49a;
+  --accent-hover: #d4c4ae;
+  --accent-light: rgba(166, 139, 106, 0.16);
+  --accent-dark: #a68b6a;
 
-  --background: #0b0b14;
-  --surface: #15151f;
-  --border: #26263a;
-  --border-light: #1d1d2b;
-  --text-primary: #f2f2f8;
-  --text-secondary: #b9b9cc;
-  --text-muted: #85859c;
+  --background: #121110;
+  --surface: #1c1b19;
+  --border: #2e2c28;
+  --border-light: #242220;
+  --text-primary: #fdfcfa;
+  --text-secondary: #c4bfb8;
+  --text-muted: #8a847c;
 
   --success: #34d399;
   --success-light: rgba(16, 185, 129, 0.16);
@@ -125,8 +125,8 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.45), 0 2px 4px -2px rgb(0 0 0 / 0.4);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.55), 0 8px 10px -6px rgb(0 0 0 / 0.45);
-  --shadow-primary: 0 4px 14px 0 rgb(255 107 53 / 0.25);
-  --shadow-accent: 0 4px 14px 0 rgb(0 212 170 / 0.25);
+  --shadow-primary: 0 4px 14px 0 rgb(92 107 92 / 0.28);
+  --shadow-accent: 0 4px 14px 0 rgb(166 139 106 / 0.25);
 }
 
 @theme inline {
@@ -319,10 +319,10 @@ h6 {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4);
+    box-shadow: 0 0 0 0 rgba(44, 56, 44, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 12px rgba(255, 107, 53, 0);
+    box-shadow: 0 0 0 12px rgba(44, 56, 44, 0);
   }
 }
 
@@ -585,7 +585,7 @@ h6 {
    ============================================ */
 
 ::selection {
-  background: rgba(255, 107, 53, 0.2);
+  background: rgba(44, 56, 44, 0.18);
   color: var(--text-primary);
 }
 

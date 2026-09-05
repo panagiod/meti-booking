@@ -60,12 +60,21 @@ export const metadata: Metadata = {
     siteName: "Meropi Tirri",
     type: "website",
     url: siteUrl,
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "MeTi Pilates — Book Reformer Sessions Online",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Meropi Tirri — Clinical Pilates & Reformer",
     description:
       "Physiotherapist and Clinical Pilates instructor. Reformer sessions in small groups — personalized care, safe movement, lasting results.",
+    images: ["/og-image.png"],
   },
   metadataBase: new URL(siteUrl),
 };

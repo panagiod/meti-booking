@@ -60,9 +60,21 @@ if [[ ! -f "${STANDALONE}/server.js" ]]; then
 fi
 
 echo "==> Syncing static assets..."
-cp -r "${ROOT}/public" "${STANDALONE}/public"
-mkdir -p "${STANDALONE}/.next"
-cp -r "${ROOT}/.next/static" "${STANDALONE}/.next/static"
+# Next standalone looks for public/ next to server.js. Copy to every
+# server.js directory so favicons and images are served after deploy.
+mapfile -t SERVER_JS < <(find "${STANDALONE}" -name server.js -not -path '*/node_modules/*')
+if [[ ${#SERVER_JS[@]} -eq 0 ]]; then
+  echo "ERROR: No server.js found under ${STANDALONE}"
+  exit 1
+fi
+for server in "${SERVER_JS[@]}"; do
+  server_dir="$(dirname "${server}")"
+  mkdir -p "${server_dir}/public"
+  cp -a "${ROOT}/public/." "${server_dir}/public/"
+  mkdir -p "${server_dir}/.next"
+  cp -a "${ROOT}/.next/static/." "${server_dir}/.next/static/"
+  echo "  synced public + static → ${server_dir}"
+done
 
 echo "==> Caddy + systemd..."
 "${ROOT}/deploy/setup-caddy-lite.sh"
