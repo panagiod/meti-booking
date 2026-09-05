@@ -101,7 +101,15 @@ async function calendarUsage(): Promise<{ upcomingBooked: number; upcomingCapaci
     }),
   ]);
   const duration = service?.durationMin || 45;
-  const perWeek = schedules.reduce((sum, row) => {
+  let perWeek = 0;
+  for (const row of schedules as Array<{
+    dayOfWeek: number;
+    startTime: string;
+    endTime: string;
+    lunchStart: string | null;
+    lunchEnd: string | null;
+    gapMinutes: number;
+  }>) {
     const day: StudioDaySchedule = {
       dayOfWeek: row.dayOfWeek,
       dayName: "",
@@ -112,8 +120,8 @@ async function calendarUsage(): Promise<{ upcomingBooked: number; upcomingCapaci
       lunchEnd: row.lunchEnd || "",
       gapMinutes: row.gapMinutes ?? 0,
     };
-    return sum + countSlotsPerDay(day, duration);
-  }, 0);
+    perWeek += countSlotsPerDay(day, duration);
+  }
 
   return { upcomingBooked, upcomingCapacity: perWeek * 2 };
 }
