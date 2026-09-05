@@ -106,7 +106,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const stored = readStoredLocale();
     setLocaleState(stored);
-    applyDocumentLocale(stored);
+    persistLocale(stored);
     setReady(true);
     loadStudioContent();
   }, [loadStudioContent]);

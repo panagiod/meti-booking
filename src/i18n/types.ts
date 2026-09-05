@@ -2,7 +2,8 @@ export type Locale = "en" | "el";
 
 export const locales: Locale[] = ["en", "el"];
 export const defaultLocale: Locale = "el";
-export const LOCALE_COOKIE = "meti-locale";
+/** Bumped so an older English cookie does not keep the site on EN. */
+export const LOCALE_COOKIE = "meti-lang";
 
 export type Messages = {
   meta: {

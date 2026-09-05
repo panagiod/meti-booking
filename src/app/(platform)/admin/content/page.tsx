@@ -291,7 +291,7 @@ export default function AdminContentPage() {
   const t = useTranslations();
   const dialog = useDialog();
   const { showAlert } = dialog;
-  const [tab, setTab] = useState<Tab>("en");
+  const [tab, setTab] = useState<Tab>("el");
   const [content, setContent] = useState<StudioContentData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);

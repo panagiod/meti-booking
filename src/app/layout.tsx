@@ -105,7 +105,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
+      lang="el"
       suppressHydrationWarning
       className={`${dmSans.variable} ${notoSans.variable} ${cormorant.variable} ${ebGaramond.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
