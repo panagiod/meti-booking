@@ -434,10 +434,13 @@ function CheckoutContent() {
                             <li>• {t.checkout.cancelReschedule}</li>
                             <li>• {t.checkout.cancelNoRefund}</li>
                             <li>• {t.checkout.cancelNoShow}</li>
+                            <li>• {t.checkout.cancelPunctuality}</li>
                           </>
                         ) : (
                           <>
                             <li>• {t.checkout.bookingPolicyReschedule}</li>
+                            <li>• {t.checkout.bookingPolicyLatePay}</li>
+                            <li>• {t.checkout.bookingPolicyPunctuality}</li>
                             <li>• {t.checkout.bookingPolicyContact}</li>
                           </>
                         )}

@@ -14,7 +14,7 @@ export default function TermsOfServicePage() {
               Terms of Service
             </h1>
             <p className="text-sm text-[var(--text-muted)]">
-              Last updated: September 3, 2026
+              Last updated: September 5, 2026
             </p>
           </div>
 
@@ -36,7 +36,8 @@ export default function TermsOfServicePage() {
             <ul className="list-disc list-inside text-[var(--text-secondary)] space-y-2 ml-4">
               <li>You can book with an account or as a guest using your email.</li>
               <li>A confirmed booking reserves a reformer place at the chosen time.</li>
-              <li>Please arrive about 10 minutes early for your first visit.</li>
+              <li>Please arrive a few minutes early. Classes start on time and do not wait if you arrive late.</li>
+              <li>First visits: arrive about 10 minutes early so we can set you up on the reformer.</li>
             </ul>
           </section>
 
@@ -46,7 +47,8 @@ export default function TermsOfServicePage() {
             </h2>
             <p className="text-[var(--text-secondary)] leading-relaxed">
               Payment is made at the studio. The current session price is shown when you
-              book. There is no online checkout at this time.
+              book. There is no online checkout at this time. If a booking is not cancelled
+              at least 24 hours before the session, the session must still be paid.
             </p>
           </section>
 
@@ -58,6 +60,10 @@ export default function TermsOfServicePage() {
               <li>
                 You may cancel from the link in your confirmation email or from your
                 account at least 24 hours before the session.
+              </li>
+              <li>
+                Late cancellation, no-show, or arriving after the class has started does
+                not cancel the fee — the session must still be paid.
               </li>
               <li>If the studio must cancel, we will contact you to rebook.</li>
             </ul>

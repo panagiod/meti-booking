@@ -95,7 +95,7 @@ export async function sendBookingConfirmedEmail(
       <tr><td style="padding:8px 0;color:#6b7280;">Session price</td><td style="padding:8px 0;font-weight:600;color:#ff6b35;text-align:right;">${formatCurrency(data.totalCents)}</td></tr>
     </table>
     <a href="${data.appointmentUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">View or cancel booking</a>
-    <p style="margin:16px 0 0;color:#6b7280;font-size:13px;line-height:1.6;">Cancel from this email link or your account at least 24 hours before the session. Payment is at the studio.</p>
+    <p style="margin:16px 0 0;color:#6b7280;font-size:13px;line-height:1.6;">Cancel from this email link or your account at least 24 hours before the session. If you do not cancel in time, the session must still be paid at the studio. Classes start on time and do not wait if you arrive late.</p>
   `;
 
   const { error } = await client.emails.send({
@@ -162,6 +162,11 @@ export async function sendReminderEmail(
       <tr><td style="padding:8px 0;color:#6b7280;">Date and time</td><td style="padding:8px 0;font-weight:600;color:#1a1a2e;text-align:right;">${formatDate(data.scheduledAt)}</td></tr>
     </table>
     <a href="${data.appointmentUrl}" style="display:inline-block;background:#ff6b35;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-weight:600;">${role === "client" ? "View or cancel booking" : "View my schedule"}</a>
+    ${
+      role === "client"
+        ? `<p style="margin:16px 0 0;color:#6b7280;font-size:13px;line-height:1.6;">Classes start on time and do not wait if you arrive late. If you cannot come, cancel now — after the 24-hour window the session must still be paid at the studio.</p>`
+        : ""
+    }
   `;
 
   const { error } = await client.emails.send({

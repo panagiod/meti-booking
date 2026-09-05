@@ -26,7 +26,7 @@ export function canClientCancelAppointment(input: {
   if (hoursLeft < input.rescheduleHoursMin) {
     return {
       allowed: false,
-      reason: `Cancellation must be at least ${input.rescheduleHoursMin} hours before the session.`,
+      reason: `Cancellation must be at least ${input.rescheduleHoursMin} hours before the session. If you do not cancel in time, the session must still be paid.`,
     };
   }
 

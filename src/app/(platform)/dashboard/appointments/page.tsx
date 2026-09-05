@@ -316,7 +316,7 @@ export default function AppointmentsPage() {
                     )}
                     {apt.status === "CONFIRMED" && !clientCanCancel(apt) && new Date(apt.scheduledAt) > new Date() && (
                       <span className="text-xs text-[var(--text-muted)] max-w-[10rem] text-right">
-                        Cancel at least {apt.service.rescheduleHoursMin ?? 24}h before
+                        Too late to cancel — session still payable
                       </span>
                     )}
                     {apt.status === "COMPLETED" && (

@@ -35,6 +35,7 @@ describe("canClientCancelAppointment", () => {
     });
     expect(result.allowed).toBe(false);
     expect(result.reason).toContain("24 hours");
+    expect(result.reason).toContain("still be paid");
   });
 
   it("blocks completed appointments", () => {

@@ -42,6 +42,7 @@ export type Messages = {
     phone: string;
     email: string;
     book: string;
+    policyNote: string;
   };
   how: {
     title: string;
@@ -111,6 +112,8 @@ export type Messages = {
     total: string;
     sessionPrice: string;
     reschedulePolicy: string;
+    lateCancelPolicy: string;
+    punctualityPolicy: string;
     continuePayment: string;
     confirmBooking: string;
     processing: string;
@@ -189,6 +192,7 @@ export type Messages = {
     cancelReschedule: string;
     cancelNoRefund: string;
     cancelNoShow: string;
+    cancelPunctuality: string;
     summary: string;
     total: string;
     includesCosts: string;
@@ -199,6 +203,8 @@ export type Messages = {
     bookingOnlySub: string;
     bookingPolicy: string;
     bookingPolicyReschedule: string;
+    bookingPolicyLatePay: string;
+    bookingPolicyPunctuality: string;
     bookingPolicyContact: string;
     payAtStudio: string;
     noBookingData: string;

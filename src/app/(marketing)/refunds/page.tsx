@@ -8,7 +8,7 @@ export default function RefundsPage() {
         Cancellations
       </h1>
       <p className="text-sm text-[var(--text-muted)] mb-8">
-        Last updated: September 3, 2026
+        Last updated: September 5, 2026
       </p>
 
       <div className="space-y-6">
@@ -19,8 +19,12 @@ export default function RefundsPage() {
             </h2>
             <ul className="text-sm text-[var(--text-secondary)] space-y-2 list-disc list-inside">
               <li>
-                You can cancel a confirmed booking from your account if there are
-                at least 24 hours before the session.
+                You can cancel a confirmed booking from your account or confirmation
+                email if there are at least 24 hours before the session.
+              </li>
+              <li>
+                If you do not cancel at least 24 hours before, the session must still
+                be paid at the studio — including no-shows.
               </li>
               <li>Payment is made at the studio, so there is no online refund.</li>
             </ul>

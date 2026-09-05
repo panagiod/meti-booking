@@ -10,11 +10,15 @@ export default function FAQPage() {
     },
     {
       q: "How do I pay?",
-      a: `Payment is at the studio. Reformer sessions start from €${siteConfig.sessionTypes[0].priceFrom}. There is no online payment on this site.`,
+      a: `Payment is at the studio. Reformer sessions start from €${siteConfig.sessionTypes[0].priceFrom}. There is no online payment on this site. If you book and do not cancel at least 24 hours before, the session must still be paid.`,
     },
     {
       q: "How do I cancel?",
-      a: "Use the link in your confirmation email or sign in to your account. Cancellations need at least 24 hours’ notice.",
+      a: "Use the link in your confirmation email or sign in to your account. Free cancellation needs at least 24 hours’ notice. Later than that, or if you do not come, the session must still be paid.",
+    },
+    {
+      q: "What if I arrive late?",
+      a: "Classes start on time and do not wait. Join quietly if you can; the session will not be delayed or extended.",
     },
     {
       q: "Where is the studio?",
@@ -22,7 +26,7 @@ export default function FAQPage() {
     },
     {
       q: "What should I bring?",
-      a: "Wear comfortable movement clothing. Arrive about 10 minutes early on your first visit so we can get you set up on the reformer.",
+      a: "Wear comfortable movement clothing. Arrive a few minutes early so you are ready when the class starts. First visits: come about 10 minutes early so we can get you set up on the reformer.",
     },
     {
       q: "Who teaches?",

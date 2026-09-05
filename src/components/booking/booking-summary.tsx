@@ -157,11 +157,15 @@ export function BookingSummary({
           <p className="mt-2 text-xs text-[var(--studio-muted)]">{t.checkout.includesCosts}</p>
         )}
 
-        <p className="mt-6 text-xs leading-relaxed text-[var(--studio-muted)]">
-          {formatMessage(t.booking.reschedulePolicy, {
-            hours: service.rescheduleHoursMin || 24,
-          })}
-        </p>
+        <div className="mt-6 space-y-1.5 text-xs leading-relaxed text-[var(--studio-muted)]">
+          <p>
+            {formatMessage(t.booking.reschedulePolicy, {
+              hours: service.rescheduleHoursMin || 24,
+            })}
+          </p>
+          <p>{t.booking.lateCancelPolicy}</p>
+          <p>{t.booking.punctualityPolicy}</p>
+        </div>
 
         <button
           type="button"

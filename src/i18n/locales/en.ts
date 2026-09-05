@@ -40,6 +40,8 @@ const en: Messages = {
     phone: "Phone",
     email: "Email",
     book: "Book a time",
+    policyNote:
+      "Cancel at least 24 hours before or the session is still payable. Classes start on time and do not wait for late arrivals.",
   },
   how: {
     title: "How to book",
@@ -55,7 +57,8 @@ const en: Messages = {
       },
       {
         title: "Confirm",
-        description: "Leave your name and email. Payment is at the studio — no card needed online.",
+        description:
+          "Leave your name and email. Payment is at the studio. Cancel at least 24 hours before, or the session is still payable. Classes start on time.",
       },
     ],
   },
@@ -165,7 +168,9 @@ const en: Messages = {
     date: "Date",
     time: "Time",
     total: "Total",
-    reschedulePolicy: "Free reschedule up to {hours} hours before your session.",
+    reschedulePolicy: "Free cancel or change up to {hours} hours before your session.",
+    lateCancelPolicy: "If you do not cancel in time, the session must still be paid at the studio.",
+    punctualityPolicy: "Classes start on time and do not wait if you arrive late.",
     continuePayment: "Continue to payment",
     confirmBooking: "Confirm booking",
     processing: "Processing…",
@@ -246,9 +251,10 @@ const en: Messages = {
     mercadoPagoSub: "Credit card, debit card, or account balance",
     securePayment: "Secure payment",
     cancellationPolicy: "Cancellation policy",
-    cancelReschedule: "Free reschedule with 24 hours notice",
-    cancelNoRefund: "Cancel without rescheduling — no refund",
-    cancelNoShow: "No-show — no refund",
+    cancelReschedule: "Free cancel or change with 24 hours notice",
+    cancelNoRefund: "Cancel later than 24 hours before — session still payable",
+    cancelNoShow: "No-show — session still payable",
+    cancelPunctuality: "Classes start on time and do not wait if you arrive late",
     summary: "Summary",
     total: "Total",
     includesCosts: "Includes all fees",
@@ -259,7 +265,10 @@ const en: Messages = {
     bookingOnlySub:
       "No online payment. Your session is reserved immediately — payment is handled at the studio.",
     bookingPolicy: "Booking policy",
-    bookingPolicyReschedule: "Free reschedule with 24 hours notice",
+    bookingPolicyReschedule: "Free cancel or change with 24 hours notice",
+    bookingPolicyLatePay:
+      "If you do not cancel at least 24 hours before, the session must still be paid at the studio.",
+    bookingPolicyPunctuality: "Classes start on time and do not wait if you arrive late.",
     bookingPolicyContact:
       "Cancel from the link in your confirmation email or from your account, at least 24 hours before the session.",
     payAtStudio: "Payment at the studio",
@@ -282,7 +291,8 @@ const en: Messages = {
     cancel: "Cancel booking",
     cancelling: "Cancelling…",
     cancelled: "Your booking has been cancelled and the slot is free again.",
-    cannotCancel: "This booking can no longer be cancelled online.",
+    cannotCancel:
+      "This booking can no longer be cancelled online. The session must still be paid at the studio.",
     confirmBody: "Cancel this session? The reformer place will be released.",
     backHome: "← Back to home",
   },
@@ -291,10 +301,10 @@ const en: Messages = {
     noBookingInfo: "No booking information available.",
     bookingConfirmed: "Booking confirmed!",
     bookingConfirmedSub:
-      "Your reformer session is booked. See you at the studio — arrive 10 minutes early.",
+      "Your reformer session is booked. Arrive a few minutes early — classes start on time and do not wait. Cancel at least 24 hours before, or the session is still payable.",
     paymentConfirmed: "Booking confirmed!",
     paymentConfirmedSub:
-      "Your reformer session is booked. See you at the studio — arrive 10 minutes early.",
+      "Your reformer session is booked. Arrive a few minutes early — classes start on time and do not wait. Cancel at least 24 hours before, or the session is still payable.",
     goToDashboard: "Go to my bookings",
     paymentFailed: "Payment was not completed",
     paymentFailedSub: "No charge was made. You can try again whenever you like.",
