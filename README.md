@@ -23,8 +23,7 @@ Book **reformer sessions** online: pick a date, time, sign in, pay.
 | **Timezone** | Asia/Nicosia (Cyprus) |
 | **Booking lead time** | 2 hours minimum (`resolveBookingLeadHours`) |
 | **Languages** | Greek default (`meti-lang`); EN optional. Noto Sans / GFS Didot |
-| **Demo password** | `Demo1234!` (or `DEMO_PASSWORD` env) |
-| **Admin** | `admin@demo.meti-booking.local` |
+| **Local demo** | See [docs/DEMO.md](docs/DEMO.md) |
 
 ---
 
@@ -55,7 +54,7 @@ Open [http://localhost:3000](http://localhost:3000) → **Book**.
 
 See [docs/ADMIN.md](docs/ADMIN.md) for details.
 
-Production backups and restore live in a **private** ops repo. Setup: [deploy/OPS.md](deploy/OPS.md).
+Production backups live in a **private** ops repo. Public pointer: [deploy/OPS.md](deploy/OPS.md).
 
 ---
 

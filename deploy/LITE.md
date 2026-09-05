@@ -53,7 +53,7 @@ Every push to `main` runs `./deploy/deploy-lite.sh` via GitHub Actions — see [
 The live SQLite file (`/var/lib/meti-booking/data.db`) holds the studio schedule, blocked days, and customer bookings.
 
 - **Every night at 02:00 UTC** the server writes an encrypted local copy.
-- **GitHub Actions** copies the encrypted database and `.env` to the private `meti-studio-ops` repo.
+- **GitHub Actions** copies the encrypted database and `.env` to the private ops repo.
 - Manual backup: `./deploy/backup-studio-data.sh`
 
 Restore (this replaces the live database): GitHub → **Restore Production**, or:
@@ -91,7 +91,7 @@ git pull
 
 ## Booking emails (Resend)
 
-Bookings work without email. To send **client confirmations** and **studio alerts** to `tyrri_meropi@hotmail.com`:
+Bookings work without email. To send **client confirmations** and **studio alerts**:
 
 1. Verify `meti-pilates.com` in [Resend](https://resend.com/domains) (DNS records)
 2. Create an API key (`re_…`)

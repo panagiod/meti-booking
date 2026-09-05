@@ -36,7 +36,9 @@ revokes existing sessions so they must sign in again. See
 | **Closures** | `/admin/closures` | Cyprus holidays + extra days off |
 | **Website** | `/admin/content` | Homepage text, images, contact info |
 
-The admin UI follows the site language (Greek by default, `EN | ΕΛ` in the sidebar). Legacy marketplace pages (`/admin/blog`, `/admin/invoices`, `/admin/config`) stay off the sidebar and remain English.
+The admin UI follows the site language (Greek by default, `EN | ΕΛ` in the sidebar and the top bar). Legacy marketplace pages (`/admin/blog`, `/admin/invoices`, `/admin/config`) stay off the sidebar and remain English.
+
+Clients may leave an optional phone number at checkout or on `/dashboard/profile`. It appears on the **Clients** page and in cancellation emails to the studio.
 
 ---
 

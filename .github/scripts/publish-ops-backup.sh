@@ -58,8 +58,17 @@ if [[ -s "$SRC_INV" ]]; then
 fi
 
 if [[ -d "${TEMPLATE_ROOT}/deploy/ops-repo" ]]; then
-  cp "${TEMPLATE_ROOT}/deploy/ops-repo/README.md" README.md
   cp "${TEMPLATE_ROOT}/deploy/ops-repo/env.example" env.example
+  # Do not overwrite private runbooks with public stubs.
+  if [[ ! -f README.md ]]; then
+    cp "${TEMPLATE_ROOT}/deploy/ops-repo/README.md" README.md
+  fi
+  if [[ ! -d docs ]] || [[ -z "$(find docs -name '*.md' -print -quit 2>/dev/null)" ]]; then
+    if [[ -d "${TEMPLATE_ROOT}/deploy/ops-repo/docs" ]]; then
+      mkdir -p docs
+      cp "${TEMPLATE_ROOT}/deploy/ops-repo/docs/"*.md docs/ 2>/dev/null || true
+    fi
+  fi
 fi
 
 python3 - <<PY

@@ -34,9 +34,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Schema changes: `pnpm db:migrate` + update `demo-setup.ts`
 - After seed changes: `pnpm demo:setup`
 - Production: set `ENCRYPTION_KEY`, `STUDIO_TIMEZONE`, `CRON_SECRET`
-- **Private ops repo:** encrypted DB + `.env` backups — [deploy/OPS.md](deploy/OPS.md)
+- **Private ops repo:** encrypted DB + `.env` backups. Public pointer: [deploy/OPS.md](deploy/OPS.md). Host-specific runbooks are **not** in this repo.
 - **If production data is lost, follow Disaster recovery below** — do not invent a new restore path
-- **If you change backup or restore, update the procedures in the same change** — [deploy/OPS.md](deploy/OPS.md), [deploy/BACKUP.md](deploy/BACKUP.md), this Disaster recovery section, and [`.agents/skills/meti-backup-restore/SKILL.md`](.agents/skills/meti-backup-restore/SKILL.md). Do not leave the runbooks describing an old path.
+- **If you change backup or restore, update the private ops runbooks** (`docs/OPS.md`, `docs/BACKUP.md`, `docs/RECOVERY.md`) and the public-safe skill [`.agents/skills/meti-backup-restore/SKILL.md`](.agents/skills/meti-backup-restore/SKILL.md). Do not write the host IP or the ops repo name into this public tree.
 - **Hetzner VPS:** `SELF_HOSTED=1`, use `./deploy/deploy.sh` — see [docs/HOSTING.md](docs/HOSTING.md)
 - **Vercel:** `BLOB_READ_WRITE_TOKEN` for admin uploads
 
@@ -60,43 +60,25 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | MP encryption | `src/lib/encryption.ts`, `src/lib/advisor-mp.ts` |
 | Checkout pricing | `src/app/api/checkout/quote/route.ts` |
 | **Production deploy** | `deploy/HETZNER.md`, `docs/HOSTING.md` |
-| **Backup / restore** | [deploy/OPS.md](deploy/OPS.md), skill [meti-backup-restore](.agents/skills/meti-backup-restore/SKILL.md) |
-| **Downtime / usage alerts** | [deploy/OPS.md](deploy/OPS.md) — VPS cron + GitHub **Uptime** |
+| **Backup / restore** | [deploy/OPS.md](deploy/OPS.md) (public pointer) · private repo `docs/` · skill [meti-backup-restore](.agents/skills/meti-backup-restore/SKILL.md) |
+| **Downtime / usage alerts** | GitHub **Uptime** + VPS cron (`deploy/monitor-studio.sh`) |
 
 ## Disaster recovery
 
-Full runbook: **[deploy/OPS.md](deploy/OPS.md)**. Private vault: `panagiod/meti-studio-ops`. Agent skill: [`.agents/skills/meti-backup-restore/SKILL.md`](.agents/skills/meti-backup-restore/SKILL.md).
+Host-specific steps (SSH, host address, private repo name) live in the private
+ops repo: `docs/RECOVERY.md` and `docs/OPS.md`. Public pointer:
+[deploy/OPS.md](deploy/OPS.md). Agent skill:
+[`.agents/skills/meti-backup-restore/SKILL.md`](.agents/skills/meti-backup-restore/SKILL.md).
 
-Any change that affects encrypting, publishing, verifying, restoring, or rebuilding studio data must update those docs and this section in the same commit. That includes `deploy/backup-*.sh`, `deploy/restore-*.sh`, `deploy/bootstrap-from-ops.sh`, `deploy/ci-deploy-wrapper.sh`, `deploy/backup-crypto.sh`, and `.github/workflows/*backup*`, `*restore*`, `*rebuild*`.
-
-**Test without replacing live data:** Actions → **Backup Production**, then **Verify Restore**. That decrypts the backup and checks it.
+**Test without replacing live data:** Actions → **Backup Production**, then **Verify Restore**.
 
 **Live dress rehearsal:** Actions → **Backup and Restore** → type `RESTORE`. Brief downtime. Rolls back if `/api/health` fails.
 
-**Same VPS (database wiped or bad deploy):**
+**Same VPS (database wiped or bad deploy):** Actions → **Restore Production** → backup `latest` → type `RESTORE`.
 
-1. GitHub → `panagiod/meti-booking` → Actions → **Restore Production**
-2. Backup: `latest` (or `YYYY-MM-DD`)
-3. Confirm: `RESTORE`
-4. The VPS pulls `backups/*.db.enc` from `meti-studio-ops` and decrypts with `BACKUP_ENCRYPTION_KEY` already in `~/meti-booking/.env`
+**VPS destroyed (new machine):** Actions → **Rebuild Production** → type `REBUILD`. Then point DNS at the new host and re-run `./deploy/setup-cicd.sh`.
 
-Manual on the live server:
-
-```bash
-ssh root@2.29.22.46
-cd ~/meti-booking
-CONFIRM=RESTORE ./deploy/restore-from-ops.sh latest
-```
-
-**VPS destroyed (new machine):**
-
-1. New Ubuntu VPS + unrestricted SSH key
-2. Secrets on `meti-booking`: `RECOVERY_HOST`, `RECOVERY_USER`, `RECOVERY_SSH_KEY`, `BACKUP_ENCRYPTION_KEY`, `OPS_REPO_TOKEN`
-3. Actions → **Rebuild Production** → Confirm `REBUILD`
-4. Point `meti-pilates.com` A record at the new IP
-5. `./deploy/setup-cicd.sh` and update `PRODUCTION_HOST`
-
-Do not `--force-reset` or cancel upcoming bookings. Do not commit plaintext `.env` or `data.db`.
+Do not `--force-reset` or cancel upcoming bookings. Do not commit plaintext `.env` or `data.db`. Do not publish the production host or the private ops repo name here.
 
 ## Alerts
 
@@ -124,6 +106,7 @@ Close fixed audit issues: `./scripts/close-resolved-issues.sh`
 - Colombia timezone — use **Nicosia, Cyprus** (`Asia/Nicosia`) via `timezone.ts`
 - Greek dates without a day — nominative month (`Σεπτέμβριος 2026`); **with a day use genitive** (`3 Σεπτεμβρίου`)
 - Site language defaults to **Greek** (`meti-lang`); do not assume English
+- Production host / private ops repo name belong in the **private** ops docs — do not put them in this public repo
 - Admin UI is translated — keys in `src/i18n/locales/{en,el}.ts` under `admin`
 - `bookingLeadHours` default is **2h** — use `resolveBookingLeadHours()`
 - Hardcoded fees — use **`GET /api/checkout/quote`**

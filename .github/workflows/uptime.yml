@@ -98,7 +98,7 @@ jobs:
                   html = (
                       "<p>https://meti-pilates.com did not answer from GitHub Actions.</p>"
                       "<p>This usually means the VPS, Caddy, or Cloudflare is down. "
-                      "SSH: <code>ssh root@2.29.22.46</code></p>"
+                      "Check the host from your password manager or the private ops runbook — do not paste SSH in this workflow.</p>"
                   )
               payload = json.dumps({
                   "from": os.environ["EMAIL_FROM"],

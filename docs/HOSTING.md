@@ -139,7 +139,7 @@ git pull origin main
 
 ### Recommended backup cron
 
-Lite / production SQLite backups are installed by `deploy/setup-cron.sh` and copied encrypted to the private `meti-studio-ops` repo. See [deploy/OPS.md](../deploy/OPS.md).
+Lite / production SQLite backups are installed by `deploy/setup-cron.sh` and copied encrypted to a private ops repo. See [deploy/OPS.md](../deploy/OPS.md).
 
 ### Docker files
 

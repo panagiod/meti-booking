@@ -45,7 +45,7 @@ Google login is **already built in**. The **“Continue with Google”** button 
    - `.../auth/userinfo.profile`
    - `openid`
 5. **Test users** (while app is in *Testing* mode):
-   - Add emails that should be allowed to sign in during testing (e.g. `dimitrioupanagiotis@outlook.com`, `tyrri_meropi@hotmail.com`)
+   - Add emails that should be allowed to sign in during testing
 6. Save.
 
 > **Publishing:** While status is **Testing**, only **test users** you added can sign in. When ready for everyone, click **Publish app** on the consent screen. Basic email/profile scopes usually do not need Google verification.
@@ -153,7 +153,7 @@ Also test **https://meti-pilates.com/register** — same Google button appears t
 
 ## Linking Google to an existing email/password account
 
-If someone already registered with **email + password** (e.g. `dimitrioupanagiotis@outlook.com`), signing in with **Google using the same email** should link the accounts automatically (better-auth account linking is enabled).
+If someone already registered with **email + password**, signing in with **Google using the same email** should link the accounts automatically (better-auth account linking is enabled).
 
 If they use a **different** Google email, that creates a **separate** account.
 

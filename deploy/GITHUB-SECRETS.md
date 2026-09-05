@@ -1,36 +1,38 @@
-# One-time: enable automatic deploy from GitHub
+# GitHub Actions secrets
 
-CI/CD **cannot connect** until these 3 secrets exist in GitHub.  
-The cloud agent cannot add them for you (GitHub security).
+This public file lists secret **names** only. Host addresses, key material,
+and the private ops repo path live in that private repo’s
+`docs/GITHUB-SECRETS.md`.
 
-## Step 1 — On the server (SSH once)
+## Deploy
 
-```bash
-cd ~/meti-booking
-git pull
-./deploy/setup-cicd.sh
-```
+| Secret | What it is |
+|--------|------------|
+| `PRODUCTION_HOST` | Server address (from `./deploy/setup-cicd.sh` on the VPS) |
+| `PRODUCTION_USER` | SSH user printed by the setup script |
+| `PRODUCTION_SSH_KEY` | Full private key printed by the setup script |
 
-Copy the output (host, user, private key).
+On the server: `cd ~/meti-booking && ./deploy/setup-cicd.sh`, then paste the
+output into this repo’s Actions secrets. Do not write the address here.
 
-## Step 2 — GitHub (one-time)
+## Backups and rebuild
 
-Open: **https://github.com/panagiod/meti-booking/settings/secrets/actions**
+| Secret | What it is |
+|--------|------------|
+| `OPS_REPO` | `owner/name` of the private ops repository |
+| `OPS_REPO_TOKEN` | Fine-grained PAT with Contents access on that repo only |
+| `BACKUP_ENCRYPTION_KEY` | From the server `.env` (also keep in a password manager) |
+| `RECOVERY_HOST` | New VPS address, only when rebuilding |
+| `RECOVERY_USER` | SSH user for the new VPS |
+| `RECOVERY_SSH_KEY` | Unrestricted private key for the new VPS |
 
-| Secret | Value |
-|--------|--------|
-| `PRODUCTION_HOST` | Server IPv4 |
-| `PRODUCTION_USER` | `root` |
-| `PRODUCTION_SSH_KEY` | Full private key from setup script |
+## Optional (uptime email from GitHub)
 
-## Step 3 — Trigger deploy
+| Secret | What it is |
+|--------|------------|
+| `RESEND_API_KEY` | Actions cannot read the server `.env` |
+| `EMAIL_FROM` | From-address for downtime mail |
+| `STUDIO_NOTIFICATION_EMAIL` | Studio inbox |
 
-Push to `main` or: **Actions → Deploy Production → Run workflow**
-
----
-
-Keep `BACKUP_ENCRYPTION_KEY` from the server `.env` in a password manager and as a GitHub secret. Encrypted backups go to the private `meti-studio-ops` repo — see [OPS.md](./OPS.md).
-
-After this, **every push deploys automatically** — no more manual `git pull` or `./deploy/deploy-lite.sh`.
-
-Deploy logs on server: `/var/log/meti-booking/deploy.log`
+After the three deploy secrets exist, push to `main` or run
+**Actions → Deploy Production**.

@@ -5,19 +5,24 @@ description: MeTi Pilates production backup, verify, restore, and rebuild. Use w
 
 # MeTi backup and restore
 
-Source of truth for humans: **[deploy/OPS.md](../../../deploy/OPS.md)** and **[deploy/BACKUP.md](../../../deploy/BACKUP.md)**.  
+Host-specific runbooks live in the **private** ops repository (`docs/OPS.md`,
+`docs/BACKUP.md`, `docs/RECOVERY.md`). Public pointer:
+**[deploy/OPS.md](../../../deploy/OPS.md)**.
+
 Agent recap: **[AGENTS.md](../../../AGENTS.md)** → Disaster recovery.
 
 ## Rule
 
-If a change affects backup or restore, update the procedures in the **same commit**. Do not ship a new path while the runbooks still describe the old one.
+If a change affects backup or restore, update the **private** runbooks. Do not
+write the production host, SSH commands with a live address, or the private
+ops repo name into this public repository.
 
 Update all of:
 
-- [deploy/OPS.md](../../../deploy/OPS.md)
-- [deploy/BACKUP.md](../../../deploy/BACKUP.md)
-- [AGENTS.md](../../../AGENTS.md) Disaster recovery
-- this skill, if the steps or file list changed
+- Private ops repo `docs/OPS.md`, `docs/BACKUP.md`, `docs/RECOVERY.md`
+- [deploy/OPS.md](../../../deploy/OPS.md) (public pointer only)
+- [AGENTS.md](../../../AGENTS.md) Disaster recovery (Actions names only)
+- this skill, if the Action names or file list changed
 
 That includes edits to:
 
@@ -29,14 +34,16 @@ That includes edits to:
 
 Do not invent a second restore path. Do not `--force-reset` or cancel upcoming bookings. Do not commit plaintext `.env` or `data.db`.
 
-## Current procedures
+## Current procedures (public-safe)
 
-**Backup:** VPS encrypts SQLite + `.env` with `BACKUP_ENCRYPTION_KEY`, then pushes to private `panagiod/meti-studio-ops`. Actions → **Backup Production**, nightly cron, and post-deploy.
+**Backup:** VPS encrypts SQLite + `.env`, then publishes to the private ops repo. Actions → **Backup Production**, nightly cron, and post-deploy.
 
 **Verify (no live swap):** Actions → **Verify Restore** (`latest`). Decrypts and checks tables. Site stays up.
 
-**Same VPS restore:** Actions → **Restore Production** → `latest` + type `RESTORE`. Or `CONFIRM=RESTORE ./deploy/restore-from-ops.sh latest`. Stops the app, saves `pre-restore-*.db`, replaces `data.db`, drops WAL/SHM, starts, checks `/api/health`, rolls back if health fails.
+**Same VPS restore:** Actions → **Restore Production** → `latest` + type `RESTORE`.
 
 **Dress rehearsal:** Actions → **Backup and Restore** → type `RESTORE`.
 
-**New VPS:** Actions → **Rebuild Production** → `REBUILD`. Untested on a real empty machine. Needs `BACKUP_ENCRYPTION_KEY` plus an unrestricted recovery SSH key.
+**New VPS:** Actions → **Rebuild Production** → `REBUILD`. Needs `BACKUP_ENCRYPTION_KEY` plus an unrestricted recovery SSH key.
+
+**Refresh private runbooks:** Actions → **Publish Ops Docs** (only while `deploy/ops-repo/docs/` still has a payload).

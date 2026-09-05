@@ -1,0 +1,33 @@
+name: Publish Ops Docs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "deploy/ops-repo/**"
+      - "deploy/publish-ops-docs.sh"
+      - ".github/workflows/publish-ops-docs.yml"
+
+jobs:
+  publish:
+    name: Copy runbooks to the private ops repo
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publish docs
+        env:
+          OPS_REPO: ${{ secrets.OPS_REPO }}
+          OPS_REPO_TOKEN: ${{ secrets.OPS_REPO_TOKEN }}
+        run: |
+          if [ -z "$OPS_REPO_TOKEN" ]; then
+            echo "::error::Add OPS_REPO_TOKEN first"
+            exit 1
+          fi
+          export OPS_REPO="${OPS_REPO:-panagiod/meti-studio-ops}"
+          chmod +x deploy/publish-ops-docs.sh
+          ./deploy/publish-ops-docs.sh

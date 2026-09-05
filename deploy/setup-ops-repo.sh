@@ -59,9 +59,12 @@ trap 'rm -rf "$WORK"' EXIT
 git clone "https://x-access-token:${OPS_REPO_TOKEN}@github.com/${OPS_REPO}.git" "$WORK/ops"
 cd "$WORK/ops"
 
-mkdir -p backups secrets
+mkdir -p backups secrets docs
 cp "${ROOT}/deploy/ops-repo/README.md" README.md
 cp "${ROOT}/deploy/ops-repo/env.example" env.example
+if [[ -d "${ROOT}/deploy/ops-repo/docs" ]]; then
+  cp "${ROOT}/deploy/ops-repo/docs/"*.md docs/ 2>/dev/null || true
+fi
 if [[ ! -f inventory.md ]]; then
   echo "# Studio inventory" > inventory.md
   echo "" >> inventory.md
@@ -73,7 +76,7 @@ fi
 
 git config user.name meti-backup
 git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-git add README.md env.example inventory.md backups/.gitkeep secrets/.gitkeep
+git add README.md env.example inventory.md backups/.gitkeep secrets/.gitkeep docs
 if git diff --staged --quiet; then
   echo "Ops repo already initialized"
   exit 0

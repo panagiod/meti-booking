@@ -6,7 +6,7 @@ Turn on **booking confirmation emails** for clients and **new-booking alerts** f
 |----------------|-------------|
 | Bookings work normally | Same — plus emails |
 | No confirmation email to client | ✓ “Booking confirmed” to client |
-| No alert to studio | ✓ “New booking” to `tyrri_meropi@hotmail.com` |
+| No alert to studio | ✓ “New booking” to `STUDIO_NOTIFICATION_EMAIL` |
 | No 24h reminders | ✓ Reminder emails (needs cron — already installed on VPS) |
 
 **Cost:** Resend **free tier** — 100 emails/day, 3,000/month. Enough for a small studio.
@@ -36,11 +36,11 @@ Turn on **booking confirmation emails** for clients and **new-booking alerts** f
 | Password reset requested | User | Reset your MeTi Pilates password |
 | ~24h before class | Client + studio | ⏰ Reminder: … tomorrow |
 
-**Studio inbox (default):** `tyrri_meropi@hotmail.com`  
-Override with `STUDIO_NOTIFICATION_EMAIL` in `.env`. **Multiple inboxes:** separate with commas:
+**Studio inbox:** set `STUDIO_NOTIFICATION_EMAIL` in `.env`.
+**Multiple inboxes:** separate with commas:
 
 ```bash
-STUDIO_NOTIFICATION_EMAIL="tyrri_meropi@hotmail.com, second@example.com"
+STUDIO_NOTIFICATION_EMAIL="studio@example.com, second@example.com"
 ```
 ```
 
@@ -160,7 +160,7 @@ Find the **Email (Resend)** section and set:
 # --- Email (Resend) ---
 RESEND_API_KEY=re_paste_your_key_here
 EMAIL_FROM="MeTi Pilates <bookings@meti-pilates.com>"
-STUDIO_NOTIFICATION_EMAIL="tyrri_meropi@hotmail.com, second@example.com"
+STUDIO_NOTIFICATION_EMAIL="studio@example.com, second@example.com"
 ```
 
 **Rules:**
@@ -221,7 +221,7 @@ Do **not** share this output publicly.
 | Inbox | Expected email |
 |-------|----------------|
 | Email you used as guest | “Booking confirmed” |
-| `tyrri_meropi@hotmail.com` | “New booking” |
+| `STUDIO_NOTIFICATION_EMAIL` | “New booking” |
 
 Check **Spam / Junk** on Hotmail — first emails from a new domain often land there until you mark “Not junk”.
 
@@ -266,7 +266,7 @@ Book a session for **tomorrow** if you want to test the real cron path. Otherwis
 | **Reminders never send** | `CRON_SECRET` set? Run `./deploy/setup-cron.sh` again; appointment must be ~24h away |
 | **Changed `.env` but still no email** | Did you run `sudo systemctl restart meti-booking`? |
 
-### Hotmail / Outlook tips (`tyrri_meropi@hotmail.com`)
+### Hotmail / Outlook tips
 
 1. Check **Junk Email** and **Other** tabs.
 2. Add `bookings@meti-pilates.com` to **Safe senders** (Settings → Mail → Junk email).

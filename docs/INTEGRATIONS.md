@@ -91,7 +91,7 @@ Quick env vars:
 ```bash
 RESEND_API_KEY=re_...
 EMAIL_FROM="MeTi Pilates <bookings@meti-pilates.com>"
-STUDIO_NOTIFICATION_EMAIL=tyrri_meropi@hotmail.com
+STUDIO_NOTIFICATION_EMAIL=studio@example.com
 ```
 
 Without `RESEND_API_KEY`, bookings work but no emails are sent.

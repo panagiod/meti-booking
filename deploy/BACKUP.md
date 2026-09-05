@@ -1,48 +1,18 @@
 # Studio backups
 
-MeTi Pilates stores the schedule, blocked dates, and customer bookings in one SQLite file:
+The live schedule, closures, and customer bookings sit in one SQLite file on
+the VPS. Encrypted copies go to a **private** ops repository (`OPS_REPO`).
 
-`/var/lib/meti-booking/data.db`
+Host-specific restore steps are **not** in this public file. See the private
+repo `docs/BACKUP.md` and `docs/OPS.md`.
 
-The public repo must not keep those files in plaintext. Encrypted copies go to the **private** ops repo.
+## What you can do from this repo
 
-**Setup and disaster recovery:** [OPS.md](./OPS.md)
+- **Actions → Backup Production** — write an encrypted copy now
+- **Actions → Verify Restore** — decrypt and check (does not replace live data)
+- **Actions → Restore Production** — type `RESTORE` to replace live `data.db`
+- **Actions → Rebuild Production** — type `REBUILD` on a new VPS
 
-If you change backup or restore, update this file, [OPS.md](./OPS.md), [AGENTS.md](../AGENTS.md) Disaster recovery, and `.agents/skills/meti-backup-restore/SKILL.md` in the same commit.
-
-## What runs automatically
-
-1. **On the VPS, every night at 02:00 UTC** (05:00 Nicosia in summer)  
-   `deploy/backup-studio-data.sh` writes:
-   - encrypted files in `/var/lib/meti-booking/backups/`
-   - last 7 raw copies on the server only
-2. **GitHub Actions, every night and after each deploy**  
-   Pulls the encrypted database and `.env` over the restricted deploy SSH key and commits them to `panagiod/meti-studio-ops`.
-
-## Restore the live database (same VPS)
-
-GitHub → **Actions → Restore Production** → backup `latest` → confirm `RESTORE`
-
-Or on the server:
-
-```bash
-cd ~/meti-booking
-CONFIRM=RESTORE ./deploy/restore-from-ops.sh latest
-```
-
-The restore script decrypts with `BACKUP_ENCRYPTION_KEY`, saves the current database first, then replaces `data.db`.
-
-## If the server is gone
-
-Use **Actions → Rebuild Production** on a new VPS, or run `CONFIRM=REBUILD ./deploy/bootstrap-from-ops.sh latest`. Full steps are in [OPS.md](./OPS.md).
-
-Store `BACKUP_ENCRYPTION_KEY` in a password manager and as the GitHub secret of the same name.
-
-## Manual backup
-
-```bash
-cd ~/meti-booking
-./deploy/backup-studio-data.sh
-```
-
-Or run **Actions → Backup Production → Run workflow**.
+If you change backup or restore scripts, update the **private** runbooks in
+the same change. Do not put the production host or the ops repo name back
+into this public file.

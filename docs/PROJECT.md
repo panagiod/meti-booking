@@ -89,7 +89,7 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 | `src/lib/site-config.ts` | EUR, capacity, booking window, reformer filter |
 | `src/lib/studio-content.ts` | Content types, defaults, message merge |
 | `src/lib/studio-content-server.ts` | DB CRUD for `StudioContent` |
-| `src/lib/date-locale.ts` | Greek nominative months for date-fns |
+| `src/lib/date-locale.ts` | Greek months: genitive with a day, nominative for month-year |
 | `src/lib/booking-config.ts` | `resolveBookingLeadHours()`, studio default (2h) |
 | `src/components/providers/locale-provider.tsx` | i18n + loads `/api/studio/content` |
 | `src/proxy.ts` | Auth middleware + public route allowlist |
