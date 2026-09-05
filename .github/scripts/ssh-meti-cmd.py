@@ -23,9 +23,10 @@ def load_key(raw: str) -> paramiko.PKey:
     if not text.endswith("\n"):
         text += "\n"
     last_error: Exception | None = None
-    for loader in (paramiko.Ed25519Key, paramiko.RSAKey, paramiko.ECDSAKey, paramiko.DSSKey):
+    loaders = [paramiko.PKey.from_private_key, paramiko.Ed25519Key.from_private_key, paramiko.RSAKey.from_private_key, paramiko.ECDSAKey.from_private_key]
+    for loader in loaders:
         try:
-            return loader.from_private_key(io.StringIO(text))
+            return loader(io.StringIO(text))
         except Exception as error:  # noqa: BLE001 — try each key type
             last_error = error
     raise SystemExit(f"Could not parse PRODUCTION_SSH_KEY: {last_error}")
