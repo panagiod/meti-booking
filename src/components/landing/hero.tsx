@@ -13,6 +13,7 @@ import {
   useTranslations,
   useStudioBranding,
 } from "@/components/providers/locale-provider";
+import { StudioMapLink } from "@/components/landing/studio-map-link";
 
 export function Hero() {
   const t = useTranslations();
@@ -71,7 +72,7 @@ export function Hero() {
               ) : null}
             </div>
             <p className="mt-8 text-sm leading-relaxed break-words text-[var(--studio-muted)] sm:mt-12">
-              {studio.location}
+              <StudioMapLink className="text-[var(--studio-muted)]">{studio.location}</StudioMapLink>
               <span className="mx-2 hidden text-[var(--studio-line)] sm:inline">·</span>
               <span className="mt-1 block sm:mt-0 sm:inline">{t.common.hours}</span>
             </p>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatStudioPhone, siteConfig, studioTelHref } from "@/lib/site-config";
+import { formatStudioPhone, siteConfig, studioMapsUrl, studioTelHref } from "@/lib/site-config";
 
 export default function FAQPage() {
   const items = [
@@ -18,7 +18,7 @@ export default function FAQPage() {
     },
     {
       q: "Where is the studio?",
-      a: `${siteConfig.location}. Call ${formatStudioPhone(siteConfig.phone)} if you need directions.`,
+      a: `${siteConfig.location}.`,
     },
     {
       q: "What should I bring?",
@@ -46,7 +46,23 @@ export default function FAQPage() {
               <h2 className="font-heading font-semibold text-[var(--text-primary)] mb-2">
                 {item.q}
               </h2>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{item.a}</p>
+              <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
+                {item.q === "Where is the studio?" ? (
+                  <>
+                    <a
+                      href={studioMapsUrl()}
+                      target="_blank"
+                      rel="noopener"
+                      className="text-[var(--primary)] hover:underline"
+                    >
+                      {siteConfig.location}
+                    </a>
+                    .
+                  </>
+                ) : (
+                  item.a
+                )}
+              </p>
             </CardContent>
           </Card>
         ))}

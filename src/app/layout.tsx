@@ -102,6 +102,11 @@ export default function RootLayout({
               telephone: siteConfig.phone,
               email: siteConfig.email,
               hasMap: siteConfig.mapsUrl,
+              geo: {
+                "@type": "GeoCoordinates",
+                latitude: siteConfig.mapsLat,
+                longitude: siteConfig.mapsLng,
+              },
               image: `${siteUrl}/images/hero.jpg`,
               priceRange: "€10",
               currenciesAccepted: "EUR",

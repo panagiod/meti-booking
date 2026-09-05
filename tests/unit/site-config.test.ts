@@ -7,6 +7,7 @@ import {
   isPublicPhone,
   sanitizeStudioPhone,
   siteConfig,
+  studioMapsUrl,
   studioTelHref,
 } from "@/lib/site-config";
 
@@ -79,6 +80,12 @@ describe("studio phone", () => {
   it("keeps a real number", () => {
     expect(isPublicPhone("+357 25 123456")).toBe(true);
     expect(sanitizeStudioPhone(" +357 25 123456 ")).toBe("+357 25 123456");
+  });
+
+  it("opens the shared Google Maps pin", () => {
+    expect(studioMapsUrl()).toBe("https://maps.app.goo.gl/r2C9X5e88pgco3hT7?g_st=ac");
+    expect(siteConfig.mapsLat).toBe(34.893656);
+    expect(siteConfig.mapsLng).toBe(33.025257);
   });
 
   it("publishes the Cyprus studio mobile", () => {

@@ -22,6 +22,8 @@ export const siteConfig = {
   deliveryMode: "in-person" as const,
   location: "60A Christoforou Giatrou, Agios Ioannis Pitsilias, 4071 Limassol",
   mapsUrl: "https://maps.app.goo.gl/r2C9X5e88pgco3hT7?g_st=ac",
+  mapsLat: 34.893656,
+  mapsLng: 33.025257,
   phone: "+35795519786",
   email: "tyrri_meropi@hotmail.com",
   hours: "Tue, Thu, Sat · see booking calendar",

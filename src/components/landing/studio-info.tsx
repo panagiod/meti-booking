@@ -13,9 +13,9 @@ import {
   formatStudioPhone,
   isPublicPhone,
   siteConfig,
-  studioMapsUrl,
   studioTelHref,
 } from "@/lib/site-config";
+import { StudioMapLink } from "@/components/landing/studio-map-link";
 import { formatScheduleHoursForLocale } from "@/lib/studio-schedule";
 
 export function StudioInfo() {
@@ -65,7 +65,6 @@ export function StudioInfo() {
   }, [locale, t.common.hours]);
 
   const phone = studio.phone;
-  const mapsUrl = studioMapsUrl();
 
   return (
     <section id="visit" className="border-t border-[var(--studio-line)]">
@@ -107,15 +106,12 @@ export function StudioInfo() {
               {t.visit.address}
             </dt>
             <dd className="mt-2 text-sm leading-relaxed text-[var(--studio-muted)]">
-              {studio.location}
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 block text-[var(--studio-ink)] underline-offset-4 hover:underline"
-              >
+              <StudioMapLink className="text-[var(--studio-muted)]">
+                {studio.location}
+              </StudioMapLink>
+              <StudioMapLink className="mt-2 block">
                 {t.visit.directions}
-              </a>
+              </StudioMapLink>
             </dd>
           </div>
           {isPublicPhone(phone) ? (
