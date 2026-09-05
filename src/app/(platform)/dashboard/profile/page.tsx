@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LoadingPage } from "@/components/ui/loading";
-import { User, Mail, Save, Camera, X } from "lucide-react";
+import { User, Mail, Save, Camera, X, Download, Trash2 } from "lucide-react";
 import { loginUrl } from "@/lib/auth-redirect";
 import { useTranslations } from "@/components/providers/locale-provider";
 
@@ -22,6 +22,8 @@ export default function ProfilePage() {
   const [image, setImage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -120,6 +122,54 @@ export default function ProfilePage() {
       alert(t.dashboard.connectionError);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const res = await fetch("/api/account/export", { credentials: "include" });
+      if (!res.ok) {
+        alert(t.dashboard.downloadError);
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "meti-pilates-data.json";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert(t.dashboard.downloadError);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm(t.dashboard.deleteAccountConfirm)) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch("/api/account/delete", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.status === 409) {
+        alert(t.dashboard.deleteAccountBlocked);
+        return;
+      }
+      if (!res.ok) {
+        alert(t.dashboard.deleteError);
+        return;
+      }
+      await authClient.signOut();
+      alert(t.dashboard.deleted);
+      router.replace("/");
+    } catch {
+      alert(t.dashboard.deleteError);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -248,6 +298,31 @@ export default function ProfilePage() {
             <Save className="w-4 h-4 mr-2" />
             {isSaving ? t.dashboard.saving : t.dashboard.saveChanges}
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t.dashboard.privacyTitle}</CardTitle>
+          <CardDescription>{t.dashboard.privacySub}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-[var(--text-muted)]">{t.dashboard.deleteAccountSub}</p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Button variant="outline" onClick={handleExport} disabled={isExporting || isDeleting}>
+              <Download className="mr-2 h-4 w-4" />
+              {isExporting ? t.dashboard.downloadingData : t.dashboard.downloadData}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleDelete}
+              disabled={isDeleting || isExporting}
+              className="text-[var(--error)]"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {isDeleting ? t.dashboard.deletingAccount : t.dashboard.deleteAccount}
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

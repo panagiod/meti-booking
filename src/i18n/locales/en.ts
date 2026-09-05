@@ -136,6 +136,13 @@ const en: Messages = {
     terms: "Terms",
     faq: "FAQ",
     cookies: "Cookies",
+    refunds: "Cancellations",
+    licenses: "Licenses",
+  },
+  cookieNotice: {
+    message: "We use only essential cookies to run bookings and remember your language.",
+    link: "Cookie policy",
+    dismiss: "OK",
   },
   book: {
     back: "Back",
@@ -227,6 +234,7 @@ const en: Messages = {
     resetPasswordError: "Could not reset password. Please request a new link.",
     resetPasswordInvalidLink: "This reset link is invalid or has expired.",
     resetPasswordMismatch: "Passwords do not match.",
+    acceptLegalRequired: "Please confirm that you have read the privacy policy and terms.",
     requestNewResetLink: "Request a new reset link",
     newPassword: "New password (minimum 8 characters)",
     confirmPassword: "Confirm new password",
@@ -275,6 +283,14 @@ const en: Messages = {
     bookingPolicyContact:
       "Cancel from the link in your confirmation email or from your account, at least 24 hours before the session.",
     payAtStudio: "Payment at the studio",
+    acceptLegalPrefix: "I have read and accept the",
+    acceptPrivacy: "privacy policy",
+    acceptLegalMiddle: "and the",
+    acceptTerms: "terms of service",
+    acceptLegalSuffix: ".",
+    acceptLegalRequired: "Please confirm that you have read the privacy policy and terms.",
+    withdrawalNote:
+      "A class on a set date is a leisure service. The 14-day online cooling-off right does not apply. You may cancel free of charge up to 24 hours before.",
     noBookingData: "No booking data",
     bookSession: "Book a session",
     errorCreateAppointment: "Failed to create booking. Please try again.",
@@ -389,6 +405,20 @@ const en: Messages = {
     profileUpdateError: "Failed to update profile",
     connectionError: "Connection error",
     uploadError: "Failed to upload image",
+    privacyTitle: "Your data",
+    privacySub: "Download a copy or delete your account.",
+    downloadData: "Download my data",
+    downloadingData: "Preparing…",
+    downloadError: "Could not download your data. Please try again.",
+    deleteAccount: "Delete my account",
+    deleteAccountSub:
+      "This removes your name, email, phone, and photo. Cancel any upcoming session first.",
+    deleteAccountConfirm:
+      "Delete your account? This cannot be undone. Upcoming bookings must be cancelled first.",
+    deleteAccountBlocked: "Cancel your upcoming sessions first, then try again.",
+    deletingAccount: "Deleting…",
+    deleteError: "Could not delete the account. Please try again or email the studio.",
+    deleted: "Your account has been deleted.",
   },
   admin: {
     roleAdmin: "Admin",

@@ -131,4 +131,4 @@ public/uploads/studio/   # Admin-uploaded images (local dev)
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md). Visitor summary: `/licenses`.

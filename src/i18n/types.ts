@@ -4,6 +4,7 @@ export const locales: Locale[] = ["en", "el"];
 export const defaultLocale: Locale = "el";
 /** Bumped so an older English cookie does not keep the site on EN. */
 export const LOCALE_COOKIE = "meti-lang";
+export const COOKIE_NOTICE_KEY = "meti-cookie-notice";
 
 export type Messages = {
   meta: {
@@ -85,6 +86,13 @@ export type Messages = {
     terms: string;
     faq: string;
     cookies: string;
+    refunds: string;
+    licenses: string;
+  };
+  cookieNotice: {
+    message: string;
+    link: string;
+    dismiss: string;
   };
   book: {
     back: string;
@@ -166,6 +174,7 @@ export type Messages = {
     resetPasswordError: string;
     resetPasswordInvalidLink: string;
     resetPasswordMismatch: string;
+    acceptLegalRequired: string;
     requestNewResetLink: string;
     newPassword: string;
     confirmPassword: string;
@@ -211,6 +220,13 @@ export type Messages = {
     bookingPolicyPunctuality: string;
     bookingPolicyContact: string;
     payAtStudio: string;
+    acceptLegalPrefix: string;
+    acceptPrivacy: string;
+    acceptLegalMiddle: string;
+    acceptTerms: string;
+    acceptLegalSuffix: string;
+    acceptLegalRequired: string;
+    withdrawalNote: string;
     noBookingData: string;
     bookSession: string;
     errorCreateAppointment: string;
@@ -321,6 +337,18 @@ export type Messages = {
     profileUpdateError: string;
     connectionError: string;
     uploadError: string;
+    privacyTitle: string;
+    privacySub: string;
+    downloadData: string;
+    downloadingData: string;
+    downloadError: string;
+    deleteAccount: string;
+    deleteAccountSub: string;
+    deleteAccountConfirm: string;
+    deleteAccountBlocked: string;
+    deletingAccount: string;
+    deleteError: string;
+    deleted: string;
   };
   admin: {
     roleAdmin: string;

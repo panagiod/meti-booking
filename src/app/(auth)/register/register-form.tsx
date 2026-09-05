@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Logo } from "@/components/ui/logo";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 import { useTranslations } from "@/components/providers/locale-provider";
+import { LegalAcceptance } from "@/components/legal/legal-acceptance";
 import type { Messages } from "@/i18n";
 
 function mapSignUpError(
@@ -44,6 +45,8 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
+  const [legalError, setLegalError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/config")
@@ -60,6 +63,10 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
     e.preventDefault();
     if (!registrationEnabled) {
       setError(t.auth.signUpUnavailable);
+      return;
+    }
+    if (!acceptedLegal) {
+      setLegalError(t.auth.acceptLegalRequired);
       return;
     }
 
@@ -161,10 +168,19 @@ export function RegisterForm({ googleOAuthEnabled }: RegisterFormProps) {
               disabled={!registrationEnabled}
               className="h-11 disabled:opacity-60"
             />
+            <LegalAcceptance
+              id="register-legal-acceptance"
+              checked={acceptedLegal}
+              onChange={(next) => {
+                setAcceptedLegal(next);
+                if (next) setLegalError(null);
+              }}
+              error={legalError}
+            />
             <Button
               type="submit"
               className="w-full h-11"
-              disabled={isLoading || !registrationEnabled}
+              disabled={isLoading || !registrationEnabled || !acceptedLegal}
             >
               {isLoading ? t.auth.creatingAccount : t.auth.createAccountBtn}
             </Button>

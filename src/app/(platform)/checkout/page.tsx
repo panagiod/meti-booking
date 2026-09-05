@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import { formatLongDate, formatMoney } from "@/lib/format";
 import { clearPendingBooking, savePendingBooking } from "@/lib/booking-utils";
 import { ClientPhoneError, normalizeClientPhone } from "@/lib/client-phone";
+import { LegalAcceptance } from "@/components/legal/legal-acceptance";
 
 function CheckoutContent() {
   const router = useRouter();
@@ -57,6 +58,8 @@ function CheckoutContent() {
   } | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(true);
   const [paymentsEnabled, setPaymentsEnabled] = useState(false);
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
+  const [legalError, setLegalError] = useState<string | null>(null);
 
   const instructorId = searchParams.get("instructorId") || searchParams.get("advisorId");
   const instructorName =
@@ -207,8 +210,9 @@ function CheckoutContent() {
   };
 
   const canConfirm =
-    isLoggedIn === true ||
-    (isLoggedIn === false && guestEmail.trim().length > 0 && !guestEmailError);
+    acceptedLegal &&
+    (isLoggedIn === true ||
+      (isLoggedIn === false && guestEmail.trim().length > 0 && !guestEmailError));
 
   const handleConfirmBooking = async () => {
     if (isLoggedIn === null) return;
@@ -217,6 +221,10 @@ function CheckoutContent() {
       return;
     }
     if (!validateGuestPhone()) {
+      return;
+    }
+    if (!acceptedLegal) {
+      setLegalError(t.checkout.acceptLegalRequired);
       return;
     }
 
@@ -604,6 +612,18 @@ function CheckoutContent() {
                         : t.checkout.payAtStudio}
                     </p>
                   </div>
+
+                  <LegalAcceptance
+                    checked={acceptedLegal}
+                    onChange={(next) => {
+                      setAcceptedLegal(next);
+                      if (next) setLegalError(null);
+                    }}
+                    error={legalError}
+                  />
+                  <p className="text-xs leading-relaxed text-[var(--text-muted)]">
+                    {t.checkout.withdrawalNote}
+                  </p>
 
                   <Button
                     className="w-full h-12 text-base mt-4"

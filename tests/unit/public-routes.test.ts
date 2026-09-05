@@ -10,6 +10,7 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/faq")).toBe(true);
     expect(isPublicPath("/privacy")).toBe(true);
     expect(isPublicPath("/terms")).toBe(true);
+    expect(isPublicPath("/licenses")).toBe(true);
     expect(isPublicPath("/resources")).toBe(true);
     expect(isPublicPath("/stories")).toBe(true);
     expect(isPublicPath("/booking/manage")).toBe(true);

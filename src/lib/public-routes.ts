@@ -12,6 +12,7 @@ export const PUBLIC_PATHS = [
   "/terms",
   "/cookies",
   "/refunds",
+  "/licenses",
   "/resources",
   "/stories",
   "/book",

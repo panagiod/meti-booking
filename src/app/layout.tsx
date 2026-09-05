@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans, EB_Garamond, JetBrains_Mono, Noto_Sans } from "next/font/google";
-import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "sileo";
+import { CookieNotice } from "@/components/legal/cookie-notice";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -172,12 +172,14 @@ export default function RootLayout({
         <ThemeProvider>
           <QueryProvider>
             <LocaleProvider>
-              <AuthProvider>{children}</AuthProvider>
+              <AuthProvider>
+                {children}
+                <CookieNotice />
+              </AuthProvider>
             </LocaleProvider>
           </QueryProvider>
         </ThemeProvider>
         <Toaster position="top-right" theme="system" />
-        <Analytics />
       </body>
     </html>
   );

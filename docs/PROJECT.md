@@ -190,8 +190,8 @@ Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
 | Greek dates | `3 Σεπτεμβρίου 2026` (genitive); calendar header `Σεπτέμβριος 2026` |
 | First visit | Opens in Greek. `EN` is only used after the visitor taps it |
 
-**Translated:** homepage, `/book`, auth, checkout, client dashboard, admin dashboard (sidebar + studio pages).  
-**Still English only:** FAQ, privacy, terms, transactional emails, leftover marketplace pages (`/admin/blog`, invoices, config), advisor dashboard.
+**Translated:** homepage, `/book`, auth, checkout, client dashboard, admin dashboard (sidebar + studio pages), FAQ, privacy, terms, cookies, cancellations, licenses.  
+**Still English only:** transactional emails, leftover marketplace pages (`/admin/blog`, invoices, config), advisor dashboard.
 
 ---
 

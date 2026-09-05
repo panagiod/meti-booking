@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import el from "@/i18n/locales/el";
+import { getLegal } from "@/i18n/legal";
 
 describe("Greek studio copy", () => {
   it("addresses the client in the formal plural", () => {
@@ -36,5 +37,12 @@ describe("Greek studio copy", () => {
     expect(el.about.programIntro).toContain("εξ ολοκλήρου");
     expect(el.checkout.cancelNoShow).toContain("Εάν δεν προσέλθετε");
     expect(el.visit.policyNote).toContain("η συνεδρία χρεώνεται κανονικά");
+  });
+
+  it("keeps legal pages in formal Greek", () => {
+    const legal = JSON.stringify(getLegal("el"));
+    expect(legal).not.toMatch(/\bσου\b/);
+    expect(legal).toContain("υπαναχώρησης");
+    expect(legal).toContain("Επίτροπο Προστασίας Δεδομένων");
   });
 });

@@ -64,7 +64,8 @@ function applyDocumentLocale(locale: Locale) {
 }
 
 function persistLocale(locale: Locale) {
-  document.cookie = `${LOCALE_COOKIE}=${locale};path=/;max-age=31536000;SameSite=Lax`;
+  const secure = window.location.protocol === "https:" ? ";Secure" : "";
+  document.cookie = `${LOCALE_COOKIE}=${locale};path=/;max-age=31536000;SameSite=Lax${secure}`;
   localStorage.setItem(LOCALE_COOKIE, locale);
   applyDocumentLocale(locale);
 }

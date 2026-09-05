@@ -32,8 +32,14 @@ export function Footer() {
           <Link href="/terms" className="transition hover:text-[var(--studio-ink)]">
             {t.footer.terms}
           </Link>
+          <Link href="/refunds" className="transition hover:text-[var(--studio-ink)]">
+            {t.footer.refunds}
+          </Link>
           <Link href="/cookies" className="transition hover:text-[var(--studio-ink)]">
             {t.footer.cookies}
+          </Link>
+          <Link href="/licenses" className="transition hover:text-[var(--studio-ink)]">
+            {t.footer.licenses}
           </Link>
           {isPublicPhone(studio.phone) ? (
             <a

@@ -133,7 +133,8 @@ User requested **Stripe or Revolut** with Apple Pay / Google Pay:
 - Provider: root layout (`LocaleProvider`)
 - Customer site, client dashboard, and studio admin are translated
 - **Greek dates:** day + month is genitive (`3 Σεπτεμβρίου`); month-only is nominative — `src/lib/date-locale.ts`
-- FAQ, privacy, terms, and emails are still English
+- FAQ, privacy, terms, cookies, cancellations, and licenses follow the site language
+- Transactional emails are still English
 
 ---
 
