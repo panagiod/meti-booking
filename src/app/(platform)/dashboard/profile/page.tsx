@@ -9,8 +9,10 @@ import { Input } from "@/components/ui/input";
 import { LoadingPage } from "@/components/ui/loading";
 import { User, Mail, Save, Camera, X } from "lucide-react";
 import { loginUrl } from "@/lib/auth-redirect";
+import { useTranslations } from "@/components/providers/locale-provider";
 
 export default function ProfilePage() {
+  const t = useTranslations();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [user, setUser] = useState<any>(null);
@@ -77,10 +79,10 @@ export default function ProfilePage() {
         setImage(data.url);
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to upload image");
+        alert(data.error || t.dashboard.uploadError);
       }
     } catch (error) {
-      alert("Connection error");
+      alert(t.dashboard.connectionError);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -109,13 +111,13 @@ export default function ProfilePage() {
       if (res.ok) {
         const data = await res.json();
         setUser(data.user);
-        alert("Profile updated successfully");
+        alert(t.dashboard.profileUpdated);
       } else {
         const data = await res.json();
-        alert(data.error || "Failed to update profile");
+        alert(data.error || t.dashboard.profileUpdateError);
       }
     } catch (error) {
-      alert("Connection error");
+      alert(t.dashboard.connectionError);
     } finally {
       setIsSaving(false);
     }
@@ -130,10 +132,10 @@ export default function ProfilePage() {
       {/* Header */}
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          My Profile
+          {t.dashboard.profileTitle}
         </h1>
         <p className="text-[var(--text-muted)] mt-1">
-          Manage your personal information
+          {t.dashboard.profileSub}
         </p>
       </div>
 
@@ -142,10 +144,10 @@ export default function ProfilePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
-            Personal information
+            {t.dashboard.personalInfo}
           </CardTitle>
           <CardDescription>
-            Update your name, phone, and profile photo
+            {t.dashboard.personalInfoSub}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -187,10 +189,10 @@ export default function ProfilePage() {
             </div>
             <div className="flex-1">
               <p className="font-medium text-[var(--text-primary)]">
-                Profile photo
+                {t.dashboard.profilePhoto}
               </p>
               <p className="text-sm text-[var(--text-muted)]">
-                JPEG, PNG or WebP (max. 2MB)
+                {t.dashboard.photoHint}
               </p>
               {image && (
                 <button
@@ -199,7 +201,7 @@ export default function ProfilePage() {
                   className="text-sm text-[var(--error)] hover:underline mt-1 flex items-center gap-1"
                 >
                   <X className="w-3 h-3" />
-                  Remove photo
+                  {t.dashboard.removePhoto}
                 </button>
               )}
             </div>
@@ -208,18 +210,18 @@ export default function ProfilePage() {
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-              Name
+              {t.dashboard.nameLabel}
             </label>
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
+              placeholder={t.dashboard.yourName}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-              Phone (optional)
+              {t.dashboard.phoneOptional}
             </label>
             <Input
               type="tel"
@@ -234,7 +236,7 @@ export default function ProfilePage() {
           {/* Email (read-only) */}
           <div>
             <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
-              Email
+              {t.dashboard.emailLabel}
             </label>
             <div className="flex items-center gap-2">
               <Mail className="w-4 h-4 text-[var(--text-muted)]" />
@@ -244,7 +246,7 @@ export default function ProfilePage() {
 
           <Button onClick={handleSave} disabled={isSaving || isUploading}>
             <Save className="w-4 h-4 mr-2" />
-            {isSaving ? "Saving..." : "Save changes"}
+            {isSaving ? t.dashboard.saving : t.dashboard.saveChanges}
           </Button>
         </CardContent>
       </Card>

@@ -9,9 +9,14 @@ import { Calendar, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { loginUrl } from "@/lib/auth-redirect";
 import { isStudioAdminEmail } from "@/lib/studio-admins";
+import {
+  formatMessage,
+  useTranslations,
+} from "@/components/providers/locale-provider";
 
 export default function DashboardPage() {
   const router = useRouter();
+  const t = useTranslations();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -62,9 +67,11 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="font-heading text-3xl font-bold text-[var(--text-primary)]">
-          Hello, {user.name?.split(" ")[0]}!
+          {formatMessage(t.dashboard.hello, {
+            name: user.name?.split(" ")[0] || "",
+          })}
         </h1>
-        <p className="text-[var(--text-muted)] mt-1">Welcome to your bookings</p>
+        <p className="text-[var(--text-muted)] mt-1">{t.dashboard.welcome}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -77,10 +84,10 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-heading font-semibold text-[var(--text-primary)] mb-1">
-                    Book a session
+                    {t.dashboard.bookSessionTitle}
                   </h3>
                   <p className="text-sm text-[var(--text-muted)]">
-                    Tue, Thu &amp; Sat · next open times are highlighted
+                    {t.dashboard.bookSessionSub}
                   </p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all" />
@@ -98,10 +105,10 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-heading font-semibold text-[var(--text-primary)] mb-1">
-                    My bookings
+                    {t.dashboard.myBookingsTitle}
                   </h3>
                   <p className="text-sm text-[var(--text-muted)]">
-                    View or cancel upcoming sessions
+                    {t.dashboard.myBookingsSub}
                   </p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-[var(--text-muted)] group-hover:text-[var(--primary)] group-hover:translate-x-1 transition-all" />
@@ -113,16 +120,16 @@ export default function DashboardPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Account</CardTitle>
+          <CardTitle className="text-lg">{t.dashboard.account}</CardTitle>
         </CardHeader>
         <CardContent>
           <dl className="space-y-3">
             <div className="flex justify-between py-2 border-b border-[var(--border)]">
-              <dt className="text-sm text-[var(--text-muted)]">Name</dt>
+              <dt className="text-sm text-[var(--text-muted)]">{t.dashboard.nameLabel}</dt>
               <dd className="text-sm font-medium text-[var(--text-primary)]">{user.name}</dd>
             </div>
             <div className="flex justify-between py-2">
-              <dt className="text-sm text-[var(--text-muted)]">Email</dt>
+              <dt className="text-sm text-[var(--text-muted)]">{t.dashboard.emailLabel}</dt>
               <dd className="text-sm font-medium text-[var(--text-primary)]">{user.email}</dd>
             </div>
           </dl>
