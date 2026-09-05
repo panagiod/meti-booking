@@ -8,6 +8,9 @@ vi.mock("@/lib/prisma", () => ({
       findUnique: vi.fn(),
       create: vi.fn(),
     },
+    clientProfile: {
+      upsert: vi.fn(),
+    },
   },
 }));
 
@@ -30,6 +33,26 @@ describe("findOrCreateGuestUser", () => {
 
     expect(user.id).toBe("user-1");
     expect(prisma.user.create).not.toHaveBeenCalled();
+    expect(prisma.clientProfile.upsert).not.toHaveBeenCalled();
+  });
+
+  it("saves a phone on an existing client", async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: "user-1",
+      email: "guest@example.com",
+      name: "Guest",
+      role: UserRole.CLIENT,
+    } as never);
+    vi.mocked(prisma.clientProfile.upsert).mockResolvedValue({} as never);
+
+    await findOrCreateGuestUser("guest@example.com", "Guest", "+35795519786");
+
+    expect(prisma.clientProfile.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { userId: "user-1" },
+        update: { phone: "+35795519786" },
+      })
+    );
   });
 
   it("creates a new client when email is unknown", async () => {
@@ -49,6 +72,26 @@ describe("findOrCreateGuestUser", () => {
           email: "new@example.com",
           name: "Alex",
           role: UserRole.CLIENT,
+          client: { create: { phone: undefined } },
+        }),
+      })
+    );
+  });
+
+  it("creates a client profile with a phone", async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.user.create).mockResolvedValue({
+      id: "new-user",
+      email: "new@example.com",
+      name: "Alex",
+    } as never);
+
+    await findOrCreateGuestUser("new@example.com", "Alex", "+35795519786");
+
+    expect(prisma.user.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          client: { create: { phone: "+35795519786" } },
         }),
       })
     );

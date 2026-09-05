@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
+import { ClientPhoneError, normalizeClientPhone } from "@/lib/client-phone";
 
 const profileSchema = z.object({
   name: z.string().min(1).optional(),
   image: z.string().url().optional().or(z.literal("")),
-  phone: z.string().optional(),
+  phone: z.string().max(32).optional(),
 });
 
 // GET: Get client profile
@@ -74,12 +75,20 @@ export async function PUT(request: NextRequest) {
       });
     }
 
-    // Update ClientProfile fields
     if (validatedData.phone !== undefined) {
+      let phone: string | null;
+      try {
+        phone = normalizeClientPhone(validatedData.phone);
+      } catch (error) {
+        if (error instanceof ClientPhoneError) {
+          return NextResponse.json({ error: error.message }, { status: 400 });
+        }
+        throw error;
+      }
       await prisma.clientProfile.upsert({
         where: { userId: session.user.id },
-        update: { phone: validatedData.phone || null },
-        create: { userId: session.user.id, phone: validatedData.phone || null },
+        update: { phone },
+        create: { userId: session.user.id, phone },
       });
     }
 

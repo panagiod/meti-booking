@@ -179,6 +179,9 @@ export type Messages = {
     guestEmailRequired: string;
     guestEmailInvalid: string;
     optionalName: string;
+    optionalPhone: string;
+    optionalPhoneHint: string;
+    guestPhoneInvalid: string;
     continueAsGuest: string;
     testModeTitle: string;
     testModeSub: string;

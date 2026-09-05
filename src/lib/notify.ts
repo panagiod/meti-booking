@@ -26,7 +26,7 @@ async function loadAppointmentForNotify(appointmentId: string) {
   return prisma.appointment.findUnique({
     where: { id: appointmentId },
     include: {
-      client: { select: { email: true, name: true } },
+      client: { select: { email: true, name: true, client: { select: { phone: true } } } },
       instructor: { include: { user: { select: { email: true, name: true } } } },
       service: { select: { name: true } },
     },
@@ -47,6 +47,7 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
   const base: AppointmentEmailData = {
     instructorName: apt.instructor.user.name,
     clientName: apt.client.name,
+    clientPhone: apt.client.client?.phone,
     serviceName: apt.service.name,
     scheduledAt: apt.scheduledAt.toISOString(),
     totalCents: apt.totalCents,
@@ -80,6 +81,7 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
   const base: AppointmentEmailData = {
     instructorName: apt.instructor.user.name,
     clientName: apt.client.name,
+    clientPhone: apt.client.client?.phone,
     serviceName: apt.service.name,
     scheduledAt: apt.scheduledAt.toISOString(),
     totalCents: apt.totalCents,
@@ -121,6 +123,7 @@ export async function notifyAppointmentCancelled(
     instructorName: apt.instructor.user.name,
     clientName: apt.client.name,
     clientEmail: clientEmail || undefined,
+    clientPhone: apt.client.client?.phone,
     serviceName: apt.service.name,
     scheduledAt: apt.scheduledAt.toISOString(),
     totalCents: apt.totalCents,

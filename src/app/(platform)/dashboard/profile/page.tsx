@@ -16,6 +16,7 @@ export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [image, setImage] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -31,6 +32,18 @@ export default function ProfilePage() {
         setUser(data.user);
         setName(data.user.name || "");
         setImage(data.user.image || "");
+        try {
+          const profileRes = await fetch("/api/client/profile", { credentials: "include" });
+          if (profileRes.ok) {
+            const profile = await profileRes.json();
+            setUser(profile.user);
+            setName(profile.user?.name || data.user.name || "");
+            setImage(profile.user?.image || data.user.image || "");
+            setPhone(profile.user?.client?.phone || "");
+          }
+        } catch {
+          // session data is enough to show the page
+        }
       } catch (error) {
         router.replace(loginUrl("/dashboard/profile"));
       } finally {
@@ -90,7 +103,7 @@ export default function ProfilePage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ name, image }),
+        body: JSON.stringify({ name, image, phone }),
       });
 
       if (res.ok) {
@@ -132,7 +145,7 @@ export default function ProfilePage() {
             Personal information
           </CardTitle>
           <CardDescription>
-            Update your name and profile photo
+            Update your name, phone, and profile photo
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -201,6 +214,20 @@ export default function ProfilePage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[var(--text-primary)] mb-1.5">
+              Phone (optional)
+            </label>
+            <Input
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+357 95 000000"
             />
           </div>
 

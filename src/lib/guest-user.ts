@@ -1,6 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { UserRole } from "@/generated/prisma/client";
 
+export async function saveClientPhone(
+  userId: string,
+  phone: string | null
+): Promise<void> {
+  await prisma.clientProfile.upsert({
+    where: { userId },
+    update: { phone },
+    create: { userId, phone },
+  });
+}
+
 export class GuestUserError extends Error {
   constructor(message: string) {
     super(message);
@@ -14,7 +25,8 @@ function normalizeEmail(email: string): string {
 
 export async function findOrCreateGuestUser(
   email: string,
-  name?: string | null
+  name?: string | null,
+  phone?: string | null
 ): Promise<{ id: string; email: string; name: string }> {
   const normalizedEmail = normalizeEmail(email);
 
@@ -29,6 +41,9 @@ export async function findOrCreateGuestUser(
         "An account with this email already exists. Please sign in to continue."
       );
     }
+    if (phone) {
+      await saveClientPhone(existing.id, phone);
+    }
     return existing;
   }
 
@@ -42,7 +57,7 @@ export async function findOrCreateGuestUser(
         role: UserRole.CLIENT,
         emailVerified: false,
         client: {
-          create: {},
+          create: { phone: phone ?? undefined },
         },
       },
       select: { id: true, email: true, name: true },
@@ -53,6 +68,9 @@ export async function findOrCreateGuestUser(
       select: { id: true, email: true, name: true, role: true },
     });
     if (raced?.role === UserRole.CLIENT) {
+      if (phone) {
+        await saveClientPhone(raced.id, phone);
+      }
       return raced;
     }
     throw new GuestUserError(

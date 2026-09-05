@@ -10,7 +10,8 @@ import { buildBookingQuote } from "@/lib/booking-quote";
 import { siteConfig } from "@/lib/site-config";
 import { validateBookableSlot, SlotBookingError } from "@/lib/slot-booking";
 import { decryptMpAccessToken } from "@/lib/instructor-mp";
-import { findOrCreateGuestUser, GuestUserError } from "@/lib/guest-user";
+import { findOrCreateGuestUser, GuestUserError, saveClientPhone } from "@/lib/guest-user";
+import { ClientPhoneError, normalizeClientPhone } from "@/lib/client-phone";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 import { notifyAppointmentConfirmed } from "@/lib/notify";
 import { isSqliteDatabase } from "@/lib/database-provider";
@@ -39,6 +40,7 @@ const appointmentSchema = z.object({
   promotionId: z.string().nullable().optional(),
   guestEmail: z.string().email().optional(),
   guestName: z.string().trim().min(1).max(100).optional(),
+  phone: z.string().trim().max(32).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -52,6 +54,15 @@ export async function POST(request: NextRequest) {
     const parsed = appointmentSchema.parse(body);
     const instructorId = readInstructorId(parsed);
     const { serviceId, scheduledAt, promotionId, guestEmail, guestName } = parsed;
+    let clientPhone: string | null = null;
+    try {
+      clientPhone = normalizeClientPhone(parsed.phone);
+    } catch (error) {
+      if (error instanceof ClientPhoneError) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+      throw error;
+    }
     const paymentsEnabled = isPaymentsEnabled();
 
     if (!instructorId) {
@@ -105,6 +116,9 @@ export async function POST(request: NextRequest) {
     if (session) {
       clientId = session.user.id;
       payerEmail = session.user.email;
+      if (clientPhone) {
+        await saveClientPhone(clientId, clientPhone);
+      }
     } else {
       if (!guestEmail) {
         return NextResponse.json(
@@ -112,7 +126,7 @@ export async function POST(request: NextRequest) {
           { status: 401 }
         );
       }
-      const guest = await findOrCreateGuestUser(guestEmail, guestName);
+      const guest = await findOrCreateGuestUser(guestEmail, guestName, clientPhone);
       clientId = guest.id;
       payerEmail = guest.email;
     }

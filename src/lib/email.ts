@@ -79,6 +79,7 @@ export interface AppointmentEmailData {
   appointmentUrl: string;
   manageUrl?: string;
   clientEmail?: string;
+  clientPhone?: string | null;
   cancelReason?: string;
 }
 
@@ -124,6 +125,11 @@ export async function sendNewBookingEmail(
     <p style="margin:0 0 16px;color:#374151;line-height:1.6;">You have a new reformer session booking:</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
       <tr><td style="padding:8px 0;color:#6b7280;">Client</td><td style="padding:8px 0;font-weight:600;color:#121110;text-align:right;">${data.clientName}</td></tr>
+      ${
+        data.clientPhone
+          ? `<tr><td style="padding:8px 0;color:#6b7280;">Phone</td><td style="padding:8px 0;font-weight:600;color:#121110;text-align:right;">${data.clientPhone}</td></tr>`
+          : ""
+      }
       <tr><td style="padding:8px 0;color:#6b7280;">Service</td><td style="padding:8px 0;font-weight:600;color:#121110;text-align:right;">${data.serviceName}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Date and time</td><td style="padding:8px 0;font-weight:600;color:#121110;text-align:right;">${formatDate(data.scheduledAt)}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Amount</td><td style="padding:8px 0;font-weight:600;color:#121110;text-align:right;">${formatCurrency(data.totalCents)}</td></tr>
@@ -197,7 +203,7 @@ export async function sendBookingCancelledStudioEmail(
   const body = `
     <p style="margin:0 0 16px;color:#374151;line-height:1.6;">A client cancelled a reformer session. That time is free again:</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
-      <tr><td style="padding:8px 0;color:#6b7280;">Client</td><td style="padding:8px 0;font-weight:600;color:#121110;text-align:right;">${data.clientName}${data.clientEmail ? ` · ${data.clientEmail}` : ""}</td></tr>
+      <tr><td style="padding:8px 0;color:#6b7280;">Client</td><td style="padding:8px 0;font-weight:600;color:#121110;text-align:right;">${data.clientName}${data.clientEmail ? ` · ${data.clientEmail}` : ""}${data.clientPhone ? ` · ${data.clientPhone}` : ""}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Service</td><td style="padding:8px 0;font-weight:600;color:#121110;text-align:right;">${data.serviceName}</td></tr>
       <tr><td style="padding:8px 0;color:#6b7280;">Date and time</td><td style="padding:8px 0;font-weight:600;color:#121110;text-align:right;">${formatDate(data.scheduledAt)}</td></tr>
       ${reasonRow}

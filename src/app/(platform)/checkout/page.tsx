@@ -30,6 +30,7 @@ import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { Input } from "@/components/ui/input";
 import { formatLongDate, formatMoney } from "@/lib/format";
 import { clearPendingBooking, savePendingBooking } from "@/lib/booking-utils";
+import { ClientPhoneError, normalizeClientPhone } from "@/lib/client-phone";
 
 function CheckoutContent() {
   const router = useRouter();
@@ -43,7 +44,9 @@ function CheckoutContent() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [guestEmail, setGuestEmail] = useState("");
   const [guestName, setGuestName] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
   const [guestEmailError, setGuestEmailError] = useState<string | null>(null);
+  const [guestPhoneError, setGuestPhoneError] = useState<string | null>(null);
   const [promotion, setPromotion] = useState<any>(null);
   const [quote, setQuote] = useState<{
     servicePriceCents: number;
@@ -127,6 +130,18 @@ function CheckoutContent() {
       if (loggedIn && data?.user?.email) {
         setGuestEmail(data.user.email);
         if (data.user.name) setGuestName(data.user.name);
+        try {
+          const profileRes = await fetch("/api/client/profile", { credentials: "include" });
+          if (profileRes.ok) {
+            const profile = await profileRes.json();
+            const savedPhone = profile.user?.client?.phone;
+            if (typeof savedPhone === "string" && savedPhone) {
+              setGuestPhone(savedPhone);
+            }
+          }
+        } catch {
+          // keep checkout usable if profile is missing
+        }
       }
     } catch {
       setIsLoggedIn(false);
@@ -177,6 +192,20 @@ function CheckoutContent() {
     return true;
   };
 
+  const validateGuestPhone = () => {
+    try {
+      normalizeClientPhone(guestPhone);
+      setGuestPhoneError(null);
+      return true;
+    } catch (error) {
+      if (error instanceof ClientPhoneError) {
+        setGuestPhoneError(t.checkout.guestPhoneInvalid);
+        return false;
+      }
+      throw error;
+    }
+  };
+
   const canConfirm =
     isLoggedIn === true ||
     (isLoggedIn === false && guestEmail.trim().length > 0 && !guestEmailError);
@@ -185,6 +214,9 @@ function CheckoutContent() {
     if (isLoggedIn === null) return;
 
     if (!isLoggedIn && !validateGuestEmail()) {
+      return;
+    }
+    if (!validateGuestPhone()) {
       return;
     }
 
@@ -209,6 +241,7 @@ function CheckoutContent() {
           serviceId,
           scheduledAt: `${date}T${time}:00`,
           promotionId: promotion?.id || null,
+          phone: guestPhone.trim() || undefined,
           ...(!isLoggedIn
             ? {
                 guestEmail: guestEmail.trim(),
@@ -321,6 +354,28 @@ function CheckoutContent() {
                         onChange={(e) => setGuestName(e.target.value)}
                       />
                     </div>
+                    <div className="space-y-2">
+                      <label htmlFor="guest-phone" className="text-sm font-medium text-[var(--text-primary)]">
+                        {t.checkout.optionalPhone}
+                      </label>
+                      <Input
+                        id="guest-phone"
+                        type="tel"
+                        inputMode="tel"
+                        autoComplete="tel"
+                        value={guestPhone}
+                        onChange={(e) => {
+                          setGuestPhone(e.target.value);
+                          if (guestPhoneError) setGuestPhoneError(null);
+                        }}
+                        onBlur={validateGuestPhone}
+                        placeholder="+357 95 000000"
+                      />
+                      <p className="text-sm text-[var(--text-muted)]">{t.checkout.optionalPhoneHint}</p>
+                      {guestPhoneError && (
+                        <p className="text-sm text-[var(--destructive)]">{guestPhoneError}</p>
+                      )}
+                    </div>
                     <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-sm text-[var(--text-muted)]">
                         {t.checkout.signInToContinueSub}
@@ -330,6 +385,35 @@ function CheckoutContent() {
                         {t.auth.signIn}
                       </Button>
                     </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {isLoggedIn === true && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{t.checkout.optionalPhone}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <p className="text-sm text-[var(--text-muted)]">
+                      {t.checkout.optionalPhoneHint}
+                    </p>
+                    <Input
+                      id="account-phone"
+                      type="tel"
+                      inputMode="tel"
+                      autoComplete="tel"
+                      value={guestPhone}
+                      onChange={(e) => {
+                        setGuestPhone(e.target.value);
+                        if (guestPhoneError) setGuestPhoneError(null);
+                      }}
+                      onBlur={validateGuestPhone}
+                      placeholder="+357 95 000000"
+                    />
+                    {guestPhoneError && (
+                      <p className="text-sm text-[var(--destructive)]">{guestPhoneError}</p>
+                    )}
                   </CardContent>
                 </Card>
               )}
