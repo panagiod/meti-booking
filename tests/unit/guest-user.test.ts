@@ -64,4 +64,19 @@ describe("findOrCreateGuestUser", () => {
 
     await expect(findOrCreateGuestUser("admin@example.com")).rejects.toThrow(GuestUserError);
   });
+
+  it("returns the existing client if create races on email", async () => {
+    vi.mocked(prisma.user.findUnique)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        id: "user-2",
+        email: "race@example.com",
+        name: "Race",
+        role: UserRole.CLIENT,
+      } as never);
+    vi.mocked(prisma.user.create).mockRejectedValue(new Error("Unique constraint"));
+
+    const user = await findOrCreateGuestUser("race@example.com");
+    expect(user.id).toBe("user-2");
+  });
 });

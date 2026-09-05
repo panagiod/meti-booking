@@ -21,9 +21,12 @@ export function LoginForm({ googleOAuthEnabled }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
+  const oauthError = searchParams.get("error");
   const t = useTranslations();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    oauthError ? t.auth.googleError : null
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const callbackURL = googleCallbackUrl(next);

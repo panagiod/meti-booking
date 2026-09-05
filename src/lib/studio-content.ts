@@ -41,9 +41,16 @@ export function formatHeroTitle(title: string) {
   return title.replace(/\s+και\s+/, " και\n");
 }
 
+type LocaleContentPatch = {
+  meta?: Partial<StudioLocaleContent["meta"]>;
+  hero?: Partial<StudioLocaleContent["hero"]>;
+  about?: Partial<StudioLocaleContent["about"]>;
+  common?: Partial<StudioLocaleContent["common"]>;
+};
+
 export function mergeLocaleContent(
   locale: Locale,
-  partial?: Partial<StudioLocaleContent>
+  partial?: LocaleContentPatch
 ): StudioLocaleContent {
   const defaults = buildDefaultLocaleContent(locale);
   if (!partial) return defaults;

@@ -25,7 +25,13 @@ export const auth = betterAuth({
     accountLinking: {
       enabled: true,
       trustedProviders: ["google"],
+      // Guest bookings and seeded studio users are created unverified.
+      // Without this, Google sign-in tries to insert a second user and 500s.
+      requireLocalEmailVerified: false,
     },
+  },
+  onAPIError: {
+    errorURL: "/login",
   },
   ...(isGoogleOAuthConfigured()
     ? {
@@ -58,11 +64,10 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (user) => {
-          // Create default ClientProfile for all new users
-          await prisma.clientProfile.create({
-            data: {
-              userId: user.id,
-            },
+          await prisma.clientProfile.upsert({
+            where: { userId: user.id },
+            create: { userId: user.id },
+            update: {},
           });
         },
       },

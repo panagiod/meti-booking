@@ -34,18 +34,29 @@ export async function findOrCreateGuestUser(
 
   const displayName = name?.trim() || normalizedEmail.split("@")[0] || "Guest";
 
-  const user = await prisma.user.create({
-    data: {
-      email: normalizedEmail,
-      name: displayName,
-      role: UserRole.CLIENT,
-      emailVerified: false,
-      client: {
-        create: {},
+  try {
+    return await prisma.user.create({
+      data: {
+        email: normalizedEmail,
+        name: displayName,
+        role: UserRole.CLIENT,
+        emailVerified: false,
+        client: {
+          create: {},
+        },
       },
-    },
-    select: { id: true, email: true, name: true },
-  });
-
-  return user;
+      select: { id: true, email: true, name: true },
+    });
+  } catch {
+    const raced = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true, email: true, name: true, role: true },
+    });
+    if (raced?.role === UserRole.CLIENT) {
+      return raced;
+    }
+    throw new GuestUserError(
+      "An account with this email already exists. Please sign in to continue."
+    );
+  }
 }
