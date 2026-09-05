@@ -78,7 +78,18 @@ for path in Path("backups").glob("*.db.enc"):
     path.unlink()
 PY
 
-git add backups secrets inventory.md README.md env.example
+if [[ -f .gitattributes ]] && grep -q 'filter=lfs' .gitattributes; then
+  echo "Removing Git LFS tracking for encrypted backups so restore can read the real files"
+  git lfs untrack '*.enc' 'backups/*.enc' 'secrets/*.enc' 2>/dev/null || true
+  sed -i.bak -E '/\.enc/d' .gitattributes || true
+  rm -f .gitattributes.bak
+fi
+
+# Encrypted files must be normal git objects, not LFS pointers.
+git -c filter.lfs.process= -c filter.lfs.clean= -c filter.lfs.smudge= -c filter.lfs.required=false \
+  add backups secrets inventory.md README.md env.example .gitattributes 2>/dev/null || \
+git -c filter.lfs.process= -c filter.lfs.clean= -c filter.lfs.smudge= -c filter.lfs.required=false \
+  add backups secrets inventory.md README.md env.example
 if git diff --staged --quiet; then
   echo "No ops-repo changes"
   exit 0

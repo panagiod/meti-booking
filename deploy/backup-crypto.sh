@@ -16,26 +16,30 @@ meti_encrypt_file() {
   local input="$1"
   local output="$2"
   local key="$3"
-  local passfile
+  local passfile rc
   passfile="$(mktemp)"
   meti_write_passfile "$key" "$passfile"
+  rc=0
   openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt \
     -pass "file:${passfile}" \
     -in "$input" \
-    -out "$output"
+    -out "$output" || rc=$?
   rm -f "$passfile"
+  return "$rc"
 }
 
 meti_decrypt_file() {
   local input="$1"
   local output="$2"
   local key="$3"
-  local passfile
+  local passfile rc
   passfile="$(mktemp)"
   meti_write_passfile "$key" "$passfile"
+  rc=0
   openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 \
     -pass "file:${passfile}" \
     -in "$input" \
-    -out "$output"
+    -out "$output" || rc=$?
   rm -f "$passfile"
+  return "$rc"
 }

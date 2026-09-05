@@ -47,6 +47,22 @@ if [[ ! -s "$ENC" ]]; then
   exit 1
 fi
 
+if head -c 128 "$ENC" | grep -q 'git-lfs.github.com'; then
+  echo "Encrypted database is a Git LFS pointer ($(wc -c <"$ENC" | tr -d ' ') bytes). Fetching the real file..."
+  if ! command -v git-lfs >/dev/null 2>&1; then
+    apt-get update -qq
+    DEBIAN_FRONTEND=noninteractive apt-get install -y git-lfs
+    git lfs install --skip-repo
+  fi
+  git -C "$WORK/ops" lfs pull --include="backups/*"
+fi
+
+echo "Backup file: ${ENC} ($(wc -c <"$ENC" | tr -d ' ') bytes)"
+if ! head -c 8 "$ENC" | grep -q 'Salted__'; then
+  echo "ERROR: ${ENC} is not an openssl encrypted file. First bytes: $(head -c 32 "$ENC" | tr -cd '[:print:]')" >&2
+  exit 1
+fi
+
 if [[ "${CONFIRM}" == "VERIFY" && -s "$WORK/ops/secrets/env.enc" ]]; then
   TMP_ENV="$(mktemp)"
   meti_decrypt_file "$WORK/ops/secrets/env.enc" "$TMP_ENV" "${BACKUP_ENCRYPTION_KEY:?}"

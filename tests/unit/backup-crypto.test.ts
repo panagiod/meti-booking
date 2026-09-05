@@ -31,6 +31,14 @@ describe("studio backup crypto", () => {
       expect(
         execFileSync("sqlite3", [out, "SELECT name FROM studio;"], { encoding: "utf8" }).trim()
       ).toBe("MeTi");
+
+      expect(() =>
+        bash(`
+          set -e
+          source "${ROOT}/deploy/backup-crypto.sh"
+          meti_decrypt_file "${enc}" "${out}" "wrong-key"
+        `)
+      ).toThrow();
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }
