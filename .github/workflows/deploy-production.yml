@@ -13,6 +13,10 @@ concurrency:
   group: production-deploy
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   deploy:
     name: Deploy to Hetzner VPS
@@ -58,8 +62,8 @@ jobs:
           echo "Deployed commit ${{ github.sha }} to production."
           echo "Site: https://meti-pilates.com"
 
-  backup:
-    name: Backup after deploy
-    needs: deploy
-    uses: ./.github/workflows/backup-production.yml
-    secrets: inherit
+      - name: Queue encrypted backup
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run backup-production.yml --ref main
