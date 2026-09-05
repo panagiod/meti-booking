@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install daily cron jobs for booking maintenance (expire, reminders, cleanup).
+# Install cron jobs for booking maintenance, backups, and studio alerts.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -41,6 +41,9 @@ CRON_SECRET=${CRON_SECRET}
 
 # Encrypted local backup of schedule + customers (02:00 UTC = 05:00 Nicosia in summer)
 0 2 * * * root ${ROOT}/deploy/backup-studio-data.sh >> /var/log/meti-booking/backup.log 2>&1
+
+# Downtime + high-usage alerts (email STUDIO_NOTIFICATION_EMAIL)
+*/15 * * * * root ${ROOT}/deploy/monitor-studio.sh
 EOF
 
 sudo chmod 644 "$CRON_FILE"

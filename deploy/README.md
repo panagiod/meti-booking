@@ -59,7 +59,8 @@ Files:
 | `Caddyfile` | Automatic Let's Encrypt SSL |
 | `env.production.example` | Environment template |
 | `deploy.sh` | Build + migrate + start |
-| `setup-cron.sh` | Daily booking maintenance |
+| `setup-cron.sh` | Daily booking maintenance + 15-minute alerts |
+| `monitor-studio.sh` | Downtime and high-usage emails |
 | `backup-db.sh` | Postgres backups |
 | `backup-studio-data.sh` | Encrypted SQLite backup (schedule + customers) |
 | `restore-studio-data.sh` | Restore an encrypted SQLite backup |

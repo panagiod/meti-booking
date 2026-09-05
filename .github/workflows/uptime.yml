@@ -1,0 +1,134 @@
+name: Uptime
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: uptime
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Public site
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Restore last alert state
+        uses: actions/cache@v4
+        with:
+          path: .uptime-state.json
+          key: uptime-alert-state-v1
+
+      - name: Check public pages
+        id: check
+        env:
+          SITE: https://meti-pilates.com
+        run: |
+          set +e
+          failed=0
+          check() {
+            local path="$1"
+            local label="$2"
+            local code
+            code=$(curl -sS -o /tmp/uptime-body -w "%{http_code}" --max-time 20 -A "MeTi-Uptime/1.0" "${SITE}${path}" || echo "000")
+            if [[ "$code" =~ ^(200|307|308)$ ]]; then
+              echo "ok ${label} (${code})"
+            else
+              echo "::error::${label} returned HTTP ${code}"
+              failed=1
+            fi
+          }
+          check "/" "Homepage"
+          check "/book" "Booking page"
+          check "/api/studio" "Studio API"
+          check "/api/health" "Health API"
+          if [[ "$failed" -eq 1 ]]; then
+            echo "status=down" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=ok" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Email studio if action is needed
+        if: always()
+        env:
+          STATUS: ${{ steps.check.outputs.status }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          STUDIO_NOTIFICATION_EMAIL: ${{ secrets.STUDIO_NOTIFICATION_EMAIL }}
+          EMAIL_FROM: "MeTi Pilates <bookings@meti-pilates.com>"
+        run: |
+          python3 << 'PY'
+          import json, os, urllib.request
+          from datetime import datetime, timezone
+
+          status = os.environ.get("STATUS") or "down"
+          current = ["down"] if status == "down" else []
+          state_path = ".uptime-state.json"
+          try:
+              previous = json.load(open(state_path))
+          except Exception:
+              previous = {"ids": [], "lastSentAt": None}
+
+          recovered = bool(previous.get("ids")) and not current
+          send = False
+          if recovered:
+              send = True
+          elif current:
+              last = previous.get("lastSentAt")
+              if not last or any(item not in previous.get("ids", []) for item in current):
+                  send = True
+              else:
+                  elapsed = datetime.now(timezone.utc) - datetime.fromisoformat(last)
+                  send = elapsed.total_seconds() >= 6 * 60 * 60
+
+          sent_at = previous.get("lastSentAt")
+          key = os.environ.get("RESEND_API_KEY", "").strip()
+          to_raw = os.environ.get("STUDIO_NOTIFICATION_EMAIL", "").strip() or "tyrri_meropi@hotmail.com"
+          to = [part.strip() for part in to_raw.replace(";", ",").split(",") if part.strip()]
+
+          if send and key:
+              if recovered:
+                  subject = "MeTi Pilates is healthy again"
+                  html = "<p>The public site looks healthy again. No action needed.</p>"
+              else:
+                  subject = "MeTi Pilates needs attention (downtime)"
+                  html = (
+                      "<p>https://meti-pilates.com did not answer from GitHub Actions.</p>"
+                      "<p>This usually means the VPS, Caddy, or Cloudflare is down. "
+                      "SSH: <code>ssh root@2.29.22.46</code></p>"
+                  )
+              payload = json.dumps({
+                  "from": os.environ["EMAIL_FROM"],
+                  "to": to,
+                  "subject": subject,
+                  "html": html,
+              }).encode()
+              req = urllib.request.Request(
+                  "https://api.resend.com/emails",
+                  data=payload,
+                  headers={
+                      "Authorization": f"Bearer {key}",
+                      "Content-Type": "application/json",
+                  },
+                  method="POST",
+              )
+              try:
+                  urllib.request.urlopen(req, timeout=20)
+                  sent_at = datetime.now(timezone.utc).isoformat()
+                  print("Sent ops alert email")
+              except Exception as error:
+                  print(f"Could not send ops alert email: {error}")
+          elif send and not key:
+              print("Site needs attention, but RESEND_API_KEY is not a GitHub secret, so no email was sent.")
+          else:
+              print("No email needed")
+
+          json.dump({"ids": current, "lastSentAt": sent_at}, open(state_path, "w"))
+          PY
+
+      - name: Fail if the site is down
+        if: steps.check.outputs.status != 'ok'
+        run: exit 1

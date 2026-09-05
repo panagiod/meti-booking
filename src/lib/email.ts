@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import { getAppUrl } from "@/lib/mercadopago";
-import { siteConfig } from "@/lib/site-config";
+import { getStudioNotificationEmails, siteConfig } from "@/lib/site-config";
 import { STUDIO_TIMEZONE } from "@/lib/timezone";
 
 const FROM_EMAIL = process.env.EMAIL_FROM || "MeTi Pilates <bookings@meti-pilates.com>";
@@ -311,6 +311,22 @@ export async function sendSummaryEmail(
     to,
     subject: `📋 Summary: ${data.serviceName} - ${formatDate(data.scheduledAt)}`,
     html: layout("Consultation summary", body),
+  });
+
+  return !error;
+}
+
+export async function sendStudioOpsEmail(subject: string, htmlBody: string): Promise<boolean> {
+  const client = getResend();
+  if (!client) return false;
+  const to = getStudioNotificationEmails();
+  if (to.length === 0) return false;
+
+  const { error } = await client.emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject,
+    html: layout(subject, htmlBody),
   });
 
   return !error;

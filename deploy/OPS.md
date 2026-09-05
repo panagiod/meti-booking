@@ -129,3 +129,23 @@ The rebuild installs the app first, then restores customers last, so a schema pu
 ## Until the private repo token is added
 
 Nightly backups still fall back to the public `backups` branch as encrypted files. After `OPS_REPO_TOKEN` works, new backups stay private.
+
+## Downtime and high-usage alerts
+
+Two checks run every 15 minutes.
+
+**On the VPS** (`deploy/monitor-studio.sh`, cron): emails `STUDIO_NOTIFICATION_EMAIL` when:
+
+| Alert | When | What to do |
+|-------|------|------------|
+| App / public site / health down | systemd inactive, `/`, `/book`, or `/api/health` fail | Check the site, then `systemctl status meti-booking` |
+| Disk ≥ 80% | Root volume is filling up | Free space or upgrade the Hetzner volume |
+| RAM ≥ 88% | Memory is almost gone | Restart the app, or upgrade the 4GB VPS |
+| Load ≥ 1.5× CPUs | 15-minute load stays high | Check a stuck deploy/backup; upgrade if it lasts |
+| Next 2 weeks ≥ 80% full | Bookings vs estimated Hours capacity | Open more days or hours in Admin → Hours |
+
+The same problem is emailed once, then again after 6 hours if it is still wrong. A “healthy again” email is sent when it clears.
+
+Logs: `/var/log/meti-booking/monitor.log`
+
+**From GitHub** (Actions → **Uptime**): curls the public site from outside the VPS. This is the only check that still runs if the machine itself is dead. It emails only if `RESEND_API_KEY` is also a **GitHub** Actions secret (the copy in server `.env` is not visible to Actions). Optional: add `STUDIO_NOTIFICATION_EMAIL` as a GitHub secret too.

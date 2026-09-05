@@ -58,6 +58,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | Checkout pricing | `src/app/api/checkout/quote/route.ts` |
 | **Production deploy** | `deploy/HETZNER.md`, `docs/HOSTING.md` |
 | **Backup / restore** | [deploy/OPS.md](deploy/OPS.md) |
+| **Downtime / usage alerts** | [deploy/OPS.md](deploy/OPS.md) — VPS cron + GitHub **Uptime** |
 
 ## Disaster recovery
 
@@ -87,6 +88,11 @@ CONFIRM=RESTORE ./deploy/restore-from-ops.sh latest
 5. `./deploy/setup-cicd.sh` and update `PRODUCTION_HOST`
 
 Do not `--force-reset` or cancel upcoming bookings. Do not commit plaintext `.env` or `data.db`.
+
+## Alerts
+
+- **On the VPS every 15 min:** `deploy/monitor-studio.sh` emails `STUDIO_NOTIFICATION_EMAIL` for downtime (systemd, `/`, `/book`, `/api/health`) and high usage (disk 80%, RAM 88%, load 1.5× CPUs, next 14 days 80% full). Debounced 6 hours; one recovery email.
+- **From GitHub every 15 min:** Actions → **Uptime** hits the public site. This still runs if the VPS is dead. Email only if `RESEND_API_KEY` is a GitHub secret.
 
 ## Demo
 

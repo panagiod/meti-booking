@@ -77,9 +77,10 @@ Watch the workflow; site should update in ~10–15 minutes (Docker rebuild).
 
 1. `git fetch origin main && git reset --hard origin/main`
 2. `./deploy/deploy.sh` — Postgres up, migrations, Docker rebuild, Caddy restart
-3. `./deploy/smoke-test.sh` — checks `/`, `/book`, `/login`, APIs
+3. `./deploy/smoke-test.sh` — checks `/`, `/book`, `/login`, `/api/health`, APIs
+4. `./deploy/setup-cron.sh` — rewrites daily maintenance, backup, and 15-minute alert jobs
 
-Cron jobs (`setup-cron.sh`) are **not** re-run every deploy — only once at initial setup.
+**Uptime:** Actions → **Uptime** curls the live site every 15 minutes. See [OPS.md](./OPS.md).
 
 ---
 

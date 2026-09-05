@@ -31,6 +31,7 @@ check "/" "Homepage" || failed=1
 check "/book" "Booking page" || failed=1
 check "/login" "Login page" || failed=1
 check "/api/studio" "Studio API (instructor configured)" || failed=1
+check "/api/health" "Health API (app + database)" || failed=1
 check "/api/auth/config" "Auth config API" || failed=1
 
 echo ""

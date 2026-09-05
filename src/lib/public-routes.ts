@@ -20,6 +20,7 @@ export const PUBLIC_PATHS = [
   "/faq",
   "/advisor",
   "/api/studio",
+  "/api/health",
   "/api/slots",
   "/api/categories",
   "/api/promotions",

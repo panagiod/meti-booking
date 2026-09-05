@@ -18,6 +18,7 @@ describe("isPublicPath", () => {
 
   it("allows public APIs including appointment create and manage", () => {
     expect(isPublicPath("/api/studio")).toBe(true);
+    expect(isPublicPath("/api/health")).toBe(true);
     expect(isPublicPath("/api/appointments")).toBe(true);
     expect(isPublicPath("/api/appointments/manage")).toBe(true);
     expect(isPublicPath("/api/auth/callback/google")).toBe(true);

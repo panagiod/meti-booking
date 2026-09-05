@@ -40,6 +40,7 @@ How to put the booking site online. **For a real studio, use Hetzner VPS** (~€
 - ✅ Database always on — no cold starts
 - ✅ Mercado Pago payments (when configured)
 - ✅ Daily cron jobs (expire bookings, reminders, cleanup)
+- ✅ Downtime and high-usage emails every 15 minutes
 - ✅ Daily database backups (script included)
 
 ### Architecture
