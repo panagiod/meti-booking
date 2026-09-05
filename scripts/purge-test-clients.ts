@@ -11,13 +11,17 @@ import { KEEP_STUDIO_CLIENT_NAME, isKeptStudioClientName } from "../src/lib/keep
 
 config({ path: resolve(__dirname, "../.env") });
 
-function shouldKeep(user: {
+type StudioUser = {
+  id: string;
   name: string;
   email: string;
   role: string;
   instructor: { id: string } | null;
   admin: { id: string } | null;
-}): boolean {
+  _count: { appointments: number };
+};
+
+function shouldKeep(user: StudioUser): boolean {
   if (user.role === "ADMIN" || user.role === "INSTRUCTOR") return true;
   if (user.instructor || user.admin) return true;
   if (isStudioAdminEmail(user.email)) return true;
@@ -32,18 +36,18 @@ async function main() {
 
   const { prisma } = await import("../src/lib/prisma");
 
-  const users = await prisma.user.findMany({
+  const users = (await prisma.user.findMany({
     include: {
       instructor: { select: { id: true } },
       admin: { select: { id: true } },
       _count: { select: { appointments: true } },
     },
     orderBy: { createdAt: "asc" },
-  });
+  })) as StudioUser[];
 
-  const keep = users.filter(shouldKeep);
-  const remove = users.filter((user) => !shouldKeep(user));
-  const keptClient = keep.filter((user) => isKeptStudioClientName(user.name));
+  const keep = users.filter((user: StudioUser) => shouldKeep(user));
+  const remove = users.filter((user: StudioUser) => !shouldKeep(user));
+  const keptClient = keep.filter((user: StudioUser) => isKeptStudioClientName(user.name));
 
   if (keptClient.length === 0) {
     console.error(
@@ -54,7 +58,7 @@ async function main() {
   }
 
   console.log(`Keeping ${keep.length} account(s), including ${KEEP_STUDIO_CLIENT_NAME}:`);
-  for (const user of keep) {
+  for (const user of keep as StudioUser[]) {
     console.log(`  keep ${user.role} ${user.name} appointments=${user._count.appointments}`);
   }
 
@@ -65,11 +69,11 @@ async function main() {
   }
 
   console.log(`Removing ${remove.length} test client(s):`);
-  for (const user of remove) {
+  for (const user of remove as StudioUser[]) {
     console.log(`  remove ${user.role} ${user.name} appointments=${user._count.appointments}`);
   }
 
-  const ids = remove.map((user) => user.id);
+  const ids = remove.map((user: StudioUser) => user.id);
 
   const posts = await prisma.blogPost.deleteMany({
     where: { authorId: { in: ids } },
