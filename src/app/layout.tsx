@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, DM_Sans, GFS_Didot, JetBrains_Mono, Noto_Sans } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans, EB_Garamond, JetBrains_Mono, Noto_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "sileo";
 import { QueryProvider } from "@/components/providers/query-provider";
@@ -27,10 +27,10 @@ const cormorant = Cormorant_Garamond({
   weight: ["400", "500", "600"],
 });
 
-const gfsDidot = GFS_Didot({
-  variable: "--font-gfs-didot",
-  subsets: ["greek", "latin"],
-  weight: ["400"],
+const ebGaramond = EB_Garamond({
+  variable: "--font-eb-garamond",
+  subsets: ["latin", "greek"],
+  weight: ["400", "500", "600"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -85,7 +85,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${dmSans.variable} ${notoSans.variable} ${cormorant.variable} ${gfsDidot.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${notoSans.variable} ${cormorant.variable} ${ebGaramond.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
         <script

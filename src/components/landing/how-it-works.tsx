@@ -13,11 +13,11 @@ export function HowItWorks() {
         </h2>
         <p className="mt-3 max-w-xl text-base text-[var(--studio-muted)]">{t.how.subtitle}</p>
 
-        <ol className="mt-10 grid gap-6 sm:grid-cols-3">
+        <ol className="mt-10 grid min-w-0 gap-6 sm:grid-cols-3">
           {t.how.steps.map((step, index) => (
             <li
               key={step.title}
-              className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-5"
+              className="min-w-0 rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-5"
             >
               <p className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--studio-muted)]">
                 {String(index + 1).padStart(2, "0")}

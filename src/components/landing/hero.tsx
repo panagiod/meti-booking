@@ -14,6 +14,7 @@ import {
   useStudioBranding,
 } from "@/components/providers/locale-provider";
 import { StudioMapLink } from "@/components/landing/studio-map-link";
+import { formatHeroTitle } from "@/lib/studio-content";
 
 export function Hero() {
   const t = useTranslations();
@@ -39,8 +40,8 @@ export function Hero() {
             <p className="mb-4 text-xs font-medium uppercase tracking-[0.22em] text-[var(--studio-muted)]">
               {t.hero.eyebrow}
             </p>
-            <h1 className="font-display max-w-lg text-[clamp(2.25rem,7vw,4.5rem)] leading-[1.05] text-[var(--studio-ink)]">
-              {t.hero.title}
+            <h1 className="font-display max-w-lg whitespace-pre-line text-[clamp(2.25rem,7vw,4.5rem)] leading-[1.05] text-[var(--studio-ink)]">
+              {formatHeroTitle(t.hero.title)}
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-[var(--studio-muted)]">
               {t.hero.description}

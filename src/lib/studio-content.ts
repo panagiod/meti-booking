@@ -23,6 +23,24 @@ export function buildDefaultLocaleContent(locale: Locale): StudioLocaleContent {
   };
 }
 
+/** Previous Greek defaults that made titles wrap unlike English. */
+const SUPERSEDED_EL_COPY: Record<string, string> = {
+  "Η υγεία και η κίνησή σας.": el.hero.title,
+  "Κράτηση μαθήματος": el.hero.bookSession,
+  "Σχετικά με εμάς | Μερόπη Τίρρη": el.about.title,
+  "Η Φιλοσοφία του Κέντρου μας": el.about.philosophyTitle,
+};
+
+function refreshSupersededCopy(value: string, locale: Locale): string {
+  if (locale !== "el") return value;
+  return SUPERSEDED_EL_COPY[value] ?? value;
+}
+
+export function formatHeroTitle(title: string) {
+  if (/,\s/.test(title)) return title.replace(/,\s*/, ",\n");
+  return title.replace(/\s+και\s+/, " και\n");
+}
+
 export function mergeLocaleContent(
   locale: Locale,
   partial?: Partial<StudioLocaleContent>
@@ -30,14 +48,25 @@ export function mergeLocaleContent(
   const defaults = buildDefaultLocaleContent(locale);
   if (!partial) return defaults;
 
+  const hero = { ...defaults.hero, ...partial.hero };
+  const about = {
+    ...defaults.about,
+    ...partial.about,
+    certifications: partial.about?.certifications ?? defaults.about.certifications,
+    programBenefits: partial.about?.programBenefits ?? defaults.about.programBenefits,
+  };
+
   return {
     meta: { ...defaults.meta, ...partial.meta },
-    hero: { ...defaults.hero, ...partial.hero },
+    hero: {
+      ...hero,
+      title: refreshSupersededCopy(hero.title, locale),
+      bookSession: refreshSupersededCopy(hero.bookSession, locale),
+    },
     about: {
-      ...defaults.about,
-      ...partial.about,
-      certifications: partial.about?.certifications ?? defaults.about.certifications,
-      programBenefits: partial.about?.programBenefits ?? defaults.about.programBenefits,
+      ...about,
+      title: refreshSupersededCopy(about.title, locale),
+      philosophyTitle: refreshSupersededCopy(about.philosophyTitle, locale),
     },
     common: { ...defaults.common, ...partial.common },
   };

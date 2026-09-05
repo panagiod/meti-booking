@@ -10,8 +10,8 @@
   --studio-accent-hover: #1f281f;
   --studio-warm: #f3ede6;
   --studio-container: 76rem;
-  --studio-font-body: var(--font-dm-sans), system-ui, sans-serif;
-  --studio-font-display: var(--font-cormorant), Georgia, serif;
+  --studio-font-body: var(--font-dm-sans), var(--font-noto-sans), "Noto Sans", system-ui, sans-serif;
+  --studio-font-display: var(--font-cormorant), var(--font-eb-garamond), Georgia, serif;
 
   background: var(--studio-bg);
   color: var(--studio-ink);
@@ -27,42 +27,24 @@ html.locale-el {
   direction: ltr;
 }
 
-/* Same pairing as English: sans body + serif titles. Noto + Didot for Greek. */
-html[lang="el"] .studio,
-html[lang="el"] .studio-booking,
-html.locale-el .studio,
-html.locale-el .studio-booking {
-  --studio-font-body: var(--font-noto-sans), "Noto Sans", system-ui, sans-serif;
-  --studio-font-display: var(--font-gfs-didot), "GFS Didot", Georgia, serif;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.studio .font-display,
-.studio-booking .font-display {
-  font-family: var(--studio-font-display);
-  font-weight: 500;
-  letter-spacing: -0.03em;
-}
-
-/* Didot only ships regular. Weight 500 would faux-bold Greek titles. */
-html[lang="el"] .studio .font-display,
-html[lang="el"] .studio-booking .font-display,
-html.locale-el .studio .font-display,
-html.locale-el .studio-booking .font-display {
-  font-weight: 400;
-}
-
-html[lang="el"] .studio-btn,
-html.locale-el .studio-btn {
-  white-space: normal;
-  max-width: 100%;
-  text-align: center;
-}
-
+/* Greek has no case mapping for these labels; keep LTR and leave type rules shared. */
 html[lang="el"] .capitalize,
 html.locale-el .capitalize {
   text-transform: none;
+}
+
+.studio .font-display,
+.studio-booking .font-display,
+.studio h1.font-display,
+.studio h2.font-display,
+.studio h3.font-display,
+.studio-booking h1.font-display,
+.studio-booking h2.font-display,
+.studio-booking h3.font-display {
+  font-family: var(--font-cormorant), var(--font-eb-garamond), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  font-synthesis: none;
 }
 
 .studio-container {
@@ -108,8 +90,8 @@ html.locale-el .capitalize {
 }
 
 .studio-booking {
-  --studio-font-body: var(--font-dm-sans), system-ui, sans-serif;
-  --studio-font-display: var(--font-cormorant), Georgia, serif;
+  --studio-font-body: var(--font-dm-sans), var(--font-noto-sans), "Noto Sans", system-ui, sans-serif;
+  --studio-font-display: var(--font-cormorant), var(--font-eb-garamond), Georgia, serif;
   background: var(--studio-bg);
   color: var(--studio-ink);
   font-family: var(--studio-font-body);
