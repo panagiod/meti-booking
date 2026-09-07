@@ -4,7 +4,7 @@ import { isStudioAdminEmail } from "@/lib/studio-admins";
 
 export const BOOKING_IP_LIMIT = 5;
 export const BOOKING_IP_WINDOW_MS = 60 * 60 * 1000;
-export const BOOKING_EMAIL_LIMIT = 3;
+export const BOOKING_EMAIL_LIMIT = 8;
 export const BOOKING_EMAIL_WINDOW_MS = 24 * 60 * 60 * 1000;
 export const BOOKING_UPCOMING_LIMIT = 8;
 
