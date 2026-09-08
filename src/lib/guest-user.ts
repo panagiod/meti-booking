@@ -23,11 +23,27 @@ function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+export type GuestCheckoutUser = {
+  id: string;
+  email: string;
+  name: string;
+  /** False when this email already had a client account. */
+  created: boolean;
+};
+
+/**
+ * The browser may receive a manage token only for a newly created guest.
+ * An existing client's confirmation link goes to their inbox, not the response.
+ */
+export function guestMayReceiveManageToken(created: boolean): boolean {
+  return created;
+}
+
 export async function findOrCreateGuestUser(
   email: string,
   name?: string | null,
   phone?: string | null
-): Promise<{ id: string; email: string; name: string }> {
+): Promise<GuestCheckoutUser> {
   const normalizedEmail = normalizeEmail(email);
 
   const existing = await prisma.user.findUnique({
@@ -41,16 +57,13 @@ export async function findOrCreateGuestUser(
         "An account with this email already exists. Please sign in to continue."
       );
     }
-    if (phone) {
-      await saveClientPhone(existing.id, phone);
-    }
-    return existing;
+    return { id: existing.id, email: existing.email, name: existing.name, created: false };
   }
 
   const displayName = name?.trim() || normalizedEmail.split("@")[0] || "Guest";
 
   try {
-    return await prisma.user.create({
+    const created = await prisma.user.create({
       data: {
         email: normalizedEmail,
         name: displayName,
@@ -62,16 +75,14 @@ export async function findOrCreateGuestUser(
       },
       select: { id: true, email: true, name: true },
     });
+    return { ...created, created: true };
   } catch {
     const raced = await prisma.user.findUnique({
       where: { email: normalizedEmail },
       select: { id: true, email: true, name: true, role: true },
     });
     if (raced?.role === UserRole.CLIENT) {
-      if (phone) {
-        await saveClientPhone(raced.id, phone);
-      }
-      return raced;
+      return { id: raced.id, email: raced.email, name: raced.name, created: false };
     }
     throw new GuestUserError(
       "An account with this email already exists. Please sign in to continue."

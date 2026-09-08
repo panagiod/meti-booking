@@ -318,7 +318,11 @@ const el: Messages = {
     backHome: "← Αρχική",
   },
   checkoutResult: {
-    signInToView: "Συνδεθείτε για να δείτε την κατάσταση της κράτησής σας.",
+    checkEmailToManage:
+      "Σας στείλαμε σύνδεσμο επιβεβαίωσης στο email σας. Ανοίξτε τον για να δείτε ή να ακυρώσετε την κράτηση.",
+    manageThisBooking: "Προβολή ή ακύρωση κράτησης",
+    signInToView:
+      "Συνδεθείτε για να δείτε την κράτηση, ή ανοίξτε τον σύνδεσμο επιβεβαίωσης που σας στείλαμε με email.",
     noBookingInfo: "Δεν υπάρχουν στοιχεία κράτησης.",
     bookingConfirmed: "Η κράτησή σας επιβεβαιώθηκε",
     bookingConfirmedSub:

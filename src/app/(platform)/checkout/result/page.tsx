@@ -31,19 +31,24 @@ function ResultContent() {
   const appointmentId = searchParams.get("appointmentId");
   const statusParam = (searchParams.get("status") || "unknown") as ResultStatus;
   const paymentId = searchParams.get("payment_id");
+  const manageToken = searchParams.get("t");
+  const emailedOnly = searchParams.get("emailed") === "1";
   const isBookingOnly = !paymentId;
 
   const [appointment, setAppointment] = useState<ResultAppointment | null>(null);
-  const [isLoading, setIsLoading] = useState(!!appointmentId);
+  const [isLoading, setIsLoading] = useState(!!appointmentId && !emailedOnly);
   const [isUnauthorized, setIsUnauthorized] = useState(false);
   const [pollAttempts, setPollAttempts] = useState(0);
 
   const fetchAppointment = useCallback(async (): Promise<"ok" | "unauthorized" | "error"> => {
-    if (!appointmentId) return "error";
+    if (emailedOnly) return "ok";
+    if (!appointmentId && !manageToken) return "error";
     try {
-      const res = await fetch(`/api/appointments/${appointmentId}`, {
-        credentials: "include",
-      });
+      const res = manageToken
+        ? await fetch(`/api/appointments/manage?t=${encodeURIComponent(manageToken)}`)
+        : await fetch(`/api/appointments/${appointmentId}`, {
+            credentials: "include",
+          });
       if (res.status === 401) {
         setIsUnauthorized(true);
         setIsLoading(false);
@@ -51,7 +56,14 @@ function ResultContent() {
       }
       if (res.ok) {
         const data = await res.json();
-        setAppointment(data.appointment);
+        const raw = data.appointment;
+        setAppointment({
+          id: raw.id,
+          status: raw.status,
+          scheduledAt: raw.scheduledAt,
+          durationMin: raw.durationMin,
+          service: raw.service ?? (raw.serviceName ? { name: raw.serviceName } : null),
+        });
         setIsUnauthorized(false);
         clearPendingBooking();
         return "ok";
@@ -63,10 +75,10 @@ function ResultContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [appointmentId]);
+  }, [appointmentId, emailedOnly, manageToken]);
 
   useEffect(() => {
-    if (!appointmentId || !paymentId) return;
+    if (emailedOnly || !appointmentId || !paymentId) return;
     const verifyPayment = async () => {
       try {
         const res = await fetch(`/api/appointments/${appointmentId}/verify`, {
@@ -93,6 +105,7 @@ function ResultContent() {
   }, []);
 
   useEffect(() => {
+    if (emailedOnly) return;
     let cancelled = false;
     const load = async () => {
       for (let attempt = 0; attempt < 3; attempt++) {
@@ -150,7 +163,7 @@ function ResultContent() {
     );
   }
 
-  if (isUnauthorized || !appointmentId) {
+  if (isUnauthorized || (!appointmentId && !manageToken && !emailedOnly)) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex flex-col items-center justify-center px-4">
         <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
@@ -182,7 +195,7 @@ function ResultContent() {
     );
   }
 
-  const isConfirmed = appointment?.status === "CONFIRMED";
+  const isConfirmed = emailedOnly || appointment?.status === "CONFIRMED";
   const failed =
     !isConfirmed && (statusParam === "failure" || appointment?.status === "CANCELLED");
   const serviceLabel =
@@ -207,26 +220,44 @@ function ResultContent() {
                   : t.checkoutResult.paymentConfirmed}
               </h1>
               <p className="text-[var(--text-muted)] mb-4">
-                {isBookingOnly
-                  ? t.checkoutResult.bookingConfirmedSub
-                  : t.checkoutResult.paymentConfirmedSub}
+                {emailedOnly
+                  ? t.checkoutResult.checkEmailToManage
+                  : isBookingOnly
+                    ? t.checkoutResult.bookingConfirmedSub
+                    : t.checkoutResult.paymentConfirmedSub}
               </p>
+              {appointment && (
               <div className="bg-[var(--background)] rounded-lg p-4 mb-6 space-y-2 text-left">
                 <div className="flex items-center gap-2 text-sm">
                   <Calendar className="w-4 h-4 text-[var(--primary)] flex-shrink-0" />
                   <span className="text-[var(--text-primary)] capitalize">
-                    {appointment && formatDateTime(appointment.scheduledAt, locale)}
+                    {formatDateTime(appointment.scheduledAt, locale)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="w-4 flex-shrink-0" />
                   <span className="text-[var(--text-muted)]">
-                    {serviceLabel} · {appointment?.durationMin} {t.checkout.min}
+                    {serviceLabel} · {appointment.durationMin} {t.checkout.min}
                   </span>
                 </div>
               </div>
+              )}
               <Button className="w-full" asChild>
-                <Link href="/dashboard/appointments">{t.checkoutResult.goToDashboard}</Link>
+                <Link
+                  href={
+                    manageToken
+                      ? `/booking/manage?t=${encodeURIComponent(manageToken)}`
+                      : emailedOnly
+                        ? "/book"
+                        : "/dashboard/appointments"
+                  }
+                >
+                  {manageToken
+                    ? t.checkoutResult.manageThisBooking
+                    : emailedOnly
+                      ? t.checkoutResult.bookAgain
+                      : t.checkoutResult.goToDashboard}
+                </Link>
               </Button>
             </>
           ) : failed ? (

@@ -268,9 +268,16 @@ function CheckoutContent() {
       clearPendingBooking();
 
       if (!paymentsEnabled || data.paymentsEnabled === false) {
-        router.push(
-          `/checkout/result?appointmentId=${data.appointment.id}&status=approved`
-        );
+        const params = new URLSearchParams({
+          appointmentId: data.appointment.id,
+          status: "approved",
+        });
+        if (typeof data.manageToken === "string" && data.manageToken) {
+          params.set("t", data.manageToken);
+        } else if (!isLoggedIn) {
+          params.set("emailed", "1");
+        }
+        router.push(`/checkout/result?${params.toString()}`);
         return;
       }
 

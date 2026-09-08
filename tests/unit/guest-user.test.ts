@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { findOrCreateGuestUser, GuestUserError } from "@/lib/guest-user";
+import {
+  findOrCreateGuestUser,
+  guestMayReceiveManageToken,
+  GuestUserError,
+} from "@/lib/guest-user";
 import { UserRole } from "@/generated/prisma/client";
 
 vi.mock("@/lib/prisma", () => ({
@@ -32,27 +36,22 @@ describe("findOrCreateGuestUser", () => {
     const user = await findOrCreateGuestUser("  Guest@Example.com  ");
 
     expect(user.id).toBe("user-1");
+    expect(user.created).toBe(false);
     expect(prisma.user.create).not.toHaveBeenCalled();
     expect(prisma.clientProfile.upsert).not.toHaveBeenCalled();
   });
 
-  it("saves a phone on an existing client", async () => {
+  it("does not overwrite phone on an existing client", async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: "user-1",
       email: "guest@example.com",
       name: "Guest",
       role: UserRole.CLIENT,
     } as never);
-    vi.mocked(prisma.clientProfile.upsert).mockResolvedValue({} as never);
 
     await findOrCreateGuestUser("guest@example.com", "Guest", "+35795519786");
 
-    expect(prisma.clientProfile.upsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { userId: "user-1" },
-        update: { phone: "+35795519786" },
-      })
-    );
+    expect(prisma.clientProfile.upsert).not.toHaveBeenCalled();
   });
 
   it("creates a new client when email is unknown", async () => {
@@ -66,6 +65,7 @@ describe("findOrCreateGuestUser", () => {
     const user = await findOrCreateGuestUser("new@example.com", "Alex");
 
     expect(user.id).toBe("new-user");
+    expect(user.created).toBe(true);
     expect(prisma.user.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
@@ -121,5 +121,12 @@ describe("findOrCreateGuestUser", () => {
 
     const user = await findOrCreateGuestUser("race@example.com");
     expect(user.id).toBe("user-2");
+    expect(user.created).toBe(false);
+    expect(prisma.clientProfile.upsert).not.toHaveBeenCalled();
+  });
+
+  it("only returns a manage token to a newly created guest", () => {
+    expect(guestMayReceiveManageToken(true)).toBe(true);
+    expect(guestMayReceiveManageToken(false)).toBe(false);
   });
 });

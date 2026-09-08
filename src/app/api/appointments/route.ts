@@ -10,7 +10,12 @@ import { buildBookingQuote } from "@/lib/booking-quote";
 import { siteConfig } from "@/lib/site-config";
 import { validateBookableSlot, SlotBookingError } from "@/lib/slot-booking";
 import { decryptMpAccessToken } from "@/lib/instructor-mp";
-import { findOrCreateGuestUser, GuestUserError, saveClientPhone } from "@/lib/guest-user";
+import {
+  findOrCreateGuestUser,
+  guestMayReceiveManageToken,
+  GuestUserError,
+  saveClientPhone,
+} from "@/lib/guest-user";
 import { ClientPhoneError, normalizeClientPhone } from "@/lib/client-phone";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 import { notifyAppointmentConfirmed } from "@/lib/notify";
@@ -28,9 +33,7 @@ import {
   assertBookingRateLimit,
   clientIpFromRequest,
 } from "@/lib/booking-rate-limit";
-import { attachGuestSession } from "@/lib/guest-session";
 import { createManageToken } from "@/lib/booking-manage-token";
-import { getSiteUrl } from "@/lib/site-config";
 
 const appointmentSchema = z.object({
   instructorId: z.string().optional(),
@@ -112,6 +115,7 @@ export async function POST(request: NextRequest) {
 
     let clientId: string;
     let payerEmail: string;
+    let guestCreated = false;
 
     if (session) {
       clientId = session.user.id;
@@ -129,6 +133,7 @@ export async function POST(request: NextRequest) {
       const guest = await findOrCreateGuestUser(guestEmail, guestName, clientPhone);
       clientId = guest.id;
       payerEmail = guest.email;
+      guestCreated = guest.created;
     }
 
     const rateLimit = await assertBookingRateLimit({
@@ -236,24 +241,13 @@ export async function POST(request: NextRequest) {
 
     const isTest = paymentsEnabled && instructorProfile.mpMode === "TEST";
 
-    function manageUrlFor(appointmentId: string, email: string): string | undefined {
+    function manageTokenFor(appointmentId: string, email: string): string | undefined {
       try {
-        const token = createManageToken(appointmentId, email);
-        return `${getSiteUrl()}/booking/manage?t=${encodeURIComponent(token)}`;
+        return createManageToken(appointmentId, email);
       } catch (error) {
         console.error("Could not create booking manage token:", error);
         return undefined;
       }
-    }
-
-    async function withGuestSession(response: NextResponse) {
-      if (session) return response;
-      try {
-        await attachGuestSession(response, clientId, request);
-      } catch (error) {
-        console.error("Could not create guest session:", error);
-      }
-      return response;
     }
 
     const appointment = await prisma.$transaction(
@@ -291,7 +285,10 @@ export async function POST(request: NextRequest) {
         : { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
     );
 
-    const manageUrl = manageUrlFor(appointment.id, payerEmail);
+    const manageToken =
+      !session && guestMayReceiveManageToken(guestCreated)
+        ? manageTokenFor(appointment.id, payerEmail)
+        : undefined;
 
     if (!paymentsEnabled) {
       try {
@@ -300,11 +297,9 @@ export async function POST(request: NextRequest) {
         console.error("Error sending confirmation emails:", notifyError);
       }
 
-      return withGuestSession(
-        NextResponse.json(
-          { appointment, paymentsEnabled: false, manageUrl },
-          { status: 201 }
-        )
+      return NextResponse.json(
+        { appointment, paymentsEnabled: false, manageToken },
+        { status: 201 }
       );
     }
 
@@ -330,11 +325,9 @@ export async function POST(request: NextRequest) {
 
       const checkoutUrl = isTest && sandboxInitPoint ? sandboxInitPoint : initPoint;
 
-      return withGuestSession(
-        NextResponse.json(
-          { appointment, initPoint: checkoutUrl, preferenceId, paymentsEnabled: true, manageUrl },
-          { status: 201 }
-        )
+      return NextResponse.json(
+        { appointment, initPoint: checkoutUrl, preferenceId, paymentsEnabled: true, manageToken },
+        { status: 201 }
       );
     } catch (prefError) {
       await prisma.appointment.delete({ where: { id: appointment.id } });

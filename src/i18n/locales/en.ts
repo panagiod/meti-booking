@@ -316,7 +316,11 @@ const en: Messages = {
     backHome: "← Back to home",
   },
   checkoutResult: {
-    signInToView: "Sign in to view your booking status.",
+    checkEmailToManage:
+      "We sent a confirmation link to your email. Open it to view or cancel this booking.",
+    manageThisBooking: "View or cancel this booking",
+    signInToView:
+      "Sign in to view your booking, or open the confirmation link we emailed you.",
     noBookingInfo: "No booking information available.",
     bookingConfirmed: "Booking confirmed!",
     bookingConfirmedSub:

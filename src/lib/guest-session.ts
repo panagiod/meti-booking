@@ -9,7 +9,11 @@ function useSecureCookies(): boolean {
   return getAuthBaseURL().startsWith("https://");
 }
 
-/** Create a better-auth session so guest checkout can load and cancel the booking. */
+/**
+ * Do not call this after guest checkout. Signing the browser in as whatever
+ * email was typed would let a stranger open that client's dashboard.
+ * Guests manage a booking with the emailed `/booking/manage` link.
+ */
 export async function attachGuestSession(
   response: NextResponse,
   userId: string,

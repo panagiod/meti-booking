@@ -251,6 +251,8 @@ export type Messages = {
     backHome: string;
   };
   checkoutResult: {
+    checkEmailToManage: string;
+    manageThisBooking: string;
     signInToView: string;
     noBookingInfo: string;
     bookingConfirmed: string;

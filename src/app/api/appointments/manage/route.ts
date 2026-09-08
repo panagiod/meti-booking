@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { parseManageToken, verifyManageToken } from "@/lib/booking-manage-token";
+import { toPublicManagedAppointment } from "@/lib/booking-manage-view";
 import { canClientCancelAppointment } from "@/lib/appointment-cancel";
 import { notifyAppointmentCancelled } from "@/lib/notify";
-import { siteConfig } from "@/lib/site-config";
 
 function jsonError(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
@@ -48,22 +48,8 @@ export async function GET(req: Request) {
     if ("error" in result) return result.error;
 
     const { appointment } = result;
-    const check = cancelCheck(appointment);
     return NextResponse.json({
-      appointment: {
-        id: appointment.id,
-        scheduledAt: appointment.scheduledAt.toISOString(),
-        durationMin: appointment.durationMin,
-        status: appointment.status,
-        totalCents: appointment.totalCents,
-        currency: siteConfig.currency,
-        serviceName: appointment.service.name,
-        instructorName: appointment.instructor.user.name,
-        clientEmail: appointment.client.email,
-        clientName: appointment.client.name,
-        cancellable: check.allowed,
-        cancelReason: check.reason ?? null,
-      },
+      appointment: toPublicManagedAppointment(appointment),
     });
   } catch (error) {
     console.error("Manage booking GET failed", error);
