@@ -25,7 +25,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **Customer routes:** `/`, `/book`, `/login`, `/checkout`, `/dashboard`
 - **Admin (MeTi):** `/admin`, `/admin/bookings`, `/admin/users`, `/admin/schedule`, `/admin/closures`, `/admin/content`
 - **Language:** Greek by default (`ΕΛ`). Cookie `meti-lang`. EN is optional.
-- **Currency:** EUR · **Timezone:** Asia/Nicosia · **Booking window:** 8 weeks
+- **Currency:** EUR · **Timezone:** Asia/Nicosia · **Booking window:** 8 weeks default (admin Hours)
 - **Legacy:** `/services`, `/advisor/*`, LiveKit video
 
 ## Development workflow
@@ -48,7 +48,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | **Code copy defaults** | `src/i18n/locales/en.ts`, `el.ts` |
 | **Live booking schedule** | Admin `/admin/schedule` (hours) + `/admin/closures` (days off) → `advisor_schedule` |
 | **Schedule code defaults** | `src/lib/studio-schedule.ts`, `demo-setup.ts` |
-| Slot capacity / booking window | `src/lib/site-config.ts` |
+| Slot capacity / booking window | Admin `/admin/schedule` (Hours) → `instructor_profiles`; defaults in `booking-config.ts` |
 | Timezone / slot times | `src/lib/timezone.ts` |
 | Greek date formatting | `src/lib/date-locale.ts` (genitive with a day: 3 Σεπτεμβρίου) |
 | Phone at booking | `src/lib/client-phone.ts` |

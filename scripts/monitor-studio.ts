@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { OPEN_BOOKING_STATUSES } from "@/lib/account-privacy";
 import { prisma } from "@/lib/prisma";
 import { sendStudioOpsEmail } from "@/lib/email";
-import { siteConfig } from "@/lib/site-config";
+import { resolveSlotCapacity } from "@/lib/booking-config";
 import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import { countWeeklyTimeSlots, type StudioDaySchedule } from "@/lib/studio-schedule";
 import {
@@ -99,7 +99,7 @@ async function calendarUsage(): Promise<{ upcomingBooked: number; upcomingCapaci
     return { upcomingBooked, upcomingCapacity: 0 };
   }
 
-  const [service, schedules] = await Promise.all([
+  const [service, schedules, profile] = await Promise.all([
     prisma.instructorService.findFirst({
       where: { instructorId: instructor.id, isActive: true },
       orderBy: { createdAt: "asc" },
@@ -107,8 +107,13 @@ async function calendarUsage(): Promise<{ upcomingBooked: number; upcomingCapaci
     prisma.instructorSchedule.findMany({
       where: { instructorId: instructor.id, isActive: true },
     }),
+    prisma.instructorProfile.findUnique({
+      where: { id: instructor.id },
+      select: { slotCapacity: true },
+    }),
   ]);
   const duration = service?.durationMin || 45;
+  const slotCapacity = resolveSlotCapacity(profile?.slotCapacity);
   const days = (schedules as Array<{
     dayOfWeek: number;
     startTime: string;
@@ -134,7 +139,7 @@ async function calendarUsage(): Promise<{ upcomingBooked: number; upcomingCapaci
     upcomingBooked,
     upcomingCapacity: upcomingPlacesCapacity(
       weeklyTimeSlots,
-      siteConfig.slotCapacity,
+      slotCapacity,
       CALENDAR_ALERT_WEEKS
     ),
   };

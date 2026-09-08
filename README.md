@@ -17,8 +17,8 @@ Book **reformer sessions** online: pick a date, time, sign in, pay.
 | **Production site** | https://meti-pilates.com |
 | **Public site** | Homepage + `/book` |
 | **Schedule** | Tue, Thu, Sat (see `studio-schedule.ts`; admin-editable) |
-| **Booking window** | 8 weeks ahead |
-| **Capacity** | 3 clients per time slot |
+| **Booking window** | 8 weeks ahead by default (admin Hours) |
+| **Capacity** | 3 clients per time slot by default (admin Hours) |
 | **Currency** | EUR (€) |
 | **Timezone** | Asia/Nicosia (Cyprus) |
 | **Booking lead time** | 2 hours minimum (`resolveBookingLeadHours`) |
@@ -48,7 +48,7 @@ Open [http://localhost:3000](http://localhost:3000) → **Book**.
 | **Overview** | [/admin](http://localhost:3000/admin) | This week’s board and today’s sessions |
 | **Bookings** | [/admin/bookings](http://localhost:3000/admin/bookings) | Upcoming sessions and free a slot |
 | **Clients** | [/admin/users](http://localhost:3000/admin/users) | Client names, phone, session dates |
-| **Hours** | [/admin/schedule](http://localhost:3000/admin/schedule) | Weekly open days and times |
+| **Hours** | [/admin/schedule](http://localhost:3000/admin/schedule) | Weekly open days, times, cancel window, places per class, booking window |
 | **Closures** | [/admin/closures](http://localhost:3000/admin/closures) | Cyprus holidays and extra days off |
 | **Website** | [/admin/content](http://localhost:3000/admin/content) | Hero text, images, contact info |
 
@@ -95,11 +95,11 @@ src/
   app/(marketing)/       # Homepage, /book
   app/(platform)/admin/  # schedule, content, …
   lib/
-    site-config.ts       # Code defaults (EUR, capacity, booking window)
+    site-config.ts       # Code defaults (EUR, default capacity and window)
     studio-content*.ts   # CMS logic
     studio-schedule.ts   # Calendar defaults
     timezone.ts          # Asia/Nicosia slot times
-    booking-config.ts    # resolveBookingLeadHours() — 2h default
+    booking-config.ts    # Lead hours, cancel hours, capacity, booking window
     date-locale.ts       # Greek months (genitive with a day)
     client-phone.ts      # Optional phone at checkout / profile
     proxy.ts             # Auth middleware (public routes)

@@ -23,9 +23,13 @@ import {
   studioBranding,
 } from "@/lib/studio-content";
 import type { StudioContentData } from "@/lib/studio-content-types";
-import { DEFAULT_CANCEL_HOURS, resolveCancelHours } from "@/lib/booking-config";
+import { DEFAULT_CANCEL_HOURS, resolveCancelHours, DEFAULT_SLOT_CAPACITY, resolveSlotCapacity, DEFAULT_BOOKING_WEEKS_AHEAD, resolveBookingWeeksAhead } from "@/lib/booking-config";
 
-export type StudioBranding = ReturnType<typeof studioBranding> & { cancelHours: number };
+export type StudioBranding = ReturnType<typeof studioBranding> & {
+  cancelHours: number;
+  slotCapacity: number;
+  bookingWeeksAhead: number;
+};
 
 type LocaleContextValue = {
   locale: Locale;
@@ -78,6 +82,8 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [studioContent, setStudioContent] = useState<StudioContentData>(defaultContent);
   const [cancelHours, setCancelHours] = useState(DEFAULT_CANCEL_HOURS);
+  const [slotCapacity, setSlotCapacity] = useState(DEFAULT_SLOT_CAPACITY);
+  const [bookingWeeksAhead, setBookingWeeksAhead] = useState(DEFAULT_BOOKING_WEEKS_AHEAD);
   const [contentLoaded, setContentLoaded] = useState(false);
 
   const loadStudioContent = useCallback(async () => {
@@ -99,6 +105,8 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
         contentEl: data.contentEl,
       });
       setCancelHours(resolveCancelHours(data.branding.cancelHours));
+      setSlotCapacity(resolveSlotCapacity(data.branding.slotCapacity));
+      setBookingWeeksAhead(resolveBookingWeeksAhead(data.branding.bookingWeeksAhead));
     } catch (error) {
       console.error("Failed to load studio content:", error);
     } finally {
@@ -126,8 +134,13 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   }, [locale, studioContent]);
 
   const studio = useMemo(
-    () => ({ ...studioBranding(studioContent, locale), cancelHours }),
-    [studioContent, locale, cancelHours]
+    () => ({
+      ...studioBranding(studioContent, locale),
+      cancelHours,
+      slotCapacity,
+      bookingWeeksAhead,
+    }),
+    [studioContent, locale, cancelHours, slotCapacity, bookingWeeksAhead]
   );
 
   const value = useMemo(

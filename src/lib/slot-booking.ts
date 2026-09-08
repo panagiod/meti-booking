@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { isCyprusPublicHoliday } from "@/lib/cyprus-holidays";
 import { generateAvailableSlots, isStudioDateBlocked } from "@/lib/slots";
-import { resolveBookingLeadHours } from "@/lib/booking-config";
-import { siteConfig } from "@/lib/site-config";
+import { resolveBookingLeadHours, resolveSlotCapacity } from "@/lib/booking-config";
 import {
   getDayOfWeekForStudioDate,
   studioDayBoundsUTC,
@@ -28,7 +27,7 @@ export async function validateBookableSlot(params: {
 
   const instructorProfile = await prisma.instructorProfile.findUnique({
     where: { id: instructorId },
-    select: { id: true, isActive: true, bookingLeadHours: true },
+    select: { id: true, isActive: true, bookingLeadHours: true, slotCapacity: true },
   });
 
   if (!instructorProfile?.isActive) {
@@ -125,7 +124,7 @@ export async function validateBookableSlot(params: {
     blockedTimes,
     new Date(`${dateStr}T12:00:00`),
     minStartTime,
-    siteConfig.slotCapacity
+    resolveSlotCapacity(instructorProfile.slotCapacity)
   );
 
   const requestedMinutes = studioLocalMinutesFromUtc(scheduledAt);

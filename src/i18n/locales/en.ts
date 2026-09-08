@@ -53,7 +53,7 @@ const en: Messages = {
       },
       {
         title: "Choose a time",
-        description: "Each slot has up to 3 places. Full times stay visible so you can pick another.",
+        description: "Each slot has up to {count} places. Full times stay visible so you can pick another.",
       },
       {
         title: "Confirm",
@@ -546,6 +546,14 @@ const en: Messages = {
     cancelHoursUnit: "hours before the session",
     cancelHoursHint:
       "Clients can cancel without charge until this many hours before class. Saving updates booking, emails, checkout, and legal pages.",
+    slotCapacityLabel: "Places per class",
+    slotCapacityUnit: "people",
+    slotCapacityHint:
+      "How many clients can book the same time. Saving updates the public calendar and homepage.",
+    bookingWeeksLabel: "Booking window",
+    bookingWeeksUnit: "weeks ahead",
+    bookingWeeksHint:
+      "How far in advance clients can book. Saving updates the public calendar.",
     weeklyHours: "Weekly hours",
     saveSchedule: "Save schedule",
     saving: "Saving…",

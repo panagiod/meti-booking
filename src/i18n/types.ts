@@ -472,6 +472,12 @@ export type Messages = {
     cancelHoursLabel: string;
     cancelHoursUnit: string;
     cancelHoursHint: string;
+    slotCapacityLabel: string;
+    slotCapacityUnit: string;
+    slotCapacityHint: string;
+    bookingWeeksLabel: string;
+    bookingWeeksUnit: string;
+    bookingWeeksHint: string;
     weeklyHours: string;
     saveSchedule: string;
     saving: string;

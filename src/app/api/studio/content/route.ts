@@ -1,19 +1,21 @@
 import { NextResponse } from "next/server";
 import { getStudioContent, studioBranding } from "@/lib/studio-content-server";
-import { getStudioCancelHours } from "@/lib/cancel-hours-server";
+import { getStudioBookingSettings } from "@/lib/studio-booking-settings";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const [content, cancelHours] = await Promise.all([
+    const [content, bookingSettings] = await Promise.all([
       getStudioContent(),
-      getStudioCancelHours(),
+      getStudioBookingSettings(),
     ]);
     return NextResponse.json({
       branding: {
         ...studioBranding(content),
-        cancelHours,
+        cancelHours: bookingSettings.cancelHours,
+        slotCapacity: bookingSettings.slotCapacity,
+        bookingWeeksAhead: bookingSettings.bookingWeeksAhead,
         location: content.location,
         locationEl: content.locationEl,
       },

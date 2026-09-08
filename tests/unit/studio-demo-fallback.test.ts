@@ -21,6 +21,8 @@ describe("studio-demo-fallback", () => {
     const studio = getDemoStudioResponse();
     expect(studio.studio.instructorId).toBe(DEMO_STUDIO_INSTRUCTOR_ID);
     expect(studio.studio.services[0]?.id).toBe(DEMO_REFORMER_SERVICE_ID);
+    expect(studio.studio.slotCapacity).toBe(3);
+    expect(studio.studio.bookingWeeksAhead).toBe(8);
     expect(studio.studio.schedule.length).toBeGreaterThan(0);
   });
 

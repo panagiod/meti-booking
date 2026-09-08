@@ -158,7 +158,8 @@ User requested **Stripe or Revolut** with Apple Pay / Google Pay:
 | Greek UI | ✅ | EN \| ΕΛ switcher |
 | Greek dates | ✅ | Genitive with a day on `/book` |
 | Reformer booking | ✅ | `/book` only |
-| 3-slot capacity | ✅ | `siteConfig.slotCapacity` |
+| Slot capacity | ✅ | Admin Hours; default `siteConfig.slotCapacity` (3) |
+| Booking window | ✅ | Admin Hours; default `siteConfig.bookingWeeksAhead` (8 weeks) |
 | EUR pricing | ✅ | `siteConfig.currency` |
 | Asia/Nicosia TZ | ✅ | `STUDIO_TIMEZONE` |
 | Google login | ❌ | Real OAuth needed |

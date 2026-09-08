@@ -30,3 +30,29 @@ export function resolveCancelHours(stored: number | null | undefined): number {
   }
   return DEFAULT_CANCEL_HOURS;
 }
+
+/** People per class. Admin can change this; stored on the studio instructor. */
+export const DEFAULT_SLOT_CAPACITY: number = siteConfig.slotCapacity;
+export const MIN_SLOT_CAPACITY = 1;
+export const MAX_SLOT_CAPACITY = 12;
+
+export function resolveSlotCapacity(stored: number | null | undefined): number {
+  if (stored != null && Number.isFinite(stored)) {
+    const count = Math.trunc(stored);
+    if (count >= MIN_SLOT_CAPACITY && count <= MAX_SLOT_CAPACITY) return count;
+  }
+  return DEFAULT_SLOT_CAPACITY;
+}
+
+/** How many weeks ahead clients can book. Admin can change this. */
+export const DEFAULT_BOOKING_WEEKS_AHEAD: number = siteConfig.bookingWeeksAhead;
+export const MIN_BOOKING_WEEKS_AHEAD = 1;
+export const MAX_BOOKING_WEEKS_AHEAD = 16;
+
+export function resolveBookingWeeksAhead(stored: number | null | undefined): number {
+  if (stored != null && Number.isFinite(stored)) {
+    const weeks = Math.trunc(stored);
+    if (weeks >= MIN_BOOKING_WEEKS_AHEAD && weeks <= MAX_BOOKING_WEEKS_AHEAD) return weeks;
+  }
+  return DEFAULT_BOOKING_WEEKS_AHEAD;
+}

@@ -17,7 +17,8 @@
 | **Currency** | **EUR** (`siteConfig.currency`) |
 | **Timezone** | **Asia/Nicosia** (`STUDIO_TIMEZONE`) |
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |
-| **Booking window** | **8 weeks ahead** (`bookingWeeksAhead`) |
+| **Slot capacity** | **3** default (`slotCapacity`); admin-configurable on Hours |
+| **Booking window** | **8 weeks** default (`bookingWeeksAhead`); admin-configurable on Hours |
 | **Lead time** | **2 hours** minimum before first bookable slot (`booking-config.ts`) |
 | **Cancel window** | **12 hours** default (`rescheduleHoursMin`); admin-configurable on Hours |
 | **Weekly schedule** | **Admin-configurable** — demo seed: Tue, Thu, Sat |
@@ -44,7 +45,7 @@
 - Capacity enforced in `POST /api/appointments` (409 if full, serializable transaction).
 - Server validates slot against schedule, blocked times, lead hours, and capacity.
 - Demo seed: **Tue/Thu 15:45–18:00** (4 slots), **Sat 08:00–12:45** (7 slots), 45 min classes.
-- Calendar shows dates up to **8 weeks** ahead.
+- Calendar shows dates up to the admin booking window (default **8 weeks**).
 
 ---
 
@@ -55,7 +56,7 @@
 | **Overview** | `/admin` | This week’s board and today’s session counts |
 | **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot |
 | **Clients** | `/admin/users` | Client list with phone and session dates |
-| **Hours** | `/admin/schedule` | Weekly open days/hours, lunch break, gap, cancellation window |
+| **Hours** | `/admin/schedule` | Weekly open days/hours, lunch, gap, cancel window, places per class, booking window |
 | **Closures** | `/admin/closures` | Cyprus holidays and extra days off |
 | **Website** | `/admin/content` | Hero copy EN/EL, SEO, images, name, address, email, price |
 
@@ -72,8 +73,8 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 | **Live homepage copy** | DB `studio_content` | `src/i18n/locales/{en,el}.ts` |
 | **Live images & contact** | DB `studio_content` | `src/lib/site-config.ts` |
 | **Booking schedule** | DB `advisor_schedule` | `src/lib/studio-schedule.ts` |
-| **Slot capacity** | `siteConfig.slotCapacity` (3) | code only |
-| **Booking window** | `siteConfig.bookingWeeksAhead` (8) | code only |
+| **Slot capacity** | DB `instructor_profiles.slotCapacity` | default 3; admin Hours page |
+| **Booking window** | DB `instructor_profiles.bookingWeeksAhead` | default 8; admin Hours page |
 | **Timezone** | `STUDIO_TIMEZONE` env | `Asia/Nicosia` |
 | **Reformer service** | DB `advisor_services` | `scripts/demo-setup.ts` |
 | **Cancel window** | DB `instructor_services.rescheduleHoursMin` | default 12; admin Hours page |
@@ -87,11 +88,11 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 
 | File | Purpose |
 |------|---------|
-| `src/lib/site-config.ts` | EUR, capacity, booking window, reformer filter |
+| `src/lib/site-config.ts` | EUR, reformer filter, default capacity/window |
 | `src/lib/studio-content.ts` | Content types, defaults, message merge |
 | `src/lib/studio-content-server.ts` | DB CRUD for `StudioContent` |
 | `src/lib/date-locale.ts` | Greek months: genitive with a day, nominative for month-year |
-| `src/lib/booking-config.ts` | `resolveBookingLeadHours()`, `resolveCancelHours()`, defaults (2h lead, 12h cancel) |
+| `src/lib/booking-config.ts` | Lead hours, cancel hours, slot capacity, booking window resolvers |
 | `src/components/providers/locale-provider.tsx` | i18n + loads `/api/studio/content` |
 | `src/proxy.ts` | Auth middleware + public route allowlist |
 
@@ -198,12 +199,12 @@ Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
 
 ## Slot capacity & schedule
 
-1. `siteConfig.slotCapacity = 3`
+1. Default `slotCapacity = 3` on the studio instructor; admin can change it on Hours
 2. Demo seed: **Tue/Thu 15:45–18:45**, **Sat 08:00–13:30** (see `studio-schedule.ts`)
 3. `GET /api/slots` — counts appointments, applies blocked times (read-only)
 4. `POST /api/appointments` — serializable transaction, 409 when full
 5. All slot times interpreted in **Asia/Nicosia**
-6. Booking horizon: **8 weeks** (`siteConfig.bookingWeeksAhead`)
+6. Booking horizon: default **8 weeks** (`bookingWeeksAhead`); admin can change it on Hours
 
 Tests: `tests/unit/slots.test.ts`, `tests/unit/studio-schedule.test.ts`, `tests/unit/timezone.test.ts`, `tests/unit/date-locale.test.ts`
 

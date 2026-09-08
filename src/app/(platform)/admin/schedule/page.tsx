@@ -20,9 +20,15 @@ import {
   type StudioDaySchedule,
 } from "@/lib/studio-schedule";
 import {
+  DEFAULT_BOOKING_WEEKS_AHEAD,
   DEFAULT_CANCEL_HOURS,
+  DEFAULT_SLOT_CAPACITY,
+  MAX_BOOKING_WEEKS_AHEAD,
   MAX_CANCEL_HOURS,
+  MAX_SLOT_CAPACITY,
+  MIN_BOOKING_WEEKS_AHEAD,
   MIN_CANCEL_HOURS,
+  MIN_SLOT_CAPACITY,
 } from "@/lib/booking-config";
 import {
   formatMessage,
@@ -44,7 +50,6 @@ function weekdayName(t: Messages["admin"], dayOfWeek: number) {
   ][dayOfWeek];
 }
 import { AdminWeekBoard } from "@/components/admin/admin-week-board";
-import { siteConfig } from "@/lib/site-config";
 import {
   Calendar,
   Clock,
@@ -77,6 +82,7 @@ interface StudioData {
   instructorName: string;
   instructorEmail: string;
   slotCapacity: number;
+  bookingWeeksAhead: number;
   serviceDurationMin: number;
   serviceName: string;
   cancelHours: number;
@@ -93,6 +99,8 @@ export default function AdminSchedulePage() {
   const [studio, setStudio] = useState<StudioData | null>(null);
   const [schedule, setSchedule] = useState<StudioDaySchedule[]>(weeklyScheduleTemplate());
   const [cancelHours, setCancelHours] = useState(DEFAULT_CANCEL_HOURS);
+  const [slotCapacity, setSlotCapacity] = useState(DEFAULT_SLOT_CAPACITY);
+  const [bookingWeeksAhead, setBookingWeeksAhead] = useState(DEFAULT_BOOKING_WEEKS_AHEAD);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -146,6 +154,16 @@ export default function AdminSchedulePage() {
           ? data.studio.cancelHours
           : DEFAULT_CANCEL_HOURS
       );
+      setSlotCapacity(
+        typeof data.studio.slotCapacity === "number"
+          ? data.studio.slotCapacity
+          : DEFAULT_SLOT_CAPACITY
+      );
+      setBookingWeeksAhead(
+        typeof data.studio.bookingWeeksAhead === "number"
+          ? data.studio.bookingWeeksAhead
+          : DEFAULT_BOOKING_WEEKS_AHEAD
+      );
       setBlockedTimes(data.studio.blockedTimes);
       setHasChanges(false);
     } catch {
@@ -176,9 +194,9 @@ export default function AdminSchedulePage() {
     return {
       perDay,
       perWeek: perDay * activeCount,
-      capacity: siteConfig.slotCapacity,
+      capacity: slotCapacity,
     };
-  }, [schedule, activeCount, studio]);
+  }, [schedule, activeCount, studio, slotCapacity]);
 
   const cancelBooking = async (booking: StudioBooking) => {
     const confirmed = await dialog.showConfirm(
@@ -263,6 +281,8 @@ export default function AdminSchedulePage() {
         body: JSON.stringify({
           schedules: schedule,
           cancelHours: Math.trunc(cancelHours),
+          slotCapacity: Math.trunc(slotCapacity),
+          bookingWeeksAhead: Math.trunc(bookingWeeksAhead),
         }),
       });
       const data = await res.json();
@@ -273,6 +293,12 @@ export default function AdminSchedulePage() {
       setSchedule(data.schedules);
       if (typeof data.cancelHours === "number") {
         setCancelHours(data.cancelHours);
+      }
+      if (typeof data.slotCapacity === "number") {
+        setSlotCapacity(data.slotCapacity);
+      }
+      if (typeof data.bookingWeeksAhead === "number") {
+        setBookingWeeksAhead(data.bookingWeeksAhead);
       }
       setHasChanges(false);
       await refreshStudioContent();
@@ -353,7 +379,7 @@ export default function AdminSchedulePage() {
               <div>
                 <p className="text-sm text-[var(--text-muted)]">{t.admin.capacity}</p>
                 <p className="font-semibold text-[var(--text-primary)]">
-                  {formatMessage(t.admin.perSlot, { count: studio.slotCapacity })}
+                  {formatMessage(t.admin.perSlot, { count: slotCapacity })}
                 </p>
                 <p className="text-xs text-[var(--text-muted)] mt-1">
                   {formatMessage(t.admin.instructor, { name: studio.instructorName })}
@@ -367,7 +393,7 @@ export default function AdminSchedulePage() {
           schedules={schedule}
           bookings={weekBookings}
           durationMin={studio.serviceDurationMin}
-          slotCapacity={studio.slotCapacity}
+          slotCapacity={slotCapacity}
           blockedTimes={blockedTimes}
           isLoadingBookings={isLoadingBookings}
           onWeekChange={loadWeekBookings}
@@ -387,34 +413,96 @@ export default function AdminSchedulePage() {
         </Card>
 
         <Card>
-          <CardContent className="p-5 space-y-3">
-            <label
-              htmlFor="cancel-hours"
-              className="block font-medium text-[var(--text-primary)]"
-            >
-              {t.admin.cancelHoursLabel}
-            </label>
-            <div className="flex items-center gap-3 max-w-xs">
-              <Input
-                id="cancel-hours"
-                type="number"
-                min={MIN_CANCEL_HOURS}
-                max={MAX_CANCEL_HOURS}
-                value={cancelHours}
-                onChange={(e) => {
-                  const next = Number(e.target.value);
-                  setCancelHours(Number.isFinite(next) ? next : DEFAULT_CANCEL_HOURS);
-                  setHasChanges(true);
-                }}
-                className="h-9 w-24 text-sm"
-              />
-              <span className="text-sm text-[var(--text-muted)]">
-                {t.admin.cancelHoursUnit}
-              </span>
+          <CardContent className="p-5 grid gap-6 sm:grid-cols-3">
+            <div className="space-y-3">
+              <label
+                htmlFor="slot-capacity"
+                className="block font-medium text-[var(--text-primary)]"
+              >
+                {t.admin.slotCapacityLabel}
+              </label>
+              <div className="flex items-center gap-3">
+                <Input
+                  id="slot-capacity"
+                  type="number"
+                  min={MIN_SLOT_CAPACITY}
+                  max={MAX_SLOT_CAPACITY}
+                  value={slotCapacity}
+                  onChange={(e) => {
+                    const next = Number(e.target.value);
+                    setSlotCapacity(Number.isFinite(next) ? next : DEFAULT_SLOT_CAPACITY);
+                    setHasChanges(true);
+                  }}
+                  className="h-9 w-24 text-sm"
+                />
+                <span className="text-sm text-[var(--text-muted)]">
+                  {t.admin.slotCapacityUnit}
+                </span>
+              </div>
+              <p className="text-sm text-[var(--text-muted)]">
+                {t.admin.slotCapacityHint}
+              </p>
             </div>
-            <p className="text-sm text-[var(--text-muted)]">
-              {t.admin.cancelHoursHint}
-            </p>
+            <div className="space-y-3">
+              <label
+                htmlFor="booking-weeks"
+                className="block font-medium text-[var(--text-primary)]"
+              >
+                {t.admin.bookingWeeksLabel}
+              </label>
+              <div className="flex items-center gap-3">
+                <Input
+                  id="booking-weeks"
+                  type="number"
+                  min={MIN_BOOKING_WEEKS_AHEAD}
+                  max={MAX_BOOKING_WEEKS_AHEAD}
+                  value={bookingWeeksAhead}
+                  onChange={(e) => {
+                    const next = Number(e.target.value);
+                    setBookingWeeksAhead(
+                      Number.isFinite(next) ? next : DEFAULT_BOOKING_WEEKS_AHEAD
+                    );
+                    setHasChanges(true);
+                  }}
+                  className="h-9 w-24 text-sm"
+                />
+                <span className="text-sm text-[var(--text-muted)]">
+                  {t.admin.bookingWeeksUnit}
+                </span>
+              </div>
+              <p className="text-sm text-[var(--text-muted)]">
+                {t.admin.bookingWeeksHint}
+              </p>
+            </div>
+            <div className="space-y-3">
+              <label
+                htmlFor="cancel-hours"
+                className="block font-medium text-[var(--text-primary)]"
+              >
+                {t.admin.cancelHoursLabel}
+              </label>
+              <div className="flex items-center gap-3">
+                <Input
+                  id="cancel-hours"
+                  type="number"
+                  min={MIN_CANCEL_HOURS}
+                  max={MAX_CANCEL_HOURS}
+                  value={cancelHours}
+                  onChange={(e) => {
+                    const next = Number(e.target.value);
+                    setCancelHours(Number.isFinite(next) ? next : DEFAULT_CANCEL_HOURS);
+                    setHasChanges(true);
+                  }}
+                  className="h-9 w-24 text-sm"
+                />
+                <span className="text-sm text-[var(--text-muted)]">
+                  {t.admin.cancelHoursUnit}
+                </span>
+              </div>
+              <p className="text-sm text-[var(--text-muted)]">
+                {t.admin.cancelHoursHint}
+              </p>
+            </div>
           </CardContent>
         </Card>
 

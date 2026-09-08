@@ -5,7 +5,7 @@ import { getStudioContent } from "@/lib/studio-content-server";
 import { getDemoStudioResponse, isDemoBookingMode } from "@/lib/studio-demo-fallback";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 import { isReformerService } from "@/lib/site-config";
-import { resolveBookingLeadHours, resolveCancelHours } from "@/lib/booking-config";
+import { resolveBookingLeadHours, resolveCancelHours, resolveSlotCapacity, resolveBookingWeeksAhead } from "@/lib/booking-config";
 import { instructorMpConnected } from "@/lib/instructor-mp";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +16,8 @@ function mapStudioPayload(params: {
   instructorName: string;
   image?: string | null;
   bookingLeadHours: number;
+  slotCapacity: number;
+  bookingWeeksAhead: number;
   mpConnected: boolean;
   mpMode: string | null;
   services: Array<{
@@ -47,6 +49,8 @@ function mapStudioPayload(params: {
     instructorName: params.instructorName,
     image: params.image ?? null,
     bookingLeadHours: params.bookingLeadHours,
+    slotCapacity: params.slotCapacity,
+    bookingWeeksAhead: params.bookingWeeksAhead,
     mpConnected: params.mpConnected,
     mpMode: params.mpMode,
     services: params.services
@@ -128,6 +132,8 @@ export async function GET() {
         instructorName: profile.user.name,
         image: profile.user.image,
         bookingLeadHours: resolveBookingLeadHours(profile.bookingLeadHours),
+        slotCapacity: resolveSlotCapacity(profile.slotCapacity),
+        bookingWeeksAhead: resolveBookingWeeksAhead(profile.bookingWeeksAhead),
         mpConnected: instructorMpConnected(profile),
         mpMode: profile.mpMode,
         services: profile.services,

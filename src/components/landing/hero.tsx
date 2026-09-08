@@ -52,7 +52,7 @@ export function Hero() {
                 <span aria-hidden className="text-[var(--studio-line)]">
                   ·
                 </span>
-                <span>{formatMessage(t.hero.classSize, { count: siteConfig.slotCapacity })}</span>
+                <span>{formatMessage(t.hero.classSize, { count: studio.slotCapacity })}</span>
                 <span aria-hidden className="text-[var(--studio-line)]">
                   ·
                 </span>

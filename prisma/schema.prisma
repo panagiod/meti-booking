@@ -120,6 +120,8 @@ model InstructorProfile {
   verificationNotes   String? @db.Text
 
   bookingLeadHours Int     @default(2)
+  slotCapacity     Int     @default(3)
+  bookingWeeksAhead Int    @default(8)
   whatsappPhone    String?
 
   createdAt       DateTime @default(now())

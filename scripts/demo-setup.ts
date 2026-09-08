@@ -8,7 +8,7 @@ import {
   mergeScheduleFromDb,
   STUDIO_SESSION_DURATION_MIN,
 } from "../src/lib/studio-schedule";
-import { DEFAULT_BOOKING_LEAD_HOURS, DEFAULT_CANCEL_HOURS } from "../src/lib/booking-config";
+import { DEFAULT_BOOKING_LEAD_HOURS, DEFAULT_CANCEL_HOURS, DEFAULT_SLOT_CAPACITY, DEFAULT_BOOKING_WEEKS_AHEAD } from "../src/lib/booking-config";
 import { applyDatabaseSchema } from "./prisma-apply-schema";
 
 config({ path: resolve(__dirname, "../.env") });
@@ -125,6 +125,8 @@ async function main() {
             isVerified: true,
             verificationStatus: "APPROVED",
             bookingLeadHours: DEFAULT_BOOKING_LEAD_HOURS,
+            slotCapacity: DEFAULT_SLOT_CAPACITY,
+            bookingWeeksAhead: DEFAULT_BOOKING_WEEKS_AHEAD,
           },
         });
       } else if (RESET) {
@@ -137,6 +139,8 @@ async function main() {
             isVerified: true,
             verificationStatus: "APPROVED",
             bookingLeadHours: DEFAULT_BOOKING_LEAD_HOURS,
+            slotCapacity: DEFAULT_SLOT_CAPACITY,
+            bookingWeeksAhead: DEFAULT_BOOKING_WEEKS_AHEAD,
           },
         });
       }

@@ -12,7 +12,6 @@ import {
 import {
   formatStudioPhone,
   isPublicPhone,
-  siteConfig,
   studioTelHref,
 } from "@/lib/site-config";
 import { StudioMapLink } from "@/components/landing/studio-map-link";
@@ -100,7 +99,7 @@ export function StudioInfo() {
               {t.visit.classSize}
             </dt>
             <dd className="mt-2 text-sm leading-relaxed text-[var(--studio-muted)]">
-              {formatMessage(t.visit.classSizeDetail, { count: siteConfig.slotCapacity })}
+              {formatMessage(t.visit.classSizeDetail, { count: studio.slotCapacity })}
             </dd>
           </div>
           <div className="rounded-2xl border border-[var(--studio-line)] bg-[var(--studio-surface)] p-5">

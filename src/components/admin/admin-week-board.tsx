@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCyprusHoliday } from "@/lib/cyprus-holidays";
 import { generateAvailableSlots } from "@/lib/slots";
-import { siteConfig } from "@/lib/site-config";
+import { DEFAULT_SLOT_CAPACITY } from "@/lib/booking-config";
 import type { StudioDaySchedule } from "@/lib/studio-schedule";
 import {
   formatMessage,
@@ -177,7 +177,7 @@ export function AdminWeekBoard({
                   mappedBlocks,
                   slotDate,
                   undefined,
-                  slotCapacity || siteConfig.slotCapacity
+                  slotCapacity || DEFAULT_SLOT_CAPACITY
                 )
               : [];
 

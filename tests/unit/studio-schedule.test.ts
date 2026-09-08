@@ -131,8 +131,27 @@ describe("schedule payload", () => {
         },
       ],
       cancelHours: 12,
+      slotCapacity: 3,
+      bookingWeeksAhead: 8,
     });
     expect(parsed.cancelHours).toBe(12);
+    expect(parsed.slotCapacity).toBe(3);
+    expect(parsed.bookingWeeksAhead).toBe(8);
+  });
+
+  it("rejects slot capacity and booking window outside range", () => {
+    expect(() =>
+      schedulePayloadSchema.parse({
+        schedules: [],
+        slotCapacity: 0,
+      })
+    ).toThrow();
+    expect(() =>
+      schedulePayloadSchema.parse({
+        schedules: [],
+        bookingWeeksAhead: 20,
+      })
+    ).toThrow();
   });
 
   it("rejects cancel windows outside 1–72 hours", () => {

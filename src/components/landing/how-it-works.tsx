@@ -29,7 +29,10 @@ export function HowItWorks() {
               </p>
               <h3 className="font-display mt-3 text-xl text-[var(--studio-ink)]">{step.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-[var(--studio-muted)]">
-                {formatMessage(step.description, { hours: studio.cancelHours })}
+                {formatMessage(step.description, {
+                  hours: studio.cancelHours,
+                  count: studio.slotCapacity,
+                })}
               </p>
             </li>
           ))}

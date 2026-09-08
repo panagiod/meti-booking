@@ -2,6 +2,8 @@ import { randomUUID } from "crypto";
 import {
   DEFAULT_BOOKING_LEAD_HOURS,
   DEFAULT_CANCEL_HOURS,
+  DEFAULT_SLOT_CAPACITY,
+  DEFAULT_BOOKING_WEEKS_AHEAD,
   resolveBookingLeadHours,
 } from "@/lib/booking-config";
 import { buildDefaultStudioContent } from "@/lib/studio-content";
@@ -64,6 +66,8 @@ export function getDemoStudioResponse() {
       instructorName: content.name,
       image: null,
       bookingLeadHours: DEFAULT_BOOKING_LEAD_HOURS,
+      slotCapacity: DEFAULT_SLOT_CAPACITY,
+      bookingWeeksAhead: DEFAULT_BOOKING_WEEKS_AHEAD,
       mpConnected: false,
       mpMode: null,
       services: [
@@ -113,7 +117,7 @@ export function getDemoSlotsForDates(dates: string[]): Record<string, TimeSlot[]
       [],
       new Date(`${date}T12:00:00`),
       minStartTime,
-      siteConfig.slotCapacity
+      DEFAULT_SLOT_CAPACITY
     );
   }
 
@@ -153,7 +157,7 @@ export function validateDemoBookableSlot(scheduledAt: Date): void {
     [],
     new Date(`${dateStr}T12:00:00`),
     minStartTime,
-    siteConfig.slotCapacity
+    DEFAULT_SLOT_CAPACITY
   );
 
   const requestedMinutes = studioLocalMinutesFromUtc(scheduledAt);

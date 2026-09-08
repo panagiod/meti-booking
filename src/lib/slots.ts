@@ -7,7 +7,7 @@ import {
   studioLocalMinutesFromUtc,
 } from "@/lib/timezone";
 import { isCyprusPublicHoliday } from "@/lib/cyprus-holidays";
-import { siteConfig } from "@/lib/site-config";
+import { DEFAULT_SLOT_CAPACITY } from "@/lib/booking-config";
 
 export interface Schedule {
   dayOfWeek: number;
@@ -180,7 +180,8 @@ export function getAvailableDates(
   serviceDuration: number,
   weeksToShow: number = 2,
   blockedTimes: BlockedTime[] = [],
-  leadHours: number = 0
+  leadHours: number = 0,
+  slotCapacity: number = DEFAULT_SLOT_CAPACITY
 ): DaySlots[] {
   const today = startOfDay(new Date());
   const minStartTime = leadHours > 0 ? new Date(Date.now() + leadHours * 60 * 60 * 1000) : undefined;
@@ -203,7 +204,7 @@ export function getAvailableDates(
         blockedTimes,
         date,
         minStartTime,
-        siteConfig.slotCapacity
+        slotCapacity
       );
       const hasAvailability = slots.some((s) => s.available);
 

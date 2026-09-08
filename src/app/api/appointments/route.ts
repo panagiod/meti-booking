@@ -7,7 +7,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { createCheckoutPreference } from "@/lib/mercadopago";
 import { parseLocalISO } from "@/lib/timezone";
 import { buildBookingQuote } from "@/lib/booking-quote";
-import { siteConfig } from "@/lib/site-config";
+import { resolveSlotCapacity } from "@/lib/booking-config";
 import { validateBookableSlot, SlotBookingError } from "@/lib/slot-booking";
 import { decryptMpAccessToken } from "@/lib/instructor-mp";
 import {
@@ -260,7 +260,7 @@ export async function POST(request: NextRequest) {
           },
         });
 
-        if (bookedCount >= siteConfig.slotCapacity) {
+        if (bookedCount >= resolveSlotCapacity(instructorProfile.slotCapacity)) {
           throw new Error("SLOT_FULL");
         }
 

@@ -9,8 +9,7 @@ import { BookingSummary } from "@/components/booking/booking-summary";
 import { BookingSteps } from "@/components/booking/booking-steps";
 import { fetchBatchSlots } from "@/lib/fetch-batch-slots";
 import { getAvailableDates, type DaySlots, type TimeSlot } from "@/lib/slots";
-import { siteConfig } from "@/lib/site-config";
-import { resolveBookingLeadHours } from "@/lib/booking-config";
+import { resolveBookingLeadHours, DEFAULT_SLOT_CAPACITY, DEFAULT_BOOKING_WEEKS_AHEAD } from "@/lib/booking-config";
 import { useTranslations, useStudioBranding } from "@/components/providers/locale-provider";
 import { savePendingBooking } from "@/lib/booking-utils";
 import { ArrowLeft } from "lucide-react";
@@ -35,6 +34,8 @@ interface StudioBooking {
     gapMinutes: number;
   }>;
   bookingLeadHours: number;
+  slotCapacity: number;
+  bookingWeeksAhead: number;
 }
 
 export default function BookPage() {
@@ -73,6 +74,8 @@ export default function BookPage() {
         services,
         schedule: payload.schedule,
         bookingLeadHours: payload.bookingLeadHours,
+        slotCapacity: payload.slotCapacity ?? DEFAULT_SLOT_CAPACITY,
+        bookingWeeksAhead: payload.bookingWeeksAhead ?? DEFAULT_BOOKING_WEEKS_AHEAD,
       });
       setSelectedService(services[0]);
       setStep("date");
@@ -88,11 +91,12 @@ export default function BookPage() {
     return getAvailableDates(
       booking.schedule,
       selectedService.durationMin,
-      siteConfig.bookingWeeksAhead,
+      booking.bookingWeeksAhead,
       [],
-      resolveBookingLeadHours(booking.bookingLeadHours)
+      resolveBookingLeadHours(booking.bookingLeadHours),
+      booking.slotCapacity
     );
-  }, [selectedService, booking?.schedule, booking?.bookingLeadHours]);
+  }, [selectedService, booking?.schedule, booking?.bookingLeadHours, booking?.bookingWeeksAhead, booking?.slotCapacity]);
 
   const [apiSlots, setApiSlots] = useState<Record<string, { slots: TimeSlot[]; hasAvailability: boolean }>>({});
   const [slotsLoading, setSlotsLoading] = useState(false);

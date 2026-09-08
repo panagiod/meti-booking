@@ -1,8 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { generateAvailableSlots, isStudioDateBlocked, type TimeSlot } from "@/lib/slots";
 import { getDayOfWeekForStudioDate, studioDayBoundsUTC } from "@/lib/timezone";
-import { siteConfig } from "@/lib/site-config";
-import { resolveBookingLeadHours } from "@/lib/booking-config";
+import { resolveBookingLeadHours, resolveSlotCapacity } from "@/lib/booking-config";
 
 import { isValidSlotDate } from "@/lib/slot-dates";
 
@@ -46,10 +45,11 @@ export async function getSlotsForDates(
 
   const instructorProfile = await prisma.instructorProfile.findUnique({
     where: { id: instructorId },
-    select: { bookingLeadHours: true },
+    select: { bookingLeadHours: true, slotCapacity: true },
   });
 
   const leadHours = resolveBookingLeadHours(instructorProfile?.bookingLeadHours);
+  const slotCapacity = resolveSlotCapacity(instructorProfile?.slotCapacity);
   const minStartTime =
     leadHours > 0 ? new Date(Date.now() + leadHours * 60 * 60 * 1000) : undefined;
 
@@ -147,7 +147,7 @@ export async function getSlotsForDates(
       dayBlocked,
       new Date(`${date}T12:00:00`),
       minStartTime,
-      siteConfig.slotCapacity
+      slotCapacity
     );
   }
 

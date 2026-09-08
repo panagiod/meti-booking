@@ -1,5 +1,5 @@
 import { generateAvailableSlots } from "@/lib/slots";
-import { siteConfig } from "@/lib/site-config";
+import { DEFAULT_SLOT_CAPACITY } from "@/lib/booking-config";
 
 /** Reformer class length — matches bookable slot spacing */
 export const STUDIO_SESSION_DURATION_MIN = 45;
@@ -141,7 +141,7 @@ export function countSlotsPerDay(
     [],
     undefined,
     undefined,
-    siteConfig.slotCapacity
+    DEFAULT_SLOT_CAPACITY
   );
   return slots.length;
 }
