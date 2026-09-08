@@ -101,7 +101,12 @@ fi
 echo "Backup: ${ENC}"
 echo "Raw copy: ${RAW}"
 
-ls -1t "${LOCAL_DIR}"/sqlite-*.db 2>/dev/null | tail -n +8 | xargs -r rm -f
-ls -1t "${LOCAL_DIR}"/sqlite-*.db.enc 2>/dev/null | tail -n +31 | xargs -r rm -f
-ls -1t "${LOCAL_DIR}"/env-*.enc 2>/dev/null | tail -n +8 | xargs -r rm -f
-ls -1t "${ROOT}/deploy/backups"/sqlite-*.db.enc 2>/dev/null | tail -n +8 | xargs -r rm -f
+ls -1t "${LOCAL_DIR}"/sqlite-*.db 2>/dev/null | tail -n +8 | xargs -r rm -f || true
+ls -1t "${LOCAL_DIR}"/sqlite-*.db.enc 2>/dev/null | tail -n +31 | xargs -r rm -f || true
+ls -1t "${LOCAL_DIR}"/env-*.enc 2>/dev/null | tail -n +8 | xargs -r rm -f || true
+ls -1t "${LOCAL_DIR}"/pre-restore-*.db 2>/dev/null | tail -n +4 | xargs -r rm -f || true
+ls -1t "${ROOT}/deploy/backups"/sqlite-*.db.enc 2>/dev/null | tail -n +8 | xargs -r rm -f || true
+
+if command -v sqlite3 >/dev/null 2>&1; then
+  sqlite3 "$DB" "PRAGMA wal_checkpoint(TRUNCATE);" >/dev/null 2>&1 || true
+fi

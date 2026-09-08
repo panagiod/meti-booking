@@ -61,6 +61,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | Checkout pricing | `src/app/api/checkout/quote/route.ts` |
 | **Production deploy** | `deploy/HETZNER.md`, `docs/HOSTING.md` |
 | **Backup / restore** | [deploy/OPS.md](deploy/OPS.md) (public pointer) · private repo `docs/` · skill [meti-backup-restore](.agents/skills/meti-backup-restore/SKILL.md) |
+| **Disk prune** | `deploy/prune-disk.sh` (cron 01:45 UTC; also at 80% disk) |
 | **Downtime / usage alerts** | GitHub **Uptime** + VPS cron (`deploy/monitor-studio.sh`) |
 
 ## Disaster recovery
@@ -82,7 +83,8 @@ Do not `--force-reset` or cancel upcoming bookings. Do not commit plaintext `.en
 
 ## Alerts
 
-- **On the VPS every 15 min:** `deploy/monitor-studio.sh` emails `STUDIO_NOTIFICATION_EMAIL` for downtime (systemd, `/`, `/book`, `/api/health`) and high usage (disk 80%, RAM 88%, load 1.5× CPUs, next 14 days 95% of places full — time slots × people per slot). Debounced 6 hours; one recovery email.
+- **On the VPS every 15 min:** `deploy/monitor-studio.sh` emails `STUDIO_NOTIFICATION_EMAIL` for downtime (systemd, `/`, `/book`, `/api/health`) and high usage (disk 80%, RAM 88%, load 1.5× CPUs, next 14 days 95% of places full — time slots × people per slot). Debounced 6 hours; one recovery email. At 80% disk it also runs `deploy/prune-disk.sh --urgent` so logs and leftover backups cannot fill the volume.
+- **Disk caps:** journald 200M, `/var/log/meti-booking` logrotate, local SQLite backups kept to 7 raw / 30 encrypted (fewer if disk is already high). Off-server encrypted copies stay in the private ops repo (90 days + 1sts of month).
 - **From GitHub every 15 min:** Actions → **Uptime** hits the public site. This still runs if the VPS is dead. Email only if `RESEND_API_KEY` is a GitHub secret.
 
 ## Demo

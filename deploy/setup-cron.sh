@@ -39,6 +39,9 @@ CRON_SECRET=${CRON_SECRET}
 # Cleanup old cancelled appointments (03:00 UTC)
 0 3 * * * root curl -fsS -H "Authorization: Bearer \${CRON_SECRET}" ${BASE_URL}/api/cron/cleanup-cancelled >/dev/null 2>&1
 
+# Reclaim logs, leftover local backups, and journal (01:45 UTC)
+45 1 * * * root ${ROOT}/deploy/prune-disk.sh >> /var/log/meti-booking/prune.log 2>&1
+
 # Encrypted local backup of schedule + customers (02:00 UTC = 05:00 Nicosia in summer)
 0 2 * * * root ${ROOT}/deploy/backup-studio-data.sh >> /var/log/meti-booking/backup.log 2>&1
 
@@ -47,5 +50,6 @@ CRON_SECRET=${CRON_SECRET}
 EOF
 
 sudo chmod 644 "$CRON_FILE"
+chmod +x "${ROOT}/deploy/prune-disk.sh" "${ROOT}/deploy/monitor-studio.sh" "${ROOT}/deploy/backup-studio-data.sh"
 echo "Cron jobs installed at $CRON_FILE"
 echo "Reminder job runs at 12:00 UTC (= 15:00 Nicosia in summer, 14:00 in winter). Edit the file to change times."

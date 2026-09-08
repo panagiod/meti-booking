@@ -12,4 +12,12 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH
 mkdir -p /var/log/meti-booking
 exec >>/var/log/meti-booking/monitor.log 2>&1
 echo "==== $(date -u +%Y-%m-%dT%H:%M:%SZ) ===="
-pnpm exec tsx scripts/monitor-studio.ts
+status=0
+pnpm exec tsx scripts/monitor-studio.ts || status=$?
+
+used="$(df -P / | awk 'NR==2 { gsub("%","",$5); print $5 }')"
+if [[ "${used:-0}" -ge 80 ]]; then
+  echo "Disk ${used}% — reclaiming logs and leftover backups"
+  "${ROOT}/deploy/prune-disk.sh" --urgent || true
+fi
+exit "$status"

@@ -84,6 +84,10 @@ systemctl enable meti-booking caddy
 systemctl restart meti-booking
 systemctl reload caddy 2>/dev/null || systemctl restart caddy
 
+echo "==> Reclaiming build cache..."
+rm -rf "${ROOT}/.next/cache"
+pnpm store prune >/dev/null 2>&1 || true
+
 echo ""
 echo "Lite deploy complete."
 echo "  Site: https://${DOMAIN}"

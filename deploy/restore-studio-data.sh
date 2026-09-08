@@ -106,6 +106,7 @@ if [[ -f "$DB" ]]; then
   SAFETY="${DATA_DIR}/backups/pre-restore-$(date -u +%Y%m%d-%H%M%S).db"
   cp "$DB" "$SAFETY"
   echo "Saved current database to ${SAFETY}"
+  ls -1t "${DATA_DIR}/backups"/pre-restore-*.db 2>/dev/null | tail -n +4 | xargs -r rm -f || true
 fi
 
 cp "$TMP_DB" "$DB"

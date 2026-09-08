@@ -9,7 +9,7 @@ fi
 
 echo "==> System packages..."
 apt-get update && apt-get upgrade -y
-apt-get install -y curl git build-essential ufw ca-certificates gnupg sqlite3
+apt-get install -y curl git build-essential ufw ca-certificates gnupg sqlite3 logrotate
 
 echo "==> Node.js 22..."
 if ! command -v node >/dev/null 2>&1 || [[ "$(node -p "process.versions.node.split('.')[0]")" -lt 22 ]]; then
@@ -43,6 +43,11 @@ fi
 
 mkdir -p /var/lib/meti-booking
 mkdir -p /var/log/meti-booking
+
+echo "==> Disk hygiene (journald + logrotate)..."
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+chmod +x "${ROOT}/deploy/setup-disk-hygiene.sh" "${ROOT}/deploy/prune-disk.sh"
+"${ROOT}/deploy/setup-disk-hygiene.sh" || true
 
 ufw allow OpenSSH
 ufw allow 80/tcp

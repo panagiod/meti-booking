@@ -1,0 +1,10 @@
+/var/log/meti-booking/*.log {
+	weekly
+	maxsize 5M
+	rotate 4
+	compress
+	delaycompress
+	missingok
+	notifempty
+	copytruncate
+}

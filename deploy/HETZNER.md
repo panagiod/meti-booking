@@ -520,7 +520,7 @@ docker compose -f deploy/docker-compose.prod.yml down
 | **Can't upload images in admin** | Ensure `SELF_HOSTED=1` in `.env`; rebuild app |
 | **Cron not running** | Re-run `./deploy/setup-cron.sh`; check `CRON_SECRET` |
 | **DB connection error** | `docker compose -f deploy/docker-compose.prod.yml ps` — postgres healthy? |
-| **Out of disk** | `docker system prune -a` (careful); expand Hetzner volume |
+| **Out of disk** | `./deploy/prune-disk.sh --urgent` (logs, journal, leftover backups, build cache). Journald is capped at 200M. Expand the Hetzner volume only if the live DB or uploads are the bulk. |
 
 ---
 
