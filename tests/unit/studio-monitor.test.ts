@@ -31,7 +31,7 @@ describe("studio monitor", () => {
       ...healthy,
       serviceActive: false,
       diskUsedPercent: 91,
-      upcomingBooked: 16,
+      upcomingBooked: 18,
       upcomingCapacity: 18,
     });
     expect(issues.map((issue) => issue.id)).toEqual([
@@ -98,15 +98,22 @@ describe("studio monitor", () => {
     ).toEqual([]);
   });
 
-  it("still alerts when 80% of places are booked", () => {
+  it("stays quiet at 94% of places and alerts at 95%", () => {
+    expect(
+      evaluateMonitor({
+        ...healthy,
+        upcomingBooked: 85,
+        upcomingCapacity: 90,
+      })
+    ).toEqual([]);
     const issues = evaluateMonitor({
       ...healthy,
-      upcomingBooked: 72,
-      upcomingCapacity: 90,
+      upcomingBooked: 19,
+      upcomingCapacity: 20,
     });
     expect(issues).toHaveLength(1);
     expect(issues[0].id).toBe("calendar-full");
-    expect(issues[0].detail).toBe("72 of 90 places are booked (80%).");
+    expect(issues[0].detail).toBe("19 of 20 places are booked (95%).");
   });
 
   it("emails a new problem and a recovery, but not every check", () => {

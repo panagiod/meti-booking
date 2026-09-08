@@ -24,7 +24,7 @@ export interface MonitorSample {
 export const DISK_ALERT_PERCENT = 80;
 export const MEMORY_ALERT_PERCENT = 88;
 export const LOAD_ALERT_MULTIPLIER = 1.5;
-export const CALENDAR_ALERT_RATIO = 0.8;
+export const CALENDAR_ALERT_RATIO = 0.95;
 export const CALENDAR_ALERT_WEEKS = 2;
 
 /** Bookable places over the next N weeks: time slots × people per slot × weeks. */

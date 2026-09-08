@@ -82,7 +82,7 @@ Do not `--force-reset` or cancel upcoming bookings. Do not commit plaintext `.en
 
 ## Alerts
 
-- **On the VPS every 15 min:** `deploy/monitor-studio.sh` emails `STUDIO_NOTIFICATION_EMAIL` for downtime (systemd, `/`, `/book`, `/api/health`) and high usage (disk 80%, RAM 88%, load 1.5× CPUs, next 14 days 80% of places full — time slots × people per slot). Debounced 6 hours; one recovery email.
+- **On the VPS every 15 min:** `deploy/monitor-studio.sh` emails `STUDIO_NOTIFICATION_EMAIL` for downtime (systemd, `/`, `/book`, `/api/health`) and high usage (disk 80%, RAM 88%, load 1.5× CPUs, next 14 days 95% of places full — time slots × people per slot). Debounced 6 hours; one recovery email.
 - **From GitHub every 15 min:** Actions → **Uptime** hits the public site. This still runs if the VPS is dead. Email only if `RESEND_API_KEY` is a GitHub secret.
 
 ## Demo
