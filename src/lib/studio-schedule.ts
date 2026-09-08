@@ -114,6 +114,15 @@ export function validateStudioSchedule(schedules: ScheduleInput[]): string | nul
   return null;
 }
 
+export function countWeeklyTimeSlots(
+  schedules: Array<
+    Pick<StudioDaySchedule, "startTime" | "endTime" | "lunchStart" | "lunchEnd" | "gapMinutes">
+  >,
+  serviceDurationMin = STUDIO_SESSION_DURATION_MIN
+): number {
+  return schedules.reduce((total, day) => total + countSlotsPerDay(day, serviceDurationMin), 0);
+}
+
 export function countSlotsPerDay(
   schedule: Pick<StudioDaySchedule, "startTime" | "endTime" | "lunchStart" | "lunchEnd" | "gapMinutes">,
   serviceDurationMin = STUDIO_SESSION_DURATION_MIN

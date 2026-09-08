@@ -25,6 +25,17 @@ export const DISK_ALERT_PERCENT = 80;
 export const MEMORY_ALERT_PERCENT = 88;
 export const LOAD_ALERT_MULTIPLIER = 1.5;
 export const CALENDAR_ALERT_RATIO = 0.8;
+export const CALENDAR_ALERT_WEEKS = 2;
+
+/** Bookable places over the next N weeks: time slots × people per slot × weeks. */
+export function upcomingPlacesCapacity(
+  weeklyTimeSlots: number,
+  slotCapacity: number,
+  weeks = CALENDAR_ALERT_WEEKS
+): number {
+  if (weeklyTimeSlots <= 0 || slotCapacity <= 0 || weeks <= 0) return 0;
+  return weeklyTimeSlots * slotCapacity * weeks;
+}
 
 export function evaluateMonitor(sample: MonitorSample): MonitorIssue[] {
   const issues: MonitorIssue[] = [];
@@ -98,7 +109,7 @@ export function evaluateMonitor(sample: MonitorSample): MonitorIssue[] {
       id: "calendar-full",
       severity: "usage",
       title: "The next two weeks are almost full",
-      detail: `${sample.upcomingBooked} of ${sample.upcomingCapacity} slots are booked (${percent}%).`,
+      detail: `${sample.upcomingBooked} of ${sample.upcomingCapacity} places are booked (${percent}%).`,
       action: "Open more days or hours in Admin → Hours if you want to take more bookings.",
     });
   }

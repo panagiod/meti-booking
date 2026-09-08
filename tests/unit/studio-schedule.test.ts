@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   validateStudioSchedule,
-  countSlotsPerDay,
+  countWeeklyTimeSlots,
   weeklyScheduleTemplate,
   mergeScheduleFromDb,
   studioScheduleSeedRows,
@@ -56,6 +56,18 @@ describe("studio-schedule", () => {
       "12:00",
       "12:45",
     ]);
+  });
+
+  it("counts 15 time slots across the demo week", () => {
+    expect(
+      countWeeklyTimeSlots(
+        studioScheduleSeedRows().map((row) => ({
+          ...row,
+          lunchStart: row.lunchStart || "",
+          lunchEnd: row.lunchEnd || "",
+        }))
+      )
+    ).toBe(15);
   });
 
   it("rejects schedule with no active days", () => {

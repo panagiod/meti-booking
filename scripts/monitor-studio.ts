@@ -1,11 +1,19 @@
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { execFileSync } from "node:child_process";
+import { OPEN_BOOKING_STATUSES } from "@/lib/account-privacy";
 import { prisma } from "@/lib/prisma";
 import { sendStudioOpsEmail } from "@/lib/email";
+import { siteConfig } from "@/lib/site-config";
 import { resolveStudioInstructor } from "@/lib/studio-instructor";
-import { countSlotsPerDay, type StudioDaySchedule } from "@/lib/studio-schedule";
-import { evaluateMonitor, shouldSendAlert, type MonitorSample } from "@/lib/studio-monitor";
+import { countWeeklyTimeSlots, type StudioDaySchedule } from "@/lib/studio-schedule";
+import {
+  CALENDAR_ALERT_WEEKS,
+  evaluateMonitor,
+  shouldSendAlert,
+  upcomingPlacesCapacity,
+  type MonitorSample,
+} from "@/lib/studio-monitor";
 
 const STATE_PATH = process.env.METI_MONITOR_STATE || "/var/lib/meti-booking/monitor-state.json";
 const SITE = process.env.APP_URL || process.env.BETTER_AUTH_URL || "https://meti-pilates.com";
@@ -81,7 +89,7 @@ async function calendarUsage(): Promise<{ upcomingBooked: number; upcomingCapaci
   const upcomingBooked = await prisma.appointment.count({
     where: {
       scheduledAt: { gte: now, lte: in14Days },
-      status: { in: ["CONFIRMED", "IN_PROGRESS"] },
+      status: { in: [...OPEN_BOOKING_STATUSES] },
       isTest: false,
     },
   });
@@ -101,16 +109,15 @@ async function calendarUsage(): Promise<{ upcomingBooked: number; upcomingCapaci
     }),
   ]);
   const duration = service?.durationMin || 45;
-  let perWeek = 0;
-  for (const row of schedules as Array<{
+  const days = (schedules as Array<{
     dayOfWeek: number;
     startTime: string;
     endTime: string;
     lunchStart: string | null;
     lunchEnd: string | null;
     gapMinutes: number;
-  }>) {
-    const day: StudioDaySchedule = {
+  }>).map(
+    (row): StudioDaySchedule => ({
       dayOfWeek: row.dayOfWeek,
       dayName: "",
       isActive: true,
@@ -119,11 +126,18 @@ async function calendarUsage(): Promise<{ upcomingBooked: number; upcomingCapaci
       lunchStart: row.lunchStart || "",
       lunchEnd: row.lunchEnd || "",
       gapMinutes: row.gapMinutes ?? 0,
-    };
-    perWeek += countSlotsPerDay(day, duration);
-  }
+    })
+  );
+  const weeklyTimeSlots = countWeeklyTimeSlots(days, duration);
 
-  return { upcomingBooked, upcomingCapacity: perWeek * 2 };
+  return {
+    upcomingBooked,
+    upcomingCapacity: upcomingPlacesCapacity(
+      weeklyTimeSlots,
+      siteConfig.slotCapacity,
+      CALENDAR_ALERT_WEEKS
+    ),
+  };
 }
 
 async function main() {

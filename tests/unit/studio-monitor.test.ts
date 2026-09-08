@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { evaluateMonitor, shouldSendAlert, type MonitorSample } from "@/lib/studio-monitor";
+import {
+  evaluateMonitor,
+  shouldSendAlert,
+  upcomingPlacesCapacity,
+  type MonitorSample,
+} from "@/lib/studio-monitor";
+import { siteConfig } from "@/lib/site-config";
+import { countWeeklyTimeSlots, studioScheduleSeedRows } from "@/lib/studio-schedule";
 
 const healthy: MonitorSample = {
   homepageOk: true,
@@ -63,6 +70,43 @@ describe("studio monitor", () => {
       "memory-high",
       "load-high",
     ]);
+  });
+
+  it("counts people per slot, not just time slots", () => {
+    expect(upcomingPlacesCapacity(15, 3, 2)).toBe(90);
+    expect(upcomingPlacesCapacity(0, 3, 2)).toBe(0);
+    expect(upcomingPlacesCapacity(15, 0, 2)).toBe(0);
+  });
+
+  it("does not treat 49 people on a 15-slot week as 163% full", () => {
+    const weeklyTimeSlots = countWeeklyTimeSlots(
+      studioScheduleSeedRows().map((row) => ({
+        ...row,
+        lunchStart: row.lunchStart || "",
+        lunchEnd: row.lunchEnd || "",
+      }))
+    );
+    expect(weeklyTimeSlots).toBe(15);
+    const upcomingCapacity = upcomingPlacesCapacity(weeklyTimeSlots, siteConfig.slotCapacity, 2);
+    expect(upcomingCapacity).toBe(90);
+    expect(
+      evaluateMonitor({
+        ...healthy,
+        upcomingBooked: 49,
+        upcomingCapacity,
+      })
+    ).toEqual([]);
+  });
+
+  it("still alerts when 80% of places are booked", () => {
+    const issues = evaluateMonitor({
+      ...healthy,
+      upcomingBooked: 72,
+      upcomingCapacity: 90,
+    });
+    expect(issues).toHaveLength(1);
+    expect(issues[0].id).toBe("calendar-full");
+    expect(issues[0].detail).toBe("72 of 90 places are booked (80%).");
   });
 
   it("emails a new problem and a recovery, but not every check", () => {
