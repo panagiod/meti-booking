@@ -8,7 +8,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LoadingPage } from "@/components/ui/loading";
 import { CheckCircle, XCircle, Clock, Calendar, ArrowLeft } from "lucide-react";
-import { useLocale, useTranslations } from "@/components/providers/locale-provider";
+import {
+  formatMessage,
+  useLocale,
+  useStudioBranding,
+  useTranslations,
+} from "@/components/providers/locale-provider";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { formatDateTime } from "@/lib/format";
 import { clearPendingBooking } from "@/lib/booking-utils";
@@ -28,6 +33,7 @@ function ResultContent() {
   const searchParams = useSearchParams();
   const t = useTranslations();
   const { locale } = useLocale();
+  const studio = useStudioBranding();
   const appointmentId = searchParams.get("appointmentId");
   const statusParam = (searchParams.get("status") || "unknown") as ResultStatus;
   const paymentId = searchParams.get("payment_id");
@@ -38,6 +44,12 @@ function ResultContent() {
   const [appointment, setAppointment] = useState<ResultAppointment | null>(null);
   const [isLoading, setIsLoading] = useState(!!appointmentId && !emailedOnly);
   const [isUnauthorized, setIsUnauthorized] = useState(false);
+  const confirmedSub = formatMessage(t.checkoutResult.bookingConfirmedSub, {
+    hours: studio.cancelHours,
+  });
+  const paymentConfirmedSub = formatMessage(t.checkoutResult.paymentConfirmedSub, {
+    hours: studio.cancelHours,
+  });
   const [pollAttempts, setPollAttempts] = useState(0);
 
   const fetchAppointment = useCallback(async (): Promise<"ok" | "unauthorized" | "error"> => {
@@ -141,7 +153,7 @@ function ResultContent() {
           ? t.checkoutResult.bookingConfirmed
           : t.checkoutResult.toastConfirmedTitle,
         description: isBookingOnly
-          ? t.checkoutResult.bookingConfirmedSub
+          ? confirmedSub
           : t.checkoutResult.toastConfirmedSub,
         duration: 6000,
       });
@@ -150,7 +162,7 @@ function ResultContent() {
     appointment?.status,
     isBookingOnly,
     t.checkoutResult.bookingConfirmed,
-    t.checkoutResult.bookingConfirmedSub,
+    confirmedSub,
     t.checkoutResult.toastConfirmedTitle,
     t.checkoutResult.toastConfirmedSub,
   ]);
@@ -223,8 +235,8 @@ function ResultContent() {
                 {emailedOnly
                   ? t.checkoutResult.checkEmailToManage
                   : isBookingOnly
-                    ? t.checkoutResult.bookingConfirmedSub
-                    : t.checkoutResult.paymentConfirmedSub}
+                    ? confirmedSub
+                    : paymentConfirmedSub}
               </p>
               {appointment && (
               <div className="bg-[var(--background)] rounded-lg p-4 mb-6 space-y-2 text-left">

@@ -20,6 +20,11 @@ import {
   type StudioDaySchedule,
 } from "@/lib/studio-schedule";
 import {
+  DEFAULT_CANCEL_HOURS,
+  MAX_CANCEL_HOURS,
+  MIN_CANCEL_HOURS,
+} from "@/lib/booking-config";
+import {
   formatMessage,
   useLocale,
   useTranslations,
@@ -74,18 +79,20 @@ interface StudioData {
   slotCapacity: number;
   serviceDurationMin: number;
   serviceName: string;
+  cancelHours: number;
   schedules: StudioDaySchedule[];
   blockedTimes: BlockedTime[];
 }
 
 export default function AdminSchedulePage() {
   const t = useTranslations();
-  const { locale } = useLocale();
+  const { locale, refreshStudioContent } = useLocale();
   const dialog = useDialog();
   const { showAlert } = dialog;
   const [isLoading, setIsLoading] = useState(true);
   const [studio, setStudio] = useState<StudioData | null>(null);
   const [schedule, setSchedule] = useState<StudioDaySchedule[]>(weeklyScheduleTemplate());
+  const [cancelHours, setCancelHours] = useState(DEFAULT_CANCEL_HOURS);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -134,6 +141,11 @@ export default function AdminSchedulePage() {
       const data = await res.json();
       setStudio(data.studio);
       setSchedule(data.studio.schedules);
+      setCancelHours(
+        typeof data.studio.cancelHours === "number"
+          ? data.studio.cancelHours
+          : DEFAULT_CANCEL_HOURS
+      );
       setBlockedTimes(data.studio.blockedTimes);
       setHasChanges(false);
     } catch {
@@ -248,7 +260,10 @@ export default function AdminSchedulePage() {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ schedules: schedule }),
+        body: JSON.stringify({
+          schedules: schedule,
+          cancelHours: Math.trunc(cancelHours),
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -256,7 +271,11 @@ export default function AdminSchedulePage() {
         return;
       }
       setSchedule(data.schedules);
+      if (typeof data.cancelHours === "number") {
+        setCancelHours(data.cancelHours);
+      }
       setHasChanges(false);
+      await refreshStudioContent();
       dialog.showAlert(t.admin.saved, t.admin.calendarUpdated, "success");
     } catch {
       dialog.showAlert(t.common.error, t.admin.connectionError, "error");
@@ -363,6 +382,38 @@ export default function AdminSchedulePage() {
             <Info className="w-5 h-5 shrink-0 text-[var(--primary)]" />
             <p>
               {t.admin.hoursHint}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-5 space-y-3">
+            <label
+              htmlFor="cancel-hours"
+              className="block font-medium text-[var(--text-primary)]"
+            >
+              {t.admin.cancelHoursLabel}
+            </label>
+            <div className="flex items-center gap-3 max-w-xs">
+              <Input
+                id="cancel-hours"
+                type="number"
+                min={MIN_CANCEL_HOURS}
+                max={MAX_CANCEL_HOURS}
+                value={cancelHours}
+                onChange={(e) => {
+                  const next = Number(e.target.value);
+                  setCancelHours(Number.isFinite(next) ? next : DEFAULT_CANCEL_HOURS);
+                  setHasChanges(true);
+                }}
+                className="h-9 w-24 text-sm"
+              />
+              <span className="text-sm text-[var(--text-muted)]">
+                {t.admin.cancelHoursUnit}
+              </span>
+            </div>
+            <p className="text-sm text-[var(--text-muted)]">
+              {t.admin.cancelHoursHint}
             </p>
           </CardContent>
         </Card>

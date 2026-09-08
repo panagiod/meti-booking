@@ -37,6 +37,17 @@ describe("legal pages", () => {
     )).toBe(true);
   });
 
+  it("interpolates the studio cancel window into terms, refunds, and FAQ", () => {
+    const twelve = JSON.stringify(getLegal("en", 12));
+    const fortyEight = JSON.stringify(getLegal("en", 48));
+    expect(twelve).toContain("12 hours");
+    expect(twelve).toContain("12-hour");
+    expect(twelve).not.toContain("{hours}");
+    expect(fortyEight).toContain("48 hours");
+    expect(fortyEight).not.toContain("12 hours");
+    expect(JSON.stringify(getLegal("el", 12))).toContain("12 ώρες");
+  });
+
   it("does not load Vercel Analytics", () => {
     const layout = readFileSync(join(__dirname, "../../src/app/layout.tsx"), "utf8");
     expect(layout).not.toContain("@vercel/analytics");

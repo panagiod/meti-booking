@@ -84,6 +84,17 @@ fi
 echo "==> Ensure studio owner is ADMIN..."
 pnpm exec tsx scripts/ensure-studio-admin.ts || true
 
+ALIGN_FLAG="${METI_DATA_DIR:-/var/lib/meti-booking}/aligned-cancel-hours-v1.flag"
+if [[ ! -f "$ALIGN_FLAG" ]]; then
+  echo "==> One-time align of cancel window 24h → 12h..."
+  if pnpm exec tsx scripts/align-cancel-hours.ts; then
+    date -u +%Y-%m-%dT%H:%M:%SZ >"$ALIGN_FLAG"
+    echo "Cancel-window align complete."
+  else
+    echo "WARNING: cancel-hours align did not run. Deploy continues."
+  fi
+fi
+
 # Sync CMS to bundled hero/reformer files (picks up image updates from git)
 pnpm exec tsx scripts/sync-bundled-images.ts || true
 

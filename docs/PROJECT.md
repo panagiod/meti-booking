@@ -18,14 +18,14 @@
 | **Timezone** | **Asia/Nicosia** (`STUDIO_TIMEZONE`) |
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |
 | **Booking window** | **8 weeks ahead** (`bookingWeeksAhead`) |
-| **Lead time** | **2 hours** minimum before first bookable slot |
+| **Lead time** | **2 hours** minimum before first bookable slot (`booking-config.ts`) |
+| **Cancel window** | **12 hours** default (`rescheduleHoursMin`); admin-configurable on Hours |
 | **Weekly schedule** | **Admin-configurable** — demo seed: Tue, Thu, Sat |
 | **Admin calendar** | Hours `/admin/schedule` + closures `/admin/closures` |
 | **Admin CMS** | `/admin/content` — text, images, contact (DB-backed) |
 | **Greek typography** | Noto Sans (body) + GFS Didot (headlines) when `lang="el"` |
 | **Greek dates** | Day + month uses genitive (`3 Σεπτεμβρίου`); month-only uses nominative (`Σεπτέμβριος 2026`) |
 | **Security** | Admin server guard, proxy middleware, MP token encryption |
-| **Lead time** | **2 hours** minimum before first bookable slot (`booking-config.ts`) |
 | **Payments** | Mercado Pago in code — **not on demo**; server-side checkout quotes |
 | **Legacy** | Meti advisory marketplace: `/services`, advisor/admin dashboards, LiveKit |
 
@@ -55,7 +55,7 @@
 | **Overview** | `/admin` | This week’s board and today’s session counts |
 | **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot |
 | **Clients** | `/admin/users` | Client list with phone and session dates |
-| **Hours** | `/admin/schedule` | Weekly open days/hours, lunch break, gap |
+| **Hours** | `/admin/schedule` | Weekly open days/hours, lunch break, gap, cancellation window |
 | **Closures** | `/admin/closures` | Cyprus holidays and extra days off |
 | **Website** | `/admin/content` | Hero copy EN/EL, SEO, images, name, address, email, price |
 
@@ -76,6 +76,7 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 | **Booking window** | `siteConfig.bookingWeeksAhead` (8) | code only |
 | **Timezone** | `STUDIO_TIMEZONE` env | `Asia/Nicosia` |
 | **Reformer service** | DB `advisor_services` | `scripts/demo-setup.ts` |
+| **Cancel window** | DB `instructor_services.rescheduleHoursMin` | default 12; admin Hours page |
 | **Code defaults** | `site-config.ts`, locale files | used on first seed |
 
 ---
@@ -90,7 +91,7 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 | `src/lib/studio-content.ts` | Content types, defaults, message merge |
 | `src/lib/studio-content-server.ts` | DB CRUD for `StudioContent` |
 | `src/lib/date-locale.ts` | Greek months: genitive with a day, nominative for month-year |
-| `src/lib/booking-config.ts` | `resolveBookingLeadHours()`, studio default (2h) |
+| `src/lib/booking-config.ts` | `resolveBookingLeadHours()`, `resolveCancelHours()`, defaults (2h lead, 12h cancel) |
 | `src/components/providers/locale-provider.tsx` | i18n + loads `/api/studio/content` |
 | `src/proxy.ts` | Auth middleware + public route allowlist |
 

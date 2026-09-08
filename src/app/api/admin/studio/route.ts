@@ -4,6 +4,7 @@ import { requireAdminSession } from "@/lib/admin-auth";
 import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import { mergeScheduleFromDb } from "@/lib/studio-schedule";
 import { getStudioContent } from "@/lib/studio-content-server";
+import { getStudioCancelHours } from "@/lib/cancel-hours-server";
 import { siteConfig, REFORMER_SERVICE_NAME } from "@/lib/site-config";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +21,7 @@ export async function GET() {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
 
-    const [schedules, blockedTimes, service, content] = await Promise.all([
+    const [schedules, blockedTimes, service, content, cancelHours] = await Promise.all([
       prisma.instructorSchedule.findMany({
         where: { instructorId: advisor.id },
         orderBy: { dayOfWeek: "asc" },
@@ -35,6 +36,7 @@ export async function GET() {
         select: { durationMin: true, name: true },
       }),
       getStudioContent(),
+      getStudioCancelHours(),
     ]);
 
     return NextResponse.json({
@@ -46,6 +48,7 @@ export async function GET() {
         slotCapacity: siteConfig.slotCapacity,
         serviceDurationMin: service?.durationMin ?? 50,
         serviceName: service?.name ?? REFORMER_SERVICE_NAME,
+        cancelHours,
         schedules: mergeScheduleFromDb(schedules),
         blockedTimes,
       },

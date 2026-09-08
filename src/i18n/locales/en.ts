@@ -41,7 +41,7 @@ const en: Messages = {
     email: "Email",
     book: "Book a time",
     policyNote:
-      "Cancel at least 24 hours before or the session is still payable. Classes start on time and do not wait for late arrivals.",
+      "Cancel at least {hours} hours before or the session is still payable. Classes start on time and do not wait for late arrivals.",
   },
   how: {
     title: "How to book",
@@ -58,7 +58,7 @@ const en: Messages = {
       {
         title: "Confirm",
         description:
-          "Leave your name and email. Payment is at the studio. Cancel at least 24 hours before, or the session is still payable. Classes start on time.",
+          "Leave your name and email. Payment is at the studio. Cancel at least {hours} hours before, or the session is still payable. Classes start on time.",
       },
     ],
   },
@@ -262,8 +262,8 @@ const en: Messages = {
     mercadoPagoSub: "Credit card, debit card, or account balance",
     securePayment: "Secure payment",
     cancellationPolicy: "Cancellation policy",
-    cancelReschedule: "Free cancel or change with 24 hours notice",
-    cancelNoRefund: "Cancel later than 24 hours before — session still payable",
+    cancelReschedule: "Free cancel or change with {hours} hours notice",
+    cancelNoRefund: "Cancel later than {hours} hours before — session still payable",
     cancelNoShow: "No-show — session still payable",
     cancelPunctuality: "Classes start on time and do not wait if you arrive late",
     summary: "Summary",
@@ -276,12 +276,12 @@ const en: Messages = {
     bookingOnlySub:
       "No online payment. Your session is reserved immediately — payment is handled at the studio.",
     bookingPolicy: "Booking policy",
-    bookingPolicyReschedule: "Free cancel or change with 24 hours notice",
+    bookingPolicyReschedule: "Free cancel or change with {hours} hours notice",
     bookingPolicyLatePay:
-      "If you do not cancel at least 24 hours before, the session must still be paid at the studio.",
+      "If you do not cancel at least {hours} hours before, the session must still be paid at the studio.",
     bookingPolicyPunctuality: "Classes start on time and do not wait if you arrive late.",
     bookingPolicyContact:
-      "Cancel from the link in your confirmation email or from your account, at least 24 hours before the session.",
+      "Cancel from the link in your confirmation email or from your account, at least {hours} hours before the session.",
     payAtStudio: "Payment at the studio",
     acceptLegalPrefix: "I have read and accept the",
     acceptPrivacy: "privacy policy",
@@ -290,7 +290,7 @@ const en: Messages = {
     acceptLegalSuffix: ".",
     acceptLegalRequired: "Please confirm that you have read the privacy policy and terms.",
     withdrawalNote:
-      "A class on a set date is a leisure service. The 14-day online cooling-off right does not apply. You may cancel free of charge up to 24 hours before.",
+      "A class on a set date is a leisure service. The 14-day online cooling-off right does not apply. You may cancel free of charge up to {hours} hours before.",
     noBookingData: "No booking data",
     bookSession: "Book a session",
     errorCreateAppointment: "Failed to create booking. Please try again.",
@@ -324,10 +324,10 @@ const en: Messages = {
     noBookingInfo: "No booking information available.",
     bookingConfirmed: "Booking confirmed!",
     bookingConfirmedSub:
-      "Your reformer session is booked. Arrive a few minutes early — classes start on time and do not wait. Cancel at least 24 hours before, or the session is still payable.",
+      "Your reformer session is booked. Arrive a few minutes early — classes start on time and do not wait. Cancel at least {hours} hours before, or the session is still payable.",
     paymentConfirmed: "Booking confirmed!",
     paymentConfirmedSub:
-      "Your reformer session is booked. Arrive a few minutes early — classes start on time and do not wait. Cancel at least 24 hours before, or the session is still payable.",
+      "Your reformer session is booked. Arrive a few minutes early — classes start on time and do not wait. Cancel at least {hours} hours before, or the session is still payable.",
     goToDashboard: "Go to my bookings",
     paymentFailed: "Payment was not completed",
     paymentFailedSub: "No charge was made. You can try again whenever you like.",
@@ -542,6 +542,10 @@ const en: Messages = {
     instructor: "Instructor: {name}",
     hoursHint:
       "Toggle the days you want open each week (e.g. Monday, Wednesday, Saturday). Set start and end times per day. Changes apply immediately on the public booking calendar after you save.",
+    cancelHoursLabel: "Free cancellation window",
+    cancelHoursUnit: "hours before the session",
+    cancelHoursHint:
+      "Clients can cancel without charge until this many hours before class. Saving updates booking, emails, checkout, and legal pages.",
     weeklyHours: "Weekly hours",
     saveSchedule: "Save schedule",
     saving: "Saving…",

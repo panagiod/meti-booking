@@ -23,8 +23,9 @@ import {
   studioBranding,
 } from "@/lib/studio-content";
 import type { StudioContentData } from "@/lib/studio-content-types";
+import { DEFAULT_CANCEL_HOURS, resolveCancelHours } from "@/lib/booking-config";
 
-export type StudioBranding = ReturnType<typeof studioBranding>;
+export type StudioBranding = ReturnType<typeof studioBranding> & { cancelHours: number };
 
 type LocaleContextValue = {
   locale: Locale;
@@ -71,12 +72,12 @@ function persistLocale(locale: Locale) {
 }
 
 const defaultContent = buildDefaultStudioContent();
-const defaultBranding = studioBranding(defaultContent);
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
   const [ready, setReady] = useState(false);
   const [studioContent, setStudioContent] = useState<StudioContentData>(defaultContent);
+  const [cancelHours, setCancelHours] = useState(DEFAULT_CANCEL_HOURS);
   const [contentLoaded, setContentLoaded] = useState(false);
 
   const loadStudioContent = useCallback(async () => {
@@ -97,6 +98,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
         contentEn: data.contentEn,
         contentEl: data.contentEl,
       });
+      setCancelHours(resolveCancelHours(data.branding.cancelHours));
     } catch (error) {
       console.error("Failed to load studio content:", error);
     } finally {
@@ -123,7 +125,10 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     return mergeMessages(base, overrides);
   }, [locale, studioContent]);
 
-  const studio = useMemo(() => studioBranding(studioContent, locale), [studioContent, locale]);
+  const studio = useMemo(
+    () => ({ ...studioBranding(studioContent, locale), cancelHours }),
+    [studioContent, locale, cancelHours]
+  );
 
   const value = useMemo(
     () => ({
@@ -165,7 +170,7 @@ export function formatMessage(
   vars: Record<string, string | number>
 ) {
   return Object.entries(vars).reduce(
-    (text, [key, value]) => text.replace(`{${key}}`, String(value)),
+    (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
     template
   );
 }

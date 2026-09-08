@@ -5,6 +5,7 @@ import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import { mergeScheduleFromDb, validateStudioSchedule, formatScheduleHoursForLocale } from "@/lib/studio-schedule";
 import { schedulePayloadSchema } from "@/lib/schedule-schema";
 import { getStudioContent, saveStudioContent } from "@/lib/studio-content-server";
+import { getStudioCancelHours, setStudioCancelHours } from "@/lib/cancel-hours-server";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -21,14 +22,18 @@ export async function GET() {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
 
-    const schedules = await prisma.instructorSchedule.findMany({
-      where: { instructorId: advisor.id },
-      orderBy: { dayOfWeek: "asc" },
-    });
+    const [schedules, cancelHours] = await Promise.all([
+      prisma.instructorSchedule.findMany({
+        where: { instructorId: advisor.id },
+        orderBy: { dayOfWeek: "asc" },
+      }),
+      getStudioCancelHours(),
+    ]);
 
     return NextResponse.json({
       instructorId: advisor.id,
       schedules: mergeScheduleFromDb(schedules),
+      cancelHours,
     });
   } catch (error) {
     console.error("[admin/studio/schedule] GET error:", error);
@@ -49,7 +54,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { schedules } = schedulePayloadSchema.parse(body);
+    const { schedules, cancelHours } = schedulePayloadSchema.parse(body);
 
     const validationError = validateStudioSchedule(schedules);
     if (validationError) {
@@ -100,8 +105,14 @@ export async function PUT(request: NextRequest) {
       },
     });
 
+    const savedCancelHours =
+      cancelHours != null
+        ? await setStudioCancelHours(advisor.id, cancelHours)
+        : await getStudioCancelHours();
+
     return NextResponse.json({
       schedules: mergedSchedules,
+      cancelHours: savedCancelHours,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

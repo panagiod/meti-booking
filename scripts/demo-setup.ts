@@ -8,7 +8,7 @@ import {
   mergeScheduleFromDb,
   STUDIO_SESSION_DURATION_MIN,
 } from "../src/lib/studio-schedule";
-import { DEFAULT_BOOKING_LEAD_HOURS } from "../src/lib/booking-config";
+import { DEFAULT_BOOKING_LEAD_HOURS, DEFAULT_CANCEL_HOURS } from "../src/lib/booking-config";
 import { applyDatabaseSchema } from "./prisma-apply-schema";
 
 config({ path: resolve(__dirname, "../.env") });
@@ -171,7 +171,10 @@ async function main() {
       if (RESET) {
         await prisma.instructorService.updateMany({
           where: { instructorId: advisor.id, name: "Reformer Session" },
-          data: { durationMin: STUDIO_SESSION_DURATION_MIN },
+          data: {
+            durationMin: STUDIO_SESSION_DURATION_MIN,
+            rescheduleHoursMin: DEFAULT_CANCEL_HOURS,
+          },
         });
       }
 
@@ -187,6 +190,7 @@ async function main() {
             description: "Equipment-based full-body workout on the reformer.",
             durationMin: STUDIO_SESSION_DURATION_MIN,
             priceCents: 1000,
+            rescheduleHoursMin: DEFAULT_CANCEL_HOURS,
             isActive: true,
             categoryId: category?.id,
           },

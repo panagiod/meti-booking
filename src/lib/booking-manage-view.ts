@@ -1,5 +1,6 @@
 import { siteConfig } from "@/lib/site-config";
 import { canClientCancelAppointment } from "@/lib/appointment-cancel";
+import { resolveCancelHours } from "@/lib/booking-config";
 
 export type ManagedAppointmentRecord = {
   id: string;
@@ -16,7 +17,7 @@ export function toPublicManagedAppointment(appointment: ManagedAppointmentRecord
   const check = canClientCancelAppointment({
     status: appointment.status,
     scheduledAt: appointment.scheduledAt,
-    rescheduleHoursMin: appointment.service.rescheduleHoursMin,
+    rescheduleHoursMin: resolveCancelHours(appointment.service.rescheduleHoursMin),
   });
   return {
     id: appointment.id,

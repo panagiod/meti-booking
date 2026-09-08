@@ -1,5 +1,9 @@
 import { randomUUID } from "crypto";
-import { DEFAULT_BOOKING_LEAD_HOURS } from "@/lib/booking-config";
+import {
+  DEFAULT_BOOKING_LEAD_HOURS,
+  DEFAULT_CANCEL_HOURS,
+  resolveBookingLeadHours,
+} from "@/lib/booking-config";
 import { buildDefaultStudioContent } from "@/lib/studio-content";
 import { generateAvailableSlots, type TimeSlot } from "@/lib/slots";
 import { SlotBookingError } from "@/lib/slot-booking-errors";
@@ -15,7 +19,6 @@ import {
   studioScheduleSeedRows,
 } from "@/lib/studio-schedule";
 import { buildBookingQuote } from "@/lib/booking-quote";
-import { resolveBookingLeadHours } from "@/lib/booking-config";
 
 export const DEMO_STUDIO_INSTRUCTOR_ID = "demo-studio-instructor";
 export const DEMO_REFORMER_SERVICE_ID = "demo-reformer-service";
@@ -70,7 +73,7 @@ export function getDemoStudioResponse() {
           description: siteConfig.sessionTypes[0]?.description ?? "Reformer session",
           durationMin: STUDIO_SESSION_DURATION_MIN,
           priceCents: DEMO_SERVICE_PRICE_CENTS,
-          rescheduleHoursMin: 24,
+          rescheduleHoursMin: DEFAULT_CANCEL_HOURS,
           promotion: null,
         },
       ],

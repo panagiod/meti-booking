@@ -3,6 +3,11 @@ import { siteConfig } from "@/lib/site-config";
 /** Studio default — single source of truth (also in `siteConfig.defaultBookingLeadHours`). */
 export const DEFAULT_BOOKING_LEAD_HOURS = siteConfig.defaultBookingLeadHours;
 
+/** Free cancellation window. Admin can change this; stored on each service. */
+export const DEFAULT_CANCEL_HOURS = 12;
+export const MIN_CANCEL_HOURS = 1;
+export const MAX_CANCEL_HOURS = 72;
+
 /**
  * Effective minimum hours before the first bookable slot.
  *
@@ -16,4 +21,12 @@ export function resolveBookingLeadHours(stored: number | null | undefined): numb
     return Math.trunc(stored);
   }
   return DEFAULT_BOOKING_LEAD_HOURS;
+}
+
+export function resolveCancelHours(stored: number | null | undefined): number {
+  if (stored != null && Number.isFinite(stored)) {
+    const hours = Math.trunc(stored);
+    if (hours >= MIN_CANCEL_HOURS && hours <= MAX_CANCEL_HOURS) return hours;
+  }
+  return DEFAULT_CANCEL_HOURS;
 }

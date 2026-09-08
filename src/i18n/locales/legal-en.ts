@@ -110,13 +110,13 @@ const legalEn: LegalBundle = {
       {
         heading: "3. Payment",
         paragraphs: [
-          "Payment is made at the studio. The price is shown when you book. There is no online checkout at this time. If a booking is not cancelled at least 24 hours before the session, the session must still be paid.",
+          "Payment is made at the studio. The price is shown when you book. There is no online checkout at this time. If a booking is not cancelled at least {hours} hours before the session, the session must still be paid.",
         ],
       },
       {
         heading: "4. Cancellation",
         bullets: [
-          "You may cancel from the link in your confirmation email or from your account at least 24 hours before the session.",
+          "You may cancel from the link in your confirmation email or from your account at least {hours} hours before the session.",
           "Late cancellation, no-show, or arriving after the class has started does not cancel the fee — the session must still be paid.",
           "If the studio must cancel, we will contact you to rebook.",
         ],
@@ -124,7 +124,7 @@ const legalEn: LegalBundle = {
       {
         heading: "5. Right of withdrawal",
         paragraphs: [
-          "EU consumer law usually gives a 14-day cooling-off period for distance contracts. That right does not apply to leisure services for a specific date or period (Directive 2011/83/EU, Art. 16(l), as implemented in Cyprus). When you book a dated class, you ask us to reserve that place. The 24-hour studio cancellation rule above still applies.",
+          "EU consumer law usually gives a 14-day cooling-off period for distance contracts. That right does not apply to leisure services for a specific date or period (Directive 2011/83/EU, Art. 16(l), as implemented in Cyprus). When you book a dated class, you ask us to reserve that place. The {hours}-hour studio cancellation rule above still applies.",
         ],
       },
       {
@@ -206,8 +206,8 @@ const legalEn: LegalBundle = {
       {
         heading: "Cancelling a session",
         bullets: [
-          "You can cancel a confirmed booking from your account or confirmation email if there are at least 24 hours before the session.",
-          "If you do not cancel at least 24 hours before, the session must still be paid at the studio — including no-shows.",
+          "You can cancel a confirmed booking from your account or confirmation email if there are at least {hours} hours before the session.",
+          "If you do not cancel at least {hours} hours before, the session must still be paid at the studio — including no-shows.",
           "Payment is made at the studio, so there is no online refund.",
         ],
       },
@@ -220,7 +220,7 @@ const legalEn: LegalBundle = {
       {
         heading: "Dated leisure services",
         paragraphs: [
-          "A class booked for a specific date is a leisure service. The 14-day online cooling-off right does not apply. The 24-hour studio rule above is the cancellation policy that applies.",
+          "A class booked for a specific date is a leisure service. The 14-day online cooling-off right does not apply. The {hours}-hour studio rule above is the cancellation policy that applies.",
         ],
       },
     ],
@@ -263,11 +263,11 @@ const legalEn: LegalBundle = {
       },
       {
         q: "How do I pay?",
-        a: `Payment is at the studio. Reformer sessions start from €${siteConfig.sessionTypes[0].priceFrom}. There is no online payment on this site. If you book and do not cancel at least 24 hours before, the session must still be paid.`,
+        a: `Payment is at the studio. Reformer sessions start from €${siteConfig.sessionTypes[0].priceFrom}. There is no online payment on this site. If you book and do not cancel at least {hours} hours before, the session must still be paid.`,
       },
       {
         q: "How do I cancel?",
-        a: "Use the link in your confirmation email or sign in to your account. Free cancellation needs at least 24 hours’ notice. Later than that, or if you do not come, the session must still be paid.",
+        a: "Use the link in your confirmation email or sign in to your account. Free cancellation needs at least {hours} hours’ notice. Later than that, or if you do not come, the session must still be paid.",
       },
       {
         q: "What if I arrive late?",

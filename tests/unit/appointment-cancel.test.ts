@@ -30,12 +30,23 @@ describe("canClientCancelAppointment", () => {
     const result = canClientCancelAppointment({
       status: "CONFIRMED",
       scheduledAt,
-      rescheduleHoursMin: 24,
-      now: new Date("2026-09-10T02:00:00Z"),
+      rescheduleHoursMin: 12,
+      now: new Date("2026-09-10T04:00:00Z"),
     });
     expect(result.allowed).toBe(false);
-    expect(result.reason).toContain("24 hours");
+    expect(result.reason).toContain("12 hours");
     expect(result.reason).toContain("still be paid");
+  });
+
+  it("allows cancelling confirmed bookings before a 12-hour window", () => {
+    expect(
+      canClientCancelAppointment({
+        status: "CONFIRMED",
+        scheduledAt,
+        rescheduleHoursMin: 12,
+        now: new Date("2026-09-09T20:00:00Z"),
+      }).allowed
+    ).toBe(true);
   });
 
   it("blocks completed appointments", () => {

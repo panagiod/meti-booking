@@ -21,6 +21,7 @@ import {
 } from "@/components/providers/locale-provider";
 import { getDateFnsLocale } from "@/lib/date-locale";
 import { formatDateTime } from "@/lib/format";
+import { resolveCancelHours } from "@/lib/booking-config";
 
 interface Appointment {
   id: string;
@@ -37,7 +38,7 @@ function clientCanCancel(appointment: Appointment): boolean {
   return canClientCancelAppointment({
     status: appointment.status as AppointmentStatus,
     scheduledAt: new Date(appointment.scheduledAt),
-    rescheduleHoursMin: appointment.service.rescheduleHoursMin ?? 24,
+    rescheduleHoursMin: resolveCancelHours(appointment.service.rescheduleHoursMin),
   }).allowed;
 }
 

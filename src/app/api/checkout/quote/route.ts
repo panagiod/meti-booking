@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { buildBookingQuote } from "@/lib/booking-quote";
 import { isPaymentsEnabled } from "@/lib/payments-config";
+import { DEFAULT_CANCEL_HOURS, resolveCancelHours } from "@/lib/booking-config";
 import {
   getDemoQuote,
   isDemoBookingMode,
@@ -22,6 +23,7 @@ export async function GET(request: NextRequest) {
     if (isDemoBookingMode() && isDemoServiceId(serviceId)) {
       return NextResponse.json({
         paymentsEnabled: isPaymentsEnabled(),
+        cancelHours: DEFAULT_CANCEL_HOURS,
         quote: getDemoQuote(),
       });
     }
@@ -84,6 +86,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       paymentsEnabled: isPaymentsEnabled(),
+      cancelHours: resolveCancelHours(service.rescheduleHoursMin),
       quote: buildBookingQuote({
         serviceId: service.id,
         serviceName: service.name,

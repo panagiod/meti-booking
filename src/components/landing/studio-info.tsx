@@ -74,7 +74,7 @@ export function StudioInfo() {
         </h2>
         <p className="mt-3 max-w-xl text-base text-[var(--studio-muted)]">{t.visit.subtitle}</p>
         <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--studio-muted)]">
-          {t.visit.policyNote}
+          {formatMessage(t.visit.policyNote, { hours: studio.cancelHours })}
         </p>
 
         <dl className="mt-10 grid min-w-0 gap-6 sm:grid-cols-2">

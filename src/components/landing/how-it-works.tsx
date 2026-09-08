@@ -1,9 +1,14 @@
 "use client";
 
-import { useTranslations } from "@/components/providers/locale-provider";
+import {
+  formatMessage,
+  useStudioBranding,
+  useTranslations,
+} from "@/components/providers/locale-provider";
 
 export function HowItWorks() {
   const t = useTranslations();
+  const studio = useStudioBranding();
 
   return (
     <section id="how" className="border-t border-[var(--studio-line)]">
@@ -24,7 +29,7 @@ export function HowItWorks() {
               </p>
               <h3 className="font-display mt-3 text-xl text-[var(--studio-ink)]">{step.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-[var(--studio-muted)]">
-                {step.description}
+                {formatMessage(step.description, { hours: studio.cancelHours })}
               </p>
             </li>
           ))}

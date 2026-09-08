@@ -11,6 +11,7 @@ import {
 } from "@/components/providers/locale-provider";
 import { getDateFnsLocale } from "@/lib/date-locale";
 import { formatMoney } from "@/lib/format";
+import { resolveCancelHours } from "@/lib/booking-config";
 
 interface Quote {
   servicePriceCents: number;
@@ -160,7 +161,7 @@ export function BookingSummary({
         <div className="mt-6 space-y-1.5 text-xs leading-relaxed text-[var(--studio-muted)]">
           <p>
             {formatMessage(t.booking.reschedulePolicy, {
-              hours: service.rescheduleHoursMin || 24,
+              hours: resolveCancelHours(service.rescheduleHoursMin),
             })}
           </p>
           <p>{t.booking.lateCancelPolicy}</p>

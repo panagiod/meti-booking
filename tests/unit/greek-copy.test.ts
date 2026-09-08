@@ -22,6 +22,7 @@ describe("Greek studio copy", () => {
     expect(el.admin.navClients).toBe("Πελάτες");
     expect(el.admin.signOut).toBe("Αποσύνδεση");
     expect(el.admin.statusConfirmed).toBe("Επιβεβαιωμένη");
+    expect(el.admin.cancelHoursLabel).toBe("Προθεσμία δωρεάν ακύρωσης");
     expect(el.common.confirm).toBe("Επιβεβαίωση");
     expect(el.admin.weekScheduleSub).not.toMatch(/Nicosia/i);
   });

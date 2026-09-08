@@ -12,6 +12,7 @@ export const schedulePayloadSchema = z.object({
       gapMinutes: z.coerce.number().min(0).max(120).default(15),
     })
   ),
+  cancelHours: z.coerce.number().int().min(1).max(72).optional(),
 });
 
 export const blockedTimePayloadSchema = z.object({

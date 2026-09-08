@@ -469,6 +469,9 @@ export type Messages = {
     perSlot: string;
     instructor: string;
     hoursHint: string;
+    cancelHoursLabel: string;
+    cancelHoursUnit: string;
+    cancelHoursHint: string;
     weeklyHours: string;
     saveSchedule: string;
     saving: string;

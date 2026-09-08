@@ -32,7 +32,7 @@ revokes existing sessions so they must sign in again. See
 | **Overview** | `/admin` | This week’s board, today’s counts, shortcuts |
 | **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot, book for a client |
 | **Clients** | `/admin/users` | Client list with phone and session dates |
-| **Hours** | `/admin/schedule` | Weekly open days, times, lunch, gap |
+| **Hours** | `/admin/schedule` | Weekly open days, times, lunch, gap, cancellation window |
 | **Closures** | `/admin/closures` | Cyprus holidays + extra days off |
 | **Website** | `/admin/content` | Homepage text, images, contact info |
 
@@ -60,7 +60,8 @@ Controls when customers can book on the public `/book` page. Holidays and extra 
 3. **Set gap between slots** — minutes between session start times (default 10)
 4. **Set lunch break** — optional `lunch start` / `lunch end` to block mid-day slots
 5. **Save schedule** — updates public booking immediately
-6. **Block dates** — use **Closures**; blocked days are hidden from `/book`.  
+6. **Set free cancellation window** — hours before class that clients may cancel without charge (default **12**). Saving writes the same value to every service so booking, emails, checkout, FAQ, and legal pages stay in sync.
+7. **Block dates** — use **Closures**; blocked days are hidden from `/book`.  
    For a **single day**, set the same **From** and **To** date.
 
 ### APIs (admin auth required)

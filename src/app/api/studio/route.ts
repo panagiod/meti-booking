@@ -5,7 +5,7 @@ import { getStudioContent } from "@/lib/studio-content-server";
 import { getDemoStudioResponse, isDemoBookingMode } from "@/lib/studio-demo-fallback";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 import { isReformerService } from "@/lib/site-config";
-import { resolveBookingLeadHours } from "@/lib/booking-config";
+import { resolveBookingLeadHours, resolveCancelHours } from "@/lib/booking-config";
 import { instructorMpConnected } from "@/lib/instructor-mp";
 
 export const dynamic = "force-dynamic";
@@ -57,7 +57,7 @@ function mapStudioPayload(params: {
         description: service.description,
         durationMin: service.durationMin,
         priceCents: service.priceCents,
-        rescheduleHoursMin: service.rescheduleHoursMin,
+        rescheduleHoursMin: resolveCancelHours(service.rescheduleHoursMin),
         promotion: service.promotions?.[0] || null,
       })),
     schedule: params.schedule.map((row) => ({

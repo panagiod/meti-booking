@@ -28,7 +28,7 @@ async function loadAppointmentForNotify(appointmentId: string) {
     include: {
       client: { select: { email: true, name: true, client: { select: { phone: true } } } },
       instructor: { include: { user: { select: { email: true, name: true } } } },
-      service: { select: { name: true } },
+      service: { select: { name: true, rescheduleHoursMin: true } },
     },
   });
 }
@@ -53,6 +53,7 @@ export async function notifyAppointmentConfirmed(appointmentId: string): Promise
     totalCents: apt.totalCents,
     appointmentUrl: manageUrl || `${getSiteUrl()}/dashboard/appointments`,
     manageUrl,
+    cancelHours: apt.service.rescheduleHoursMin,
   };
 
   let sent = false;
@@ -87,6 +88,7 @@ export async function notifyAppointmentReminder(appointmentId: string): Promise<
     totalCents: apt.totalCents,
     appointmentUrl: manageUrl || `${getSiteUrl()}/dashboard/appointments`,
     manageUrl,
+    cancelHours: apt.service.rescheduleHoursMin,
   };
 
   let sent = false;

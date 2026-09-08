@@ -24,6 +24,7 @@ import {
 import {
   formatMessage,
   useLocale,
+  useStudioBranding,
   useTranslations,
 } from "@/components/providers/locale-provider";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
@@ -32,6 +33,7 @@ import { formatLongDate, formatMoney } from "@/lib/format";
 import { clearPendingBooking, savePendingBooking } from "@/lib/booking-utils";
 import { ClientPhoneError, normalizeClientPhone } from "@/lib/client-phone";
 import { LegalAcceptance } from "@/components/legal/legal-acceptance";
+import { resolveCancelHours } from "@/lib/booking-config";
 
 function CheckoutContent() {
   const router = useRouter();
@@ -39,6 +41,7 @@ function CheckoutContent() {
   const dialog = useDialog();
   const t = useTranslations();
   const { locale } = useLocale();
+  const studio = useStudioBranding();
   const [isProcessing, setIsProcessing] = useState(false);
   const [instructorHasMP, setInstructorHasMP] = useState<boolean | null>(null);
   const [instructorMpMode, setInstructorMpMode] = useState<string | null>(null);
@@ -58,6 +61,7 @@ function CheckoutContent() {
   } | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(true);
   const [paymentsEnabled, setPaymentsEnabled] = useState(false);
+  const [loadedCancelHours, setLoadedCancelHours] = useState<number | null>(null);
   const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [legalError, setLegalError] = useState<string | null>(null);
 
@@ -77,6 +81,7 @@ function CheckoutContent() {
   const serviceFee = quote?.platformFeeCents ?? 0;
   const serviceTotal = quote?.totalCents ?? servicePrice + serviceFee;
   const totalOriginal = servicePrice + serviceFee;
+  const policyHours = resolveCancelHours(loadedCancelHours ?? studio.cancelHours);
 
   useEffect(() => {
     clearPendingBooking();
@@ -104,6 +109,9 @@ function CheckoutContent() {
           setQuote(data.quote);
           if (typeof data.paymentsEnabled === "boolean") {
             setPaymentsEnabled(data.paymentsEnabled);
+          }
+          if (typeof data.cancelHours === "number") {
+            setLoadedCancelHours(resolveCancelHours(data.cancelHours));
           }
         }
       } catch {
@@ -530,17 +538,17 @@ function CheckoutContent() {
                       <ul className="text-[var(--text-muted)] space-y-1">
                         {paymentsEnabled ? (
                           <>
-                            <li>• {t.checkout.cancelReschedule}</li>
-                            <li>• {t.checkout.cancelNoRefund}</li>
+                            <li>• {formatMessage(t.checkout.cancelReschedule, { hours: policyHours })}</li>
+                            <li>• {formatMessage(t.checkout.cancelNoRefund, { hours: policyHours })}</li>
                             <li>• {t.checkout.cancelNoShow}</li>
                             <li>• {t.checkout.cancelPunctuality}</li>
                           </>
                         ) : (
                           <>
-                            <li>• {t.checkout.bookingPolicyReschedule}</li>
-                            <li>• {t.checkout.bookingPolicyLatePay}</li>
+                            <li>• {formatMessage(t.checkout.bookingPolicyReschedule, { hours: policyHours })}</li>
+                            <li>• {formatMessage(t.checkout.bookingPolicyLatePay, { hours: policyHours })}</li>
                             <li>• {t.checkout.bookingPolicyPunctuality}</li>
-                            <li>• {t.checkout.bookingPolicyContact}</li>
+                            <li>• {formatMessage(t.checkout.bookingPolicyContact, { hours: policyHours })}</li>
                           </>
                         )}
                       </ul>
@@ -629,7 +637,7 @@ function CheckoutContent() {
                     error={legalError}
                   />
                   <p className="text-xs leading-relaxed text-[var(--text-muted)]">
-                    {t.checkout.withdrawalNote}
+                    {formatMessage(t.checkout.withdrawalNote, { hours: policyHours })}
                   </p>
 
                   <Button

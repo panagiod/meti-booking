@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useLocale, useTranslations } from "@/components/providers/locale-provider";
+import { useLocale, useStudioBranding, useTranslations } from "@/components/providers/locale-provider";
 import { CookieInventory, LegalDocument } from "@/components/legal/legal-document";
 import { getLegal } from "@/i18n/legal";
 
@@ -12,7 +12,8 @@ export function LegalPageView({
 }) {
   const { locale } = useLocale();
   const t = useTranslations();
-  const legal = getLegal(locale);
+  const studio = useStudioBranding();
+  const legal = getLegal(locale, studio.cancelHours);
   const page = legal[kind];
 
   return (
@@ -33,7 +34,8 @@ export function LegalPageView({
 export function FaqPageView() {
   const { locale } = useLocale();
   const t = useTranslations();
-  const faq = getLegal(locale).faq;
+  const studio = useStudioBranding();
+  const faq = getLegal(locale, studio.cancelHours).faq;
 
   return (
     <div className="container-meti max-w-3xl py-16">

@@ -10,6 +10,7 @@ import {
   STUDIO_SESSION_DURATION_MIN,
 } from "@/lib/studio-schedule";
 import { generateAvailableSlots } from "@/lib/slots";
+import { schedulePayloadSchema } from "@/lib/schedule-schema";
 
 describe("studio-schedule", () => {
   it("empty template has no active days", () => {
@@ -114,5 +115,38 @@ describe("studio-schedule", () => {
     expect(formatScheduleHoursForLocale(schedule, "el")).toBe(
       "Τρί, Πέμ 15:45–18:45 · Σάβ 08:00–13:30"
     );
+  });
+});
+
+describe("schedule payload", () => {
+  it("accepts a cancel window between 1 and 72 hours", () => {
+    const parsed = schedulePayloadSchema.parse({
+      schedules: [
+        {
+          dayOfWeek: 2,
+          isActive: true,
+          startTime: "15:45",
+          endTime: "18:00",
+          gapMinutes: 10,
+        },
+      ],
+      cancelHours: 12,
+    });
+    expect(parsed.cancelHours).toBe(12);
+  });
+
+  it("rejects cancel windows outside 1–72 hours", () => {
+    expect(() =>
+      schedulePayloadSchema.parse({
+        schedules: [],
+        cancelHours: 0,
+      })
+    ).toThrow();
+    expect(() =>
+      schedulePayloadSchema.parse({
+        schedules: [],
+        cancelHours: 96,
+      })
+    ).toThrow();
   });
 });

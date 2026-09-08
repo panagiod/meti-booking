@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { getAppUrl } from "@/lib/mercadopago";
 import { getStudioNotificationEmails, siteConfig } from "@/lib/site-config";
 import { STUDIO_TIMEZONE } from "@/lib/timezone";
+import { resolveCancelHours } from "@/lib/booking-config";
 
 const FROM_EMAIL = process.env.EMAIL_FROM || "MeTi Pilates <bookings@meti-pilates.com>";
 
@@ -81,6 +82,7 @@ export interface AppointmentEmailData {
   clientEmail?: string;
   clientPhone?: string | null;
   cancelReason?: string;
+  cancelHours?: number;
 }
 
 // Client email: booking confirmation (payment approved)
@@ -91,6 +93,7 @@ export async function sendBookingConfirmedEmail(
   const client = getResend();
   if (!client) return false;
 
+  const hours = resolveCancelHours(data.cancelHours);
   const body = `
     <p style="margin:0 0 16px;color:#374151;line-height:1.6;">Hi <strong>${data.clientName}</strong>, your reformer session is confirmed:</p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
@@ -100,7 +103,7 @@ export async function sendBookingConfirmedEmail(
       <tr><td style="padding:8px 0;color:#6b7280;">Session price</td><td style="padding:8px 0;font-weight:600;color:#2c382c;text-align:right;">${formatCurrency(data.totalCents)}</td></tr>
     </table>
     <a href="${data.appointmentUrl}" style="display:inline-block;background:#2c382c;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:999px;font-weight:500;">View or cancel booking</a>
-    <p style="margin:16px 0 0;color:#6b7280;font-size:13px;line-height:1.6;">Cancel from this email link or your account at least 24 hours before the session. If you do not cancel in time, the session must still be paid at the studio. Classes start on time and do not wait if you arrive late.</p>
+    <p style="margin:16px 0 0;color:#6b7280;font-size:13px;line-height:1.6;">Cancel from this email link or your account at least ${hours} hours before the session. If you do not cancel in time, the session must still be paid at the studio. Classes start on time and do not wait if you arrive late.</p>
   `;
 
   const { error } = await client.emails.send({
@@ -156,6 +159,7 @@ export async function sendReminderEmail(
   const client = getResend();
   if (!client) return false;
 
+  const hours = resolveCancelHours(data.cancelHours);
   const greeting =
     role === "client"
       ? `Hi <strong>${data.clientName}</strong>, remember that tomorrow you have your reformer session:`
@@ -174,7 +178,7 @@ export async function sendReminderEmail(
     <a href="${data.appointmentUrl}" style="display:inline-block;background:#2c382c;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:999px;font-weight:500;">${role === "client" ? "View or cancel booking" : "View my schedule"}</a>
     ${
       role === "client"
-        ? `<p style="margin:16px 0 0;color:#6b7280;font-size:13px;line-height:1.6;">Classes start on time and do not wait if you arrive late. If you cannot come, cancel now — after the 24-hour window the session must still be paid at the studio.</p>`
+        ? `<p style="margin:16px 0 0;color:#6b7280;font-size:13px;line-height:1.6;">Classes start on time and do not wait if you arrive late. If you cannot come, cancel now — after the ${hours}-hour window the session must still be paid at the studio.</p>`
         : ""
     }
   `;
