@@ -4,6 +4,7 @@ import {
   recordAndCheckIpLimit,
   resetBookingRateLimitState,
   BOOKING_IP_LIMIT,
+  BOOKING_EMAIL_LIMIT,
 } from "@/lib/booking-rate-limit";
 
 vi.mock("@/lib/prisma", () => ({
@@ -95,7 +96,7 @@ describe("booking rate limit", () => {
 
   it("blocks when the client already has too many recent bookings", async () => {
     vi.mocked(prisma.appointment.count)
-      .mockResolvedValueOnce(3)
+      .mockResolvedValueOnce(BOOKING_EMAIL_LIMIT)
       .mockResolvedValueOnce(0);
 
     const result = await assertBookingRateLimit({
