@@ -426,6 +426,8 @@ export type Messages = {
     freeSlot: string;
     clientsTitle: string;
     clientsSub: string;
+    clientsLoadError: string;
+    clientsRetry: string;
     people: string;
     upcomingSessions: string;
     admins: string;

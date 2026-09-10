@@ -20,7 +20,7 @@ export function idsToComplete<T extends { id: string; scheduledAt: Date; duratio
     .map((row) => row.id);
 }
 
-/** Same number the Clients page shows — older completed rows are deleted. */
+/** Same number the Clients page shows — older completed rows stay in the database. */
 export const COMPLETED_HISTORY_LIMIT = 8;
 
 export function idsBeyondCompletedHistoryLimit<

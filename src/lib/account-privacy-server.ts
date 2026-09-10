@@ -37,14 +37,22 @@ export async function exportClientAccount(userId: string) {
           service: { select: { name: true } },
         },
       },
-      attendance: {
-        orderBy: { studioDate: "desc" },
-        select: { studioDate: true },
-      },
     },
   });
 
   if (!user) return null;
+
+  let classDatesThisYear: string[] = [];
+  try {
+    const attendance = await prisma.clientAttendance.findMany({
+      where: { clientId: userId },
+      orderBy: { studioDate: "desc" },
+      select: { studioDate: true },
+    });
+    classDatesThisYear = attendance.map((row: { studioDate: string }) => row.studioDate);
+  } catch (error) {
+    console.error("client_attendance unavailable for export", error);
+  }
 
   return {
     exportedAt: new Date().toISOString(),
@@ -62,7 +70,7 @@ export async function exportClientAccount(userId: string) {
       status: appointment.status,
       totalCents: appointment.totalCents,
     })),
-    classDatesThisYear: user.attendance.map((row: { studioDate: string }) => row.studioDate),
+    classDatesThisYear,
   };
 }
 

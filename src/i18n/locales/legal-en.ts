@@ -63,7 +63,7 @@ const legalEn: LegalBundle = {
       {
         heading: "6. How long we keep data",
         paragraphs: [
-          "Upcoming bookings are kept until the class happens or is cancelled. We keep the last 8 completed class records per person. Class dates for the past 12 months stay for studio totals. Cancelled bookings are removed automatically. You may download your data or ask us to delete your account from your profile. If you have an upcoming session, cancel it first. After deletion we anonymise your name, email, phone, and photo. Past session times may remain on the schedule without your identity.",
+          "Upcoming bookings are kept until the class happens or is cancelled. Completed class records and class dates for the past 12 months stay for studio totals. The clients list shows the last 8 completed classes per person. Cancelled bookings are removed automatically. You may download your data or ask us to delete your account from your profile. If you have an upcoming session, cancel it first. After deletion we anonymise your name, email, phone, and photo. Past session times may remain on the schedule without your identity.",
         ],
       },
       {

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { idsBeyondCompletedHistoryLimit, idsToComplete } from "@/lib/appointment-complete";
+import { idsToComplete } from "@/lib/appointment-complete";
 import { syncClientAttendance } from "@/lib/client-attendance-server";
 
 /** Mark confirmed sessions as completed once their class time has finished. */
@@ -26,27 +26,21 @@ export async function completePastAppointments(now = new Date()): Promise<number
   return result.count;
 }
 
-/** Keep only the completed classes admin can see (last 8 per client). */
+/** Do not delete live booking history. The Clients page already shows only the last 8. */
 export async function deleteExcessCompletedAppointments(): Promise<number> {
-  const rows = await prisma.appointment.findMany({
-    where: { status: { in: ["COMPLETED", "NO_SHOW"] } },
-    select: { id: true, clientId: true, scheduledAt: true },
-  });
-  const ids = idsBeyondCompletedHistoryLimit(rows);
-  if (ids.length === 0) return 0;
-  const result = await prisma.appointment.deleteMany({
-    where: { id: { in: ids } },
-  });
-  return result.count;
+  return 0;
 }
 
-/** Complete finished classes, store year dates, then drop extra full booking rows. */
+/** Complete finished classes and store year dates. Never delete bookings from a page load. */
 export async function refreshAppointmentHistory(now = new Date()): Promise<{
   completed: number;
   trimmed: number;
 }> {
   const completed = await completePastAppointments(now);
-  await syncClientAttendance(now);
-  const trimmed = await deleteExcessCompletedAppointments();
-  return { completed, trimmed };
+  try {
+    await syncClientAttendance(now);
+  } catch (error) {
+    console.error("Could not sync client attendance", error);
+  }
+  return { completed, trimmed: 0 };
 }

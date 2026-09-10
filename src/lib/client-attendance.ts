@@ -3,6 +3,8 @@ import { addStudioDays, studioDateStrFromUtc } from "@/lib/timezone";
 /** Slim date log for admin year metrics. Full booking rows stay at last 8. */
 export const ATTENDANCE_RETENTION_DAYS = 365;
 
+const COUNTED_STATUSES = new Set(["COMPLETED", "NO_SHOW"]);
+
 export function attendanceCutoffDateStr(now = new Date()): string {
   return addStudioDays(studioDateStrFromUtc(now), -ATTENDANCE_RETENTION_DAYS);
 }
@@ -19,6 +21,27 @@ export function summarizeYearAttendance(
     ),
   ].sort((a, b) => b.localeCompare(a));
   return { count: rows.filter((row) => row.studioDate >= cutoffDateStr).length, dates };
+}
+
+export function yearAttendanceFromAppointments(
+  appointments: Array<{ scheduledAt: string | Date; status: string; isTest?: boolean }>,
+  cutoffDateStr: string
+): { count: number; dates: string[] } {
+  return summarizeYearAttendance(
+    appointments
+      .filter(
+        (row) => !row.isTest && COUNTED_STATUSES.has(row.status.trim().toUpperCase())
+      )
+      .map((row) => ({ studioDate: studioDateStrFromUtc(new Date(row.scheduledAt)) })),
+    cutoffDateStr
+  );
+}
+
+export function richerYearAttendance(
+  log: { count: number; dates: string[] },
+  fromRows: { count: number; dates: string[] }
+): { count: number; dates: string[] } {
+  return log.count >= fromRows.count ? log : fromRows;
 }
 
 export function groupAttendanceDatesByMonth(

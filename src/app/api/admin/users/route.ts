@@ -4,8 +4,13 @@ import { containsInsensitive } from "@/lib/prisma-filters";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { partitionAdminAppointments, type AdminUserAppointment } from "@/lib/admin-users";
 import { retainedAppointmentWhere } from "@/lib/appointment-complete";
-import { refreshAppointmentHistory } from "@/lib/appointment-complete-server";
-import { attendanceCutoffDateStr, summarizeYearAttendance } from "@/lib/client-attendance";
+import { completePastAppointments } from "@/lib/appointment-complete-server";
+import {
+  attendanceCutoffDateStr,
+  richerYearAttendance,
+  summarizeYearAttendance,
+  yearAttendanceFromAppointments,
+} from "@/lib/client-attendance";
 
 type UserRow = {
   id: string;
@@ -14,7 +19,6 @@ type UserRow = {
   role: string;
   createdAt: Date;
   client: { phone: string | null } | null;
-  attendance: Array<{ studioDate: string }>;
   appointments: Array<{
     id: string;
     scheduledAt: Date;
@@ -24,6 +28,23 @@ type UserRow = {
     service: { name: string };
   }>;
 };
+
+async function loadAttendanceByClient(): Promise<Map<string, Array<{ studioDate: string }>>> {
+  const byClient = new Map<string, Array<{ studioDate: string }>>();
+  try {
+    const rows = await prisma.clientAttendance.findMany({
+      select: { clientId: true, studioDate: true },
+    });
+    for (const row of rows) {
+      const list = byClient.get(row.clientId);
+      if (list) list.push({ studioDate: row.studioDate });
+      else byClient.set(row.clientId, [{ studioDate: row.studioDate }]);
+    }
+  } catch (error) {
+    console.error("client_attendance unavailable", error);
+  }
+  return byClient;
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -55,33 +76,41 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    await refreshAppointmentHistory();
+    try {
+      await completePastAppointments();
+    } catch (error) {
+      console.error("Could not complete past appointments before listing users", error);
+    }
 
-    const users = await prisma.user.findMany({
-      where,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-        client: { select: { phone: true } },
-        attendance: { select: { studioDate: true } },
-        appointments: {
-          where: retainedAppointmentWhere(),
-          select: {
-            id: true,
-            scheduledAt: true,
-            status: true,
-            durationMin: true,
-            isTest: true,
-            service: { select: { name: true } },
+    const [users, attendanceByClient] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+          client: { select: { phone: true } },
+          appointments: {
+            where: retainedAppointmentWhere(),
+            select: {
+              id: true,
+              scheduledAt: true,
+              status: true,
+              durationMin: true,
+              isTest: true,
+              service: { select: { name: true } },
+            },
+            orderBy: { scheduledAt: "asc" },
           },
-          orderBy: { scheduledAt: "asc" },
         },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+        orderBy: { createdAt: "desc" },
+      }),
+      loadAttendanceByClient(),
+    ]);
+
+    const cutoff = attendanceCutoffDateStr();
 
     return NextResponse.json({
       users: (users as UserRow[]).map((user) => {
@@ -94,7 +123,10 @@ export async function GET(request: NextRequest) {
           isTest: appointment.isTest,
         }));
         const { upcoming, recent } = partitionAdminAppointments(appointments);
-        const year = summarizeYearAttendance(user.attendance ?? [], attendanceCutoffDateStr());
+        const year = richerYearAttendance(
+          summarizeYearAttendance(attendanceByClient.get(user.id) ?? [], cutoff),
+          yearAttendanceFromAppointments(appointments, cutoff)
+        );
         return {
           id: user.id,
           name: user.name,

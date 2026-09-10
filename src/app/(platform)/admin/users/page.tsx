@@ -269,7 +269,7 @@ export default function UsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [bookingFilter, setBookingFilter] = useState<AdminUserBookingFilter>("all");
-  const { data, isLoading } = useAdminUsers();
+  const { data, isLoading, isError, refetch } = useAdminUsers();
 
   const users = useMemo(
     () =>
@@ -298,6 +298,17 @@ export default function UsersPage() {
   );
 
   if (isLoading) return <LoadingPage label={t.admin.loading} />;
+
+  if (isError) {
+    return (
+      <EmptyState
+        icon={Users}
+        title={t.common.error}
+        description={t.admin.clientsLoadError}
+        action={{ label: t.admin.clientsRetry, onClick: () => void refetch() }}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
