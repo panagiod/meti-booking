@@ -49,6 +49,7 @@ function weekdayName(t: Messages["admin"], dayOfWeek: number) {
     t.weekdaySaturday,
   ][dayOfWeek];
 }
+import { AdminDisclosure } from "@/components/admin/admin-disclosure";
 import { AdminWeekBoard } from "@/components/admin/admin-week-board";
 import {
   Calendar,
@@ -518,129 +519,133 @@ export default function AdminSchedulePage() {
             </Button>
           </div>
 
-          {schedule
+          {[...schedule]
             .sort((a, b) => {
               const order = [1, 2, 3, 4, 5, 6, 0];
               return order.indexOf(a.dayOfWeek) - order.indexOf(b.dayOfWeek);
             })
             .map((day) => (
-              <Card key={day.dayOfWeek} className={!day.isActive ? "opacity-60" : ""}>
-                <CardContent className="p-4 md:p-6">
-                  <div className="flex flex-col md:flex-row md:items-center gap-4">
-                    <div className="flex items-center gap-3 md:w-44">
-                      <button
-                        type="button"
-                        onClick={() => toggleDay(day.dayOfWeek)}
+              <AdminDisclosure
+                key={day.dayOfWeek}
+                className={!day.isActive ? "opacity-60" : undefined}
+                title={weekdayName(t.admin, day.dayOfWeek)}
+                count={
+                  day.isActive
+                    ? countSlotsPerDay(day, studio.serviceDurationMin)
+                    : undefined
+                }
+                defaultOpen={day.isActive}
+              >
+                <div className="flex flex-col gap-4 md:flex-row md:items-start">
+                  <div className="flex items-center gap-3 md:w-36">
+                    <button
+                      type="button"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        toggleDay(day.dayOfWeek);
+                      }}
+                      className={cn(
+                        "w-12 h-6 rounded-full transition-colors relative shrink-0",
+                        day.isActive ? "bg-[var(--success)]" : "bg-[var(--border)]"
+                      )}
+                      aria-label={formatMessage(t.admin.toggleDay, {
+                        day: weekdayName(t.admin, day.dayOfWeek),
+                      })}
+                    >
+                      <span
                         className={cn(
-                          "w-12 h-6 rounded-full transition-colors relative shrink-0",
-                          day.isActive ? "bg-[var(--success)]" : "bg-[var(--border)]"
+                          "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
+                          day.isActive ? "left-7" : "left-1"
                         )}
-                        aria-label={formatMessage(t.admin.toggleDay, {
-                          day: weekdayName(t.admin, day.dayOfWeek),
-                        })}
-                      >
-                        <span
-                          className={cn(
-                            "absolute top-1 w-4 h-4 rounded-full bg-white transition-transform",
-                            day.isActive ? "left-7" : "left-1"
-                          )}
-                        />
-                      </button>
-                      <span className="font-medium text-[var(--text-primary)]">
-                        {weekdayName(t.admin, day.dayOfWeek)}
+                      />
+                    </button>
+                    {!day.isActive ? (
+                      <span className="text-sm italic text-[var(--text-muted)]">
+                        {t.admin.closedNotBookable}
                       </span>
-                    </div>
+                    ) : null}
+                  </div>
 
-                    {day.isActive ? (
-                      <div className="flex-1 space-y-3">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          <div>
-                            <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              {t.admin.start}
-                            </label>
-                            <Input
-                              type="time"
-                              value={day.startTime}
-                              onChange={(e) =>
-                                updateTime(day.dayOfWeek, "startTime", e.target.value)
-                              }
-                              className="h-9 text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              {t.admin.end}
-                            </label>
-                            <Input
-                              type="time"
-                              value={day.endTime}
-                              onChange={(e) =>
-                                updateTime(day.dayOfWeek, "endTime", e.target.value)
-                              }
-                              className="h-9 text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              {t.admin.gapMin}
-                            </label>
-                            <Input
-                              type="number"
-                              min={0}
-                              max={120}
-                              value={day.gapMinutes}
-                              onChange={(e) =>
-                                updateDay(day.dayOfWeek, {
-                                  gapMinutes: Number(e.target.value) || 0,
-                                })
-                              }
-                              className="h-9 text-sm"
-                            />
-                          </div>
-                          <div className="flex items-end gap-2 text-sm text-[var(--text-muted)] pb-2">
-                            <Clock className="w-4 h-4" />
-                            {formatMessage(t.admin.slotsCount, {
-                              count: countSlotsPerDay(day, studio.serviceDurationMin),
-                            })}
-                          </div>
+                  {day.isActive ? (
+                    <div className="flex-1 space-y-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                          <label className="block text-xs text-[var(--text-muted)] mb-1">
+                            {t.admin.start}
+                          </label>
+                          <Input
+                            type="time"
+                            value={day.startTime}
+                            onChange={(e) =>
+                              updateTime(day.dayOfWeek, "startTime", e.target.value)
+                            }
+                            className="h-9 text-sm"
+                          />
                         </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          <div>
-                            <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              {t.admin.lunchStart}
-                            </label>
-                            <Input
-                              type="time"
-                              value={day.lunchStart}
-                              onChange={(e) =>
-                                updateTime(day.dayOfWeek, "lunchStart", e.target.value)
-                              }
-                              className="h-9 text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-[var(--text-muted)] mb-1">
-                              {t.admin.lunchEnd}
-                            </label>
-                            <Input
-                              type="time"
-                              value={day.lunchEnd}
-                              onChange={(e) =>
-                                updateTime(day.dayOfWeek, "lunchEnd", e.target.value)
-                              }
-                              className="h-9 text-sm"
-                            />
-                          </div>
+                        <div>
+                          <label className="block text-xs text-[var(--text-muted)] mb-1">
+                            {t.admin.end}
+                          </label>
+                          <Input
+                            type="time"
+                            value={day.endTime}
+                            onChange={(e) =>
+                              updateTime(day.dayOfWeek, "endTime", e.target.value)
+                            }
+                            className="h-9 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-[var(--text-muted)] mb-1">
+                            {t.admin.gapMin}
+                          </label>
+                          <Input
+                            type="number"
+                            min={0}
+                            max={120}
+                            value={day.gapMinutes}
+                            onChange={(e) =>
+                              updateDay(day.dayOfWeek, {
+                                gapMinutes: Number(e.target.value) || 0,
+                              })
+                            }
+                            className="h-9 text-sm"
+                          />
                         </div>
                       </div>
-                    ) : (
-                      <p className="text-sm text-[var(--text-muted)] italic flex-1">
-                        {t.admin.closedNotBookable}
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div>
+                          <label className="block text-xs text-[var(--text-muted)] mb-1">
+                            {t.admin.lunchStart}
+                          </label>
+                          <Input
+                            type="time"
+                            value={day.lunchStart}
+                            onChange={(e) =>
+                              updateTime(day.dayOfWeek, "lunchStart", e.target.value)
+                            }
+                            className="h-9 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-[var(--text-muted)] mb-1">
+                            {t.admin.lunchEnd}
+                          </label>
+                          <Input
+                            type="time"
+                            value={day.lunchEnd}
+                            onChange={(e) =>
+                              updateTime(day.dayOfWeek, "lunchEnd", e.target.value)
+                            }
+                            className="h-9 text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </AdminDisclosure>
             ))}
         </div>
       </div>

@@ -1,12 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertDialog } from "@/components/ui/alert-dialog";
+import { AdminDisclosure } from "@/components/admin/admin-disclosure";
 import { useDialog } from "@/hooks/use-dialog";
-import { formatStudioDateTime } from "@/lib/timezone";
+import { firstOpenBookingDate, groupBookingsByStudioDate } from "@/lib/admin-bookings";
+import {
+  formatStudioDate,
+  formatStudioDateTime,
+  formatStudioTime,
+  studioDateStrFromUtc,
+} from "@/lib/timezone";
 import { CalendarPlus, XCircle } from "lucide-react";
 import {
   formatMessage,
@@ -127,6 +134,12 @@ export function AdminUpcomingBookings() {
     }
   };
 
+  const grouped = useMemo(() => groupBookingsByStudioDate(bookings), [bookings]);
+  const openDate = firstOpenBookingDate(
+    grouped.map((group) => group.date),
+    studioDateStrFromUtc(new Date())
+  );
+
   return (
     <>
       <Card>
@@ -166,32 +179,49 @@ export function AdminUpcomingBookings() {
           {bookings.length === 0 && !isLoading ? (
             <p className="text-sm italic text-[var(--text-muted)]">{t.admin.noUpcoming}</p>
           ) : (
-            <ul className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)]">
-              {bookings.map((booking) => (
-                <li
-                  key={booking.id}
-                  className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between"
+            <div className="space-y-3">
+              {grouped.map((group) => (
+                <AdminDisclosure
+                  key={group.date}
+                  title={formatStudioDate(
+                    new Date(`${group.date}T12:00:00.000Z`),
+                    { weekday: "long", day: "numeric", month: "long" },
+                    locale
+                  )}
+                  count={group.items.length}
+                  defaultOpen={group.date === openDate}
                 >
-                  <div>
-                    <p className="font-medium text-[var(--text-primary)]">
-                      {formatStudioDateTime(new Date(booking.scheduledAt), locale)}
-                    </p>
-                    <p className="text-sm text-[var(--text-muted)]">
-                      {booking.serviceName} · {booking.clientName} · {booking.clientEmail}
-                      {booking.isTestBooking ? ` · ${t.admin.testBooking}` : ""}
-                    </p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    disabled={cancellingBookingId === booking.id}
-                    onClick={() => cancelBooking(booking)}
-                  >
-                    {cancellingBookingId === booking.id ? t.admin.cancelling : t.admin.cancelFreeSlot}
-                  </Button>
-                </li>
+                  <ul className="divide-y divide-[var(--border)]">
+                    {group.items.map((booking) => (
+                      <li
+                        key={booking.id}
+                        className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
+                      >
+                        <div>
+                          <p className="font-medium text-[var(--text-primary)]">
+                            {formatStudioTime(new Date(booking.scheduledAt))}
+                          </p>
+                          <p className="text-sm text-[var(--text-muted)]">
+                            {booking.serviceName} · {booking.clientName} · {booking.clientEmail}
+                            {booking.isTestBooking ? ` · ${t.admin.testBooking}` : ""}
+                          </p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          disabled={cancellingBookingId === booking.id}
+                          onClick={() => cancelBooking(booking)}
+                        >
+                          {cancellingBookingId === booking.id
+                            ? t.admin.cancelling
+                            : t.admin.cancelFreeSlot}
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </AdminDisclosure>
               ))}
-            </ul>
+            </div>
           )}
         </CardContent>
       </Card>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { LoadingPage } from "@/components/ui/loading";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
+import { AdminDisclosure } from "@/components/admin/admin-disclosure";
 import { upcomingCyprusHolidays } from "@/lib/cyprus-holidays";
 import { Ban, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "@/components/providers/locale-provider";
@@ -110,6 +111,8 @@ export default function AdminClosuresPage() {
 
   if (isLoading) return <LoadingPage label={t.admin.loadingClosures} />;
 
+  const holidays = upcomingCyprusHolidays();
+
   return (
     <>
       <div className="space-y-6 max-w-3xl">
@@ -120,30 +123,25 @@ export default function AdminClosuresPage() {
           <p className="mt-1 text-[var(--text-muted)]">{t.admin.closuresSub}</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">{t.admin.publicHolidays}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="divide-y divide-[var(--border)] rounded-lg border border-[var(--border)]">
-              {upcomingCyprusHolidays().map((holiday) => (
-                <li
-                  key={holiday.date}
-                  className="flex items-center justify-between gap-3 p-3 text-sm"
-                >
-                  <span className="font-medium text-[var(--text-primary)]">
-                    {locale === "el" ? holiday.nameEl : holiday.name}
-                  </span>
-                  <span className="text-[var(--text-muted)]">
-                    {format(new Date(`${holiday.date}T12:00:00`), "EEE d MMM yyyy", {
-                      locale: dateLocale,
-                    })}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+        <AdminDisclosure title={t.admin.publicHolidays} count={holidays.length}>
+          <ul className="divide-y divide-[var(--border)]">
+            {holidays.map((holiday) => (
+              <li
+                key={holiday.date}
+                className="flex items-center justify-between gap-3 py-3 text-sm first:pt-0 last:pb-0"
+              >
+                <span className="font-medium text-[var(--text-primary)]">
+                  {locale === "el" ? holiday.nameEl : holiday.name}
+                </span>
+                <span className="text-[var(--text-muted)]">
+                  {format(new Date(`${holiday.date}T12:00:00`), "EEE d MMM yyyy", {
+                    locale: dateLocale,
+                  })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </AdminDisclosure>
 
         <Card>
           <CardHeader>

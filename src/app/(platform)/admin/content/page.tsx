@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { LoadingPage } from "@/components/ui/loading";
 import { AlertDialog } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/hooks/use-dialog";
+import { AdminDisclosure } from "@/components/admin/admin-disclosure";
 import { cn } from "@/lib/utils";
 import type { StudioContentData, StudioLocaleContent } from "@/lib/studio-content-types";
 import { Save, Upload, ImageIcon, Type, Globe } from "lucide-react";
@@ -66,11 +67,8 @@ function LocaleFields({
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          {formatMessage(t.seoTab, { locale: localeLabel })}
-        </h3>
+    <div className="space-y-3">
+      <AdminDisclosure title={formatMessage(t.seoTab, { locale: localeLabel })}>
         <div className="space-y-3">
           <TextArea
             label={t.pageTitle}
@@ -85,12 +83,12 @@ function LocaleFields({
             rows={3}
           />
         </div>
-      </div>
+      </AdminDisclosure>
 
-      <div>
-        <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          {formatMessage(t.heroSection, { locale: localeLabel })}
-        </h3>
+      <AdminDisclosure
+        title={formatMessage(t.heroSection, { locale: localeLabel })}
+        defaultOpen
+      >
         <div className="space-y-3">
           <TextArea
             label={t.eyebrow}
@@ -123,12 +121,9 @@ function LocaleFields({
             rows={2}
           />
         </div>
-      </div>
+      </AdminDisclosure>
 
-      <div>
-        <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">
-          {formatMessage(t.aboutSection, { locale: localeLabel })}
-        </h3>
+      <AdminDisclosure title={formatMessage(t.aboutSection, { locale: localeLabel })}>
         <div className="space-y-3">
           <TextArea
             label={t.sectionTitle}
@@ -191,17 +186,16 @@ function LocaleFields({
             rows={3}
           />
         </div>
-      </div>
+      </AdminDisclosure>
 
-      <div>
-        <h3 className="mb-3 text-sm font-semibold text-[var(--text-primary)]">{t.hoursLine}</h3>
+      <AdminDisclosure title={t.hoursLine}>
         <TextArea
           label={t.hoursLineHint}
           value={content.common.hours}
           onChange={(v) => update("common", "hours", v)}
           rows={1}
         />
-      </div>
+      </AdminDisclosure>
     </div>
   );
 }
