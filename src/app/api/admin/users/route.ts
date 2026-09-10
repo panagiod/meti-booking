@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { containsInsensitive } from "@/lib/prisma-filters";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { partitionAdminAppointments, type AdminUserAppointment } from "@/lib/admin-users";
+import { retainedAppointmentWhere } from "@/lib/appointment-complete";
 
 type UserRow = {
   id: string;
@@ -61,6 +62,7 @@ export async function GET(request: NextRequest) {
         createdAt: true,
         client: { select: { phone: true } },
         appointments: {
+          where: retainedAppointmentWhere(),
           select: {
             id: true,
             scheduledAt: true,

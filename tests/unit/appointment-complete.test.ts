@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { idsToComplete, sessionHasEnded } from "@/lib/appointment-complete";
+import { idsToComplete, sessionHasEnded, COMPLETED_RETENTION_DAYS, completedRetentionCutoff } from "@/lib/appointment-complete";
 
 const start = new Date("2026-09-10T12:45:00Z");
 
@@ -21,5 +21,14 @@ describe("idsToComplete", () => {
       { id: "done", scheduledAt: new Date("2026-09-10T11:00:00Z"), durationMin: 45 },
     ];
     expect(idsToComplete(rows, new Date("2026-09-10T13:10:00Z"))).toEqual(["done"]);
+  });
+});
+
+describe("completed retention", () => {
+  it("keeps completed classes for 12 months", () => {
+    expect(COMPLETED_RETENTION_DAYS).toBe(365);
+    const now = new Date("2026-09-10T12:00:00Z");
+    const cutoff = completedRetentionCutoff(now);
+    expect(now.getTime() - cutoff.getTime()).toBe(365 * 24 * 60 * 60 * 1000);
   });
 });

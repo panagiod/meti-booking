@@ -63,7 +63,7 @@ const legalEn: LegalBundle = {
       {
         heading: "6. How long we keep data",
         paragraphs: [
-          "We keep booking records as long as we need them to run the studio and meet legal duties. Cancelled test bookings are removed automatically. You may download your data or ask us to delete your account from your profile. If you have an upcoming session, cancel it first. After deletion we anonymise your name, email, phone, and photo. Past session times may remain on the schedule without your identity.",
+          "Upcoming bookings are kept until the class happens or is cancelled. Completed and no-show class records are kept for 12 months, then deleted. Cancelled bookings are removed automatically. You may download your data or ask us to delete your account from your profile. If you have an upcoming session, cancel it first. After deletion we anonymise your name, email, phone, and photo. Past session times may remain on the schedule without your identity.",
         ],
       },
       {

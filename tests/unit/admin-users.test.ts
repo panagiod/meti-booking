@@ -155,6 +155,17 @@ describe("partitionAdminAppointments", () => {
     expect(result.upcoming.map((item) => item.id)).toEqual(["next"]);
     expect(result.recent.map((item) => item.id)).toEqual(["cancelled", "past"]);
   });
+
+  it("shows at most eight past sessions on a client card", () => {
+    const past = Array.from({ length: 12 }, (_, index) => ({
+      id: `past-${index}`,
+      scheduledAt: `2026-08-${String(index + 1).padStart(2, "0")}T12:45:00.000Z`,
+      status: "COMPLETED",
+      serviceName: "Reformer Session",
+      durationMin: 45,
+    }));
+    expect(partitionAdminAppointments(past, now).recent).toHaveLength(8);
+  });
 });
 
 describe("classifyAdminAppointment", () => {

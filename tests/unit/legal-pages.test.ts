@@ -26,6 +26,7 @@ describe("legal pages", () => {
     expect(privacy).toContain("dataprotection.gov.cy");
     expect(privacy).toContain("Επίτροπο Προστασίας Δεδομένων");
     expect(privacy).toContain("τηλέφωνο");
+    expect(privacy).toContain("12 μήνες");
   });
 
   it("explains the leisure-service withdrawal exemption", () => {

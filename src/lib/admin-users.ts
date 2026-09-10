@@ -23,6 +23,7 @@ export interface AdminUserListItem {
 }
 
 const ACTIVE_STATUSES = new Set(["PENDING", "CONFIRMED", "IN_PROGRESS"]);
+export const ADMIN_RECENT_HISTORY_LIMIT = 8;
 
 export function normalizeAdminUserRole(role: string | null | undefined): AdminUserRole {
   const value = role?.trim().toLowerCase();
@@ -79,7 +80,7 @@ export function partitionAdminAppointments(
 
   upcoming.sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
   recent.sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt));
-  return { upcoming, recent: recent.slice(0, 8) };
+  return { upcoming, recent: recent.slice(0, ADMIN_RECENT_HISTORY_LIMIT) };
 }
 
 export function sortAdminUsers(users: AdminUserListItem[]): AdminUserListItem[] {
