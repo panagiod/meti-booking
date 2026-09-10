@@ -80,4 +80,24 @@ describe("notifyAppointmentCancelled", () => {
     expect(sendBookingCancelledClientEmail).not.toHaveBeenCalled();
     expect(sendBookingCancelledStudioEmail).not.toHaveBeenCalled();
   });
+
+  it("does not email the excluded outlook inbox for cancellations", async () => {
+    vi.stubEnv(
+      "STUDIO_NOTIFICATION_EMAIL",
+      "tyrri_meropi@hotmail.com, dimitrioupanagiotis@outlook.com"
+    );
+    vi.mocked(prisma.appointment.findUnique).mockResolvedValue({
+      ...appointment,
+      instructor: {
+        user: { email: "dimitrioupanagiotis@outlook.com", name: "Panagiotis" },
+      },
+    } as never);
+
+    await notifyAppointmentCancelled("apt-1", { cancelledBy: "client" });
+    expect(sendBookingCancelledStudioEmail).toHaveBeenCalledTimes(1);
+    expect(sendBookingCancelledStudioEmail).toHaveBeenCalledWith(
+      "tyrri_meropi@hotmail.com",
+      expect.any(Object)
+    );
+  });
 });

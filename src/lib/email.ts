@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import { getAppUrl } from "@/lib/mercadopago";
-import { getStudioNotificationEmails, siteConfig } from "@/lib/site-config";
+import { getStudioNotificationEmails, isStudioBookingAlertExcluded, siteConfig } from "@/lib/site-config";
 import { STUDIO_TIMEZONE } from "@/lib/timezone";
 import { resolveCancelHours } from "@/lib/booking-config";
 
@@ -121,6 +121,7 @@ export async function sendNewBookingEmail(
   to: string,
   data: AppointmentEmailData
 ): Promise<boolean> {
+  if (isStudioBookingAlertExcluded(to)) return false;
   const client = getResend();
   if (!client) return false;
 
@@ -156,6 +157,7 @@ export async function sendReminderEmail(
   data: AppointmentEmailData,
   role: "client" | "instructor"
 ): Promise<boolean> {
+  if (role === "instructor" && isStudioBookingAlertExcluded(to)) return false;
   const client = getResend();
   if (!client) return false;
 
@@ -197,6 +199,7 @@ export async function sendBookingCancelledStudioEmail(
   to: string,
   data: AppointmentEmailData
 ): Promise<boolean> {
+  if (isStudioBookingAlertExcluded(to)) return false;
   const client = getResend();
   if (!client) return false;
 

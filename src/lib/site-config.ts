@@ -84,6 +84,16 @@ export function getSiteUrl(): string {
   return siteConfig.siteUrl;
 }
 
+/** Addresses that should not receive studio booking or cancellation alerts. */
+const STUDIO_BOOKING_ALERT_EXCLUDED = new Set([
+  "dimitrioupanagiotis@outlook.com",
+]);
+
+export function isStudioBookingAlertExcluded(email?: string | null): boolean {
+  if (!email) return false;
+  return STUDIO_BOOKING_ALERT_EXCLUDED.has(email.trim().toLowerCase());
+}
+
 /** Parse studio notification inboxes from env (comma- or semicolon-separated). */
 export function getStudioNotificationEmails(): string[] {
   const fromEnv = process.env.STUDIO_NOTIFICATION_EMAIL?.trim();
@@ -98,6 +108,18 @@ export function getStudioNotificationEmails(): string[] {
     emails.push(email);
   }
 
+  return emails;
+}
+
+/** Studio inboxes for new-booking, reminder, and cancellation alerts. */
+export function studioBookingAlertEmails(extra?: string | null): string[] {
+  const seen = new Set<string>();
+  const emails: string[] = [];
+  for (const email of [...getStudioNotificationEmails(), extra?.trim().toLowerCase() ?? ""]) {
+    if (!email || seen.has(email) || isStudioBookingAlertExcluded(email)) continue;
+    seen.add(email);
+    emails.push(email);
+  }
   return emails;
 }
 

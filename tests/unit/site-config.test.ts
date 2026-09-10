@@ -5,8 +5,10 @@ import {
   getStudioNotificationEmail,
   getStudioNotificationEmails,
   isPublicPhone,
+  isStudioBookingAlertExcluded,
   sanitizeStudioPhone,
   siteConfig,
+  studioBookingAlertEmails,
   studioMapsUrl,
   studioTelHref,
 } from "@/lib/site-config";
@@ -75,6 +77,17 @@ describe("getStudioNotificationEmails", () => {
     expect(getStudioNotificationEmails()).toEqual([
       "studio@example.com",
       "other@example.com",
+    ]);
+  });
+
+  it("does not send booking or cancellation alerts to the excluded outlook inbox", () => {
+    vi.stubEnv(
+      "STUDIO_NOTIFICATION_EMAIL",
+      "tyrri_meropi@hotmail.com, dimitrioupanagiotis@outlook.com"
+    );
+    expect(isStudioBookingAlertExcluded("DimitriouPanagiotis@outlook.com")).toBe(true);
+    expect(studioBookingAlertEmails("dimitrioupanagiotis@outlook.com")).toEqual([
+      "tyrri_meropi@hotmail.com",
     ]);
   });
 });
