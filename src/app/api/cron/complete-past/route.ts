@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireCronAuth } from "@/lib/cron-auth";
-import { completePastAppointments, deleteExcessCompletedAppointments } from "@/lib/appointment-complete-server";
+import { refreshAppointmentHistory } from "@/lib/appointment-complete-server";
 
 export const dynamic = "force-dynamic";
 
@@ -9,8 +9,7 @@ export async function GET(request: Request) {
   if (authError) return authError;
 
   try {
-    const completed = await completePastAppointments();
-    const trimmed = await deleteExcessCompletedAppointments();
+    const { completed, trimmed } = await refreshAppointmentHistory();
     if (completed > 0 || trimmed > 0) {
       console.log(
         `[cron/complete-past] Marked ${completed} sessions complete, removed ${trimmed} extra completed rows`

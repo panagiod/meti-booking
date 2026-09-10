@@ -11,6 +11,7 @@ import { useAdminUsers } from "@/lib/hooks";
 import {
   appointmentStatusLabel,
   countUpcomingSessions,
+  countYearClasses,
   filterAdminUsers,
   normalizeAdminUserRole,
   sortAdminUsers,
@@ -19,9 +20,10 @@ import {
   type AdminUserBookingFilter,
   type AdminUserListItem,
 } from "@/lib/admin-users";
-import { formatStudioDate, formatStudioDateTime } from "@/lib/timezone";
+import { groupAttendanceDatesByMonth } from "@/lib/client-attendance";
+import { formatStudioDate, formatStudioDateTime, parseStudioDateInput } from "@/lib/timezone";
 import { formatStudioPhone, isPublicPhone, studioTelHref } from "@/lib/site-config";
-import { CalendarDays, Mail, Phone, Search, Users } from "lucide-react";
+import { CalendarDays, ChevronDown, Mail, Phone, Search, Users } from "lucide-react";
 import {
   formatMessage,
   useLocale,
@@ -64,6 +66,177 @@ function statusBadgeVariant(
   return "outline";
 }
 
+function monthHeading(month: string, locale: "en" | "el"): string {
+  const [year, monthNumber] = month.split("-").map(Number);
+  return formatStudioDate(
+    new Date(Date.UTC(year, monthNumber - 1, 15, 12, 0, 0)),
+    { month: "long", year: "numeric" },
+    locale
+  );
+}
+
+function ClientCard({
+  user,
+  t,
+  locale,
+}: {
+  user: AdminUserListItem;
+  t: Messages["admin"];
+  locale: "en" | "el";
+}) {
+  const next = user.upcoming[0];
+  const last = user.recent[0];
+  const yearCount = user.yearCount ?? 0;
+  const yearLabel =
+    yearCount === 1
+      ? t.yearClassCountOne
+      : formatMessage(t.yearClassCount, { count: yearCount });
+  const months = groupAttendanceDatesByMonth(user.yearDates ?? []);
+
+  return (
+    <details className="group rounded-lg bg-[var(--background)]">
+      <summary className="flex cursor-pointer list-none items-start gap-3 p-4 [&::-webkit-details-marker]:hidden">
+        <div className="flex min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex items-start gap-4">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[var(--primary-light)]">
+              <span className="font-medium text-[var(--primary)]">{user.name?.charAt(0) || "?"}</span>
+            </div>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-medium text-[var(--text-primary)]">
+                  {user.name || t.unnamedClient}
+                </h3>
+                <Badge variant={roleBadgeVariant(user.role)}>{roleLabel(user.role, t)}</Badge>
+              </div>
+              <div className="mt-1 flex flex-col gap-1 text-sm text-[var(--text-muted)] sm:flex-row sm:flex-wrap sm:gap-x-4">
+                <a
+                  href={`mailto:${user.email}`}
+                  className="inline-flex items-center gap-1.5 hover:text-[var(--text-primary)]"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <Mail className="h-3.5 w-3.5" />
+                  {user.email}
+                </a>
+                {isPublicPhone(user.phone) ? (
+                  <a
+                    href={studioTelHref(user.phone)}
+                    className="inline-flex items-center gap-1.5 hover:text-[var(--text-primary)]"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    {formatStudioPhone(user.phone)}
+                  </a>
+                ) : null}
+              </div>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">{yearLabel}</p>
+            </div>
+          </div>
+          <div className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm lg:min-w-[16rem]">
+            {next ? (
+              <>
+                <p className="text-xs text-[var(--text-muted)]">{t.nextSession}</p>
+                <p className="font-medium text-[var(--text-primary)]">
+                  {formatStudioDateTime(new Date(next.scheduledAt), locale)}
+                </p>
+              </>
+            ) : last ? (
+              <>
+                <p className="text-xs text-[var(--text-muted)]">{t.lastSession}</p>
+                <p className="font-medium text-[var(--text-primary)]">
+                  {formatStudioDateTime(new Date(last.scheduledAt), locale)}
+                </p>
+              </>
+            ) : (
+              <p className="text-[var(--text-muted)]">{t.noSessionsYet}</p>
+            )}
+          </div>
+        </div>
+        <ChevronDown className="mt-2 h-5 w-5 shrink-0 text-[var(--text-muted)] transition group-open:rotate-180" />
+      </summary>
+
+      <div className="space-y-3 border-t border-[var(--border)] px-4 pb-4 pt-3">
+        <details className="rounded-lg border border-[var(--border)]">
+          <summary className="cursor-pointer list-none px-3 py-2 text-sm font-medium text-[var(--text-primary)] [&::-webkit-details-marker]:hidden">
+            {t.upcomingSection} ({user.upcoming.length})
+          </summary>
+          <div className="px-3 pb-3">
+            {user.upcoming.length === 0 ? (
+              <p className="text-sm text-[var(--text-muted)]">{t.noUpcomingSessions}</p>
+            ) : (
+              <ul className="divide-y divide-[var(--border)]">
+                {user.upcoming.map((appointment) => (
+                  <AppointmentRow
+                    key={appointment.id}
+                    appointment={appointment}
+                    t={t}
+                    locale={locale}
+                  />
+                ))}
+              </ul>
+            )}
+          </div>
+        </details>
+
+        <details className="rounded-lg border border-[var(--border)]">
+          <summary className="cursor-pointer list-none px-3 py-2 text-sm font-medium text-[var(--text-primary)] [&::-webkit-details-marker]:hidden">
+            {t.completedSection} ({yearCount})
+          </summary>
+          <div className="space-y-3 px-3 pb-3">
+            {yearCount === 0 ? (
+              <p className="text-sm text-[var(--text-muted)]">{t.noCompletedYet}</p>
+            ) : (
+              <>
+                <div>
+                  <p className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
+                    <CalendarDays className="h-3.5 w-3.5" />
+                    {t.yearDates}
+                  </p>
+                  <div className="space-y-2">
+                    {months.map((group) => (
+                      <div key={group.month}>
+                        <p className="text-xs font-medium text-[var(--text-muted)]">
+                          {monthHeading(group.month, locale)}
+                        </p>
+                        <p className="text-sm text-[var(--text-primary)]">
+                          {group.dates
+                            .map((date) =>
+                              formatStudioDate(parseStudioDateInput(date) ?? new Date(`${date}T12:00:00Z`), {
+                                day: "numeric",
+                                month: "short",
+                              }, locale)
+                            )
+                            .join(" · ")}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {user.recent.length > 0 ? (
+                  <div>
+                    <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
+                      {t.latestCompleted}
+                    </p>
+                    <ul className="divide-y divide-[var(--border)]">
+                      {user.recent.map((appointment) => (
+                        <AppointmentRow
+                          key={appointment.id}
+                          appointment={appointment}
+                          t={t}
+                          locale={locale}
+                        />
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+              </>
+            )}
+          </div>
+        </details>
+      </div>
+    </details>
+  );
+}
+
 function AppointmentRow({
   appointment,
   t,
@@ -104,11 +277,14 @@ export default function UsersPage() {
         ...user,
         upcoming: user.upcoming ?? [],
         recent: user.recent ?? [],
+        yearCount: user.yearCount ?? 0,
+        yearDates: user.yearDates ?? [],
       })),
     [data?.users]
   );
   const totals = summarizeAdminUsers(users);
   const upcomingCount = countUpcomingSessions(users);
+  const yearClasses = countYearClasses(users);
   const visibleUsers = useMemo(
     () =>
       sortAdminUsers(
@@ -132,7 +308,7 @@ export default function UsersPage() {
         <p className="text-[var(--text-muted)] mt-1">{t.admin.clientsSub}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-[var(--text-muted)]">{t.admin.people}</p>
@@ -154,6 +330,14 @@ export default function UsersPage() {
             <p className="text-sm text-[var(--text-muted)]">{t.admin.upcomingSessions}</p>
             <p className="text-2xl font-heading font-bold text-[var(--success)]">
               {upcomingCount}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-sm text-[var(--text-muted)]">{t.admin.yearClasses}</p>
+            <p className="text-2xl font-heading font-bold text-[var(--success)]">
+              {yearClasses}
             </p>
           </CardContent>
         </Card>
@@ -248,119 +432,10 @@ export default function UsersPage() {
               }
             />
           ) : (
-            <div className="space-y-4">
-              {visibleUsers.map((user) => {
-                const next = user.upcoming[0];
-                const last = user.recent[0];
-                return (
-                  <div
-                    key={user.id}
-                    className="rounded-lg bg-[var(--background)] p-4 space-y-4"
-                  >
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-[var(--primary-light)] flex items-center justify-center flex-shrink-0">
-                          <span className="font-medium text-[var(--primary)]">
-                            {user.name?.charAt(0) || "?"}
-                          </span>
-                        </div>
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-medium text-[var(--text-primary)]">
-                              {user.name || t.admin.unnamedClient}
-                            </h3>
-                            <Badge variant={roleBadgeVariant(user.role)}>
-                              {roleLabel(user.role, t.admin)}
-                            </Badge>
-                          </div>
-                          <div className="mt-1 flex flex-col gap-1 text-sm text-[var(--text-muted)] sm:flex-row sm:flex-wrap sm:gap-x-4">
-                            <a
-                              href={`mailto:${user.email}`}
-                              className="inline-flex items-center gap-1.5 hover:text-[var(--text-primary)]"
-                            >
-                              <Mail className="h-3.5 w-3.5" />
-                              {user.email}
-                            </a>
-                            {isPublicPhone(user.phone) ? (
-                              <a
-                                href={studioTelHref(user.phone)}
-                                className="inline-flex items-center gap-1.5 hover:text-[var(--text-primary)]"
-                              >
-                                <Phone className="h-3.5 w-3.5" />
-                                {formatStudioPhone(user.phone)}
-                              </a>
-                            ) : null}
-                          </div>
-                          {user.joinDate ? (
-                            <p className="mt-1 text-xs text-[var(--text-muted)]">
-                              {formatMessage(t.admin.joined, {
-                                date: formatStudioDate(new Date(user.joinDate), undefined, locale),
-                              })}
-                            </p>
-                          ) : null}
-                        </div>
-                      </div>
-
-                      <div className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm lg:min-w-[16rem]">
-                        {next ? (
-                          <>
-                            <p className="text-xs text-[var(--text-muted)]">{t.admin.nextSession}</p>
-                            <p className="font-medium text-[var(--text-primary)]">
-                              {formatStudioDateTime(new Date(next.scheduledAt), locale)}
-                            </p>
-                          </>
-                        ) : last ? (
-                          <>
-                            <p className="text-xs text-[var(--text-muted)]">{t.admin.lastSession}</p>
-                            <p className="font-medium text-[var(--text-primary)]">
-                              {formatStudioDateTime(new Date(last.scheduledAt), locale)}
-                            </p>
-                          </>
-                        ) : (
-                          <p className="text-[var(--text-muted)]">{t.admin.noSessionsYet}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {user.upcoming.length > 0 ? (
-                      <div>
-                        <p className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
-                          <CalendarDays className="h-3.5 w-3.5" />
-                          {formatMessage(t.admin.upcomingCount, { count: user.upcoming.length })}
-                        </p>
-                        <ul className="divide-y divide-[var(--border)]">
-                          {user.upcoming.map((appointment) => (
-                            <AppointmentRow
-                              key={appointment.id}
-                              appointment={appointment}
-                              t={t.admin}
-                              locale={locale}
-                            />
-                          ))}
-                        </ul>
-                      </div>
-                    ) : null}
-
-                    {user.recent.length > 0 ? (
-                      <div>
-                        <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
-                          {t.admin.recentHistory}
-                        </p>
-                        <ul className="divide-y divide-[var(--border)]">
-                          {user.recent.map((appointment) => (
-                            <AppointmentRow
-                              key={appointment.id}
-                              appointment={appointment}
-                              t={t.admin}
-                              locale={locale}
-                            />
-                          ))}
-                        </ul>
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              })}
+            <div className="space-y-3">
+              {visibleUsers.map((user) => (
+                <ClientCard key={user.id} user={user} t={t.admin} locale={locale} />
+              ))}
             </div>
           )}
         </CardContent>

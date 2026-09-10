@@ -37,6 +37,10 @@ export async function exportClientAccount(userId: string) {
           service: { select: { name: true } },
         },
       },
+      attendance: {
+        orderBy: { studioDate: "desc" },
+        select: { studioDate: true },
+      },
     },
   });
 
@@ -58,6 +62,7 @@ export async function exportClientAccount(userId: string) {
       status: appointment.status,
       totalCents: appointment.totalCents,
     })),
+    classDatesThisYear: user.attendance.map((row: { studioDate: string }) => row.studioDate),
   };
 }
 

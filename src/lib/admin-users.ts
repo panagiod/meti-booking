@@ -22,6 +22,8 @@ export interface AdminUserListItem {
   joinDate: string;
   upcoming: AdminUserAppointment[];
   recent: AdminUserAppointment[];
+  yearCount: number;
+  yearDates: string[];
 }
 
 const ACTIVE_STATUSES = new Set(["PENDING", "CONFIRMED", "IN_PROGRESS"]);
@@ -103,6 +105,10 @@ export function sortAdminUsers(users: AdminUserListItem[]): AdminUserListItem[] 
 
 export function countUpcomingSessions(users: AdminUserListItem[]): number {
   return users.reduce((sum, user) => sum + user.upcoming.length, 0);
+}
+
+export function countYearClasses(users: AdminUserListItem[]): number {
+  return users.reduce((sum, user) => sum + (user.yearCount ?? 0), 0);
 }
 
 export function appointmentStatusLabel(

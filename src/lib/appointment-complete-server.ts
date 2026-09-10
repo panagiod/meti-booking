@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { idsBeyondCompletedHistoryLimit, idsToComplete } from "@/lib/appointment-complete";
+import { syncClientAttendance } from "@/lib/client-attendance-server";
 
 /** Mark confirmed sessions as completed once their class time has finished. */
 export async function completePastAppointments(now = new Date()): Promise<number> {
@@ -37,4 +38,15 @@ export async function deleteExcessCompletedAppointments(): Promise<number> {
     where: { id: { in: ids } },
   });
   return result.count;
+}
+
+/** Complete finished classes, store year dates, then drop extra full booking rows. */
+export async function refreshAppointmentHistory(now = new Date()): Promise<{
+  completed: number;
+  trimmed: number;
+}> {
+  const completed = await completePastAppointments(now);
+  await syncClientAttendance(now);
+  const trimmed = await deleteExcessCompletedAppointments();
+  return { completed, trimmed };
 }

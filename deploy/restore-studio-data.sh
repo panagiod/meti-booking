@@ -78,7 +78,7 @@ count_table() {
 }
 
 echo "Decrypted backup is a valid SQLite database (integrity_check=ok)"
-for table in appointments users instructor_schedules instructor_profiles studio_content blocked_times; do
+for table in appointments users instructor_schedules instructor_profiles studio_content blocked_times client_attendance; do
   backup_count="$(count_table "$TMP_DB" "$table")"
   live_count="n/a"
   if [[ -f "$DB" ]]; then

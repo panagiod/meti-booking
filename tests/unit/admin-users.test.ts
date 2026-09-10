@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   classifyAdminAppointment,
   countUpcomingSessions,
+  countYearClasses,
   filterAdminUsers,
   normalizeAdminUserRole,
   partitionAdminAppointments,
@@ -19,6 +20,8 @@ function user(
     phone: null,
     upcoming: [],
     recent: [],
+    yearCount: 0,
+    yearDates: [],
     ...partial,
   };
 }
@@ -185,8 +188,13 @@ describe("sortAdminUsers", () => {
   });
 });
 
-describe("countUpcomingSessions", () => {
-  it("sums upcoming dates across people", () => {
-    expect(countUpcomingSessions(users)).toBe(2);
+describe("countYearClasses", () => {
+  it("sums completed classes from the year log", () => {
+    expect(
+      countYearClasses([
+        { ...users[0], yearCount: 2 },
+        { ...users[2], yearCount: 12 },
+      ])
+    ).toBe(14);
   });
 });

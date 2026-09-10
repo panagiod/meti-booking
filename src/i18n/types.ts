@@ -449,6 +449,15 @@ export type Messages = {
     noSessionsYet: string;
     upcomingCount: string;
     recentHistory: string;
+    yearClasses: string;
+    yearClassCount: string;
+    yearClassCountOne: string;
+    upcomingSection: string;
+    completedSection: string;
+    yearDates: string;
+    latestCompleted: string;
+    noCompletedYet: string;
+    noUpcomingSessions: string;
     minutes: string;
     statusConfirmed: string;
     statusPending: string;

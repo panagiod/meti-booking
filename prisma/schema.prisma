@@ -29,6 +29,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   appointments  Appointment[] @relation("ClientAppointments")
+  attendance    ClientAttendance[]
   blogPosts     BlogPost[]
 
   @@map("users")
@@ -347,6 +348,20 @@ model ClientProfile {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("client_profiles")
+}
+
+// Completed-class dates for admin year metrics. Kept 12 months; full booking rows stay at last 8.
+model ClientAttendance {
+  id             String   @id @default(cuid())
+  clientId       String
+  appointmentId  String   @unique
+  studioDate     String
+  createdAt      DateTime @default(now())
+
+  client         User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, studioDate])
+  @@map("client_attendance")
 }
 
 // ============================================

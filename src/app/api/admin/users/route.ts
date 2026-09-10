@@ -4,7 +4,8 @@ import { containsInsensitive } from "@/lib/prisma-filters";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { partitionAdminAppointments, type AdminUserAppointment } from "@/lib/admin-users";
 import { retainedAppointmentWhere } from "@/lib/appointment-complete";
-import { deleteExcessCompletedAppointments } from "@/lib/appointment-complete-server";
+import { refreshAppointmentHistory } from "@/lib/appointment-complete-server";
+import { attendanceCutoffDateStr, summarizeYearAttendance } from "@/lib/client-attendance";
 
 type UserRow = {
   id: string;
@@ -13,6 +14,7 @@ type UserRow = {
   role: string;
   createdAt: Date;
   client: { phone: string | null } | null;
+  attendance: Array<{ studioDate: string }>;
   appointments: Array<{
     id: string;
     scheduledAt: Date;
@@ -53,7 +55,7 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    await deleteExcessCompletedAppointments();
+    await refreshAppointmentHistory();
 
     const users = await prisma.user.findMany({
       where,
@@ -64,6 +66,7 @@ export async function GET(request: NextRequest) {
         role: true,
         createdAt: true,
         client: { select: { phone: true } },
+        attendance: { select: { studioDate: true } },
         appointments: {
           where: retainedAppointmentWhere(),
           select: {
@@ -91,6 +94,7 @@ export async function GET(request: NextRequest) {
           isTest: appointment.isTest,
         }));
         const { upcoming, recent } = partitionAdminAppointments(appointments);
+        const year = summarizeYearAttendance(user.attendance ?? [], attendanceCutoffDateStr());
         return {
           id: user.id,
           name: user.name,
@@ -101,6 +105,8 @@ export async function GET(request: NextRequest) {
           joinDate: user.createdAt.toISOString(),
           upcoming,
           recent,
+          yearCount: year.count,
+          yearDates: year.dates,
         };
       }),
     });

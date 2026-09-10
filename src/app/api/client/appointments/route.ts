@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { completePastAppointments, deleteExcessCompletedAppointments } from "@/lib/appointment-complete-server";
+import { refreshAppointmentHistory } from "@/lib/appointment-complete-server";
 import { retainedAppointmentWhere } from "@/lib/appointment-complete";
 
 // GET: List client appointments
@@ -19,8 +19,7 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    await completePastAppointments();
-    await deleteExcessCompletedAppointments();
+    await refreshAppointmentHistory();
 
     const appointments = await prisma.appointment.findMany({
       where: {

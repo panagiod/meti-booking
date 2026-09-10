@@ -27,6 +27,7 @@ describe("legal pages", () => {
     expect(privacy).toContain("Επίτροπο Προστασίας Δεδομένων");
     expect(privacy).toContain("τηλέφωνο");
     expect(privacy).toContain("8 τελευταίες");
+    expect(privacy).toContain("12 μηνών");
   });
 
   it("explains the leisure-service withdrawal exemption", () => {

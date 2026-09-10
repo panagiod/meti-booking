@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireCronAuth } from "@/lib/cron-auth";
-import { deleteExcessCompletedAppointments } from "@/lib/appointment-complete-server";
+import { refreshAppointmentHistory } from "@/lib/appointment-complete-server";
 
 export async function GET(request: Request) {
   const authError = requireCronAuth(request);
@@ -11,16 +11,16 @@ export async function GET(request: Request) {
     const cancelled = await prisma.appointment.deleteMany({
       where: { status: "CANCELLED" },
     });
-    const expired = await deleteExcessCompletedAppointments();
+    const { trimmed } = await refreshAppointmentHistory();
 
     console.log(
-      `[cron/cleanup-cancelled] Deleted ${cancelled.count} cancelled and ${expired} extra completed appointments`
+      `[cron/cleanup-cancelled] Deleted ${cancelled.count} cancelled and ${trimmed} extra completed appointments`
     );
 
     return NextResponse.json({
       ok: true,
       deleted: cancelled.count,
-      expiredCompleted: expired,
+      expiredCompleted: trimmed,
     });
   } catch (error) {
     console.error("Cron cleanup-cancelled error:", error);
