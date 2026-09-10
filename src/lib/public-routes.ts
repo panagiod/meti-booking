@@ -29,6 +29,7 @@ export const PUBLIC_PATHS = [
   "/api/promotions",
   "/api/checkout/quote",
   "/api/appointments",
+  "/api/cron",
   // Token-authenticated (not cookie-based) — see src/lib/admin-promote.ts
   "/api/ops/promote-admin",
 ] as const;

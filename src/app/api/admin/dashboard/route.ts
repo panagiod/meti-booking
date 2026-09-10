@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { studioDateStrFromUtc, studioDayBoundsUTC } from "@/lib/timezone";
+import { completePastAppointments } from "@/lib/appointment-complete-server";
+
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
@@ -13,12 +16,14 @@ export async function GET() {
     const now = new Date();
     const { start: startOfDay, end: endOfDay } = studioDayBoundsUTC(studioDateStrFromUtc(now));
 
+    await completePastAppointments(now);
+
     const [totalUsers, todayAppointments, completedToday, upcomingAppointments] = await Promise.all([
       prisma.user.count(),
       prisma.appointment.count({
         where: {
           scheduledAt: { gte: startOfDay, lte: endOfDay },
-          status: { in: ["CONFIRMED", "IN_PROGRESS"] },
+          status: { in: ["CONFIRMED", "IN_PROGRESS", "COMPLETED"] },
         },
       }),
       prisma.appointment.count({

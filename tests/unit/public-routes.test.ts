@@ -24,6 +24,7 @@ describe("isPublicPath", () => {
     expect(isPublicPath("/api/health")).toBe(true);
     expect(isPublicPath("/api/appointments")).toBe(true);
     expect(isPublicPath("/api/appointments/manage")).toBe(true);
+    expect(isPublicPath("/api/cron/complete-past")).toBe(true);
     expect(isPublicPath("/api/auth/callback/google")).toBe(true);
   });
 

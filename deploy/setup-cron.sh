@@ -39,6 +39,9 @@ CRON_SECRET=${CRON_SECRET}
 # Cleanup old cancelled appointments (03:00 UTC)
 0 3 * * * root curl -fsS -H "Authorization: Bearer \${CRON_SECRET}" ${BASE_URL}/api/cron/cleanup-cancelled >/dev/null 2>&1
 
+# Mark finished classes as completed (every 15 minutes)
+*/15 * * * * root curl -fsS -H "Authorization: Bearer \${CRON_SECRET}" ${BASE_URL}/api/cron/complete-past >/dev/null 2>&1
+
 # Reclaim logs, leftover local backups, and journal (01:45 UTC)
 45 1 * * * root ${ROOT}/deploy/prune-disk.sh >> /var/log/meti-booking/prune.log 2>&1
 

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import { isAutomatedTestEmail } from "@/lib/appointment-cancel";
+import { completePastAppointments } from "@/lib/appointment-complete-server";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -45,6 +46,8 @@ export async function GET(request: NextRequest) {
     if (!advisor) {
       return NextResponse.json({ error: "No studio instructor configured" }, { status: 404 });
     }
+
+    await completePastAppointments();
 
     const startDate = request.nextUrl.searchParams.get("startDate");
     const endDate = request.nextUrl.searchParams.get("endDate");

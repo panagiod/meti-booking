@@ -134,6 +134,7 @@ git pull origin main
 | Expire unpaid bookings | 00:00 | `/api/cron/expire-pending` |
 | Booking reminders | 12:00 | `/api/cron/reminders` |
 | Cleanup cancelled | 03:00 | `/api/cron/cleanup-cancelled` |
+| Complete past classes | every 15 min | `/api/cron/complete-past` |
 | Disk prune | 01:45 | `deploy/prune-disk.sh` (logs, journal, leftover local backups) |
 | Encrypted backup | 02:00 | `deploy/backup-studio-data.sh` |
 
