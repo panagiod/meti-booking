@@ -1,8 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import {
-  completedRetentionCutoff,
-  idsToComplete,
-} from "@/lib/appointment-complete";
+import { idsBeyondCompletedHistoryLimit, idsToComplete } from "@/lib/appointment-complete";
 
 /** Mark confirmed sessions as completed once their class time has finished. */
 export async function completePastAppointments(now = new Date()): Promise<number> {
@@ -28,13 +25,16 @@ export async function completePastAppointments(now = new Date()): Promise<number
   return result.count;
 }
 
-/** Drop completed class records after the retention window so client history stays bounded. */
-export async function deleteExpiredCompletedAppointments(now = new Date()): Promise<number> {
+/** Keep only the completed classes admin can see (last 8 per client). */
+export async function deleteExcessCompletedAppointments(): Promise<number> {
+  const rows = await prisma.appointment.findMany({
+    where: { status: { in: ["COMPLETED", "NO_SHOW"] } },
+    select: { id: true, clientId: true, scheduledAt: true },
+  });
+  const ids = idsBeyondCompletedHistoryLimit(rows);
+  if (ids.length === 0) return 0;
   const result = await prisma.appointment.deleteMany({
-    where: {
-      status: { in: ["COMPLETED", "NO_SHOW"] },
-      scheduledAt: { lt: completedRetentionCutoff(now) },
-    },
+    where: { id: { in: ids } },
   });
   return result.count;
 }

@@ -31,7 +31,7 @@ revokes existing sessions so they must sign in again. See
 |------|-----|---------|
 | **Overview** | `/admin` | This week’s board, today’s counts, shortcuts |
 | **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot, book for a client |
-| **Clients** | `/admin/users` | Client list with phone and the last 8 past sessions (completed classes are kept 12 months) |
+| **Clients** | `/admin/users` | Client list with phone and the last 8 past sessions |
 | **Hours** | `/admin/schedule` | Weekly open days, times, lunch, gap, cancellation window, places per class, booking window |
 | **Closures** | `/admin/closures` | Cyprus holidays + extra days off |
 | **Website** | `/admin/content` | Homepage text, images, contact info |

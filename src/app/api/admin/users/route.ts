@@ -4,6 +4,7 @@ import { containsInsensitive } from "@/lib/prisma-filters";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { partitionAdminAppointments, type AdminUserAppointment } from "@/lib/admin-users";
 import { retainedAppointmentWhere } from "@/lib/appointment-complete";
+import { deleteExcessCompletedAppointments } from "@/lib/appointment-complete-server";
 
 type UserRow = {
   id: string;
@@ -51,6 +52,8 @@ export async function GET(request: NextRequest) {
         { email: containsInsensitive(search) },
       ];
     }
+
+    await deleteExcessCompletedAppointments();
 
     const users = await prisma.user.findMany({
       where,

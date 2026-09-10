@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { idsToComplete, sessionHasEnded, COMPLETED_RETENTION_DAYS, completedRetentionCutoff } from "@/lib/appointment-complete";
+import { idsToComplete, sessionHasEnded, COMPLETED_HISTORY_LIMIT, idsBeyondCompletedHistoryLimit } from "@/lib/appointment-complete";
 
 const start = new Date("2026-09-10T12:45:00Z");
 
@@ -24,11 +24,22 @@ describe("idsToComplete", () => {
   });
 });
 
-describe("completed retention", () => {
-  it("keeps completed classes for 12 months", () => {
-    expect(COMPLETED_RETENTION_DAYS).toBe(365);
-    const now = new Date("2026-09-10T12:00:00Z");
-    const cutoff = completedRetentionCutoff(now);
-    expect(now.getTime() - cutoff.getTime()).toBe(365 * 24 * 60 * 60 * 1000);
+describe("completed history limit", () => {
+  it("keeps the same eight completed classes admin can see", () => {
+    expect(COMPLETED_HISTORY_LIMIT).toBe(8);
+    const rows = Array.from({ length: 10 }, (_, index) => ({
+      id: `c${index}`,
+      clientId: "alex",
+      scheduledAt: new Date(`2026-09-${String(index + 1).padStart(2, "0")}T12:45:00Z`),
+    }));
+    expect(idsBeyondCompletedHistoryLimit(rows).sort()).toEqual(["c0", "c1"]);
+  });
+
+  it("does not delete another client's recent classes", () => {
+    const rows = [
+      { id: "a-old", clientId: "a", scheduledAt: new Date("2026-01-01T12:00:00Z") },
+      { id: "b-new", clientId: "b", scheduledAt: new Date("2026-09-01T12:00:00Z") },
+    ];
+    expect(idsBeyondCompletedHistoryLimit(rows, 8)).toEqual([]);
   });
 });

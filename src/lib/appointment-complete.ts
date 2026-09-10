@@ -20,23 +20,28 @@ export function idsToComplete<T extends { id: string; scheduledAt: Date; duratio
     .map((row) => row.id);
 }
 
-/** Completed and no-show class records older than this are deleted. */
-export const COMPLETED_RETENTION_DAYS = 365;
+/** Same number the Clients page shows — older completed rows are deleted. */
+export const COMPLETED_HISTORY_LIMIT = 8;
 
-export function completedRetentionCutoff(now = new Date()): Date {
-  return new Date(now.getTime() - COMPLETED_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+export function idsBeyondCompletedHistoryLimit<
+  T extends { id: string; clientId: string; scheduledAt: Date },
+>(rows: T[], limit = COMPLETED_HISTORY_LIMIT): string[] {
+  const kept = new Map<string, number>();
+  const extra: string[] = [];
+  const newestFirst = [...rows].sort(
+    (a, b) => b.scheduledAt.getTime() - a.scheduledAt.getTime()
+  );
+  for (const row of newestFirst) {
+    const count = kept.get(row.clientId) ?? 0;
+    if (count >= limit) extra.push(row.id);
+    else kept.set(row.clientId, count + 1);
+  }
+  return extra;
 }
 
-/** Upcoming bookings plus completed classes still inside the retention window. */
-export function retainedAppointmentWhere(now = new Date()) {
-  const cutoff = completedRetentionCutoff(now);
+/** Upcoming bookings plus the completed classes we still keep. */
+export function retainedAppointmentWhere() {
   return {
-    OR: [
-      { status: { in: ["PENDING", "CONFIRMED", "IN_PROGRESS"] } },
-      {
-        status: { in: ["COMPLETED", "NO_SHOW"] },
-        scheduledAt: { gte: cutoff },
-      },
-    ],
+    status: { in: ["PENDING", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "NO_SHOW"] },
   };
 }
