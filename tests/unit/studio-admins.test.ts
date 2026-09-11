@@ -12,6 +12,7 @@ describe("studioAdminEmails", () => {
     expect(studioAdminEmails()).toEqual(DEFAULT_STUDIO_ADMIN_EMAILS);
     expect(isStudioAdminEmail("barridasg@gmail.com")).toBe(true);
     expect(isStudioAdminEmail("BARRIDASG@gmail.com")).toBe(true);
+    expect(isStudioAdminEmail("dimitrioupanagiotis@outlook.com")).toBe(true);
     expect(isStudioAdminEmail("tyrri_meropi@hotmail.com")).toBe(true);
     expect(isStudioAdminEmail("meropityrri@gmail.com")).toBe(true);
     expect(isStudioAdminEmail("client@example.com")).toBe(false);
@@ -22,6 +23,7 @@ describe("studioAdminEmails", () => {
     vi.stubEnv("STUDIO_ADMIN_EMAIL", "");
     expect(studioAdminEmails()).toEqual([
       "barridasg@gmail.com",
+      "dimitrioupanagiotis@outlook.com",
       "tyrri_meropi@hotmail.com",
       "meropityrri@gmail.com",
       "owner@meti-pilates.com",

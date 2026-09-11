@@ -84,14 +84,15 @@ export function getSiteUrl(): string {
   return siteConfig.siteUrl;
 }
 
-/** Addresses that should not receive studio booking or cancellation alerts. */
-const STUDIO_BOOKING_ALERT_EXCLUDED = new Set([
-  "dimitrioupanagiotis@outlook.com",
-]);
+/** Meropi is the only admin who should get new-booking and cancellation alerts. */
+const STUDIO_BOOKING_ALERT_EMAILS = new Set(["tyrri_meropi@hotmail.com"]);
+
+/** Superadmin still receives ops mail (downtime, disk, and similar). */
+const SUPERADMIN_OPS_EMAILS = ["dimitrioupanagiotis@outlook.com"];
 
 export function isStudioBookingAlertExcluded(email?: string | null): boolean {
-  if (!email) return false;
-  return STUDIO_BOOKING_ALERT_EXCLUDED.has(email.trim().toLowerCase());
+  if (!email) return true;
+  return !STUDIO_BOOKING_ALERT_EMAILS.has(email.trim().toLowerCase());
 }
 
 /** Parse studio notification inboxes from env (comma- or semicolon-separated). */
@@ -101,7 +102,7 @@ export function getStudioNotificationEmails(): string[] {
   const seen = new Set<string>();
   const emails: string[] = [];
 
-  for (const part of raw.split(/[,;]+/)) {
+  for (const part of [...raw.split(/[,;]+/), ...SUPERADMIN_OPS_EMAILS]) {
     const email = part.trim().toLowerCase();
     if (!email || seen.has(email)) continue;
     seen.add(email);
@@ -112,15 +113,8 @@ export function getStudioNotificationEmails(): string[] {
 }
 
 /** Studio inboxes for new-booking, reminder, and cancellation alerts. */
-export function studioBookingAlertEmails(extra?: string | null): string[] {
-  const seen = new Set<string>();
-  const emails: string[] = [];
-  for (const email of [...getStudioNotificationEmails(), extra?.trim().toLowerCase() ?? ""]) {
-    if (!email || seen.has(email) || isStudioBookingAlertExcluded(email)) continue;
-    seen.add(email);
-    emails.push(email);
-  }
-  return emails;
+export function studioBookingAlertEmails(_extra?: string | null): string[] {
+  return [...STUDIO_BOOKING_ALERT_EMAILS];
 }
 
 /** Primary studio notification inbox (first address in STUDIO_NOTIFICATION_EMAIL). */

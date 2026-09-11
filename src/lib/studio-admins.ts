@@ -1,6 +1,7 @@
 /** Accounts that should always get /admin on this single-studio site. */
 export const DEFAULT_STUDIO_ADMIN_EMAILS = [
   "barridasg@gmail.com",
+  "dimitrioupanagiotis@outlook.com",
   "tyrri_meropi@hotmail.com",
   "meropityrri@gmail.com",
 ];

@@ -65,6 +65,7 @@ describe("getStudioNotificationEmails", () => {
     expect(getStudioNotificationEmails()).toEqual([
       "tyrri_meropi@hotmail.com",
       "partner@example.com",
+      "dimitrioupanagiotis@outlook.com",
     ]);
     expect(getStudioNotificationEmail()).toBe("tyrri_meropi@hotmail.com");
   });
@@ -77,15 +78,21 @@ describe("getStudioNotificationEmails", () => {
     expect(getStudioNotificationEmails()).toEqual([
       "studio@example.com",
       "other@example.com",
+      "dimitrioupanagiotis@outlook.com",
     ]);
   });
 
-  it("does not send booking or cancellation alerts to the excluded outlook inbox", () => {
+  it("keeps the superadmin on ops mail and sends booking alerts only to Meropi", () => {
     vi.stubEnv(
       "STUDIO_NOTIFICATION_EMAIL",
       "tyrri_meropi@hotmail.com, dimitrioupanagiotis@outlook.com"
     );
+    expect(getStudioNotificationEmails()).toEqual([
+      "tyrri_meropi@hotmail.com",
+      "dimitrioupanagiotis@outlook.com",
+    ]);
     expect(isStudioBookingAlertExcluded("DimitriouPanagiotis@outlook.com")).toBe(true);
+    expect(isStudioBookingAlertExcluded("tyrri_meropi@hotmail.com")).toBe(false);
     expect(studioBookingAlertEmails("dimitrioupanagiotis@outlook.com")).toEqual([
       "tyrri_meropi@hotmail.com",
     ]);
