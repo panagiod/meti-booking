@@ -10,6 +10,7 @@ import { LoadingPage } from "@/components/ui/loading";
 import { useAdminUsers } from "@/lib/hooks";
 import {
   appointmentStatusLabel,
+  countUnpaidCents,
   countUpcomingSessions,
   countYearClasses,
   filterAdminUsers,
@@ -21,9 +22,12 @@ import {
   type AdminUserListItem,
 } from "@/lib/admin-users";
 import { groupAttendanceDatesByMonth } from "@/lib/client-attendance";
+import { formatMoney } from "@/lib/format";
+import { isPayableSessionStatus, isSessionPaid } from "@/lib/session-payment";
 import { formatStudioDate, formatStudioDateTime, parseStudioDateInput } from "@/lib/timezone";
 import { formatStudioPhone, isPublicPhone, studioTelHref } from "@/lib/site-config";
 import { CalendarDays, ChevronDown, Mail, Phone, Search, Users } from "lucide-react";
+import { sileo } from "sileo";
 import {
   formatMessage,
   useLocale,
@@ -79,14 +83,17 @@ function ClientCard({
   user,
   t,
   locale,
+  onPaymentUpdated,
 }: {
   user: AdminUserListItem;
   t: Messages["admin"];
   locale: "en" | "el";
+  onPaymentUpdated: () => void;
 }) {
   const next = user.upcoming[0];
   const last = user.recent[0];
   const yearCount = user.yearCount ?? 0;
+  const unpaidCents = user.unpaidCents ?? 0;
   const yearLabel =
     yearCount === 1
       ? t.yearClassCountOne
@@ -129,6 +136,11 @@ function ClientCard({
                 ) : null}
               </div>
               <p className="mt-1 text-xs text-[var(--text-muted)]">{yearLabel}</p>
+              {unpaidCents > 0 ? (
+                <p className="mt-1 text-xs font-medium text-[var(--error)]">
+                  {formatMessage(t.unpaidAmount, { amount: formatMoney(unpaidCents, locale) })}
+                </p>
+              ) : null}
             </div>
           </div>
           <div className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm lg:min-w-[16rem]">
@@ -182,10 +194,11 @@ function ClientCard({
             {t.completedSection} ({yearCount})
           </summary>
           <div className="space-y-3 px-3 pb-3">
-            {yearCount === 0 ? (
+            {yearCount === 0 && user.recent.length === 0 ? (
               <p className="text-sm text-[var(--text-muted)]">{t.noCompletedYet}</p>
             ) : (
               <>
+                {yearCount > 0 ? (
                 <div>
                   <p className="mb-1 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                     <CalendarDays className="h-3.5 w-3.5" />
@@ -211,6 +224,7 @@ function ClientCard({
                     ))}
                   </div>
                 </div>
+                ) : null}
                 {user.recent.length > 0 ? (
                   <div>
                     <p className="mb-1 text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
@@ -223,6 +237,9 @@ function ClientCard({
                           appointment={appointment}
                           t={t}
                           locale={locale}
+                          clientName={user.name}
+                          showPayment
+                          onPaymentUpdated={onPaymentUpdated}
                         />
                       ))}
                     </ul>
@@ -241,24 +258,125 @@ function AppointmentRow({
   appointment,
   t,
   locale,
+  clientName,
+  showPayment = false,
+  onPaymentUpdated,
 }: {
   appointment: AdminUserAppointment;
   t: Messages["admin"];
   locale: "en" | "el";
+  clientName?: string;
+  showPayment?: boolean;
+  onPaymentUpdated?: () => void;
 }) {
+  const payable = showPayment && isPayableSessionStatus(appointment.status);
+  const paid = isSessionPaid(appointment);
+  const [paidByName, setPaidByName] = useState(appointment.paidByName || clientName || "");
+  const [saving, setSaving] = useState(false);
+  const amount =
+    typeof appointment.totalCents === "number" && appointment.totalCents > 0
+      ? formatMoney(appointment.totalCents, locale)
+      : null;
+
+  async function savePayment(paidNext: boolean) {
+    const name = paidByName.trim() || clientName?.trim() || "";
+    if (paidNext && !name) {
+      sileo.error({ title: t.paidByRequired });
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/admin/appointments/${appointment.id}/payment`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paid: paidNext, paidByName: name }),
+      });
+      if (!res.ok) {
+        throw new Error("payment");
+      }
+      sileo.success({ title: paidNext ? t.paymentSaved : t.paymentCleared });
+      onPaymentUpdated?.();
+    } catch {
+      sileo.error({ title: t.paymentError });
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
-    <li className="flex flex-wrap items-center justify-between gap-2 py-1.5 text-sm">
-      <div>
-        <p className="font-medium text-[var(--text-primary)]">
-          {formatStudioDateTime(new Date(appointment.scheduledAt), locale)}
-        </p>
-        <p className="text-xs text-[var(--text-muted)]">
-          {appointment.serviceName} · {formatMessage(t.minutes, { count: appointment.durationMin })}
-        </p>
+    <li className="flex flex-col gap-2 py-2 text-sm">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="font-medium text-[var(--text-primary)]">
+            {formatStudioDateTime(new Date(appointment.scheduledAt), locale)}
+          </p>
+          <p className="text-xs text-[var(--text-muted)]">
+            {appointment.serviceName} · {formatMessage(t.minutes, { count: appointment.durationMin })}
+            {amount ? ` · ${amount}` : ""}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Badge variant={statusBadgeVariant(appointment.status)}>
+            {appointmentStatusLabel(appointment.status, statusLabels(t))}
+          </Badge>
+          {payable ? (
+            <Badge variant={paid ? "success" : "warning"}>
+              {paid ? t.sessionPaid : t.sessionUnpaid}
+            </Badge>
+          ) : null}
+        </div>
       </div>
-      <Badge variant={statusBadgeVariant(appointment.status)}>
-        {appointmentStatusLabel(appointment.status, statusLabels(t))}
-      </Badge>
+      {payable ? (
+        paid ? (
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs text-[var(--text-muted)]">
+              {formatMessage(t.paidBy, { name: appointment.paidByName || paidByName })}
+              {appointment.paidAt
+                ? ` · ${formatStudioDate(
+                    new Date(appointment.paidAt),
+                    { day: "numeric", month: "short" },
+                    locale
+                  )}`
+                : ""}
+            </p>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={saving}
+              onClick={() => void savePayment(false)}
+            >
+              {saving ? t.savingPayment : t.markUnpaid}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center gap-2">
+            <Input
+              value={paidByName}
+              onChange={(event) => setPaidByName(event.target.value)}
+              placeholder={t.paidByPlaceholder}
+              aria-label={t.paidByPlaceholder}
+              className="h-8 max-w-56 text-xs"
+              disabled={saving}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  void savePayment(true);
+                }
+              }}
+            />
+            <Button
+              type="button"
+              variant="success"
+              size="sm"
+              disabled={saving}
+              onClick={() => void savePayment(true)}
+            >
+              {saving ? t.savingPayment : t.markPaid}
+            </Button>
+          </div>
+        )
+      ) : null}
     </li>
   );
 }
@@ -279,12 +397,14 @@ export default function UsersPage() {
         recent: user.recent ?? [],
         yearCount: user.yearCount ?? 0,
         yearDates: user.yearDates ?? [],
+        unpaidCents: user.unpaidCents ?? 0,
       })),
     [data?.users]
   );
   const totals = summarizeAdminUsers(users);
   const upcomingCount = countUpcomingSessions(users);
   const yearClasses = countYearClasses(users);
+  const unpaidTotal = countUnpaidCents(users);
   const visibleUsers = useMemo(
     () =>
       sortAdminUsers(
@@ -319,7 +439,7 @@ export default function UsersPage() {
         <p className="text-[var(--text-muted)] mt-1">{t.admin.clientsSub}</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-[var(--text-muted)]">{t.admin.people}</p>
@@ -349,6 +469,14 @@ export default function UsersPage() {
             <p className="text-sm text-[var(--text-muted)]">{t.admin.yearClasses}</p>
             <p className="text-2xl font-heading font-bold text-[var(--success)]">
               {yearClasses}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-sm text-[var(--text-muted)]">{t.admin.unpaidTotal}</p>
+            <p className="text-2xl font-heading font-bold text-[var(--error)]">
+              {formatMoney(unpaidTotal, locale)}
             </p>
           </CardContent>
         </Card>
@@ -420,6 +548,13 @@ export default function UsersPage() {
             >
               {t.admin.filterNoUpcoming}
             </Button>
+            <Button
+              variant={bookingFilter === "unpaid" ? "default" : "secondary"}
+              size="sm"
+              onClick={() => setBookingFilter("unpaid")}
+            >
+              {t.admin.filterUnpaid}
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -445,7 +580,13 @@ export default function UsersPage() {
           ) : (
             <div className="space-y-3">
               {visibleUsers.map((user) => (
-                <ClientCard key={user.id} user={user} t={t.admin} locale={locale} />
+                <ClientCard
+                  key={user.id}
+                  user={user}
+                  t={t.admin}
+                  locale={locale}
+                  onPaymentUpdated={() => void refetch()}
+                />
               ))}
             </div>
           )}

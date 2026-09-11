@@ -438,6 +438,9 @@ export type Messages = {
     filterAllBookings: string;
     filterHasUpcoming: string;
     filterNoUpcoming: string;
+    filterUnpaid: string;
+    unpaidTotal: string;
+    unpaidAmount: string;
     personCount: string;
     peopleCount: string;
     noClientsYet: string;
@@ -467,6 +470,17 @@ export type Messages = {
     statusCompleted: string;
     statusCancelled: string;
     statusNoShow: string;
+    sessionPaid: string;
+    sessionUnpaid: string;
+    markPaid: string;
+    markUnpaid: string;
+    paidByPlaceholder: string;
+    paidBy: string;
+    paidByRequired: string;
+    paymentSaved: string;
+    paymentCleared: string;
+    paymentError: string;
+    savingPayment: string;
     hoursTitle: string;
     hoursSub: string;
     closuresLink: string;

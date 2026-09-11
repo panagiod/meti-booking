@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   classifyAdminAppointment,
-  countUpcomingSessions,
+  countUnpaidCents,
   countYearClasses,
   filterAdminUsers,
   normalizeAdminUserRole,
@@ -22,6 +22,7 @@ function user(
     recent: [],
     yearCount: 0,
     yearDates: [],
+    unpaidCents: 0,
     ...partial,
   };
 }
@@ -65,8 +66,12 @@ const users: AdminUserListItem[] = [
         status: "COMPLETED",
         serviceName: "Reformer Session",
         durationMin: 45,
+        totalCents: 3500,
+        paidAt: null,
+        paidByName: null,
       },
     ],
+    unpaidCents: 3500,
   }),
 ];
 
@@ -100,6 +105,10 @@ describe("filterAdminUsers", () => {
       "3",
     ]);
     expect(filterAdminUsers(users, { bookings: "none" }).map((item) => item.id)).toEqual(["1"]);
+  });
+
+  it("filters people who still owe for a completed session", () => {
+    expect(filterAdminUsers(users, { bookings: "unpaid" }).map((item) => item.id)).toEqual(["3"]);
   });
 
   it("searches phone numbers", () => {
@@ -169,6 +178,26 @@ describe("partitionAdminAppointments", () => {
     }));
     expect(partitionAdminAppointments(past, now).recent).toHaveLength(8);
   });
+
+  it("keeps unpaid completed sessions even when they are older than the last eight", () => {
+    const past = Array.from({ length: 12 }, (_, index) => ({
+      id: `past-${index}`,
+      scheduledAt: `2026-08-${String(index + 1).padStart(2, "0")}T12:45:00.000Z`,
+      status: "COMPLETED",
+      serviceName: "Reformer Session",
+      durationMin: 45,
+      totalCents: 3500,
+      paidAt: index < 4 ? null : "2026-09-01T12:00:00.000Z",
+    }));
+    const recent = partitionAdminAppointments(past, now).recent;
+    expect(recent).toHaveLength(12);
+    expect(recent.filter((item) => item.paidAt === null).map((item) => item.id)).toEqual([
+      "past-3",
+      "past-2",
+      "past-1",
+      "past-0",
+    ]);
+  });
 });
 
 describe("classifyAdminAppointment", () => {
@@ -196,5 +225,11 @@ describe("countYearClasses", () => {
         { ...users[2], yearCount: 12 },
       ])
     ).toBe(14);
+  });
+});
+
+describe("countUnpaidCents", () => {
+  it("sums unpaid session totals across clients", () => {
+    expect(countUnpaidCents(users)).toBe(3500);
   });
 });

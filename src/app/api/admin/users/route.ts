@@ -5,6 +5,7 @@ import { requireAdminSession } from "@/lib/admin-auth";
 import { partitionAdminAppointments, type AdminUserAppointment } from "@/lib/admin-users";
 import { retainedAppointmentWhere } from "@/lib/appointment-complete";
 import { completePastAppointments } from "@/lib/appointment-complete-server";
+import { unpaidSessionTotalCents } from "@/lib/session-payment";
 import {
   attendanceCutoffDateStr,
   richerYearAttendance,
@@ -25,6 +26,10 @@ type UserRow = {
     status: string;
     durationMin: number;
     isTest: boolean;
+    totalCents: number;
+    paidAt: Date | null;
+    paidByName: string | null;
+    paidRecordedByEmail: string | null;
     service: { name: string };
   }>;
 };
@@ -100,6 +105,10 @@ export async function GET(request: NextRequest) {
               status: true,
               durationMin: true,
               isTest: true,
+              totalCents: true,
+              paidAt: true,
+              paidByName: true,
+              paidRecordedByEmail: true,
               service: { select: { name: true } },
             },
             orderBy: { scheduledAt: "asc" },
@@ -121,6 +130,10 @@ export async function GET(request: NextRequest) {
           serviceName: appointment.service.name,
           durationMin: appointment.durationMin,
           isTest: appointment.isTest,
+          totalCents: appointment.totalCents,
+          paidAt: appointment.paidAt ? appointment.paidAt.toISOString() : null,
+          paidByName: appointment.paidByName,
+          paidRecordedByEmail: appointment.paidRecordedByEmail,
         }));
         const { upcoming, recent } = partitionAdminAppointments(appointments);
         const year = richerYearAttendance(
@@ -139,6 +152,7 @@ export async function GET(request: NextRequest) {
           recent,
           yearCount: year.count,
           yearDates: year.dates,
+          unpaidCents: unpaidSessionTotalCents(appointments),
         };
       }),
     });

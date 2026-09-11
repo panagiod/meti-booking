@@ -1,7 +1,8 @@
 import { COMPLETED_HISTORY_LIMIT } from "@/lib/appointment-complete";
+import { isUnpaidPayableSession } from "@/lib/session-payment";
 
 export type AdminUserRole = "admin" | "client" | "instructor";
-export type AdminUserBookingFilter = "all" | "upcoming" | "none";
+export type AdminUserBookingFilter = "all" | "upcoming" | "none" | "unpaid";
 
 export interface AdminUserAppointment {
   id: string;
@@ -10,6 +11,10 @@ export interface AdminUserAppointment {
   serviceName: string;
   durationMin: number;
   isTest?: boolean;
+  totalCents?: number;
+  paidAt?: string | null;
+  paidByName?: string | null;
+  paidRecordedByEmail?: string | null;
 }
 
 export interface AdminUserListItem {
@@ -24,6 +29,7 @@ export interface AdminUserListItem {
   recent: AdminUserAppointment[];
   yearCount: number;
   yearDates: string[];
+  unpaidCents?: number;
 }
 
 const ACTIVE_STATUSES = new Set(["PENDING", "CONFIRMED", "IN_PROGRESS"]);
@@ -83,7 +89,17 @@ export function partitionAdminAppointments(
 
   upcoming.sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt));
   recent.sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt));
-  return { upcoming, recent: recent.slice(0, COMPLETED_HISTORY_LIMIT) };
+
+  const limited = recent.slice(0, COMPLETED_HISTORY_LIMIT);
+  const extraUnpaid = recent.filter(
+    (item) => isUnpaidPayableSession(item) && !limited.some((kept) => kept.id === item.id)
+  );
+  extraUnpaid.sort((a, b) => b.scheduledAt.localeCompare(a.scheduledAt));
+  return { upcoming, recent: [...limited, ...extraUnpaid] };
+}
+
+export function countUnpaidCents(users: AdminUserListItem[]): number {
+  return users.reduce((sum, user) => sum + (user.unpaidCents ?? 0), 0);
 }
 
 export function sortAdminUsers(users: AdminUserListItem[]): AdminUserListItem[] {
@@ -142,6 +158,7 @@ export function filterAdminUsers(
     }
     if (bookings === "upcoming" && user.upcoming.length === 0) return false;
     if (bookings === "none" && user.upcoming.length > 0) return false;
+    if (bookings === "unpaid" && (user.unpaidCents ?? 0) <= 0) return false;
     if (!search) return true;
     const haystack = [
       user.name,
