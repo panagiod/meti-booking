@@ -45,6 +45,8 @@ test.describe("07 · Client appointments", () => {
     expect(appointments[0].id).toBe(apt.id);
     expect(appointments[0].instructor.user.name).toBeTruthy();
     expect(appointments[0].service.name).toBe("E2E Consulting");
+    expect(appointments[0].paidAt).toBeNull();
+    expect(appointments[0].paidByName).toBeUndefined();
   });
 
   test("appointment detail: participants only (403 for outsiders)", async ({ request }) => {

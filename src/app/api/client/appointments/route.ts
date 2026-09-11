@@ -4,8 +4,10 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { retainedAppointmentWhere } from "@/lib/appointment-complete";
 import { completePastAppointments } from "@/lib/appointment-complete-server";
+import { toClientAppointment } from "@/lib/client-appointments";
 
-// GET: List client appointments
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const headersList = await headers();
@@ -30,17 +32,25 @@ export async function GET() {
         clientId: userId,
         ...retainedAppointmentWhere(),
       },
-      include: {
-        instructor: {
-          include: { user: true },
-        },
-        service: true,
-        review: true,
+      select: {
+        id: true,
+        scheduledAt: true,
+        durationMin: true,
+        status: true,
+        totalCents: true,
+        paidAt: true,
+        service: { select: { name: true, rescheduleHoursMin: true } },
+        instructor: { select: { user: { select: { name: true, image: true } } } },
+        review: { select: { id: true, rating: true, comment: true } },
       },
       orderBy: { scheduledAt: "desc" },
     });
 
-    return NextResponse.json({ appointments });
+    return NextResponse.json({
+      appointments: appointments.map((appointment: (typeof appointments)[number]) =>
+        toClientAppointment(appointment)
+      ),
+    });
   } catch (error) {
     console.error("Error fetching appointments:", error);
     return NextResponse.json(

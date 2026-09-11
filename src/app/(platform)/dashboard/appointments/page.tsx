@@ -22,6 +22,7 @@ import {
 import { getDateFnsLocale } from "@/lib/date-locale";
 import { formatDateTime } from "@/lib/format";
 import { resolveCancelHours } from "@/lib/booking-config";
+import { isPayableSessionStatus } from "@/lib/session-payment";
 
 interface Appointment {
   id: string;
@@ -29,6 +30,7 @@ interface Appointment {
   durationMin: number;
   status: string;
   totalCents: number;
+  paidAt: string | null;
   service: { name: string; rescheduleHoursMin: number };
   instructor: { user: { name: string; image: string | null } };
   review?: { id: string; rating: number; comment: string | null } | null;
@@ -106,6 +108,8 @@ export default function AppointmentsPage() {
         return <Badge variant="destructive">{t.dashboard.statusCancelled}</Badge>;
       case "PENDING":
         return <Badge variant="warning">{t.dashboard.statusPending}</Badge>;
+      case "NO_SHOW":
+        return <Badge variant="destructive">{t.dashboard.statusNoShow}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -312,6 +316,11 @@ export default function AppointmentsPage() {
 
                   <div className="flex items-center gap-2">
                     {getStatusBadge(apt.status)}
+                    {isPayableSessionStatus(apt.status) ? (
+                      <Badge variant={apt.paidAt ? "success" : "warning"}>
+                        {apt.paidAt ? t.dashboard.sessionPaid : t.dashboard.sessionUnpaid}
+                      </Badge>
+                    ) : null}
                     {apt.status === "PENDING" && paymentsEnabled && (
                       <Button
                         size="sm"

@@ -301,6 +301,9 @@ export type Messages = {
     statusCompleted: string;
     statusCancelled: string;
     statusPending: string;
+    statusNoShow: string;
+    sessionPaid: string;
+    sessionUnpaid: string;
     withInstructor: string;
     sessionWith: string;
     minutes: string;
