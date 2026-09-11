@@ -43,20 +43,14 @@ describe("notifyAppointmentCancelled", () => {
     vi.mocked(sendBookingCancelledStudioEmail).mockResolvedValue(true);
   });
 
-  it("emails the studio when a client cancels", async () => {
+  it("emails the client and not the studio when a client cancels", async () => {
     const sent = await notifyAppointmentCancelled("apt-1", { cancelledBy: "client" });
     expect(sent).toBe(true);
     expect(sendBookingCancelledClientEmail).toHaveBeenCalledWith(
       "client@studio.com",
       expect.objectContaining({ cancelledByStudio: false })
     );
-    expect(sendBookingCancelledStudioEmail).toHaveBeenCalledWith(
-      "tyrri_meropi@hotmail.com",
-      expect.objectContaining({
-        clientName: "Alex",
-        serviceName: "Reformer Session",
-      })
-    );
+    expect(sendBookingCancelledStudioEmail).not.toHaveBeenCalled();
   });
 
   it("does not email the studio when the studio cancels", async () => {
@@ -81,7 +75,7 @@ describe("notifyAppointmentCancelled", () => {
     expect(sendBookingCancelledStudioEmail).not.toHaveBeenCalled();
   });
 
-  it("does not email the excluded outlook inbox for cancellations", async () => {
+  it("does not email Meropi or the Outlook inbox for cancellations", async () => {
     vi.stubEnv(
       "STUDIO_NOTIFICATION_EMAIL",
       "tyrri_meropi@hotmail.com, dimitrioupanagiotis@outlook.com"
@@ -89,15 +83,11 @@ describe("notifyAppointmentCancelled", () => {
     vi.mocked(prisma.appointment.findUnique).mockResolvedValue({
       ...appointment,
       instructor: {
-        user: { email: "dimitrioupanagiotis@outlook.com", name: "Panagiotis" },
+        user: { email: "tyrri_meropi@hotmail.com", name: "Meropi Tirri" },
       },
     } as never);
 
     await notifyAppointmentCancelled("apt-1", { cancelledBy: "client" });
-    expect(sendBookingCancelledStudioEmail).toHaveBeenCalledTimes(1);
-    expect(sendBookingCancelledStudioEmail).toHaveBeenCalledWith(
-      "tyrri_meropi@hotmail.com",
-      expect.any(Object)
-    );
+    expect(sendBookingCancelledStudioEmail).not.toHaveBeenCalled();
   });
 });

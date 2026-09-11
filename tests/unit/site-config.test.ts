@@ -82,7 +82,7 @@ describe("getStudioNotificationEmails", () => {
     ]);
   });
 
-  it("keeps the superadmin on ops mail and sends booking alerts only to Meropi", () => {
+  it("keeps ops mail and does not send booking alerts to admins", () => {
     vi.stubEnv(
       "STUDIO_NOTIFICATION_EMAIL",
       "tyrri_meropi@hotmail.com, dimitrioupanagiotis@outlook.com"
@@ -91,11 +91,9 @@ describe("getStudioNotificationEmails", () => {
       "tyrri_meropi@hotmail.com",
       "dimitrioupanagiotis@outlook.com",
     ]);
-    expect(isStudioBookingAlertExcluded("DimitriouPanagiotis@outlook.com")).toBe(true);
-    expect(isStudioBookingAlertExcluded("tyrri_meropi@hotmail.com")).toBe(false);
-    expect(studioBookingAlertEmails("dimitrioupanagiotis@outlook.com")).toEqual([
-      "tyrri_meropi@hotmail.com",
-    ]);
+    expect(isStudioBookingAlertExcluded("tyrri_meropi@hotmail.com")).toBe(true);
+    expect(isStudioBookingAlertExcluded("dimitrioupanagiotis@outlook.com")).toBe(true);
+    expect(studioBookingAlertEmails("tyrri_meropi@hotmail.com")).toEqual([]);
   });
 });
 

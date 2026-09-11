@@ -84,8 +84,8 @@ export function getSiteUrl(): string {
   return siteConfig.siteUrl;
 }
 
-/** Meropi is the only admin who should get new-booking and cancellation alerts. */
-const STUDIO_BOOKING_ALERT_EMAILS = new Set(["tyrri_meropi@hotmail.com"]);
+/** No admin inbox gets new-booking, reminder, or cancellation alerts. */
+const STUDIO_BOOKING_ALERT_EMAILS = new Set<string>();
 
 /** Superadmin still receives ops mail (downtime, disk, and similar). */
 const SUPERADMIN_OPS_EMAILS = ["dimitrioupanagiotis@outlook.com"];
