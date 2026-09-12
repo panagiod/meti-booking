@@ -509,6 +509,9 @@ export type Messages = {
     maxUpcomingLabel: string;
     maxUpcomingUnit: string;
     maxUpcomingHint: string;
+    dailyBookingLabel: string;
+    dailyBookingUnit: string;
+    dailyBookingHint: string;
     weeklyHours: string;
     saveSchedule: string;
     saving: string;

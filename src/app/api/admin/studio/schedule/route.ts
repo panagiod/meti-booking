@@ -37,6 +37,7 @@ export async function GET() {
       slotCapacity: bookingSettings.slotCapacity,
       bookingWeeksAhead: bookingSettings.bookingWeeksAhead,
       maxUpcomingBookings: bookingSettings.maxUpcomingBookings,
+      dailyBookingLimit: bookingSettings.dailyBookingLimit,
     });
   } catch (error) {
     console.error("[admin/studio/schedule] GET error:", error);
@@ -57,8 +58,14 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { schedules, cancelHours, slotCapacity, bookingWeeksAhead, maxUpcomingBookings } =
-      schedulePayloadSchema.parse(body);
+    const {
+      schedules,
+      cancelHours,
+      slotCapacity,
+      bookingWeeksAhead,
+      maxUpcomingBookings,
+      dailyBookingLimit,
+    } = schedulePayloadSchema.parse(body);
 
     const validationError = validateStudioSchedule(schedules);
     if (validationError) {
@@ -114,6 +121,7 @@ export async function PUT(request: NextRequest) {
       slotCapacity,
       bookingWeeksAhead,
       maxUpcomingBookings,
+      dailyBookingLimit,
     });
 
     return NextResponse.json({
@@ -122,6 +130,7 @@ export async function PUT(request: NextRequest) {
       slotCapacity: savedSettings.slotCapacity,
       bookingWeeksAhead: savedSettings.bookingWeeksAhead,
       maxUpcomingBookings: savedSettings.maxUpcomingBookings,
+      dailyBookingLimit: savedSettings.dailyBookingLimit,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

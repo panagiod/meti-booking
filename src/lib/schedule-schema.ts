@@ -16,6 +16,7 @@ export const schedulePayloadSchema = z.object({
   slotCapacity: z.coerce.number().int().min(1).max(12).optional(),
   bookingWeeksAhead: z.coerce.number().int().min(1).max(16).optional(),
   maxUpcomingBookings: z.coerce.number().int().min(1).max(40).optional(),
+  dailyBookingLimit: z.coerce.number().int().min(1).max(40).optional(),
 });
 
 export const blockedTimePayloadSchema = z.object({

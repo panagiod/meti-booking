@@ -19,6 +19,10 @@ import {
   resolveSlotCapacity,
   resolveBookingWeeksAhead,
   resolveMaxUpcomingBookings,
+  DEFAULT_DAILY_BOOKING_LIMIT,
+  MAX_DAILY_BOOKING_LIMIT,
+  MIN_DAILY_BOOKING_LIMIT,
+  resolveDailyBookingLimit,
 } from "@/lib/booking-config";
 import { siteConfig } from "@/lib/site-config";
 
@@ -91,5 +95,19 @@ describe("booking-config", () => {
     expect(resolveMaxUpcomingBookings(8)).toBe(8);
     expect(resolveMaxUpcomingBookings(12)).toBe(12);
     expect(resolveMaxUpcomingBookings(40)).toBe(MAX_MAX_UPCOMING_BOOKINGS);
+  });
+
+  it("defaults the daily booking limit to 8", () => {
+    expect(DEFAULT_DAILY_BOOKING_LIMIT).toBe(8);
+    expect(resolveDailyBookingLimit(null)).toBe(8);
+    expect(resolveDailyBookingLimit(0)).toBe(8);
+    expect(resolveDailyBookingLimit(99)).toBe(8);
+  });
+
+  it("preserves admin daily booking limits within range", () => {
+    expect(resolveDailyBookingLimit(1)).toBe(MIN_DAILY_BOOKING_LIMIT);
+    expect(resolveDailyBookingLimit(8)).toBe(8);
+    expect(resolveDailyBookingLimit(12)).toBe(12);
+    expect(resolveDailyBookingLimit(40)).toBe(MAX_DAILY_BOOKING_LIMIT);
   });
 });

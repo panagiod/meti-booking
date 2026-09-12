@@ -22,14 +22,17 @@ import {
 import {
   DEFAULT_BOOKING_WEEKS_AHEAD,
   DEFAULT_CANCEL_HOURS,
+  DEFAULT_DAILY_BOOKING_LIMIT,
   DEFAULT_MAX_UPCOMING_BOOKINGS,
   DEFAULT_SLOT_CAPACITY,
   MAX_BOOKING_WEEKS_AHEAD,
   MAX_CANCEL_HOURS,
+  MAX_DAILY_BOOKING_LIMIT,
   MAX_MAX_UPCOMING_BOOKINGS,
   MAX_SLOT_CAPACITY,
   MIN_BOOKING_WEEKS_AHEAD,
   MIN_CANCEL_HOURS,
+  MIN_DAILY_BOOKING_LIMIT,
   MIN_MAX_UPCOMING_BOOKINGS,
   MIN_SLOT_CAPACITY,
 } from "@/lib/booking-config";
@@ -88,6 +91,7 @@ interface StudioData {
   slotCapacity: number;
   bookingWeeksAhead: number;
   maxUpcomingBookings: number;
+  dailyBookingLimit: number;
   serviceDurationMin: number;
   serviceName: string;
   cancelHours: number;
@@ -107,6 +111,7 @@ export default function AdminSchedulePage() {
   const [slotCapacity, setSlotCapacity] = useState(DEFAULT_SLOT_CAPACITY);
   const [bookingWeeksAhead, setBookingWeeksAhead] = useState(DEFAULT_BOOKING_WEEKS_AHEAD);
   const [maxUpcomingBookings, setMaxUpcomingBookings] = useState(DEFAULT_MAX_UPCOMING_BOOKINGS);
+  const [dailyBookingLimit, setDailyBookingLimit] = useState(DEFAULT_DAILY_BOOKING_LIMIT);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -174,6 +179,11 @@ export default function AdminSchedulePage() {
         typeof data.studio.maxUpcomingBookings === "number"
           ? data.studio.maxUpcomingBookings
           : DEFAULT_MAX_UPCOMING_BOOKINGS
+      );
+      setDailyBookingLimit(
+        typeof data.studio.dailyBookingLimit === "number"
+          ? data.studio.dailyBookingLimit
+          : DEFAULT_DAILY_BOOKING_LIMIT
       );
       setBlockedTimes(data.studio.blockedTimes);
       setHasChanges(false);
@@ -295,6 +305,7 @@ export default function AdminSchedulePage() {
           slotCapacity: Math.trunc(slotCapacity),
           bookingWeeksAhead: Math.trunc(bookingWeeksAhead),
           maxUpcomingBookings: Math.trunc(maxUpcomingBookings),
+          dailyBookingLimit: Math.trunc(dailyBookingLimit),
         }),
       });
       const data = await res.json();
@@ -314,6 +325,9 @@ export default function AdminSchedulePage() {
       }
       if (typeof data.maxUpcomingBookings === "number") {
         setMaxUpcomingBookings(data.maxUpcomingBookings);
+      }
+      if (typeof data.dailyBookingLimit === "number") {
+        setDailyBookingLimit(data.dailyBookingLimit);
       }
       setHasChanges(false);
       await refreshStudioContent();
@@ -518,6 +532,37 @@ export default function AdminSchedulePage() {
               </div>
               <p className="text-sm text-[var(--text-muted)]">
                 {t.admin.maxUpcomingHint}
+              </p>
+            </div>
+            <div className="space-y-3">
+              <label
+                htmlFor="daily-booking-limit"
+                className="block font-medium text-[var(--text-primary)]"
+              >
+                {t.admin.dailyBookingLabel}
+              </label>
+              <div className="flex items-center gap-3">
+                <Input
+                  id="daily-booking-limit"
+                  type="number"
+                  min={MIN_DAILY_BOOKING_LIMIT}
+                  max={MAX_DAILY_BOOKING_LIMIT}
+                  value={dailyBookingLimit}
+                  onChange={(e) => {
+                    const next = Number(e.target.value);
+                    setDailyBookingLimit(
+                      Number.isFinite(next) ? next : DEFAULT_DAILY_BOOKING_LIMIT
+                    );
+                    setHasChanges(true);
+                  }}
+                  className="h-9 w-24 text-sm"
+                />
+                <span className="text-sm text-[var(--text-muted)]">
+                  {t.admin.dailyBookingUnit}
+                </span>
+              </div>
+              <p className="text-sm text-[var(--text-muted)]">
+                {t.admin.dailyBookingHint}
               </p>
             </div>
             <div className="space-y-3">

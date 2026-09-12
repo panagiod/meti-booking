@@ -48,6 +48,7 @@ export async function GET() {
         slotCapacity: bookingSettings.slotCapacity,
         bookingWeeksAhead: bookingSettings.bookingWeeksAhead,
         maxUpcomingBookings: bookingSettings.maxUpcomingBookings,
+        dailyBookingLimit: bookingSettings.dailyBookingLimit,
         serviceDurationMin: service?.durationMin ?? 50,
         serviceName: service?.name ?? REFORMER_SERVICE_NAME,
         cancelHours: bookingSettings.cancelHours,

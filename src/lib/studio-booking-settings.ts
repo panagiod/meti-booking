@@ -3,10 +3,12 @@ import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import {
   DEFAULT_BOOKING_WEEKS_AHEAD,
   DEFAULT_CANCEL_HOURS,
+  DEFAULT_DAILY_BOOKING_LIMIT,
   DEFAULT_MAX_UPCOMING_BOOKINGS,
   DEFAULT_SLOT_CAPACITY,
   resolveBookingWeeksAhead,
   resolveCancelHours,
+  resolveDailyBookingLimit,
   resolveMaxUpcomingBookings,
   resolveSlotCapacity,
 } from "@/lib/booking-config";
@@ -16,6 +18,7 @@ export type StudioBookingSettings = {
   slotCapacity: number;
   bookingWeeksAhead: number;
   maxUpcomingBookings: number;
+  dailyBookingLimit: number;
 };
 
 const DEFAULT_SETTINGS: StudioBookingSettings = {
@@ -23,7 +26,15 @@ const DEFAULT_SETTINGS: StudioBookingSettings = {
   slotCapacity: DEFAULT_SLOT_CAPACITY,
   bookingWeeksAhead: DEFAULT_BOOKING_WEEKS_AHEAD,
   maxUpcomingBookings: DEFAULT_MAX_UPCOMING_BOOKINGS,
+  dailyBookingLimit: DEFAULT_DAILY_BOOKING_LIMIT,
 };
+
+const PROFILE_SETTINGS_SELECT = {
+  slotCapacity: true,
+  bookingWeeksAhead: true,
+  maxUpcomingBookings: true,
+  dailyBookingLimit: true,
+} as const;
 
 function settingsFromRows(
   service: { rescheduleHoursMin: number } | null | undefined,
@@ -31,6 +42,7 @@ function settingsFromRows(
     slotCapacity: number;
     bookingWeeksAhead: number;
     maxUpcomingBookings?: number | null;
+    dailyBookingLimit?: number | null;
   } | null | undefined
 ): StudioBookingSettings {
   return {
@@ -38,6 +50,7 @@ function settingsFromRows(
     slotCapacity: resolveSlotCapacity(profile?.slotCapacity),
     bookingWeeksAhead: resolveBookingWeeksAhead(profile?.bookingWeeksAhead),
     maxUpcomingBookings: resolveMaxUpcomingBookings(profile?.maxUpcomingBookings),
+    dailyBookingLimit: resolveDailyBookingLimit(profile?.dailyBookingLimit),
   };
 }
 
@@ -53,7 +66,7 @@ export async function getStudioBookingSettings(): Promise<StudioBookingSettings>
     }),
     prisma.instructorProfile.findUnique({
       where: { id: instructor.id },
-      select: { slotCapacity: true, bookingWeeksAhead: true, maxUpcomingBookings: true },
+      select: PROFILE_SETTINGS_SELECT,
     }),
   ]);
 
@@ -82,6 +95,7 @@ export async function setStudioBookingSettings(
     slotCapacity?: number;
     bookingWeeksAhead?: number;
     maxUpcomingBookings?: number;
+    dailyBookingLimit?: number;
   }
 ): Promise<StudioBookingSettings> {
   if (patch.cancelHours != null) {
@@ -92,6 +106,7 @@ export async function setStudioBookingSettings(
     slotCapacity?: number;
     bookingWeeksAhead?: number;
     maxUpcomingBookings?: number;
+    dailyBookingLimit?: number;
   } = {};
   if (patch.slotCapacity != null) {
     profileData.slotCapacity = resolveSlotCapacity(patch.slotCapacity);
@@ -101,6 +116,9 @@ export async function setStudioBookingSettings(
   }
   if (patch.maxUpcomingBookings != null) {
     profileData.maxUpcomingBookings = resolveMaxUpcomingBookings(patch.maxUpcomingBookings);
+  }
+  if (patch.dailyBookingLimit != null) {
+    profileData.dailyBookingLimit = resolveDailyBookingLimit(patch.dailyBookingLimit);
   }
   if (Object.keys(profileData).length > 0) {
     await prisma.instructorProfile.update({
@@ -117,7 +135,7 @@ export async function setStudioBookingSettings(
     }),
     prisma.instructorProfile.findUnique({
       where: { id: instructorId },
-      select: { slotCapacity: true, bookingWeeksAhead: true, maxUpcomingBookings: true },
+      select: PROFILE_SETTINGS_SELECT,
     }),
   ]);
 

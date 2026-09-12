@@ -124,6 +124,7 @@ model InstructorProfile {
   slotCapacity     Int     @default(3)
   bookingWeeksAhead Int    @default(8)
   maxUpcomingBookings Int  @default(8)
+  dailyBookingLimit   Int  @default(8)
   whatsappPhone    String?
 
   createdAt       DateTime @default(now())

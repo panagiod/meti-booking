@@ -73,3 +73,18 @@ export function resolveMaxUpcomingBookings(stored: number | null | undefined): n
   }
   return DEFAULT_MAX_UPCOMING_BOOKINGS;
 }
+
+/** How many new bookings one client can make in 24 hours. Admin can change this. */
+export const DEFAULT_DAILY_BOOKING_LIMIT = 8;
+export const MIN_DAILY_BOOKING_LIMIT = 1;
+export const MAX_DAILY_BOOKING_LIMIT = 40;
+
+export function resolveDailyBookingLimit(stored: number | null | undefined): number {
+  if (stored != null && Number.isFinite(stored)) {
+    const count = Math.trunc(stored);
+    if (count >= MIN_DAILY_BOOKING_LIMIT && count <= MAX_DAILY_BOOKING_LIMIT) {
+      return count;
+    }
+  }
+  return DEFAULT_DAILY_BOOKING_LIMIT;
+}

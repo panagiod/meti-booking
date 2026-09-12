@@ -1,12 +1,17 @@
 import { prisma } from "@/lib/prisma";
 import { isAutomatedTestEmail } from "@/lib/appointment-cancel";
-import { DEFAULT_MAX_UPCOMING_BOOKINGS, resolveMaxUpcomingBookings } from "@/lib/booking-config";
+import {
+  DEFAULT_DAILY_BOOKING_LIMIT,
+  DEFAULT_MAX_UPCOMING_BOOKINGS,
+  resolveDailyBookingLimit,
+  resolveMaxUpcomingBookings,
+} from "@/lib/booking-config";
 import { getStudioBookingSettings } from "@/lib/studio-booking-settings";
 import { isStudioAdminEmail } from "@/lib/studio-admins";
 
 export const BOOKING_IP_LIMIT = 8;
 export const BOOKING_IP_WINDOW_MS = 60 * 60 * 1000;
-export const BOOKING_EMAIL_LIMIT = 8;
+export const BOOKING_EMAIL_LIMIT = DEFAULT_DAILY_BOOKING_LIMIT;
 export const BOOKING_EMAIL_WINDOW_MS = 24 * 60 * 60 * 1000;
 export const BOOKING_UPCOMING_LIMIT = DEFAULT_MAX_UPCOMING_BOOKINGS;
 
@@ -45,7 +50,8 @@ export function recordAndCheckIpLimit(ip: string, now = Date.now()): boolean {
 
 export async function checkClientBookingLimits(
   clientId: string,
-  maxUpcomingBookings = BOOKING_UPCOMING_LIMIT
+  maxUpcomingBookings = BOOKING_UPCOMING_LIMIT,
+  dailyBookingLimit = BOOKING_EMAIL_LIMIT
 ): Promise<{
   ok: boolean;
   error?: string;
@@ -70,7 +76,7 @@ export async function checkClientBookingLimits(
     }),
   ]);
 
-  if (recentCount >= BOOKING_EMAIL_LIMIT) {
+  if (recentCount >= dailyBookingLimit) {
     return {
       ok: false,
       error: "This email has reached the daily booking limit. Please try again tomorrow.",
@@ -93,6 +99,7 @@ export async function assertBookingRateLimit(input: {
   clientId: string;
   hasSession?: boolean;
   maxUpcomingBookings?: number;
+  dailyBookingLimit?: number;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   if (
     isBookingRateLimitDisabled() ||
@@ -109,11 +116,14 @@ export async function assertBookingRateLimit(input: {
     };
   }
 
-  const maxUpcoming =
-    input.maxUpcomingBookings != null
-      ? resolveMaxUpcomingBookings(input.maxUpcomingBookings)
-      : (await getStudioBookingSettings()).maxUpcomingBookings;
-  const clientLimit = await checkClientBookingLimits(input.clientId, maxUpcoming);
+  const settings = await getStudioBookingSettings();
+  const maxUpcoming = resolveMaxUpcomingBookings(
+    input.maxUpcomingBookings ?? settings.maxUpcomingBookings
+  );
+  const dailyLimit = resolveDailyBookingLimit(
+    input.dailyBookingLimit ?? settings.dailyBookingLimit
+  );
+  const clientLimit = await checkClientBookingLimits(input.clientId, maxUpcoming, dailyLimit);
   if (!clientLimit.ok) {
     return { ok: false, error: clientLimit.error ?? "Too many bookings." };
   }

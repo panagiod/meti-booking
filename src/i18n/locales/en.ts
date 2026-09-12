@@ -586,6 +586,10 @@ const en: Messages = {
     maxUpcomingUnit: "sessions",
     maxUpcomingHint:
       "How many future classes one client can hold at a time. Saving applies to new bookings.",
+    dailyBookingLabel: "Daily booking limit",
+    dailyBookingUnit: "bookings per day",
+    dailyBookingHint:
+      "How many new bookings one client can make in 24 hours. Saving applies to new bookings.",
     weeklyHours: "Weekly hours",
     saveSchedule: "Save schedule",
     saving: "Saving…",

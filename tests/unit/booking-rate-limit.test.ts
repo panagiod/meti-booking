@@ -21,6 +21,7 @@ vi.mock("@/lib/studio-booking-settings", () => ({
     slotCapacity: 3,
     bookingWeeksAhead: 8,
     maxUpcomingBookings: 8,
+    dailyBookingLimit: 8,
   })),
 }));
 
@@ -36,6 +37,7 @@ describe("booking rate limit", () => {
       slotCapacity: 3,
       bookingWeeksAhead: 8,
       maxUpcomingBookings: 8,
+      dailyBookingLimit: 8,
     });
     vi.unstubAllEnvs();
   });
@@ -116,6 +118,7 @@ describe("booking rate limit", () => {
       slotCapacity: 3,
       bookingWeeksAhead: 8,
       maxUpcomingBookings: 2,
+      dailyBookingLimit: 8,
     });
     vi.mocked(prisma.appointment.count).mockResolvedValueOnce(0).mockResolvedValueOnce(2);
 
@@ -134,6 +137,27 @@ describe("booking rate limit", () => {
     vi.mocked(prisma.appointment.count)
       .mockResolvedValueOnce(BOOKING_EMAIL_LIMIT)
       .mockResolvedValueOnce(0);
+
+    const result = await assertBookingRateLimit({
+      ip: "8.8.8.8",
+      email: "person@studio.com",
+      clientId: "client-1",
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toMatch(/daily booking limit/i);
+    }
+  });
+
+  it("uses the studio daily booking limit", async () => {
+    vi.mocked(getStudioBookingSettings).mockResolvedValueOnce({
+      cancelHours: 12,
+      slotCapacity: 3,
+      bookingWeeksAhead: 8,
+      maxUpcomingBookings: 8,
+      dailyBookingLimit: 2,
+    });
+    vi.mocked(prisma.appointment.count).mockResolvedValueOnce(2).mockResolvedValueOnce(0);
 
     const result = await assertBookingRateLimit({
       ip: "8.8.8.8",
