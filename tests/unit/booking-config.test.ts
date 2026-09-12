@@ -9,6 +9,7 @@ import {
   MAX_SLOT_CAPACITY,
   MIN_SLOT_CAPACITY,
   MAX_BOOKING_WEEKS_AHEAD,
+  MAX_BOOKING_WINDOW_DAYS,
   MIN_BOOKING_WEEKS_AHEAD,
   DEFAULT_MAX_UPCOMING_BOOKINGS,
   MAX_MAX_UPCOMING_BOOKINGS,
@@ -75,6 +76,7 @@ describe("booking-config", () => {
     expect(resolveBookingWeeksAhead(1)).toBe(MIN_BOOKING_WEEKS_AHEAD);
     expect(resolveBookingWeeksAhead(8)).toBe(8);
     expect(resolveBookingWeeksAhead(16)).toBe(MAX_BOOKING_WEEKS_AHEAD);
+    expect(MAX_BOOKING_WINDOW_DAYS).toBe(MAX_BOOKING_WEEKS_AHEAD * 7);
   });
 
   it("defaults upcoming bookings per client to 8", () => {

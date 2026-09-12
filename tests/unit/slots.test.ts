@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateAvailableSlots, isStudioDateBlocked } from "@/lib/slots";
+import { generateAvailableSlots, getAvailableDates, isStudioDateBlocked } from "@/lib/slots";
 import type { Schedule } from "@/lib/slots";
 import { localToUTCDate, parseStudioDateInput } from "@/lib/timezone";
 
@@ -163,5 +163,12 @@ describe("lib/slots — generateAvailableSlots", () => {
     expect(slots.find((s) => s.time === "09:00")?.available).toBe(false);
     expect(slots.find((s) => s.time === "10:00")?.available).toBe(false);
     expect(slots.find((s) => s.time === "11:00")?.available).toBe(true);
+  });
+});
+
+describe("getAvailableDates", () => {
+  it("builds a 10-week calendar so a 10-week booking window can load slots", () => {
+    const dates = getAvailableDates([baseSchedule], 45, 10, [], 0, 3);
+    expect(dates).toHaveLength(70);
   });
 });

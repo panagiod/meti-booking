@@ -48,6 +48,8 @@ export function resolveSlotCapacity(stored: number | null | undefined): number {
 export const DEFAULT_BOOKING_WEEKS_AHEAD: number = siteConfig.bookingWeeksAhead;
 export const MIN_BOOKING_WEEKS_AHEAD = 1;
 export const MAX_BOOKING_WEEKS_AHEAD = 16;
+/** One date per day in the longest admin booking window (16 weeks). */
+export const MAX_BOOKING_WINDOW_DAYS = MAX_BOOKING_WEEKS_AHEAD * 7;
 
 export function resolveBookingWeeksAhead(stored: number | null | undefined): number {
   if (stored != null && Number.isFinite(stored)) {

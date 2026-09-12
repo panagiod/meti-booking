@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseSlotDates } from "@/lib/slot-dates";
+import { MAX_SLOT_BATCH_DATES, parseSlotDates } from "@/lib/slot-dates";
 import { getSlotsForDates } from "@/lib/slots-server";
 import { readInstructorId } from "@/lib/studio-instructor";
 import {
@@ -11,7 +11,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const MAX_BATCH_DATES = 60;
+const MAX_BATCH_DATES = MAX_SLOT_BATCH_DATES;
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
