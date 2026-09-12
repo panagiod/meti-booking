@@ -1,12 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { isAutomatedTestEmail } from "@/lib/appointment-cancel";
+import { DEFAULT_MAX_UPCOMING_BOOKINGS, resolveMaxUpcomingBookings } from "@/lib/booking-config";
+import { getStudioBookingSettings } from "@/lib/studio-booking-settings";
 import { isStudioAdminEmail } from "@/lib/studio-admins";
 
 export const BOOKING_IP_LIMIT = 8;
 export const BOOKING_IP_WINDOW_MS = 60 * 60 * 1000;
 export const BOOKING_EMAIL_LIMIT = 8;
 export const BOOKING_EMAIL_WINDOW_MS = 24 * 60 * 60 * 1000;
-export const BOOKING_UPCOMING_LIMIT = 8;
+export const BOOKING_UPCOMING_LIMIT = DEFAULT_MAX_UPCOMING_BOOKINGS;
 
 const ipHits = new Map<string, number[]>();
 
@@ -41,7 +43,10 @@ export function recordAndCheckIpLimit(ip: string, now = Date.now()): boolean {
   return true;
 }
 
-export async function checkClientBookingLimits(clientId: string): Promise<{
+export async function checkClientBookingLimits(
+  clientId: string,
+  maxUpcomingBookings = BOOKING_UPCOMING_LIMIT
+): Promise<{
   ok: boolean;
   error?: string;
 }> {
@@ -72,7 +77,7 @@ export async function checkClientBookingLimits(clientId: string): Promise<{
     };
   }
 
-  if (upcomingCount >= BOOKING_UPCOMING_LIMIT) {
+  if (upcomingCount >= maxUpcomingBookings) {
     return {
       ok: false,
       error: "You already have too many upcoming sessions. Cancel one before booking another.",
@@ -87,6 +92,7 @@ export async function assertBookingRateLimit(input: {
   email: string;
   clientId: string;
   hasSession?: boolean;
+  maxUpcomingBookings?: number;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   if (
     isBookingRateLimitDisabled() ||
@@ -103,7 +109,11 @@ export async function assertBookingRateLimit(input: {
     };
   }
 
-  const clientLimit = await checkClientBookingLimits(input.clientId);
+  const maxUpcoming =
+    input.maxUpcomingBookings != null
+      ? resolveMaxUpcomingBookings(input.maxUpcomingBookings)
+      : (await getStudioBookingSettings()).maxUpcomingBookings;
+  const clientLimit = await checkClientBookingLimits(input.clientId, maxUpcoming);
   if (!clientLimit.ok) {
     return { ok: false, error: clientLimit.error ?? "Too many bookings." };
   }

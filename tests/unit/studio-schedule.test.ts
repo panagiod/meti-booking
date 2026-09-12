@@ -133,10 +133,12 @@ describe("schedule payload", () => {
       cancelHours: 12,
       slotCapacity: 3,
       bookingWeeksAhead: 8,
+      maxUpcomingBookings: 12,
     });
     expect(parsed.cancelHours).toBe(12);
     expect(parsed.slotCapacity).toBe(3);
     expect(parsed.bookingWeeksAhead).toBe(8);
+    expect(parsed.maxUpcomingBookings).toBe(12);
   });
 
   it("rejects slot capacity and booking window outside range", () => {
@@ -150,6 +152,18 @@ describe("schedule payload", () => {
       schedulePayloadSchema.parse({
         schedules: [],
         bookingWeeksAhead: 20,
+      })
+    ).toThrow();
+    expect(() =>
+      schedulePayloadSchema.parse({
+        schedules: [],
+        maxUpcomingBookings: 0,
+      })
+    ).toThrow();
+    expect(() =>
+      schedulePayloadSchema.parse({
+        schedules: [],
+        maxUpcomingBookings: 41,
       })
     ).toThrow();
   });

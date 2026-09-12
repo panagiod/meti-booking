@@ -15,12 +15,28 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+vi.mock("@/lib/studio-booking-settings", () => ({
+  getStudioBookingSettings: vi.fn(async () => ({
+    cancelHours: 12,
+    slotCapacity: 3,
+    bookingWeeksAhead: 8,
+    maxUpcomingBookings: 8,
+  })),
+}));
+
 import { prisma } from "@/lib/prisma";
+import { getStudioBookingSettings } from "@/lib/studio-booking-settings";
 
 describe("booking rate limit", () => {
   beforeEach(() => {
     resetBookingRateLimitState();
     vi.mocked(prisma.appointment.count).mockResolvedValue(0);
+    vi.mocked(getStudioBookingSettings).mockResolvedValue({
+      cancelHours: 12,
+      slotCapacity: 3,
+      bookingWeeksAhead: 8,
+      maxUpcomingBookings: 8,
+    });
     vi.unstubAllEnvs();
   });
 
@@ -92,6 +108,26 @@ describe("booking rate limit", () => {
         status: { notIn: ["CANCELLED", "NO_SHOW"] },
       }),
     });
+  });
+
+  it("blocks when the client already holds the studio upcoming limit", async () => {
+    vi.mocked(getStudioBookingSettings).mockResolvedValueOnce({
+      cancelHours: 12,
+      slotCapacity: 3,
+      bookingWeeksAhead: 8,
+      maxUpcomingBookings: 2,
+    });
+    vi.mocked(prisma.appointment.count).mockResolvedValueOnce(0).mockResolvedValueOnce(2);
+
+    const result = await assertBookingRateLimit({
+      ip: "8.8.8.8",
+      email: "person@studio.com",
+      clientId: "client-1",
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error).toMatch(/upcoming sessions/i);
+    }
   });
 
   it("blocks when the client already has too many recent bookings", async () => {

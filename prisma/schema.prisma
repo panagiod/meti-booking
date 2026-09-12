@@ -123,6 +123,7 @@ model InstructorProfile {
   bookingLeadHours Int     @default(2)
   slotCapacity     Int     @default(3)
   bookingWeeksAhead Int    @default(8)
+  maxUpcomingBookings Int  @default(8)
   whatsappPhone    String?
 
   createdAt       DateTime @default(now())

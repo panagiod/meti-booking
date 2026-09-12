@@ -10,10 +10,14 @@ import {
   MIN_SLOT_CAPACITY,
   MAX_BOOKING_WEEKS_AHEAD,
   MIN_BOOKING_WEEKS_AHEAD,
+  DEFAULT_MAX_UPCOMING_BOOKINGS,
+  MAX_MAX_UPCOMING_BOOKINGS,
+  MIN_MAX_UPCOMING_BOOKINGS,
   resolveBookingLeadHours,
   resolveCancelHours,
   resolveSlotCapacity,
   resolveBookingWeeksAhead,
+  resolveMaxUpcomingBookings,
 } from "@/lib/booking-config";
 import { siteConfig } from "@/lib/site-config";
 
@@ -71,5 +75,19 @@ describe("booking-config", () => {
     expect(resolveBookingWeeksAhead(1)).toBe(MIN_BOOKING_WEEKS_AHEAD);
     expect(resolveBookingWeeksAhead(8)).toBe(8);
     expect(resolveBookingWeeksAhead(16)).toBe(MAX_BOOKING_WEEKS_AHEAD);
+  });
+
+  it("defaults upcoming bookings per client to 8", () => {
+    expect(DEFAULT_MAX_UPCOMING_BOOKINGS).toBe(8);
+    expect(resolveMaxUpcomingBookings(null)).toBe(8);
+    expect(resolveMaxUpcomingBookings(0)).toBe(8);
+    expect(resolveMaxUpcomingBookings(99)).toBe(8);
+  });
+
+  it("preserves admin upcoming booking limits within range", () => {
+    expect(resolveMaxUpcomingBookings(1)).toBe(MIN_MAX_UPCOMING_BOOKINGS);
+    expect(resolveMaxUpcomingBookings(8)).toBe(8);
+    expect(resolveMaxUpcomingBookings(12)).toBe(12);
+    expect(resolveMaxUpcomingBookings(40)).toBe(MAX_MAX_UPCOMING_BOOKINGS);
   });
 });

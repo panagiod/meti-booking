@@ -582,6 +582,10 @@ const en: Messages = {
     bookingWeeksUnit: "weeks ahead",
     bookingWeeksHint:
       "How far in advance clients can book. Saving updates the public calendar.",
+    maxUpcomingLabel: "Upcoming bookings per client",
+    maxUpcomingUnit: "sessions",
+    maxUpcomingHint:
+      "How many future classes one client can hold at a time. Saving applies to new bookings.",
     weeklyHours: "Weekly hours",
     saveSchedule: "Save schedule",
     saving: "Saving…",

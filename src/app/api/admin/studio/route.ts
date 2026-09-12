@@ -47,6 +47,7 @@ export async function GET() {
         instructorEmail: advisor.user.email,
         slotCapacity: bookingSettings.slotCapacity,
         bookingWeeksAhead: bookingSettings.bookingWeeksAhead,
+        maxUpcomingBookings: bookingSettings.maxUpcomingBookings,
         serviceDurationMin: service?.durationMin ?? 50,
         serviceName: service?.name ?? REFORMER_SERVICE_NAME,
         cancelHours: bookingSettings.cancelHours,

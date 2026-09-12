@@ -22,12 +22,15 @@ import {
 import {
   DEFAULT_BOOKING_WEEKS_AHEAD,
   DEFAULT_CANCEL_HOURS,
+  DEFAULT_MAX_UPCOMING_BOOKINGS,
   DEFAULT_SLOT_CAPACITY,
   MAX_BOOKING_WEEKS_AHEAD,
   MAX_CANCEL_HOURS,
+  MAX_MAX_UPCOMING_BOOKINGS,
   MAX_SLOT_CAPACITY,
   MIN_BOOKING_WEEKS_AHEAD,
   MIN_CANCEL_HOURS,
+  MIN_MAX_UPCOMING_BOOKINGS,
   MIN_SLOT_CAPACITY,
 } from "@/lib/booking-config";
 import {
@@ -84,6 +87,7 @@ interface StudioData {
   instructorEmail: string;
   slotCapacity: number;
   bookingWeeksAhead: number;
+  maxUpcomingBookings: number;
   serviceDurationMin: number;
   serviceName: string;
   cancelHours: number;
@@ -102,6 +106,7 @@ export default function AdminSchedulePage() {
   const [cancelHours, setCancelHours] = useState(DEFAULT_CANCEL_HOURS);
   const [slotCapacity, setSlotCapacity] = useState(DEFAULT_SLOT_CAPACITY);
   const [bookingWeeksAhead, setBookingWeeksAhead] = useState(DEFAULT_BOOKING_WEEKS_AHEAD);
+  const [maxUpcomingBookings, setMaxUpcomingBookings] = useState(DEFAULT_MAX_UPCOMING_BOOKINGS);
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -164,6 +169,11 @@ export default function AdminSchedulePage() {
         typeof data.studio.bookingWeeksAhead === "number"
           ? data.studio.bookingWeeksAhead
           : DEFAULT_BOOKING_WEEKS_AHEAD
+      );
+      setMaxUpcomingBookings(
+        typeof data.studio.maxUpcomingBookings === "number"
+          ? data.studio.maxUpcomingBookings
+          : DEFAULT_MAX_UPCOMING_BOOKINGS
       );
       setBlockedTimes(data.studio.blockedTimes);
       setHasChanges(false);
@@ -284,6 +294,7 @@ export default function AdminSchedulePage() {
           cancelHours: Math.trunc(cancelHours),
           slotCapacity: Math.trunc(slotCapacity),
           bookingWeeksAhead: Math.trunc(bookingWeeksAhead),
+          maxUpcomingBookings: Math.trunc(maxUpcomingBookings),
         }),
       });
       const data = await res.json();
@@ -300,6 +311,9 @@ export default function AdminSchedulePage() {
       }
       if (typeof data.bookingWeeksAhead === "number") {
         setBookingWeeksAhead(data.bookingWeeksAhead);
+      }
+      if (typeof data.maxUpcomingBookings === "number") {
+        setMaxUpcomingBookings(data.maxUpcomingBookings);
       }
       setHasChanges(false);
       await refreshStudioContent();
@@ -414,7 +428,7 @@ export default function AdminSchedulePage() {
         </Card>
 
         <Card>
-          <CardContent className="p-5 grid gap-6 sm:grid-cols-3">
+          <CardContent className="p-5 grid gap-6 sm:grid-cols-2">
             <div className="space-y-3">
               <label
                 htmlFor="slot-capacity"
@@ -473,6 +487,37 @@ export default function AdminSchedulePage() {
               </div>
               <p className="text-sm text-[var(--text-muted)]">
                 {t.admin.bookingWeeksHint}
+              </p>
+            </div>
+            <div className="space-y-3">
+              <label
+                htmlFor="max-upcoming"
+                className="block font-medium text-[var(--text-primary)]"
+              >
+                {t.admin.maxUpcomingLabel}
+              </label>
+              <div className="flex items-center gap-3">
+                <Input
+                  id="max-upcoming"
+                  type="number"
+                  min={MIN_MAX_UPCOMING_BOOKINGS}
+                  max={MAX_MAX_UPCOMING_BOOKINGS}
+                  value={maxUpcomingBookings}
+                  onChange={(e) => {
+                    const next = Number(e.target.value);
+                    setMaxUpcomingBookings(
+                      Number.isFinite(next) ? next : DEFAULT_MAX_UPCOMING_BOOKINGS
+                    );
+                    setHasChanges(true);
+                  }}
+                  className="h-9 w-24 text-sm"
+                />
+                <span className="text-sm text-[var(--text-muted)]">
+                  {t.admin.maxUpcomingUnit}
+                </span>
+              </div>
+              <p className="text-sm text-[var(--text-muted)]">
+                {t.admin.maxUpcomingHint}
               </p>
             </div>
             <div className="space-y-3">

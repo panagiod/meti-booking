@@ -56,3 +56,18 @@ export function resolveBookingWeeksAhead(stored: number | null | undefined): num
   }
   return DEFAULT_BOOKING_WEEKS_AHEAD;
 }
+
+/** How many upcoming sessions one client can hold. Admin can change this. */
+export const DEFAULT_MAX_UPCOMING_BOOKINGS = 8;
+export const MIN_MAX_UPCOMING_BOOKINGS = 1;
+export const MAX_MAX_UPCOMING_BOOKINGS = 40;
+
+export function resolveMaxUpcomingBookings(stored: number | null | undefined): number {
+  if (stored != null && Number.isFinite(stored)) {
+    const count = Math.trunc(stored);
+    if (count >= MIN_MAX_UPCOMING_BOOKINGS && count <= MAX_MAX_UPCOMING_BOOKINGS) {
+      return count;
+    }
+  }
+  return DEFAULT_MAX_UPCOMING_BOOKINGS;
+}
