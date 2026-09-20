@@ -117,6 +117,29 @@ export function evaluateMonitor(sample: MonitorSample): MonitorIssue[] {
   return issues;
 }
 
+/** Where the VPS cron monitor should curl (localhost avoids Cloudflare/hairpin false alarms). */
+export function resolveMonitorProbeTargets(options: {
+  onProductionServer: boolean;
+  localBase: string;
+  publicSite: string;
+  checkPublicFromServer?: boolean;
+}): { health: string; home: string; book: string } {
+  const local = options.localBase.replace(/\/$/, "");
+  const site = options.publicSite.replace(/\/$/, "");
+  if (options.onProductionServer && !options.checkPublicFromServer) {
+    return {
+      health: `${local}/api/health`,
+      home: `${local}/`,
+      book: `${local}/book`,
+    };
+  }
+  return {
+    health: `${site}/api/health`,
+    home: `${site}/`,
+    book: `${site}/book`,
+  };
+}
+
 export function shouldSendAlert(
   currentIds: string[],
   previousIds: string[],

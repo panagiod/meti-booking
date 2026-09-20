@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, readFileSync, renameSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { execFileSync } from "node:child_process";
 import { OPEN_BOOKING_STATUSES } from "@/lib/account-privacy";
@@ -10,6 +10,7 @@ import { countWeeklyTimeSlots, type StudioDaySchedule } from "@/lib/studio-sched
 import {
   CALENDAR_ALERT_WEEKS,
   evaluateMonitor,
+  resolveMonitorProbeTargets,
   shouldSendAlert,
   upcomingPlacesCapacity,
   type MonitorSample,
@@ -17,6 +18,8 @@ import {
 
 const STATE_PATH = process.env.METI_MONITOR_STATE || "/var/lib/meti-booking/monitor-state.json";
 const SITE = process.env.APP_URL || process.env.BETTER_AUTH_URL || "https://meti-pilates.com";
+const LOCAL_BASE = process.env.METI_MONITOR_LOCAL_URL || "http://127.0.0.1:3000";
+const CURL_AGENT = "MeTi-Monitor/1.0";
 
 interface MonitorState {
   ids: string[];
@@ -25,13 +28,32 @@ interface MonitorState {
 
 function httpOk(url: string): boolean {
   try {
-    const code = execFileSync("curl", ["-fsS", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "15", url], {
-      encoding: "utf8",
-    }).trim();
+    const code = execFileSync(
+      "curl",
+      ["-fsS", "-A", CURL_AGENT, "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "15", url],
+      {
+        encoding: "utf8",
+      }
+    ).trim();
     return /^(200|307|308)$/.test(code);
   } catch {
     return false;
   }
+}
+
+function onProductionServer(): boolean {
+  if (process.env.METI_MONITOR_ON_SERVER === "1") return true;
+  if (process.env.METI_MONITOR_ON_SERVER === "0") return false;
+  return existsSync("/var/lib/meti-booking/data.db");
+}
+
+function probeTargets() {
+  return resolveMonitorProbeTargets({
+    onProductionServer: onProductionServer(),
+    localBase: LOCAL_BASE,
+    publicSite: SITE,
+    checkPublicFromServer: process.env.METI_MONITOR_CHECK_PUBLIC === "1",
+  });
 }
 
 function serviceActive(): boolean {
@@ -72,7 +94,9 @@ function readState(): MonitorState {
 
 function writeState(state: MonitorState) {
   mkdirSync(dirname(STATE_PATH), { recursive: true });
-  writeFileSync(STATE_PATH, JSON.stringify(state), { mode: 0o600 });
+  const tmp = `${STATE_PATH}.tmp`;
+  writeFileSync(tmp, JSON.stringify(state), { mode: 0o600 });
+  renameSync(tmp, STATE_PATH);
 }
 
 function safeNumber(read: () => number, fallback = 0): number {
@@ -153,10 +177,11 @@ async function main() {
     console.error("Calendar usage check failed:", error);
   }
 
+  const targets = probeTargets();
   const sample: MonitorSample = {
-    homepageOk: httpOk(`${SITE}/`),
-    bookOk: httpOk(`${SITE}/book`),
-    healthOk: httpOk(`${SITE}/api/health`),
+    homepageOk: httpOk(targets.home),
+    bookOk: httpOk(targets.book),
+    healthOk: httpOk(targets.health),
     serviceActive: serviceActive(),
     diskUsedPercent: safeNumber(diskUsedPercent),
     memoryUsedPercent: safeNumber(memoryUsedPercent),
@@ -174,6 +199,8 @@ async function main() {
   console.log(
     JSON.stringify({
       sample,
+      probe: targets,
+      onProductionServer: onProductionServer(),
       issues: currentIds,
       send: decision.send,
       recovered: decision.recovered,
@@ -204,12 +231,18 @@ async function main() {
       </ul>
       <p style="margin:16px 0 0;color:#6b7280;font-size:13px;">This check runs every 15 minutes. You will get another email if it is still wrong after 6 hours.</p>`;
 
-  const sent = await sendStudioOpsEmail(subject, body);
+  const sentAt = new Date().toISOString();
   writeState({
     ids: currentIds,
-    lastSentAt: sent ? new Date().toISOString() : previous.lastSentAt,
+    lastSentAt: sentAt,
   });
+
+  const sent = await sendStudioOpsEmail(subject, body);
   if (!sent) {
+    writeState({
+      ids: currentIds,
+      lastSentAt: previous.lastSentAt,
+    });
     console.error("Could not send ops alert email (RESEND_API_KEY missing?)");
     process.exitCode = 1;
   }
