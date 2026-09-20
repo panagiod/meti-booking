@@ -51,6 +51,27 @@ if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_MONITOR" ]]; then
   exit 0
 fi
 
+if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_LOGS" || "${SSH_ORIGINAL_COMMAND:-}" == *METI_LOGS* ]]; then
+  echo "=== monitor.log (last 500 lines) ==="
+  tail -n 500 /var/log/meti-booking/monitor.log 2>/dev/null || echo "(missing)"
+  echo ""
+  echo "=== monitor-state.json ==="
+  cat /var/lib/meti-booking/monitor-state.json 2>/dev/null || echo "(missing)"
+  echo ""
+  echo "=== curl probes at $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
+  for url in "http://127.0.0.1:3000/api/health" "http://127.0.0.1:3000/" "https://meti-pilates.com/api/health" "https://meti-pilates.com/"; do
+    code="$(curl -sS -o /dev/null -w "%{http_code}" --max-time 15 -A "MeTi-Logs/1.0" "$url" 2>/dev/null || echo "000")"
+    echo "${url} -> ${code}"
+  done
+  echo ""
+  echo "=== deploy.log (last 80 lines) ==="
+  tail -n 80 /var/log/meti-booking/deploy.log 2>/dev/null || echo "(missing)"
+  echo ""
+  echo "=== journalctl meti-booking since 2026-09-18 ==="
+  journalctl -u meti-booking --since "2026-09-18 00:00:00" --no-pager 2>/dev/null | tail -100 || echo "(missing)"
+  exit 0
+fi
+
 git fetch origin main
 git reset --hard origin/main
 exec "$REPO/deploy/remote-deploy.sh"
