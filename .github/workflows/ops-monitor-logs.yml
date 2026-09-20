@@ -1,0 +1,37 @@
+name: Ops monitor logs
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ops-monitor-logs
+  cancel-in-progress: true
+
+jobs:
+  read:
+    name: Read VPS monitor logs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Verify GitHub secrets
+        env:
+          PRODUCTION_HOST: ${{ secrets.PRODUCTION_HOST }}
+          PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
+          PRODUCTION_SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+        run: |
+          missing=0
+          if [ -z "$PRODUCTION_HOST" ]; then echo "::error::Missing PRODUCTION_HOST"; missing=1; fi
+          if [ -z "$PRODUCTION_USER" ]; then echo "::error::Missing PRODUCTION_USER"; missing=1; fi
+          if [ -z "$PRODUCTION_SSH_KEY" ]; then echo "::error::Missing PRODUCTION_SSH_KEY"; missing=1; fi
+          if [ "$missing" -eq 1 ]; then exit 1; fi
+
+      - name: Fetch monitor logs via SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          port: 22
+          command_timeout: 5m
+          script: METI_LOGS
