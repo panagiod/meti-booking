@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   evaluateMonitor,
+  resolveMonitorProbeTargets,
   shouldSendAlert,
   upcomingPlacesCapacity,
   type MonitorSample,
@@ -114,6 +115,27 @@ describe("studio monitor", () => {
     expect(issues).toHaveLength(1);
     expect(issues[0].id).toBe("calendar-full");
     expect(issues[0].detail).toBe("19 of 20 places are booked (95%).");
+  });
+
+  it("probes localhost on the VPS instead of the public Cloudflare URL", () => {
+    expect(
+      resolveMonitorProbeTargets({
+        onProductionServer: true,
+        localBase: "http://127.0.0.1:3000",
+        publicSite: "https://meti-pilates.com",
+      })
+    ).toEqual({
+      health: "http://127.0.0.1:3000/api/health",
+      home: "http://127.0.0.1:3000/",
+      book: "http://127.0.0.1:3000/book",
+    });
+    expect(
+      resolveMonitorProbeTargets({
+        onProductionServer: false,
+        localBase: "http://127.0.0.1:3000",
+        publicSite: "https://meti-pilates.com",
+      }).health
+    ).toBe("https://meti-pilates.com/api/health");
   });
 
   it("emails a new problem and a recovery, but not every check", () => {

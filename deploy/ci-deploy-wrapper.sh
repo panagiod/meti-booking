@@ -37,6 +37,20 @@ if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_RESTORE" || "${SSH_ORIGINAL_COMMAND:-
   exit 0
 fi
 
+if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_RESTART" ]]; then
+  systemctl restart meti-booking
+  sleep 2
+  systemctl is-active meti-booking
+  curl -fsS --max-time 5 http://127.0.0.1:3000/api/health
+  exit 0
+fi
+
+if [[ "${SSH_ORIGINAL_COMMAND:-}" == "METI_MONITOR" ]]; then
+  "$REPO/deploy/monitor-studio.sh"
+  tail -n 5 /var/log/meti-booking/monitor.log 2>/dev/null || true
+  exit 0
+fi
+
 git fetch origin main
 git reset --hard origin/main
 exec "$REPO/deploy/remote-deploy.sh"
