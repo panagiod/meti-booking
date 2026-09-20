@@ -2,6 +2,10 @@ name: Ops monitor logs
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/trigger-monitor-log-fetch.txt
 
 concurrency:
   group: ops-monitor-logs
