@@ -1,17 +1,10 @@
 import { config } from "dotenv";
 import { resolve } from "path";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { createSqlitePrisma } from "./lib/sqlite-prisma";
 
 config({ path: resolve(__dirname, "../.env") });
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { PrismaClient } = require("../src/generated/prisma/client");
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const prisma = new PrismaClient({ adapter });
+const prisma = createSqlitePrisma(process.env.DATABASE_URL!);
 
 async function cleanDatabase() {
   try {

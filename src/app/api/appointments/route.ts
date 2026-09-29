@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
+import type { Prisma } from "@/generated/prisma/client";
 import { createCheckoutPreference } from "@/lib/mercadopago";
 import { parseLocalISO } from "@/lib/timezone";
 import { buildBookingQuote } from "@/lib/booking-quote";

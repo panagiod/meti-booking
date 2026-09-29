@@ -11,7 +11,12 @@ if [[ -f .env ]]; then
 fi
 
 DATA_DIR="${METI_DATA_DIR:-/var/lib/meti-booking}"
-DB="${DATABASE_URL#file:}"
+DB_URL="${DATABASE_URL:-}"
+if [[ -n "$DB_URL" ]]; then
+  DB="${DB_URL#file:}"
+else
+  DB=""
+fi
 DB="${DB:-${DATA_DIR}/data.db}"
 PUBLIC_IP="$(curl -fsS --max-time 5 https://api4.ipify.org 2>/dev/null || true)"
 

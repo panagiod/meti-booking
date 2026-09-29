@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { resolve } from "path";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { randomUUID } from "crypto";
 
 config({ path: resolve(__dirname, "../../.env.test") });
@@ -16,7 +16,7 @@ const { PrismaClient } = require("../../src/generated/prisma/client");
 
 export const TEST_DB_URL = process.env.TEST_DATABASE_URL!;
 
-const adapter = new PrismaPg({ connectionString: TEST_DB_URL });
+const adapter = new PrismaBetterSqlite3({ url: TEST_DB_URL });
 
 export const prisma = new PrismaClient({ adapter });
 
