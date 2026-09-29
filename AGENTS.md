@@ -59,7 +59,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | Admin auth | `src/lib/admin-auth.ts`, `admin/layout.tsx` |
 | MP encryption | `src/lib/encryption.ts`, `src/lib/advisor-mp.ts` |
 | Checkout pricing | `src/app/api/checkout/quote/route.ts` |
-| **Production deploy** | `deploy/HETZNER.md`, `docs/HOSTING.md` |
+| **Production deploy** | `./deploy/deploy-lite.sh` · [deploy/LITE.md](deploy/LITE.md), [docs/HOSTING.md](docs/HOSTING.md) |
+| **Cancelled sessions (admin)** | `/admin/bookings` log; DB `status=CANCELLED` + `cancelReason`/`cancelledAt`; cron prunes beyond **100** newest (`/api/cron/cleanup-cancelled`) |
 | **Backup / restore** | [deploy/OPS.md](deploy/OPS.md) (public pointer) · private repo `docs/` · skill [meti-backup-restore](.agents/skills/meti-backup-restore/SKILL.md) |
 | **Disk prune** | `deploy/prune-disk.sh` (cron 01:45 UTC; also at 80% disk) |
 | **Downtime / usage alerts** | GitHub **Uptime** + VPS cron (`deploy/monitor-studio.sh`) |
