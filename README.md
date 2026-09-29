@@ -80,7 +80,7 @@ Production backups live in a **private** ops repo. Public pointer: [deploy/OPS.m
 ## Tech stack
 
 - Next.js 16 · React 19 · TypeScript
-- PostgreSQL · Prisma 7
+- SQLite · Prisma 7
 - better-auth
 - Tailwind 4 · `studio.css`
 - DB-backed CMS (`StudioContent` model)

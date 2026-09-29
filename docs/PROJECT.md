@@ -245,7 +245,7 @@ Copy `.env.demo.example` → `.env`. See `.env.example` for production.
 
 | Variable | Required | Notes |
 |----------|----------|-------|
-| `DATABASE_URL` | ✅ | PostgreSQL |
+| `DATABASE_URL` | ✅ | SQLite (`file:…/data.db`) |
 | `BETTER_AUTH_SECRET` | ✅ | `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | ✅ | Public URL, no trailing slash |
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | ✅ | Same |

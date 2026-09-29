@@ -28,7 +28,7 @@ const checks: Check[] = [
     name: "DATABASE_URL",
     required: true,
     ok: has("DATABASE_URL"),
-    hint: "Neon pooled Postgres URL with ?sslmode=require",
+    hint: 'SQLite file URL (e.g. file:./data.db) — hosted demos need persistent disk for the DB file',
   },
   {
     name: "BETTER_AUTH_SECRET",

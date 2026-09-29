@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { z } from "zod";
-import { Prisma } from "@/generated/prisma/client";
 import { createCheckoutPreference } from "@/lib/mercadopago";
 import { parseLocalISO } from "@/lib/timezone";
 import { buildBookingQuote } from "@/lib/booking-quote";
@@ -19,7 +18,6 @@ import {
 import { ClientPhoneError, normalizeClientPhone } from "@/lib/client-phone";
 import { isPaymentsEnabled } from "@/lib/payments-config";
 import { notifyAppointmentConfirmed } from "@/lib/notify";
-import { isSqliteDatabase } from "@/lib/database-provider";
 import { readInstructorId } from "@/lib/studio-instructor";
 import {
   createDemoAppointment,
@@ -279,10 +277,7 @@ export async function POST(request: NextRequest) {
             isTest,
           },
         });
-      },
-      isSqliteDatabase()
-        ? undefined
-        : { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+      }
     );
 
     const manageToken =

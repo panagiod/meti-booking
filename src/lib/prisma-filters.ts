@@ -1,6 +1,6 @@
 import { isSqliteDatabase } from "@/lib/database-provider";
 
-/** Case-insensitive contains that works on both Postgres and SQLite. */
+/** Case-insensitive contains for SQLite queries. */
 export function containsInsensitive(value: string) {
   if (isSqliteDatabase()) {
     return { contains: value };

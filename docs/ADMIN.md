@@ -156,7 +156,7 @@ Editable per language:
 
 ## Persistence
 
-All admin changes are stored in PostgreSQL:
+All admin changes are stored in SQLite:
 
 | Admin action | Stored in | Notes |
 |--------------|-----------|-------|

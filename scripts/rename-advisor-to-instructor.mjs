@@ -3,7 +3,7 @@
  * SQLite: rename leftover advisor_* tables/columns to instructor_*
  * and UserRole ADVISOR -> INSTRUCTOR.
  *
- * No-op on PostgreSQL or when the database is already renamed.
+ * No-op when the database is already renamed.
  * If prisma db push created empty instructor_* tables beside advisor_*,
  * drop the empty instructor_* tables first, then rename.
  */

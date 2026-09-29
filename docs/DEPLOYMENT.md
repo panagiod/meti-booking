@@ -2,7 +2,8 @@
 
 A phased plan to go from **$0/month demo** to the **cheapest sustainable production** setup.
 
-> **Start here:** [CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md) — step-by-step instructions for **$0/month** (Vercel + Neon).
+> **Production:** [docs/HOSTING.md](./HOSTING.md) + [deploy/LITE.md](../deploy/LITE.md) — Hetzner VPS + **SQLite** (`file:/var/lib/meti-booking/data.db`).  
+> **Local demo:** [CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md) · `pnpm demo:setup` with `DATABASE_URL=file:./data.db`.
 
 ## Cost summary
 
@@ -23,7 +24,7 @@ A phased plan to go from **$0/month demo** to the **cheapest sustainable product
 | Service | Provider | Cost | Notes |
 |---|---|---:|---|
 | App hosting | [Vercel Hobby](https://vercel.com) | $0 | Native Next.js support, `vercel.json` crons already configured |
-| Database | [Neon](https://neon.tech) free tier | $0 | 0.5 GB storage, enough for demo/low traffic |
+| Database | SQLite (`file:./data.db`) | $0 | Local demo only |
 | DNS / SSL | Vercel subdomain | $0 | `meti-booking.vercel.app` (or similar) |
 | Auth | Google OAuth + email/password | $0 | Google Cloud OAuth is free |
 | Email | Skip or Resend free tier | $0 | 100 emails/day on Resend free |
@@ -33,57 +34,13 @@ A phased plan to go from **$0/month demo** to the **cheapest sustainable product
 
 **Estimated total: $0/month**
 
-### Deploy steps (Vercel + Neon)
+### Deploy steps (local demo)
 
-1. **Create a Neon project**
-   - Sign up at [neon.tech](https://neon.tech)
-   - Create a database and copy the connection string
+1. `cp .env.demo.example .env`
+2. `pnpm install && pnpm db:push && pnpm demo:setup && pnpm dev`
+3. Open `http://localhost:3000/book` and sign in to `/admin`
 
-2. **Push to GitHub** (already done if using this repo)
-
-3. **Import to Vercel**
-   - Go to [vercel.com/new](https://vercel.com/new)
-   - Import `panagiod/meti-booking`
-   - Framework preset: **Next.js**
-
-4. **Set environment variables** in Vercel → Settings → Environment Variables:
-
-   ```
-   DATABASE_URL=postgresql://...
-   BETTER_AUTH_SECRET=<openssl rand -base64 32>
-   BETTER_AUTH_URL=https://your-app.vercel.app
-   NEXT_PUBLIC_BETTER_AUTH_URL=https://your-app.vercel.app
-   STUDIO_TIMEZONE=Asia/Nicosia
-   ENCRYPTION_KEY=<openssl rand -base64 32>
-   CRON_SECRET=<openssl rand -hex 24>
-   GOOGLE_CLIENT_ID=...
-   GOOGLE_CLIENT_SECRET=...
-   BLOB_READ_WRITE_TOKEN=...   # required for admin image uploads
-   ```
-
-5. **Run migrations** (one-time, from your machine):
-
-   ```bash
-   DATABASE_URL="your-neon-url" pnpm db:deploy
-   ```
-
-6. **Seed demo data** (optional — local/staging only):
-
-   ```bash
-   DATABASE_URL="your-neon-url" \
-   BETTER_AUTH_URL="https://your-app.vercel.app" \
-   ALLOW_DEMO_SEED=1 \
-   DEMO_PASSWORD="your-secure-password" \
-   pnpm demo:setup
-   ```
-
-7. **Configure Google OAuth**
-   - [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
-   - Authorized redirect URI: `https://your-app.vercel.app/api/auth/callback/google`
-
-8. **Deploy** — Vercel builds automatically on push to `main`.
-
-See [deploy/VERCEL.md](../deploy/VERCEL.md) for a step-by-step checklist (env vars, crons, smoke tests, guest checkout).
+For a public production site, use Hetzner + SQLite — [HOSTING.md](./HOSTING.md), not Vercel-hosted database files.
 
 ### Vercel cron limitations (Hobby plan)
 
@@ -94,7 +51,7 @@ The app uses daily crons (expire pending appointments, reminders, cleanup). This
 - Cold starts on free tier
 - No custom domain (unless you add one in Phase 2)
 - No video calls, payments, or file uploads without extra services
-- Neon free tier sleeps after inactivity (first request may be slow)
+- Local SQLite only — not a public host
 
 ---
 
@@ -142,7 +99,7 @@ The app uses daily crons (expire pending appointments, reminders, cleanup). This
 
 ## Phase 3 — Hetzner VPS (~€5–7/month) — **recommended for production**
 
-**Goal:** Cheapest **commercial** hosting with full control. No Vercel Pro fees, no Neon sleep.
+**Goal:** Cheapest **commercial** hosting with full control (SQLite on VPS).
 
 👉 **Full guide:** [deploy/HETZNER.md](../deploy/HETZNER.md)  
 👉 **Overview:** [docs/HOSTING.md](./HOSTING.md)
@@ -152,11 +109,11 @@ The app uses daily crons (expire pending appointments, reminders, cleanup). This
 | Item | Detail |
 |------|--------|
 | Server | Hetzner **CX23** (~€5.49/mo) — Ubuntu 24.04 — **not** CPX/CCX |
-| Stack | Docker: Postgres + Next.js + Caddy (HTTPS) |
-| Deploy | `./deploy/deploy.sh` on the server |
+| Stack | Node + Caddy + SQLite (`file:/var/lib/meti-booking/data.db`) |
+| Deploy | `./deploy/deploy-lite.sh` on the server |
 | Uploads | `SELF_HOSTED=1` — local disk, no Vercel Blob |
 | Cron | `./deploy/setup-cron.sh` |
-| Backups | `./deploy/backup-db.sh` |
+| Backups | `./deploy/backup-studio-data.sh` |
 
 ### Recommended VPS
 
@@ -171,13 +128,10 @@ The app uses daily crons (expire pending appointments, reminders, cleanup). This
 ### VPS stack (included in `deploy/`)
 
 ```
-Internet → Cloudflare DNS (free) → Caddy (HTTPS) → Next.js app → PostgreSQL
+Internet → Cloudflare DNS (free) → Caddy (HTTPS) → Next.js app → SQLite on disk
 ```
 
-Files provided:
-- `deploy/Dockerfile` — production Next.js image
-- `deploy/docker-compose.prod.yml` — app + Postgres + Caddy
-- `deploy/Caddyfile` — automatic HTTPS via Let's Encrypt
+See `deploy/LITE.md`, `deploy/deploy-lite.sh`, and `deploy/backup-studio-data.sh`.
 
 ### VPS deploy steps
 
@@ -188,7 +142,7 @@ git clone https://github.com/panagiod/meti-booking.git
 cd meti-booking
 cp deploy/env.production.example .env   # edit DOMAIN, secrets
 chmod +x deploy/*.sh
-./deploy/deploy.sh
+./deploy/deploy-lite.sh
 ./deploy/setup-cron.sh
 ```
 
@@ -197,10 +151,10 @@ Caddy obtains SSL certificates automatically. For backups, cron details, and tro
 ### VPS cost optimization tips
 
 - **Skip Vercel Blob** — store uploads on the VPS disk or Cloudflare R2 free tier (10 GB)
-- **Skip Neon** — Postgres runs on the same VPS (included in compose file)
+- **SQLite on VPS** — single `data.db` file, encrypted off-site backups via GitHub Actions
 - **Skip paid email** — use Resend free tier or self-hosted SMTP later
 - **Use Cloudflare** — free CDN, SSL, and basic protection in front of VPS
-- **Backups** — Hetzner snapshots (~€0.60/mo) or `pg_dump` to R2
+- **Backups** — `./deploy/backup-studio-data.sh` + private ops repo (see `deploy/OPS.md`)
 
 **Estimated total: ~$5–7/month VPS + $3–12/year domain**
 
@@ -210,47 +164,28 @@ Caddy obtains SSL certificates automatically. For backups, cron details, and tro
 
 ```
 Need a real studio website (commercial)?
-  └─ Hetzner VPS + Docker (~€6/mo) — see deploy/HETZNER.md
+  └─ Hetzner VPS + SQLite (~€6/mo) — deploy/LITE.md
 
-Need a demo URL today (non-commercial testing)?
-  └─ Phase 1: Vercel + Neon ($0)
-
-Need a custom domain but prefer managed hosting?
-  └─ Phase 2: Vercel Pro + Neon (~€25/mo)
-
-Hitting free-tier limits or want full control?
-  └─ Phase 3: Hetzner VPS + Docker (~€6/mo)
+Need to try the app on your laptop?
+  └─ cp .env.demo.example .env && pnpm db:push && pnpm demo:setup && pnpm dev
 ```
 
-## Migration path
+## Environment variable checklist (production VPS)
 
-| From | To | Effort |
-|---|---|---|
-| Local demo | Vercel + Neon | Low — set env vars, run `db:deploy` |
-| Vercel + Neon | VPS | Medium — export Neon DB, deploy Docker stack |
-| Vercel Blob | Cloudflare R2 / local disk | Medium — change upload routes |
-| Vercel crons | Caddy + cron on VPS | Low — same API endpoints |
-
-## Environment variable checklist (production)
-
-| Variable | Phase 1 | Phase 2 | Phase 3 |
-|---|---|---|---|
-| `DATABASE_URL` | Neon | Neon | VPS Postgres |
-| `BETTER_AUTH_SECRET` | ✅ | ✅ | ✅ |
-| `BETTER_AUTH_URL` | vercel.app | custom domain | custom domain |
-| `STUDIO_TIMEZONE` | ✅ | ✅ | ✅ |
-| `ENCRYPTION_KEY` | ✅ | ✅ | ✅ |
-| `CRON_SECRET` | ✅ | ✅ | ✅ |
-| `GOOGLE_CLIENT_ID/SECRET` | ✅ | ✅ | ✅ |
-| `BLOB_READ_WRITE_TOKEN` | ✅ uploads | ✅ | replace with R2/local |
-| `RESEND_API_KEY` | optional | recommended | optional |
-| `LIVEKIT_*` | optional | when needed | when needed |
-| `MERCADOPAGO_ACCESS_TOKEN` | when needed | when needed | when needed |
-| `APP_URL` | when MP | when MP | when MP |
-| `DEMO_PASSWORD` | — | — | only with `ALLOW_DEMO_SEED=1` |
+| Variable | Notes |
+|---|---|
+| `DATABASE_URL` | `file:/var/lib/meti-booking/data.db` |
+| `BETTER_AUTH_SECRET` | ✅ |
+| `BETTER_AUTH_URL` | `https://yourdomain.com` |
+| `STUDIO_TIMEZONE` | `Asia/Nicosia` |
+| `ENCRYPTION_KEY` | ✅ before Mercado Pago |
+| `CRON_SECRET` | ✅ |
+| `SELF_HOSTED` | `1` |
+| `GOOGLE_CLIENT_ID/SECRET` | optional |
+| `RESEND_API_KEY` | recommended |
+| `APP_URL` | when Mercado Pago |
 
 ## Recommended path for this project
 
-1. **Real studio (MeTi Pilates):** Deploy on **Hetzner CX23** using [deploy/HETZNER.md](../deploy/HETZNER.md) (~€6/mo + domain)
-2. **Testing / portfolio:** Vercel Hobby + Neon free ($0) — see [CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md)
-3. **Managed alternative:** Vercel Pro + Neon Launch (~€25/mo) — see [deploy/VERCEL.md](../deploy/VERCEL.md)
+1. **Real studio (MeTi Pilates):** Hetzner CX23 + SQLite — [deploy/LITE.md](../deploy/LITE.md) (~€6/mo + domain)
+2. **Local demo:** [CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md)

@@ -1,13 +1,6 @@
 # Lite production deploy — no Docker, SQLite (~low RAM)
 
-**Recommended for Hetzner CX23 / 4GB VPS.** Uses ~**200–400 MB RAM** at runtime instead of **1 GB+** with Docker + PostgreSQL.
-
-| | **Lite (recommended)** | Docker + Postgres |
-|--|------------------------|-------------------|
-| RAM at rest | ~200–400 MB | ~1–1.5 GB |
-| Disk | Single SQLite file | Postgres volume + images |
-| Deploy time | ~5–8 min (native build) | ~10–15 min (Docker build) |
-| Good for | Small studio, low traffic | Higher traffic / multi-app server |
+**Recommended for Hetzner CX23 / 4GB VPS.** Uses ~**200–400 MB RAM** at runtime with a single SQLite file on disk.
 
 ## One-time setup
 
@@ -69,15 +62,7 @@ Full notes: [OPS.md](./OPS.md) and [BACKUP.md](./BACKUP.md)
 
 ## Switching from Docker deploy
 
-If you started with Docker and want lite:
-
-```bash
-docker compose -f deploy/docker-compose.prod.yml down 2>/dev/null || true
-FORCE=1 ./deploy/init-env-lite.sh
-./deploy/install-lite.sh
-./deploy/deploy-lite.sh
-./deploy/seed-lite.sh
-```
+If you are migrating from an older Docker-based deploy, stop those containers first, then run the lite steps above.
 
 SQLite starts empty — re-seed or restore a backup.
 
@@ -120,4 +105,4 @@ Full walkthrough: **[GOOGLE_OAUTH.md](./GOOGLE_OAUTH.md)**
 | Auth errors | `BETTER_AUTH_URL` must match `https://yourdomain.com` |
 | No booking emails | [RESEND.md](./RESEND.md) — API key + domain verify + `systemctl restart meti-booking` |
 
-Docker + Postgres path still available: set `DEPLOY_MODE=docker` and use `./deploy/deploy.sh` — see [HETZNER.md](./HETZNER.md).
+See [HETZNER.md](./HETZNER.md) for domain/DNS and the full VPS checklist.

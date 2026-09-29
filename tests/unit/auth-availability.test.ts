@@ -6,16 +6,13 @@ describe("isAuthDatabaseAvailable", () => {
     vi.unstubAllEnvs();
   });
 
-  it("is false when DATABASE_URL points to localhost", () => {
-    vi.stubEnv("DATABASE_URL", "postgresql://meti:meti@localhost:5432/meti_booking");
+  it("is false when DATABASE_URL is a local SQLite file", () => {
+    vi.stubEnv("DATABASE_URL", "file:./data.db");
     expect(isAuthDatabaseAvailable()).toBe(false);
   });
 
-  it("is true when DATABASE_URL is a remote host", () => {
-    vi.stubEnv(
-      "DATABASE_URL",
-      "postgresql://user:pass@ep-abc.eu-central-1.aws.neon.tech/neondb?sslmode=require"
-    );
+  it("is true when DATABASE_URL is the production SQLite path", () => {
+    vi.stubEnv("DATABASE_URL", "file:/var/lib/meti-booking/data.db");
     expect(isAuthDatabaseAvailable()).toBe(true);
   });
 });

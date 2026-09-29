@@ -9,8 +9,8 @@ How to put the booking site online. **For a real studio, use Hetzner VPS** (~€
 | Option | Monthly cost | Best for |
 |--------|-------------:|----------|
 | **[Hetzner VPS](#hetzner-vps-recommended)** | **~€6** | **Real studio website** — commercial, custom domain, payments |
-| [Vercel Pro + Neon](#vercel-alternative) | ~€25 | No server maintenance; pay for convenience |
-| [Vercel Hobby + Neon free](#testing-only) | €0 | **Testing only** — not allowed for commercial use |
+| [Vercel](#vercel-alternative) | varies | Optional; production DB stays on VPS SQLite |
+| [Local demo](#testing-only) | €0 | Laptop + `file:./data.db` — not public production |
 
 **Recommendation:** Hetzner **CX23** (Cost-Optimized) + your domain + Docker stack in `deploy/`.  
 **Avoid CPX/CCX** — those are €17–20+/month (easy to pick by mistake).
@@ -27,7 +27,7 @@ How to put the booking site online. **For a real studio, use Hetzner VPS** (~€
 | IPv4 address (optional — IPv6-only saves ~€0.50) | ~€0.50/mo |
 | Domain (`.gr`, `.com`, etc.) | ~€10–15/yr |
 | SSL (Caddy + Let's Encrypt) | €0 |
-| PostgreSQL (same server) | €0 |
+| SQLite (same server) | €0 |
 | **Total** | **~€6/month** |
 
 ### What you get
@@ -58,23 +58,24 @@ Hetzner VPS (Ubuntu 24.04)
    │       │
    │       └── reverse_proxy ──► Next.js app (:3000)
    │                                   │
-   │                                   └── PostgreSQL (:5432, internal)
+   │                                   └── SQLite (/var/lib/meti-booking/data.db)
    │
    └── cron (host) ──► /api/cron/* (Bearer CRON_SECRET)
 ```
 
 ### Full step-by-step guide
 
-👉 **[deploy/HETZNER.md](../deploy/HETZNER.md)** — create server, DNS, Docker, deploy, seed, cron, backups, troubleshooting.
+👉 **[deploy/LITE.md](../deploy/LITE.md)** — install, deploy, seed, cron, backups. **[deploy/HETZNER.md](../deploy/HETZNER.md)** — domain/DNS checklist.
 
 ### Quick deploy (on the server)
 
 ```bash
 git clone https://github.com/panagiod/meti-booking.git
 cd meti-booking
-cp deploy/env.production.example .env    # edit DOMAIN, secrets, passwords
 chmod +x deploy/*.sh
-./deploy/deploy.sh
+./deploy/install-lite.sh
+FORCE=1 ./deploy/init-env-lite.sh yourdomain.com
+./deploy/deploy-lite.sh
 ./deploy/setup-cron.sh
 ```
 
@@ -82,7 +83,7 @@ First-time seed (optional):
 
 ```bash
 # In .env: ALLOW_DEMO_SEED=1 and DEMO_PASSWORD=...
-./deploy/seed.sh
+./deploy/seed-lite.sh
 ```
 
 ### Environment variables (VPS)
@@ -92,8 +93,8 @@ Copy **`deploy/env.production.example`** → **`.env`** in the project root.
 | Variable | Required | Notes |
 |----------|----------|-------|
 | `DOMAIN` | ✅ | e.g. `meti-pilates.com` — used by Caddy for HTTPS |
-| `POSTGRES_PASSWORD` | ✅ | Strong password for local Postgres |
-| `DATABASE_URL` | ✅ | Auto-set in Docker; match password in compose |
+| `METI_DATA_DIR` | ✅ | e.g. `/var/lib/meti-booking` |
+| `DATABASE_URL` | ✅ | `file:/var/lib/meti-booking/data.db` |
 | `BETTER_AUTH_SECRET` | ✅ | `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | ✅ | `https://yourdomain.com` (no trailing slash) |
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | ✅ | Same as above |
@@ -110,13 +111,13 @@ Copy **`deploy/env.production.example`** → **`.env`** in the project root.
 
 | Script | Purpose |
 |--------|---------|
-| [`deploy/deploy.sh`](../deploy/deploy.sh) | Start Postgres → migrate → build & start app + Caddy |
-| [`deploy/migrate.sh`](../deploy/migrate.sh) | Apply Prisma migrations after schema updates |
-| [`deploy/seed.sh`](../deploy/seed.sh) | Seed studio data (`ALLOW_DEMO_SEED=1`) |
+| [`deploy/deploy-lite.sh`](../deploy/deploy-lite.sh) | Build app + restart systemd + Caddy |
+| [`deploy/init-env-lite.sh`](../deploy/init-env-lite.sh) | Generate `.env` with SQLite paths |
+| [`deploy/seed-lite.sh`](../deploy/seed-lite.sh) | Seed studio data (`ALLOW_DEMO_SEED=1`) |
 | [`deploy/setup-cron.sh`](../deploy/setup-cron.sh) | Install daily cron jobs on the server |
-| [`deploy/backup-db.sh`](../deploy/backup-db.sh) | Backup Postgres to `deploy/backups/` |
+| [`deploy/backup-studio-data.sh`](../deploy/backup-studio-data.sh) | Encrypted SQLite backup |
 | [`deploy/smoke-test.sh`](../deploy/smoke-test.sh) | Post-deploy HTTP checks |
-| [`deploy/install-server.sh`](../deploy/install-server.sh) | First-time Ubuntu Docker + UFW setup |
+| [`deploy/install-lite.sh`](../deploy/install-lite.sh) | First-time Ubuntu Node + Caddy setup |
 | `pnpm deploy:check:hetzner` | Validate `.env` before VPS deploy |
 
 ### Updating the live site
@@ -124,7 +125,7 @@ Copy **`deploy/env.production.example`** → **`.env`** in the project root.
 ```bash
 cd ~/meti-booking
 git pull origin main
-./deploy/deploy.sh
+./deploy/deploy-lite.sh
 ```
 
 ### Cron schedule (installed by `setup-cron.sh`)
@@ -144,19 +145,9 @@ git pull origin main
 
 Lite / production SQLite backups are installed by `deploy/setup-cron.sh` and copied encrypted to a private ops repo. See [deploy/OPS.md](../deploy/OPS.md).
 
-### Docker files
-
-| File | Role |
-|------|------|
-| `deploy/docker-compose.prod.yml` | Postgres + app + Caddy |
-| `deploy/Dockerfile` | Production Next.js standalone image |
-| `deploy/Dockerfile.migrate` | One-shot migration container |
-| `deploy/Dockerfile.seed` | One-shot seed container |
-| `deploy/Caddyfile` | HTTPS reverse proxy |
-
 ### Image uploads on VPS
 
-With `SELF_HOSTED=1`, admin uploads save to a **persistent Docker volume** at `/app/public/uploads/studio/`. No Vercel Blob required.
+With `SELF_HOSTED=1`, admin uploads save under `public/uploads/studio/` on disk. No Vercel Blob required.
 
 See [docs/ADMIN.md](./ADMIN.md) → Website CMS → Image uploads.
 
@@ -168,7 +159,7 @@ Easier operations, higher cost (~€25/month). Requires **Vercel Pro** for comme
 
 | Doc | Purpose |
 |-----|---------|
-| [deploy/VERCEL.md](../deploy/VERCEL.md) | Vercel + Neon checklist |
+| [deploy/VERCEL.md](../deploy/VERCEL.md) | Vercel checklist (not production DB) |
 | [deploy/GOOGLE_OAUTH.md](../deploy/GOOGLE_OAUTH.md) | Google sign-in |
 | [deploy/RESEND.md](../deploy/RESEND.md) | Booking & reminder emails (Resend) |
 | [docs/CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md) | $0 testing stack + real-business limits |
@@ -179,7 +170,7 @@ Validate env before deploy: `pnpm deploy:check`
 
 ## Testing only
 
-**Vercel Hobby + Neon free = $0/month** — fine for demos, not for a live studio (Vercel prohibits commercial use on Hobby).
+**Vercel Hobby** — fine for UI demos only; production data lives on the VPS SQLite file (see [deploy/LITE.md](../deploy/LITE.md)).
 
 See [docs/CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md).
 
@@ -187,17 +178,14 @@ See [docs/CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md).
 
 ## Comparison matrix
 
-| | Hetzner VPS | Vercel Pro + Neon | Vercel Hobby (free) |
-|---|:---:|:---:|:---:|
-| Commercial use | ✅ | ✅ | ❌ |
-| Monthly cost | ~€6 | ~€25 | €0 |
-| Custom domain | ✅ | ✅ | ✅ |
-| Cold starts | ❌ | Sometimes | Sometimes |
-| DB always on | ✅ | Paid Neon | Sleeps when idle |
-| Admin image uploads | Local disk | Vercel Blob | Blob or skip |
-| Server maintenance | You | Vercel | Vercel |
-| Cron jobs | Host cron | Vercel crons | Daily only |
-| Backups | Your script | Neon PITR (paid) | 6h window (free) |
+| | Hetzner VPS (SQLite) | Vercel (optional front-end) |
+|---|:---:|:---:|
+| Commercial use | ✅ | Pro plan for business |
+| Monthly cost | ~€6 | varies |
+| Database | SQLite on VPS | Use VPS SQLite — not serverless Postgres |
+| Admin image uploads | Local disk | `SELF_HOSTED` on VPS |
+| Cron jobs | Host cron | Limited on Vercel |
+| Backups | Encrypted SQLite scripts | Same VPS backups |
 
 ---
 
@@ -207,7 +195,7 @@ See [docs/CHEAPEST_HOSTING.md](./CHEAPEST_HOSTING.md).
 [ ] Hetzner CX23 server created (Ubuntu 24.04) — **not** CPX/CCX
 [ ] Domain DNS → server IP
 [ ] .env filled (DOMAIN, secrets, SELF_HOSTED=1)
-[ ] ./deploy/deploy.sh succeeded
+[ ] ./deploy/deploy-lite.sh succeeded
 [ ] ./deploy/setup-cron.sh installed
 [ ] Backup cron added (optional but recommended)
 [ ] /book and /admin smoke tested over HTTPS

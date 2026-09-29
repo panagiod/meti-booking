@@ -37,7 +37,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **Private ops repo:** encrypted DB + `.env` backups. Public pointer: [deploy/OPS.md](deploy/OPS.md). Host-specific runbooks are **not** in this repo.
 - **If production data is lost, follow Disaster recovery below** — do not invent a new restore path
 - **If you change backup or restore, update the private ops runbooks** (`docs/OPS.md`, `docs/BACKUP.md`, `docs/RECOVERY.md`) and the public-safe skill [`.agents/skills/meti-backup-restore/SKILL.md`](.agents/skills/meti-backup-restore/SKILL.md). Do not write the host IP or the ops repo name into this public tree.
-- **Hetzner VPS:** `SELF_HOSTED=1`, use `./deploy/deploy.sh` — see [docs/HOSTING.md](docs/HOSTING.md)
+- **Hetzner VPS:** `SELF_HOSTED=1`, use `./deploy/deploy-lite.sh` — see [docs/HOSTING.md](docs/HOSTING.md)
 - **Vercel:** `BLOB_READ_WRITE_TOKEN` for admin uploads
 
 ## Common tasks

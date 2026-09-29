@@ -1,31 +1,10 @@
 #!/usr/bin/env bash
-# First-time Ubuntu 24.04 server setup for MeTi Booking on Hetzner.
-# Run as root or with sudo on a fresh VPS.
+# First-time Ubuntu server setup — redirects to lite install (SQLite, no Docker).
 set -euo pipefail
 
-if [[ $EUID -ne 0 ]]; then
-  echo "Run with sudo: sudo ./deploy/install-server.sh"
-  exit 1
-fi
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
 
-echo "==> Updating system..."
-apt-get update && apt-get upgrade -y
-
-echo "==> Installing Docker..."
-if ! command -v docker >/dev/null; then
-  curl -fsSL https://get.docker.com | sh
-fi
-
-echo "==> Configuring firewall (UFW)..."
-ufw allow OpenSSH
-ufw allow 80/tcp
-ufw allow 443/tcp
-ufw --force enable
-
-echo ""
-echo "Server ready for Docker deploy."
-echo ""
-echo "Next steps:"
-echo "  ./deploy/init-env.sh && ./deploy/deploy.sh"
-echo "  ./deploy/setup-cron.sh"
-echo "  ./deploy/setup-cicd.sh   # enable GitHub auto-deploy — see deploy/CICD.md"
+echo "MeTi Booking uses the lite stack (Node + Caddy + SQLite)."
+echo "Running ./deploy/install-lite.sh ..."
+exec ./deploy/install-lite.sh

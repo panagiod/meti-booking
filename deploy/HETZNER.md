@@ -42,10 +42,10 @@ Hetzner renamed **CX22 → CX23** in 2026 and raised prices (~€3.99 → €5.4
 | Hetzner **CAX11** (ARM, 2 GB RAM — tighter, see below) | ~**€5.99/mo** |
 | Domain (meti-pilates.com — you already have this) | ~**€10–15/yr** |
 | SSL (Caddy + Let's Encrypt) | **€0** |
-| Postgres (on same server) | **€0** |
+| SQLite (on same server) | **€0** |
 | **Total** | **~€6–7/month** |
 
-Stack: **Docker** → Postgres + Next.js app + **Caddy** (HTTPS).
+Stack: **Node + Caddy + SQLite** (lite deploy — see [LITE.md](./LITE.md)).
 
 ---
 
@@ -58,7 +58,7 @@ Stack: **Docker** → Postgres + Next.js app + **Caddy** (HTTPS).
 | Guest checkout | ✅ |
 | Admin calendar + CMS | ✅ |
 | Image uploads (local disk) | ✅ — no Vercel Blob needed |
-| Database always on | ✅ — no Neon sleep |
+| Database always on | ✅ — SQLite on VPS |
 | Daily cron jobs | ✅ — `setup-cron.sh` |
 | Mercado Pago payments | ✅ — set `APP_URL` + `ENCRYPTION_KEY` |
 | Email reminders | ✅ — add Resend |
@@ -70,9 +70,9 @@ Stack: **Docker** → Postgres + Next.js app + **Caddy** (HTTPS).
 ```
 1. Create Hetzner CX23 server in Germany or Finland (Ubuntu 24.04)
 2. Point meti-pilates.com DNS → server IP
-3. Install Docker on the server
-4. Clone repo, create .env
-5. Run ./deploy/deploy.sh
+3. Run `./deploy/install-lite.sh` (Node + Caddy)
+4. Clone repo, create `.env` with `./deploy/init-env-lite.sh`
+5. Run `./deploy/deploy-lite.sh`
 6. Seed data + install cron jobs
 7. Smoke test /book and /admin
 ```
@@ -193,14 +193,14 @@ Online checker: [https://dnschecker.org](https://dnschecker.org) → type `meti-
 
 ---
 
-### When to do this vs `./deploy/deploy.sh`
+### When to do this vs `./deploy/deploy-lite.sh`
 
 | Order | Step |
 |-------|------|
 | 1 | Create Hetzner server → note **IPv4** |
 | 2 | **Set DNS A records** (this step) |
 | 3 | SSH in, clone repo, create `.env` with `DOMAIN=meti-pilates.com` |
-| 4 | Run `./deploy/deploy.sh` — Caddy requests Let's Encrypt cert **using your domain** |
+| 4 | Run `./deploy/deploy-lite.sh` — Caddy requests Let's Encrypt cert **using your domain** |
 
 HTTPS will only work after:
 - DNS points to the server **and**
@@ -210,7 +210,7 @@ HTTPS will only work after:
 You can run deploy before DNS propagates; the site may not get HTTPS until DNS is correct. Then re-run:
 
 ```bash
-docker compose -f deploy/docker-compose.prod.yml restart caddy
+sudo systemctl reload caddy
 ```
 
 ---
@@ -249,32 +249,15 @@ Log in as deploy:
 ssh deploy@YOUR_SERVER_IP
 ```
 
-### Install Docker + firewall
+### Install Node + Caddy (lite)
 
-**Option A — automated** (Ubuntu 24.04, as root):
-
-```bash
-sudo ./deploy/install-server.sh
-```
-
-Or download from GitHub after cloning.
-
-**Option B — manual:**
+From the repo root on the server (as root or with sudo):
 
 ```bash
-sudo apt update && sudo apt upgrade -y
-curl -fsSL https://get.docker.com | sudo sh
-sudo usermod -aG docker $USER
+sudo ./deploy/install-lite.sh
 ```
 
-Log out and back in so the Docker group applies.
-
-```bash
-sudo ufw allow OpenSSH
-sudo ufw allow 80/tcp
-sudo ufw allow 443/tcp
-sudo ufw enable
-```
+This installs Node 22, Caddy, SQLite tooling, swap, and opens ports 80/443 in UFW.
 
 ---
 
@@ -292,11 +275,11 @@ cd meti-booking
 
 ```bash
 chmod +x deploy/*.sh
-./deploy/init-env.sh
+./deploy/init-env-lite.sh
 ```
 
-Uses `meti-pilates.com` by default. Another domain: `./deploy/init-env.sh yourdomain.com`  
-Overwrite existing `.env`: `FORCE=1 ./deploy/init-env.sh`
+Uses `meti-pilates.com` by default. Another domain: `./deploy/init-env-lite.sh yourdomain.com`  
+Overwrite existing `.env`: `FORCE=1 ./deploy/init-env-lite.sh`
 
 **Or manual:**
 
@@ -309,7 +292,8 @@ nano .env
 
 ```bash
 DOMAIN=meti-pilates.com                    # your real domain
-POSTGRES_PASSWORD=<strong-random-password>
+METI_DATA_DIR=/var/lib/meti-booking
+DATABASE_URL=file:/var/lib/meti-booking/data.db
 
 BETTER_AUTH_SECRET=<openssl rand -base64 32>
 BETTER_AUTH_URL=https://meti-pilates.com
@@ -330,8 +314,6 @@ EMAIL_FROM="MeTi Pilates <bookings@meti-pilates.com>"
 STUDIO_NOTIFICATION_EMAIL=studio@example.com
 ```
 
-Update `DATABASE_URL` password to match `POSTGRES_PASSWORD`.
-
 Generate secrets on your laptop or the server:
 
 ```bash
@@ -351,17 +333,17 @@ pnpm deploy:check:hetzner
 
 ```bash
 chmod +x deploy/*.sh
-./deploy/deploy.sh
+./deploy/deploy-lite.sh
 ```
 
 This will:
 
-1. Start Postgres
-2. Run database migrations
-3. Build the Next.js Docker image
-4. Start the app + Caddy (HTTPS)
+1. Apply the SQLite schema (`prisma db push`)
+2. Build the Next.js app
+3. Restart the `meti-booking` systemd service
+4. Reload Caddy (HTTPS)
 
-First build takes **5–10 minutes**.
+First build takes **5–8 minutes**.
 
 Open `https://yourdomain.com` — you should see the homepage.
 
@@ -374,7 +356,7 @@ Open `https://yourdomain.com` — you should see the homepage.
 # ALLOW_DEMO_SEED=1
 # DEMO_PASSWORD=YourSecurePassword123!
 
-./deploy/seed.sh
+./deploy/seed-lite.sh
 ```
 
 Creates admin, instructor, schedule, and CMS content.
@@ -432,7 +414,7 @@ Manual:
 
 ## Step 9 — Auto-deploy (CI/CD)
 
-After the site works manually, enable **automatic deploys** so you never run `git pull` / `./deploy/deploy.sh` again.
+After the site works manually, enable **automatic deploys** so you never run `git pull` / `./deploy/deploy-lite.sh` again.
 
 **On the server (once):**
 
@@ -479,13 +461,13 @@ Add to Google Console:
 ```bash
 cd ~/meti-booking
 git pull origin main
-./deploy/deploy.sh
+./deploy/deploy-lite.sh
 ```
 
 If only env changed (no code):
 
 ```bash
-docker compose -f deploy/docker-compose.prod.yml up -d --build
+sudo systemctl restart meti-booking
 ```
 
 ---
@@ -493,20 +475,17 @@ docker compose -f deploy/docker-compose.prod.yml up -d --build
 ## Useful commands
 
 ```bash
-# Logs
-docker compose -f deploy/docker-compose.prod.yml logs -f app
+# App logs
+journalctl -u meti-booking -f
 
-# Restart app only
-docker compose -f deploy/docker-compose.prod.yml restart app
+# Restart app
+sudo systemctl restart meti-booking
 
-# Migrations after schema change
-./deploy/migrate.sh
+# Schema change on server
+pnpm db:push
 
-# Manual DB backup
-./deploy/backup-db.sh
-
-# Stop everything
-docker compose -f deploy/docker-compose.prod.yml down
+# Manual encrypted DB backup
+./deploy/backup-studio-data.sh
 ```
 
 ---
@@ -515,11 +494,11 @@ docker compose -f deploy/docker-compose.prod.yml down
 
 | Problem | Fix |
 |---------|-----|
-| **502 / site down** | `docker compose -f deploy/docker-compose.prod.yml logs app` |
+| **502 / site down** | `journalctl -u meti-booking -n 80 --no-pager` |
 | **HTTPS certificate failed** | DNS must point to server; ports 80+443 open; `DOMAIN` in `.env` matches |
 | **Can't upload images in admin** | Ensure `SELF_HOSTED=1` in `.env`; rebuild app |
 | **Cron not running** | Re-run `./deploy/setup-cron.sh`; check `CRON_SECRET` |
-| **DB connection error** | `docker compose -f deploy/docker-compose.prod.yml ps` — postgres healthy? |
+| **DB connection error** | Check `DATABASE_URL=file:/var/lib/meti-booking/data.db` and file permissions under `/var/lib/meti-booking` |
 | **Out of disk** | `./deploy/prune-disk.sh --urgent` (logs, journal, leftover backups, build cache). Journald is capped at 200M. Expand the Hetzner volume only if the live DB or uploads are the bulk. |
 
 ---
@@ -529,7 +508,7 @@ docker compose -f deploy/docker-compose.prod.yml down
 | Setup | Monthly | Best for |
 |-------|--------:|----------|
 | **Hetzner CX23** | ~€5.50 | Real studio — **recommended cheapest** |
-| Vercel Pro + Neon | ~€25 | Zero server maintenance |
+| Managed PaaS | ~€25+ | Less ops; still use VPS SQLite for production data |
 | Vercel Hobby free | €0 | Testing only — not commercial |
 
 ---
@@ -538,12 +517,10 @@ docker compose -f deploy/docker-compose.prod.yml down
 
 | File | Purpose |
 |------|---------|
-| `deploy/docker-compose.prod.yml` | Postgres + app + Caddy |
-| `deploy/Dockerfile` | Production Next.js image |
-| `deploy/Caddyfile` | HTTPS reverse proxy |
-| `deploy/env.production.example` | `.env` template |
-| `deploy/deploy.sh` | One-command deploy |
+| `deploy/deploy-lite.sh` | Build + restart app |
+| `deploy/init-env-lite.sh` | Generate `.env` with SQLite paths |
+| `deploy/install-lite.sh` | Node + Caddy on Ubuntu |
 | `deploy/setup-cron.sh` | Daily maintenance jobs |
-| `deploy/backup-db.sh` | Postgres backup |
+| `deploy/backup-studio-data.sh` | Encrypted SQLite backup |
 
 See also [README.md](./README.md) and [../docs/CHEAPEST_HOSTING.md](../docs/CHEAPEST_HOSTING.md).

@@ -45,14 +45,11 @@ source .env
 set +a
 
 export DEPLOY_MODE="${DEPLOY_MODE:-lite}"
-
-if [[ "${DEPLOY_MODE}" == "lite" ]]; then
-  echo "Deploy mode: lite (no Docker, SQLite)"
-  ./deploy/deploy-lite.sh
-else
-  echo "Deploy mode: docker (PostgreSQL)"
-  ./deploy/deploy.sh
+if [[ "${DEPLOY_MODE}" != "lite" ]]; then
+  echo "WARNING: Only lite (SQLite) deploy is supported; ignoring DEPLOY_MODE=${DEPLOY_MODE}"
 fi
+echo "Deploy mode: lite (SQLite)"
+./deploy/deploy-lite.sh
 
 # Cron (idempotent — rewrites /etc/cron.d/meti-booking)
 echo "==> Installing cron jobs..."

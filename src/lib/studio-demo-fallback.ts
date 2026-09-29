@@ -34,6 +34,11 @@ export function isDemoBookingMode(): boolean {
   }
   const dbUrl = process.env.DATABASE_URL?.trim();
   if (!dbUrl) return true;
+  if (dbUrl.startsWith("file:")) {
+    const path = dbUrl.slice("file:".length);
+    if (path.startsWith("/var/lib/meti-booking")) return false;
+    return true;
+  }
   if (/localhost|127\.0\.0\.1/.test(dbUrl)) return true;
   return false;
 }

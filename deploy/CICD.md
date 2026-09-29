@@ -3,7 +3,7 @@
 Every push to **`main`** deploys to your Hetzner VPS automatically.
 
 **Default on small VPS:** `DEPLOY_MODE=lite` in `.env` → no Docker, SQLite ([LITE.md](./LITE.md)).  
-Docker + Postgres only if `DEPLOY_MODE=docker`.
+Production deploy is always lite (SQLite).
 
 ## How it works
 
@@ -76,7 +76,7 @@ Watch the workflow; site should update in ~10–15 minutes (Docker rebuild).
 ## What runs on each deploy
 
 1. `git fetch origin main && git reset --hard origin/main`
-2. `./deploy/deploy.sh` — Postgres up, migrations, Docker rebuild, Caddy restart
+2. `./deploy/deploy-lite.sh` — schema push, build, systemd restart, Caddy reload
 3. `./deploy/smoke-test.sh` — checks `/`, `/book`, `/login`, `/api/health`, APIs
 4. `./deploy/setup-cron.sh` — rewrites daily maintenance, backup, and 15-minute alert jobs
 
