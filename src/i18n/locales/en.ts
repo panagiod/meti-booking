@@ -462,7 +462,16 @@ const en: Messages = {
     upcoming: "Upcoming",
     clients: "Clients",
     bookingsTitle: "Bookings",
-    bookingsSub: "Upcoming sessions, who is coming, and free a slot if someone cannot attend",
+    bookingsSub:
+      "Upcoming sessions, who is coming, free a slot if needed, and a log of recent cancellations",
+    cancelledBookings: "Cancelled sessions",
+    cancelledBookingsCount: "{count} recent cancellations on record",
+    cancelledBookingsCountOne: "1 recent cancellation on record",
+    cancelledBookingsHint:
+      "Shows the last 100 cancellations (newest first). Slots were freed when each session was cancelled.",
+    cancelledAtLabel: "Cancelled at",
+    cancelReasonLabel: "Reason",
+    noCancelled: "No cancelled sessions on record.",
     upcomingBookings: "Upcoming bookings",
     holdingPlaces: "{count} holding a reformer place",
     holdingPlacesOne: "1 holding a reformer place",

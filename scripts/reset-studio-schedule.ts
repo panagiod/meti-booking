@@ -4,8 +4,7 @@ import { resolve } from "path";
 config({ path: resolve(__dirname, "../.env") });
 
 async function main() {
-  const { PrismaPg } = await import("@prisma/adapter-pg");
-  const { PrismaClient } = await import("../src/generated/prisma/client");
+  const { createSqlitePrisma } = await import("./lib/sqlite-prisma");
   const { formatScheduleHoursForLocale, mergeScheduleFromDb, studioScheduleSeedRows, STUDIO_SESSION_DURATION_MIN } =
     await import("../src/lib/studio-schedule");
   const { getStudioContent, saveStudioContent } = await import(
@@ -17,8 +16,7 @@ async function main() {
     throw new Error("DATABASE_URL is required");
   }
 
-  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-  const prisma = new PrismaClient({ adapter });
+  const prisma = createSqlitePrisma(process.env.DATABASE_URL);
 
   const advisor = await resolveStudioInstructor();
   if (!advisor) {
@@ -71,7 +69,12 @@ async function main() {
   console.log("  Advisor:", advisor.id);
   console.log(
     "  Active:",
-    schedules.map((s) => `${days[s.dayOfWeek]} ${s.startTime}–${s.endTime}`).join(", ")
+    schedules
+      .map(
+        (s: { dayOfWeek: number; startTime: string; endTime: string }) =>
+          `${days[s.dayOfWeek]} ${s.startTime}–${s.endTime}`
+      )
+      .join(", ")
   );
   console.log("  Hours EN:", formatScheduleHoursForLocale(merged, "en"));
   console.log("  Hours EL:", formatScheduleHoursForLocale(merged, "el"));

@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminCancelledBookings } from "@/components/admin/admin-cancelled-bookings";
 import { AdminUpcomingBookings } from "@/components/admin/admin-upcoming-bookings";
 import { useTranslations } from "@/components/providers/locale-provider";
 
@@ -15,6 +16,7 @@ export default function AdminBookingsPage() {
         <p className="mt-1 text-[var(--text-muted)]">{t.admin.bookingsSub}</p>
       </div>
       <AdminUpcomingBookings />
+      <AdminCancelledBookings />
     </div>
   );
 }

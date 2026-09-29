@@ -391,6 +391,13 @@ export type Messages = {
     clients: string;
     bookingsTitle: string;
     bookingsSub: string;
+    cancelledBookings: string;
+    cancelledBookingsCount: string;
+    cancelledBookingsCountOne: string;
+    cancelledBookingsHint: string;
+    cancelledAtLabel: string;
+    cancelReasonLabel: string;
+    noCancelled: string;
     upcomingBookings: string;
     holdingPlaces: string;
     holdingPlacesOne: string;

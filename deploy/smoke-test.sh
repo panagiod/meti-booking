@@ -38,6 +38,6 @@ echo ""
 if [[ $failed -eq 0 ]]; then
   echo "All smoke tests passed."
 else
-  echo "Some checks failed. See: docker compose -f deploy/docker-compose.prod.yml logs app"
+  echo "Some checks failed. See: journalctl -u meti-booking -n 50 --no-pager"
   exit 1
 fi

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { idsToComplete } from "@/lib/appointment-complete";
+import { CANCELLED_HISTORY_LIMIT, idsBeyondCancelledHistoryLimit, idsToComplete } from "@/lib/appointment-complete";
 import { syncClientAttendance } from "@/lib/client-attendance-server";
 
 /** Mark confirmed sessions as completed once their class time has finished. */
@@ -29,6 +29,21 @@ export async function completePastAppointments(now = new Date()): Promise<number
 /** Do not delete live booking history. The Clients page already shows only the last 8. */
 export async function deleteExcessCompletedAppointments(): Promise<number> {
   return 0;
+}
+
+/** Drop oldest cancelled rows beyond the admin history cap (slots already freed at cancel time). */
+export async function pruneExcessCancelledAppointments(
+  instructorId: string,
+  limit = CANCELLED_HISTORY_LIMIT
+): Promise<number> {
+  const cancelled = await prisma.appointment.findMany({
+    where: { instructorId, status: "CANCELLED" },
+    select: { id: true, cancelledAt: true, updatedAt: true },
+  });
+  const extraIds = idsBeyondCancelledHistoryLimit(cancelled, limit);
+  if (extraIds.length === 0) return 0;
+  const result = await prisma.appointment.deleteMany({ where: { id: { in: extraIds } } });
+  return result.count;
 }
 
 /** Complete finished classes and store year dates. Never delete bookings from a page load. */

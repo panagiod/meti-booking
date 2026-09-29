@@ -47,19 +47,24 @@ function urlOk(name: string): boolean {
   return v.startsWith("https://") && !v.endsWith("/");
 }
 
+function sqliteDatabaseUrlOk(): boolean {
+  const v = process.env.DATABASE_URL?.trim();
+  return Boolean(v && v.startsWith("file:"));
+}
+
 const checks: Check[] = [
   { name: "DOMAIN", required: true, ok: has("DOMAIN"), hint: "meti-pilates.com (no https://)" },
   {
-    name: "POSTGRES_PASSWORD",
-    required: true,
-    ok: has("POSTGRES_PASSWORD") && process.env.POSTGRES_PASSWORD !== "change-me-strong-password",
-    hint: "Strong password — not the example placeholder",
-  },
-  {
     name: "DATABASE_URL",
     required: true,
-    ok: has("DATABASE_URL") && process.env.DATABASE_URL!.includes("@postgres:"),
-    hint: "postgresql://meti:PASSWORD@postgres:5432/meti_booking?schema=public",
+    ok: sqliteDatabaseUrlOk(),
+    hint: "file:/var/lib/meti-booking/data.db (SQLite)",
+  },
+  {
+    name: "METI_DATA_DIR",
+    required: true,
+    ok: has("METI_DATA_DIR"),
+    hint: "/var/lib/meti-booking",
   },
   { name: "BETTER_AUTH_SECRET", required: true, ok: has("BETTER_AUTH_SECRET"), hint: "openssl rand -base64 32" },
   {
@@ -99,7 +104,6 @@ const checks: Check[] = [
   },
 ];
 
-// Cross-check DOMAIN vs BETTER_AUTH_URL
 const domain = process.env.DOMAIN?.trim();
 const authUrl = process.env.BETTER_AUTH_URL?.trim();
 if (domain && authUrl && !authUrl.includes(domain)) {
@@ -129,7 +133,7 @@ console.log("");
 
 if (failedRequired > 0) {
   console.error(`Failed: ${failedRequired} required variable(s).`);
-  console.error("Copy deploy/env.production.example → .env and see deploy/HETZNER.md");
+  console.error("Run FORCE=1 ./deploy/init-env-lite.sh — see deploy/LITE.md");
   process.exit(1);
 }
 
@@ -140,6 +144,6 @@ if (warnings > 0) {
 }
 
 console.log("\nNext steps on the VPS:");
-console.log("  ./deploy/deploy.sh");
+console.log("  ./deploy/deploy-lite.sh");
 console.log("  ./deploy/setup-cron.sh");
 console.log("  ./deploy/smoke-test.sh https://yourdomain.com");

@@ -1,1 +1,1 @@
-# Database backups (created by deploy/backup-db.sh on the VPS)
+# Legacy path; production SQLite backups use deploy/backup-studio-data.sh

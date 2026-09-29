@@ -54,7 +54,7 @@
 | Page | URL | What it manages |
 |------|-----|-----------------|
 | **Overview** | `/admin` | This week’s board and today’s session counts |
-| **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot |
+| **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot, **cancelled-session log** (last 100) |
 | **Clients** | `/admin/users` | Client list with phone and session dates |
 | **Hours** | `/admin/schedule` | Weekly open days/hours, lunch, gap, cancel window, places per class, booking window |
 | **Closures** | `/admin/closures` | Cyprus holidays and extra days off |
@@ -121,7 +121,9 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 
 | File | Purpose |
 |------|---------|
-| `src/app/(platform)/admin/bookings/page.tsx` | Upcoming bookings and free a slot |
+| `src/app/(platform)/admin/bookings/page.tsx` | Upcoming bookings, free a slot, cancelled-session log |
+| `src/components/admin/admin-cancelled-bookings.tsx` | Cancelled list (`view=cancelled` API) |
+| `src/lib/appointment-complete.ts` | Retention helpers; `CANCELLED_HISTORY_LIMIT` (100) |
 | `src/app/(platform)/admin/schedule/page.tsx` | Weekly hours UI (lunch/gap fields) |
 | `src/app/(platform)/admin/closures/page.tsx` | Holidays and extra days off |
 | `src/app/(platform)/admin/content/page.tsx` | Website CMS UI |
@@ -137,7 +139,7 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 | `AdvisorSchedule` | Weekly hours per `dayOfWeek` (0=Sun), lunch, gap |
 | `BlockedTime` | Date ranges excluded from booking |
 | `AdvisorService` | Reformer Session — duration, price (EUR cents) |
-| `Appointment` | Bookings; capacity by exact `scheduledAt` |
+| `Appointment` | Bookings; capacity by exact `scheduledAt`; `cancelReason` + `cancelledAt` when cancelled |
 | `AdvisorProfile` | Studio instructor; encrypted `mpAccessToken` |
 
 Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
@@ -175,6 +177,7 @@ Optional env: `STUDIO_ADVISOR_ID` — pin instructor for `/api/studio`.
 | `GET/PUT` | `/api/admin/studio/content` | Website CMS (strict parse) |
 | `POST` | `/api/admin/studio/upload` | Image upload (blob required in prod) |
 | `GET` | `/api/admin/studio` | Calendar page data |
+| `GET` | `/api/admin/studio/appointments` | Upcoming slot holders; `?view=cancelled` → last 100 cancellations |
 
 > **Important:** `/api/advisors` and `/api/services` must stay on the proxy public allowlist or `/book` breaks for guests.
 
@@ -245,7 +248,7 @@ Copy `.env.demo.example` → `.env`. See `.env.example` for production.
 
 | Variable | Required | Notes |
 |----------|----------|-------|
-| `DATABASE_URL` | ✅ | PostgreSQL |
+| `DATABASE_URL` | ✅ | SQLite (`file:…/data.db`) |
 | `BETTER_AUTH_SECRET` | ✅ | `openssl rand -base64 32` |
 | `BETTER_AUTH_URL` | ✅ | Public URL, no trailing slash |
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | ✅ | Same |
@@ -308,7 +311,7 @@ pnpm exec tsx scripts/reset-studio-schedule.ts   # Mon/Wed/Sat 14:00–17:00
 | Route | Description |
 |-------|-------------|
 | `/admin` | Overview |
-| `/admin/bookings` | Upcoming bookings |
+| `/admin/bookings` | Upcoming bookings + cancelled-session log (100 newest) |
 | `/admin/users` | Clients |
 | `/admin/schedule` | Weekly hours |
 | `/admin/closures` | Holidays and extra days off |

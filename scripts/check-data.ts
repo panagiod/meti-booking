@@ -1,17 +1,11 @@
 import { config } from "dotenv";
 import { resolve } from "path";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { createSqlitePrisma } from "./lib/sqlite-prisma";
 
 config({ path: resolve(__dirname, "../.env") });
 
-const { PrismaClient } = require("../src/generated/prisma/client");
-
 async function check() {
-  const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL!,
-  });
-  
-  const prisma = new PrismaClient({ adapter });
+  const prisma = createSqlitePrisma(process.env.DATABASE_URL!);
 
   const advisors = await prisma.instructorProfile.findMany({
     select: { id: true, isActive: true, verificationStatus: true, user: { select: { name: true } } },

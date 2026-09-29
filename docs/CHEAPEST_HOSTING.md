@@ -1,14 +1,15 @@
-# Cheapest hosting — $0/month
+# Cheapest hosting
 
-**Recommended stack:** [Vercel Hobby](https://vercel.com) (app) + [Neon](https://neon.tech) (database).
+**Production (real studio):** Hetzner CX23 + SQLite — ~**€6/month**. Full guide: [HOSTING.md](./HOSTING.md) · [deploy/LITE.md](../deploy/LITE.md).
+
+**Local / portfolio demo ($0):** run on your laptop with SQLite — no cloud database.
 
 | Item | Cost |
 |------|-----:|
-| Hosting (Vercel) | **$0** |
-| Database (Neon free tier) | **$0** |
-| SSL + `*.vercel.app` subdomain | **$0** |
+| Your machine | **$0** |
+| SQLite (`file:./data.db`) | **$0** |
 | Google OAuth | **$0** (optional) |
-| **Total** | **$0/month** |
+| **Total** | **$0/month** (not a public production host) |
 
 Custom domain is optional (~**$3–10/year**). See [Custom domain (optional)](#custom-domain-optional).
 
@@ -127,34 +128,28 @@ These apply regardless of hosting plan:
 
 ---
 
-## Overview (5 steps)
+## Local demo (5 steps)
 
 ```
-1. Create Neon database     → copy DATABASE_URL
-2. Import repo to Vercel    → paste env vars → Deploy
-3. Run migrations           → pnpm db:deploy (one-time)
-4. Seed demo data           → pnpm demo:setup (optional)
-5. Smoke test               → open /book and /admin
+1. cp .env.demo.example .env     → DATABASE_URL=file:./data.db
+2. pnpm install
+3. pnpm db:push                  → create SQLite schema
+4. pnpm demo:setup               → seed studio data
+5. pnpm dev                      → open /book and /admin
 ```
+
+Admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` in `.env`).
 
 ---
 
-## Step 1 — Neon database (free)
+## Production studio site
 
-1. Go to [neon.tech](https://neon.tech) and sign up.
-2. **New project** → name it e.g. `meti-booking`.
-3. Open **Connection details** → copy the **pooled** connection string.  
-   It looks like:
-   ```
-   postgresql://user:pass@ep-xxx.eu-central-1.aws.neon.tech/neondb?sslmode=require
-   ```
-4. Save it — this is your `DATABASE_URL`.
-
-**Neon free tier limits:** 0.5 GB storage, project may sleep after inactivity (first visit can be slow). Fine for a small studio.
+Use Hetzner VPS + SQLite — [HOSTING.md](./HOSTING.md) · [deploy/LITE.md](../deploy/LITE.md).  
+Do **not** use a cloud Postgres URL; the app expects `DATABASE_URL=file:…`.
 
 ---
 
-## Step 2 — Vercel project (free)
+## (Legacy) Vercel project import
 
 1. Go to [vercel.com/new](https://vercel.com/new).
 2. **Import** your Git repository (`meti-booking`).
@@ -183,7 +178,7 @@ In Vercel → your project → **Settings → Environment Variables**, add these
 
 | Name | Value |
 |------|--------|
-| `DATABASE_URL` | Neon connection string from Step 1 |
+| `DATABASE_URL` | `file:./data.db` (local demo only) |
 | `BETTER_AUTH_SECRET` | first `openssl` output |
 | `BETTER_AUTH_URL` | `https://YOUR-PROJECT.vercel.app` *(set after first deploy if unknown)* |
 | `NEXT_PUBLIC_BETTER_AUTH_URL` | **same** as `BETTER_AUTH_URL` |
@@ -221,10 +216,10 @@ git clone https://github.com/panagiod/meti-booking.git
 cd meti-booking
 pnpm install
 
-DATABASE_URL="postgresql://..." pnpm db:deploy
+DATABASE_URL="file:./data.db" pnpm db:push
 ```
 
-Replace `postgresql://...` with your Neon URL.
+Use `file:./data.db` for local SQLite.
 
 ---
 
@@ -233,7 +228,7 @@ Replace `postgresql://...` with your Neon URL.
 Creates demo users, schedule, services, and CMS content:
 
 ```bash
-DATABASE_URL="postgresql://..." \
+DATABASE_URL="file:./data.db" \
 BETTER_AUTH_URL="https://YOUR-PROJECT.vercel.app" \
 ALLOW_DEMO_SEED=1 \
 DEMO_PASSWORD="YourSecurePassword123!" \
@@ -259,7 +254,7 @@ Change passwords before sharing publicly, or create real accounts via `/register
 ```bash
 BETTER_AUTH_URL=https://YOUR-PROJECT.vercel.app \
 NEXT_PUBLIC_BETTER_AUTH_URL=https://YOUR-PROJECT.vercel.app \
-DATABASE_URL="postgresql://..." \
+DATABASE_URL="file:./data.db" \
 BETTER_AUTH_SECRET="..." \
 CRON_SECRET="..." \
 STUDIO_TIMEZONE=Asia/Nicosia \
@@ -315,7 +310,7 @@ Every push to `main` on GitHub triggers a new Vercel deployment automatically.
 For database schema changes after pulling updates:
 
 ```bash
-DATABASE_URL="postgresql://..." pnpm db:deploy
+DATABASE_URL="file:./data.db" pnpm db:push
 ```
 
 ---

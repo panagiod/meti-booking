@@ -4,6 +4,7 @@ import { requireAdminSession } from "@/lib/admin-auth";
 import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import { isAutomatedTestEmail } from "@/lib/appointment-cancel";
 import { completePastAppointments } from "@/lib/appointment-complete-server";
+import { CANCELLED_HISTORY_LIMIT } from "@/lib/appointment-complete";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,8 @@ function mapAppointment(apt: {
   scheduledAt: Date;
   status: string;
   durationMin: number;
+  cancelReason?: string | null;
+  cancelledAt?: Date | null;
   service: { name: string };
   client: { name: string; email: string };
 }) {
@@ -32,6 +35,8 @@ function mapAppointment(apt: {
     clientName: apt.client.name,
     clientEmail: apt.client.email,
     isTestBooking: isAutomatedTestEmail(apt.client.email),
+    cancelReason: apt.cancelReason ?? null,
+    cancelledAt: apt.cancelledAt ? apt.cancelledAt.toISOString() : null,
   };
 }
 
@@ -48,6 +53,27 @@ export async function GET(request: NextRequest) {
     }
 
     await completePastAppointments();
+
+    const view = request.nextUrl.searchParams.get("view");
+    if (view === "cancelled") {
+      const appointments = await prisma.appointment.findMany({
+        where: {
+          instructorId: advisor.id,
+          status: "CANCELLED",
+        },
+        include: {
+          client: { select: { name: true, email: true } },
+          service: { select: { name: true, durationMin: true } },
+        },
+        orderBy: [{ cancelledAt: "desc" }, { updatedAt: "desc" }],
+        take: CANCELLED_HISTORY_LIMIT,
+      });
+
+      return NextResponse.json({
+        cancelledCount: appointments.length,
+        appointments: appointments.map((apt: (typeof appointments)[number]) => mapAppointment(apt)),
+      });
+    }
 
     const startDate = request.nextUrl.searchParams.get("startDate");
     const endDate = request.nextUrl.searchParams.get("endDate");

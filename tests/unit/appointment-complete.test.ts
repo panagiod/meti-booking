@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { idsToComplete, sessionHasEnded, COMPLETED_HISTORY_LIMIT, idsBeyondCompletedHistoryLimit } from "@/lib/appointment-complete";
+import {
+  CANCELLED_HISTORY_LIMIT,
+  idsBeyondCancelledHistoryLimit,
+  idsToComplete,
+  sessionHasEnded,
+  COMPLETED_HISTORY_LIMIT,
+  idsBeyondCompletedHistoryLimit,
+} from "@/lib/appointment-complete";
 
 const start = new Date("2026-09-10T12:45:00Z");
 
@@ -41,5 +48,25 @@ describe("completed history limit", () => {
       { id: "b-new", clientId: "b", scheduledAt: new Date("2026-09-01T12:00:00Z") },
     ];
     expect(idsBeyondCompletedHistoryLimit(rows, 8)).toEqual([]);
+  });
+});
+
+describe("cancelled history limit", () => {
+  it("keeps the newest cancelled rows for admin", () => {
+    expect(CANCELLED_HISTORY_LIMIT).toBe(100);
+    const rows = Array.from({ length: 3 }, (_, index) => ({
+      id: `c${index}`,
+      cancelledAt: new Date(`2026-09-${String(index + 1).padStart(2, "0")}T10:00:00Z`),
+      updatedAt: new Date(`2026-09-${String(index + 1).padStart(2, "0")}T10:00:00Z`),
+    }));
+    expect(idsBeyondCancelledHistoryLimit(rows, 2)).toEqual(["c0"]);
+  });
+
+  it("falls back to updatedAt when cancelledAt is missing", () => {
+    const rows = [
+      { id: "old", cancelledAt: null, updatedAt: new Date("2026-01-01T10:00:00Z") },
+      { id: "new", cancelledAt: null, updatedAt: new Date("2026-09-01T10:00:00Z") },
+    ];
+    expect(idsBeyondCancelledHistoryLimit(rows, 1)).toEqual(["old"]);
   });
 });
