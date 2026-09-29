@@ -15,4 +15,9 @@ describe("isAuthDatabaseAvailable", () => {
     vi.stubEnv("DATABASE_URL", "file:/var/lib/meti-booking/data.db");
     expect(isAuthDatabaseAvailable()).toBe(true);
   });
+
+  it("is true for Playwright e2e SQLite", () => {
+    vi.stubEnv("DATABASE_URL", "file:./data/e2e-test.db");
+    expect(isAuthDatabaseAvailable()).toBe(true);
+  });
 });
