@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { containsInsensitive } from "@/lib/prisma-filters";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { partitionAdminAppointments, type AdminUserAppointment } from "@/lib/admin-users";
-import { retainedAppointmentWhere } from "@/lib/appointment-complete";
+import { adminClientAppointmentWhere } from "@/lib/appointment-complete";
 import { completePastAppointments } from "@/lib/appointment-complete-server";
 import { unpaidSessionTotalCents } from "@/lib/session-payment";
 import {
@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
           createdAt: true,
           client: { select: { phone: true } },
           appointments: {
-            where: retainedAppointmentWhere(),
+            where: adminClientAppointmentWhere(),
             select: {
               id: true,
               scheduledAt: true,

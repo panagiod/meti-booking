@@ -1,25 +1,30 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { requireCronAuth } from "@/lib/cron-auth";
-import { refreshAppointmentHistory } from "@/lib/appointment-complete-server";
+import {
+  pruneExcessCancelledAppointments,
+  refreshAppointmentHistory,
+} from "@/lib/appointment-complete-server";
+import { resolveStudioInstructor } from "@/lib/studio-instructor";
 
 export async function GET(request: Request) {
   const authError = requireCronAuth(request);
   if (authError) return authError;
 
   try {
-    const cancelled = await prisma.appointment.deleteMany({
-      where: { status: "CANCELLED" },
-    });
+    const advisor = await resolveStudioInstructor();
+    let prunedCancelled = 0;
+    if (advisor) {
+      prunedCancelled = await pruneExcessCancelledAppointments(advisor.id);
+    }
     const { trimmed } = await refreshAppointmentHistory();
 
     console.log(
-      `[cron/cleanup-cancelled] Deleted ${cancelled.count} cancelled and ${trimmed} extra completed appointments`
+      `[cron/cleanup-cancelled] Pruned ${prunedCancelled} old cancelled rows; ${trimmed} extra completed appointments`
     );
 
     return NextResponse.json({
       ok: true,
-      deleted: cancelled.count,
+      prunedCancelled,
       expiredCompleted: trimmed,
     });
   } catch (error) {

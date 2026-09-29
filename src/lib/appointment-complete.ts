@@ -39,9 +39,39 @@ export function idsBeyondCompletedHistoryLimit<
   return extra;
 }
 
-/** Upcoming bookings plus the completed classes we still keep. */
+const RETAINED_STATUSES = [
+  "PENDING",
+  "CONFIRMED",
+  "IN_PROGRESS",
+  "COMPLETED",
+  "NO_SHOW",
+] as const;
+
+/** Upcoming bookings plus the completed classes we still keep (client dashboard). */
 export function retainedAppointmentWhere() {
   return {
-    status: { in: ["PENDING", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "NO_SHOW"] },
+    status: { in: [...RETAINED_STATUSES] },
   };
+}
+
+/** Admin client cards also show recent cancellations. */
+export function adminClientAppointmentWhere() {
+  return {
+    status: { in: [...RETAINED_STATUSES, "CANCELLED"] },
+  };
+}
+
+/** Cancelled rows kept for admin history (newest first). Older rows are pruned by cron. */
+export const CANCELLED_HISTORY_LIMIT = 100;
+
+export function idsBeyondCancelledHistoryLimit<
+  T extends { id: string; cancelledAt: Date | null; updatedAt: Date },
+>(rows: T[], limit = CANCELLED_HISTORY_LIMIT): string[] {
+  const sorted = [...rows].sort((a, b) => {
+    const aTime = (a.cancelledAt ?? a.updatedAt).getTime();
+    const bTime = (b.cancelledAt ?? b.updatedAt).getTime();
+    return bTime - aTime;
+  });
+  if (sorted.length <= limit) return [];
+  return sorted.slice(limit).map((row) => row.id);
 }

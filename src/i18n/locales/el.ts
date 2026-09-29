@@ -463,7 +463,16 @@ const el: Messages = {
     upcoming: "Προσεχή",
     clients: "Πελάτες",
     bookingsTitle: "Κρατήσεις",
-    bookingsSub: "Τα προσεχή μαθήματα, ποιος έρχεται και απελευθέρωση θέσης εάν κάποιος δεν μπορεί να προσέλθει",
+    bookingsSub:
+      "Τα προσεχή μαθήματα, ποιος έρχεται, απελευθέρωση θέσης και καταγραφή πρόσφατων ακυρώσεων",
+    cancelledBookings: "Ακυρωμένα μαθήματα",
+    cancelledBookingsCount: "{count} πρόσφατες ακυρώσεις",
+    cancelledBookingsCountOne: "1 πρόσφατη ακύρωση",
+    cancelledBookingsHint:
+      "Εμφανίζονται οι 100 πιο πρόσφατες ακυρώσεις (νεότερες πρώτα). Οι θέσεις απελευθερώθηκαν κατά την ακύρωση.",
+    cancelledAtLabel: "Ακυρώθηκε",
+    cancelReasonLabel: "Λόγος",
+    noCancelled: "Δεν υπάρχουν καταγεγραμμένες ακυρώσεις.",
     upcomingBookings: "Προσεχείς κρατήσεις",
     holdingPlaces: "{count} θέσεις είναι κρατημένες",
     holdingPlacesOne: "1 θέση είναι κρατημένη",

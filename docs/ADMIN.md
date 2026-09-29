@@ -30,7 +30,7 @@ revokes existing sessions so they must sign in again. See
 | Page | URL | Purpose |
 |------|-----|---------|
 | **Overview** | `/admin` | This week’s board, today’s counts, shortcuts |
-| **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot, book for a client |
+| **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot, book for a client, **cancelled-session log** (last 100) |
 | **Clients** | `/admin/users` | Client list with phone, last 8 completed classes, and this year’s dates |
 | **Hours** | `/admin/schedule` | Weekly open days, times, lunch, gap, cancellation window, places per class, booking window |
 | **Closures** | `/admin/closures` | Cyprus holidays + extra days off |
