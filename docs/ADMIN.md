@@ -32,7 +32,7 @@ revokes existing sessions so they must sign in again. See
 | **Overview** | `/admin` | This week’s board, today’s counts, shortcuts |
 | **Bookings** | `/admin/bookings` | Upcoming sessions, cancel/free a slot, book for a client, **cancelled-session log** (last 100) |
 | **Clients** | `/admin/users` | Client list with phone, last 8 completed classes, and this year’s dates |
-| **Hours** | `/admin/schedule` | Weekly open days, times, lunch, gap, cancellation window, places per class, booking window |
+| **Hours** | `/admin/schedule` | Weekly open days, times, lunch, gap, cancellation window, minimum notice, places per class, booking window |
 | **Closures** | `/admin/closures` | Cyprus holidays + extra days off |
 | **Website** | `/admin/content` | Homepage text, images, contact info |
 
@@ -63,7 +63,8 @@ Controls when customers can book on the public `/book` page. Holidays and extra 
 6. **Set free cancellation window** — hours before class that clients may cancel without charge (default **12**). Saving writes the same value to every service so booking, emails, checkout, FAQ, and legal pages stay in sync.
 7. **Set places per class** — how many clients can book the same time (default **3**). Saving updates the public calendar and homepage.
 8. **Set booking window** — how many weeks ahead clients can book (default **8**). Saving updates the public calendar.
-9. **Block dates** — use **Closures**; blocked days are hidden from `/book`.  
+9. **Set minimum notice** — hours before a class starts that online booking closes (default **2**, `0` keeps classes bookable until they begin). Also enforced server-side when a booking is submitted.
+10. **Block dates** — use **Closures**; blocked days are hidden from `/book`.  
    For a **single day**, set the same **From** and **To** date.
 
 ### APIs (admin auth required)

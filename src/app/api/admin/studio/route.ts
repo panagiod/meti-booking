@@ -45,6 +45,7 @@ export async function GET() {
         instructorId: advisor.id,
         instructorName: advisor.user.name,
         instructorEmail: advisor.user.email,
+        bookingLeadHours: bookingSettings.bookingLeadHours,
         slotCapacity: bookingSettings.slotCapacity,
         bookingWeeksAhead: bookingSettings.bookingWeeksAhead,
         maxUpcomingBookings: bookingSettings.maxUpcomingBookings,

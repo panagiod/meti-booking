@@ -20,16 +20,19 @@ import {
   type StudioDaySchedule,
 } from "@/lib/studio-schedule";
 import {
+  DEFAULT_BOOKING_LEAD_HOURS,
   DEFAULT_BOOKING_WEEKS_AHEAD,
   DEFAULT_CANCEL_HOURS,
   DEFAULT_DAILY_BOOKING_LIMIT,
   DEFAULT_MAX_UPCOMING_BOOKINGS,
   DEFAULT_SLOT_CAPACITY,
+  MAX_BOOKING_LEAD_HOURS,
   MAX_BOOKING_WEEKS_AHEAD,
   MAX_CANCEL_HOURS,
   MAX_DAILY_BOOKING_LIMIT,
   MAX_MAX_UPCOMING_BOOKINGS,
   MAX_SLOT_CAPACITY,
+  MIN_BOOKING_LEAD_HOURS,
   MIN_BOOKING_WEEKS_AHEAD,
   MIN_CANCEL_HOURS,
   MIN_DAILY_BOOKING_LIMIT,
@@ -88,6 +91,7 @@ interface StudioData {
   instructorId: string;
   instructorName: string;
   instructorEmail: string;
+  bookingLeadHours: number;
   slotCapacity: number;
   bookingWeeksAhead: number;
   maxUpcomingBookings: number;
@@ -108,6 +112,7 @@ export default function AdminSchedulePage() {
   const [studio, setStudio] = useState<StudioData | null>(null);
   const [schedule, setSchedule] = useState<StudioDaySchedule[]>(weeklyScheduleTemplate());
   const [cancelHours, setCancelHours] = useState(DEFAULT_CANCEL_HOURS);
+  const [bookingLeadHours, setBookingLeadHours] = useState(DEFAULT_BOOKING_LEAD_HOURS);
   const [slotCapacity, setSlotCapacity] = useState(DEFAULT_SLOT_CAPACITY);
   const [bookingWeeksAhead, setBookingWeeksAhead] = useState(DEFAULT_BOOKING_WEEKS_AHEAD);
   const [maxUpcomingBookings, setMaxUpcomingBookings] = useState(DEFAULT_MAX_UPCOMING_BOOKINGS);
@@ -164,6 +169,11 @@ export default function AdminSchedulePage() {
         typeof data.studio.cancelHours === "number"
           ? data.studio.cancelHours
           : DEFAULT_CANCEL_HOURS
+      );
+      setBookingLeadHours(
+        typeof data.studio.bookingLeadHours === "number"
+          ? data.studio.bookingLeadHours
+          : DEFAULT_BOOKING_LEAD_HOURS
       );
       setSlotCapacity(
         typeof data.studio.slotCapacity === "number"
@@ -302,6 +312,7 @@ export default function AdminSchedulePage() {
         body: JSON.stringify({
           schedules: schedule,
           cancelHours: Math.trunc(cancelHours),
+          bookingLeadHours: Math.trunc(bookingLeadHours),
           slotCapacity: Math.trunc(slotCapacity),
           bookingWeeksAhead: Math.trunc(bookingWeeksAhead),
           maxUpcomingBookings: Math.trunc(maxUpcomingBookings),
@@ -316,6 +327,9 @@ export default function AdminSchedulePage() {
       setSchedule(data.schedules);
       if (typeof data.cancelHours === "number") {
         setCancelHours(data.cancelHours);
+      }
+      if (typeof data.bookingLeadHours === "number") {
+        setBookingLeadHours(data.bookingLeadHours);
       }
       if (typeof data.slotCapacity === "number") {
         setSlotCapacity(data.slotCapacity);
@@ -563,6 +577,37 @@ export default function AdminSchedulePage() {
               </div>
               <p className="text-sm text-[var(--text-muted)]">
                 {t.admin.dailyBookingHint}
+              </p>
+            </div>
+            <div className="space-y-3">
+              <label
+                htmlFor="lead-hours"
+                className="block font-medium text-[var(--text-primary)]"
+              >
+                {t.admin.leadHoursLabel}
+              </label>
+              <div className="flex items-center gap-3">
+                <Input
+                  id="lead-hours"
+                  type="number"
+                  min={MIN_BOOKING_LEAD_HOURS}
+                  max={MAX_BOOKING_LEAD_HOURS}
+                  value={bookingLeadHours}
+                  onChange={(e) => {
+                    const next = Number(e.target.value);
+                    setBookingLeadHours(
+                      Number.isFinite(next) ? next : DEFAULT_BOOKING_LEAD_HOURS
+                    );
+                    setHasChanges(true);
+                  }}
+                  className="h-9 w-24 text-sm"
+                />
+                <span className="text-sm text-[var(--text-muted)]">
+                  {t.admin.leadHoursUnit}
+                </span>
+              </div>
+              <p className="text-sm text-[var(--text-muted)]">
+                {t.admin.leadHoursHint}
               </p>
             </div>
             <div className="space-y-3">

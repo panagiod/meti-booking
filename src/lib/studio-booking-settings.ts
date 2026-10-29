@@ -1,11 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { resolveStudioInstructor } from "@/lib/studio-instructor";
 import {
+  DEFAULT_BOOKING_LEAD_HOURS,
   DEFAULT_BOOKING_WEEKS_AHEAD,
   DEFAULT_CANCEL_HOURS,
   DEFAULT_DAILY_BOOKING_LIMIT,
   DEFAULT_MAX_UPCOMING_BOOKINGS,
   DEFAULT_SLOT_CAPACITY,
+  resolveBookingLeadHours,
   resolveBookingWeeksAhead,
   resolveCancelHours,
   resolveDailyBookingLimit,
@@ -15,6 +17,7 @@ import {
 
 export type StudioBookingSettings = {
   cancelHours: number;
+  bookingLeadHours: number;
   slotCapacity: number;
   bookingWeeksAhead: number;
   maxUpcomingBookings: number;
@@ -23,6 +26,7 @@ export type StudioBookingSettings = {
 
 const DEFAULT_SETTINGS: StudioBookingSettings = {
   cancelHours: DEFAULT_CANCEL_HOURS,
+  bookingLeadHours: DEFAULT_BOOKING_LEAD_HOURS,
   slotCapacity: DEFAULT_SLOT_CAPACITY,
   bookingWeeksAhead: DEFAULT_BOOKING_WEEKS_AHEAD,
   maxUpcomingBookings: DEFAULT_MAX_UPCOMING_BOOKINGS,
@@ -30,6 +34,7 @@ const DEFAULT_SETTINGS: StudioBookingSettings = {
 };
 
 const PROFILE_SETTINGS_SELECT = {
+  bookingLeadHours: true,
   slotCapacity: true,
   bookingWeeksAhead: true,
   maxUpcomingBookings: true,
@@ -39,6 +44,7 @@ const PROFILE_SETTINGS_SELECT = {
 function settingsFromRows(
   service: { rescheduleHoursMin: number } | null | undefined,
   profile: {
+    bookingLeadHours?: number | null;
     slotCapacity: number;
     bookingWeeksAhead: number;
     maxUpcomingBookings?: number | null;
@@ -47,6 +53,7 @@ function settingsFromRows(
 ): StudioBookingSettings {
   return {
     cancelHours: resolveCancelHours(service?.rescheduleHoursMin),
+    bookingLeadHours: resolveBookingLeadHours(profile?.bookingLeadHours),
     slotCapacity: resolveSlotCapacity(profile?.slotCapacity),
     bookingWeeksAhead: resolveBookingWeeksAhead(profile?.bookingWeeksAhead),
     maxUpcomingBookings: resolveMaxUpcomingBookings(profile?.maxUpcomingBookings),
@@ -92,6 +99,7 @@ export async function setStudioBookingSettings(
   instructorId: string,
   patch: {
     cancelHours?: number;
+    bookingLeadHours?: number;
     slotCapacity?: number;
     bookingWeeksAhead?: number;
     maxUpcomingBookings?: number;
@@ -103,11 +111,15 @@ export async function setStudioBookingSettings(
   }
 
   const profileData: {
+    bookingLeadHours?: number;
     slotCapacity?: number;
     bookingWeeksAhead?: number;
     maxUpcomingBookings?: number;
     dailyBookingLimit?: number;
   } = {};
+  if (patch.bookingLeadHours != null) {
+    profileData.bookingLeadHours = resolveBookingLeadHours(patch.bookingLeadHours);
+  }
   if (patch.slotCapacity != null) {
     profileData.slotCapacity = resolveSlotCapacity(patch.slotCapacity);
   }

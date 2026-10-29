@@ -19,7 +19,7 @@
 | **Slot capacity** | **3 bookings per time slot** (3 reformer machines) |
 | **Slot capacity** | **3** default (`slotCapacity`); admin-configurable on Hours |
 | **Booking window** | **8 weeks** default (`bookingWeeksAhead`); admin-configurable on Hours |
-| **Lead time** | **2 hours** minimum before first bookable slot (`booking-config.ts`) |
+| **Lead time** | **2 hours** default (`bookingLeadHours`); admin-configurable on Hours, `0` disables |
 | **Cancel window** | **12 hours** default (`rescheduleHoursMin`); admin-configurable on Hours |
 | **Weekly schedule** | **Admin-configurable** — demo seed: Tue, Thu, Sat |
 | **Admin calendar** | Hours `/admin/schedule` + closures `/admin/closures` |
@@ -75,6 +75,7 @@ Demo admin: `admin@demo.meti-booking.local` / `Demo1234!` (or `DEMO_PASSWORD` en
 | **Booking schedule** | DB `advisor_schedule` | `src/lib/studio-schedule.ts` |
 | **Slot capacity** | DB `instructor_profiles.slotCapacity` | default 3; admin Hours page |
 | **Booking window** | DB `instructor_profiles.bookingWeeksAhead` | default 8; admin Hours page |
+| **Lead time** | DB `instructor_profiles.bookingLeadHours` | default 2; admin Hours page |
 | **Timezone** | `STUDIO_TIMEZONE` env | `Asia/Nicosia` |
 | **Reformer service** | DB `advisor_services` | `scripts/demo-setup.ts` |
 | **Cancel window** | DB `instructor_services.rescheduleHoursMin` | default 12; admin Hours page |

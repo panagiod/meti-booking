@@ -34,6 +34,7 @@ export async function GET() {
       instructorId: advisor.id,
       schedules: mergeScheduleFromDb(schedules),
       cancelHours: bookingSettings.cancelHours,
+      bookingLeadHours: bookingSettings.bookingLeadHours,
       slotCapacity: bookingSettings.slotCapacity,
       bookingWeeksAhead: bookingSettings.bookingWeeksAhead,
       maxUpcomingBookings: bookingSettings.maxUpcomingBookings,
@@ -61,6 +62,7 @@ export async function PUT(request: NextRequest) {
     const {
       schedules,
       cancelHours,
+      bookingLeadHours,
       slotCapacity,
       bookingWeeksAhead,
       maxUpcomingBookings,
@@ -118,6 +120,7 @@ export async function PUT(request: NextRequest) {
 
     const savedSettings = await setStudioBookingSettings(advisor.id, {
       cancelHours,
+      bookingLeadHours,
       slotCapacity,
       bookingWeeksAhead,
       maxUpcomingBookings,
@@ -127,6 +130,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({
       schedules: mergedSchedules,
       cancelHours: savedSettings.cancelHours,
+      bookingLeadHours: savedSettings.bookingLeadHours,
       slotCapacity: savedSettings.slotCapacity,
       bookingWeeksAhead: savedSettings.bookingWeeksAhead,
       maxUpcomingBookings: savedSettings.maxUpcomingBookings,

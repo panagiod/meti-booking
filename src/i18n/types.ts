@@ -507,6 +507,9 @@ export type Messages = {
     cancelHoursLabel: string;
     cancelHoursUnit: string;
     cancelHoursHint: string;
+    leadHoursLabel: string;
+    leadHoursUnit: string;
+    leadHoursHint: string;
     slotCapacityLabel: string;
     slotCapacityUnit: string;
     slotCapacityHint: string;

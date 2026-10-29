@@ -131,12 +131,14 @@ describe("schedule payload", () => {
         },
       ],
       cancelHours: 12,
+      bookingLeadHours: 0,
       slotCapacity: 3,
       bookingWeeksAhead: 8,
       maxUpcomingBookings: 12,
       dailyBookingLimit: 4,
     });
     expect(parsed.cancelHours).toBe(12);
+    expect(parsed.bookingLeadHours).toBe(0);
     expect(parsed.slotCapacity).toBe(3);
     expect(parsed.bookingWeeksAhead).toBe(8);
     expect(parsed.maxUpcomingBookings).toBe(12);
@@ -180,6 +182,21 @@ describe("schedule payload", () => {
         dailyBookingLimit: 41,
       })
     ).toThrow();
+    expect(() =>
+      schedulePayloadSchema.parse({
+        schedules: [],
+        bookingLeadHours: -1,
+      })
+    ).toThrow();
+    expect(() =>
+      schedulePayloadSchema.parse({
+        schedules: [],
+        bookingLeadHours: 73,
+      })
+    ).toThrow();
+    expect(
+      schedulePayloadSchema.parse({ schedules: [], bookingLeadHours: "1" }).bookingLeadHours
+    ).toBe(1);
   });
 
   it("rejects cancel windows outside 1–72 hours", () => {

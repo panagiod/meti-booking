@@ -583,6 +583,10 @@ const en: Messages = {
     cancelHoursUnit: "hours before the session",
     cancelHoursHint:
       "Clients can cancel without charge until this many hours before class. Saving updates booking, emails, checkout, and legal pages.",
+    leadHoursLabel: "Minimum notice",
+    leadHoursUnit: "hours before the session",
+    leadHoursHint:
+      "Online booking closes this many hours before a class starts. Set 0 to keep classes bookable until they begin. Saving updates the public calendar.",
     slotCapacityLabel: "Places per class",
     slotCapacityUnit: "people",
     slotCapacityHint:

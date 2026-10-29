@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import {
   DEFAULT_BOOKING_LEAD_HOURS,
+  MAX_BOOKING_LEAD_HOURS,
+  MIN_BOOKING_LEAD_HOURS,
   DEFAULT_CANCEL_HOURS,
   DEFAULT_SLOT_CAPACITY,
   DEFAULT_BOOKING_WEEKS_AHEAD,
@@ -44,6 +46,13 @@ describe("booking-config", () => {
 
   it("resolveBookingLeadHours treats 0 as no lead time", () => {
     expect(resolveBookingLeadHours(0)).toBe(0);
+    expect(MIN_BOOKING_LEAD_HOURS).toBe(0);
+  });
+
+  it("resolveBookingLeadHours caps at the admin maximum and ignores negatives", () => {
+    expect(resolveBookingLeadHours(MAX_BOOKING_LEAD_HOURS)).toBe(72);
+    expect(resolveBookingLeadHours(500)).toBe(MAX_BOOKING_LEAD_HOURS);
+    expect(resolveBookingLeadHours(-3)).toBe(DEFAULT_BOOKING_LEAD_HOURS);
   });
 
   it("defaults cancel window to 12 hours", () => {

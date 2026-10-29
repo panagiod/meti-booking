@@ -1,7 +1,10 @@
 import { siteConfig } from "@/lib/site-config";
 
 /** Studio default — single source of truth (also in `siteConfig.defaultBookingLeadHours`). */
-export const DEFAULT_BOOKING_LEAD_HOURS = siteConfig.defaultBookingLeadHours;
+export const DEFAULT_BOOKING_LEAD_HOURS: number = siteConfig.defaultBookingLeadHours;
+/** Admin can change the lead time; `0` means same-day classes stay bookable until they start. */
+export const MIN_BOOKING_LEAD_HOURS = 0;
+export const MAX_BOOKING_LEAD_HOURS = 72;
 
 /** Free cancellation window. Admin can change this; stored on each service. */
 export const DEFAULT_CANCEL_HOURS = 12;
@@ -18,7 +21,7 @@ export const MAX_CANCEL_HOURS = 72;
 export function resolveBookingLeadHours(stored: number | null | undefined): number {
   if (stored === 0) return 0;
   if (stored != null && Number.isFinite(stored) && stored > 0) {
-    return Math.trunc(stored);
+    return Math.min(Math.trunc(stored), MAX_BOOKING_LEAD_HOURS);
   }
   return DEFAULT_BOOKING_LEAD_HOURS;
 }

@@ -48,7 +48,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 | **Code copy defaults** | `src/i18n/locales/en.ts`, `el.ts` |
 | **Live booking schedule** | Admin `/admin/schedule` (hours) + `/admin/closures` (days off) → `advisor_schedule` |
 | **Schedule code defaults** | `src/lib/studio-schedule.ts`, `demo-setup.ts` |
-| Slot capacity / booking window | Admin `/admin/schedule` (Hours) → `instructor_profiles`; defaults in `booking-config.ts` |
+| Slot capacity / booking window / lead time | Admin `/admin/schedule` (Hours) → `instructor_profiles`; defaults in `booking-config.ts` |
 | Timezone / slot times | `src/lib/timezone.ts` |
 | Greek date formatting | `src/lib/date-locale.ts` (genitive with a day: 3 Σεπτεμβρίου) |
 | Phone at booking | `src/lib/client-phone.ts` |
@@ -111,7 +111,7 @@ Close fixed audit issues: `./scripts/close-resolved-issues.sh`
 - Site language defaults to **Greek** (`meti-lang`); do not assume English
 - Production host / private ops repo name belong in the **private** ops docs — do not put them in this public repo
 - Admin UI is translated — keys in `src/i18n/locales/{en,el}.ts` under `admin`
-- `bookingLeadHours` default is **2h** — use `resolveBookingLeadHours()`
+- `bookingLeadHours` default is **2h**, admin-editable on Hours (`0` = no lead time) — use `resolveBookingLeadHours()`
 - Hardcoded fees — use **`GET /api/checkout/quote`**
 - `/api/advisors` needs auth — must be **public** for `/book`
 - Payments work — MP not configured on demo; Stripe planned
